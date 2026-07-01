@@ -13,18 +13,30 @@ machine-checkable ground truth to measure exactly that.
 
 ## Getting started
 
-Everything runs in **Docker** — nothing is installed on the host. One command brings a
-part (or all) of the benchmark up as live SPARQL endpoints:
+Everything runs in **Docker** — nothing is installed on the host. First **choose your
+setting** — the benchmark can be run as a **Virtual KG** or as a **native KG**:
+
+- **VKGQA** — query the relational data *virtually* through Ontop SPARQL endpoints
+  (R2RML mappings + ontologies). Nothing is materialized.
+- **KGQA** — *materialize* each dataset to a native RDF graph (`.nt`) that you load into
+  your own triplestore.
 
 ```bash
 cd setup
-./start_benchmark.sh noise      # 6 noise datasets    (~3 GB disk, minutes)
-./start_benchmark.sh ambrosia   # 846 AMBROSIA DBs    (~0.5 GB disk)
-./start_benchmark.sh webqsp     # WebQSP 668M (VKG dump preferred, else RDF) ⚠️ large
-./start_benchmark.sh            # all of the above
-# force one WebQSP form:  ./start_benchmark.sh webqsp-vkg   |   webqsp-rdf
+# --- VKGQA: live Ontop endpoints ---
+./start_vkgqa.sh noise      # 6 noise datasets    (~3 GB disk, minutes)
+./start_vkgqa.sh ambrosia   # 846 AMBROSIA DBs    (~0.5 GB disk)
+./start_vkgqa.sh webqsp     # WebQSP (VKG dump via Ontop) ⚠️ large
+./start_vkgqa.sh            # all of the above
+
+# --- KGQA: materialize to native RDF (.nt) ---
+./start_kgqa.sh             # noise + AMBROSIA + WebQSP graph -> datasets/<ds>/rdf/*.nt
 ```
-Windows: use `setup\start_benchmark.ps1`.
+Windows: use the `.ps1` equivalents.
+
+**WebQSP is special:** in **VKGQA** it is restored from its PostgreSQL dump and served via
+Ontop; in **KGQA** it is *not* materialized (too large) — the prebuilt 668M-triple graph is
+just unpacked. Both files come from Zenodo (see `download_data.sh`).
 
 **Requirements at a glance** — the only hard dependency is Docker (+ Compose). Disk and
 RAM depend on which parts you start; the parts are independent, so you need **only what

@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# One-command setup for the Ambiguity VKGQA benchmark (VKG mode).
+# ============================================================================
+#  VKGQA MODE — query the data VIRTUALLY via Ontop (no materialization).
+#  Loads the relational data into Postgres/MySQL and exposes each dataset as a
+#  live Ontop SPARQL endpoint over its R2RML mapping + ontology.
+#  (For KGQA over materialized native RDF instead, use start_kgqa.sh.)
+# ============================================================================
 #
-#   ./start_benchmark.sh              # everything: backends + load data + start endpoints
-#   ./start_benchmark.sh noise        # only the 6 noise datasets
-#   ./start_benchmark.sh ambrosia     # only AMBROSIA (loads 846 MySQL schemas)
-#   ./start_benchmark.sh webqsp       # only WebQSP (loads the shipped 668M RDF)
+#   ./start_vkgqa.sh              # everything: backends + load data + start endpoints
+#   ./start_vkgqa.sh noise        # only the 6 noise datasets
+#   ./start_vkgqa.sh ambrosia     # only AMBROSIA (loads 846 MySQL schemas)
+#   ./start_vkgqa.sh webqsp       # only WebQSP (VKG dump preferred, else RDF graph)
+#   ./start_vkgqa.sh webqsp-vkg   # force WebQSP as VKG (pg_restore + Ontop)
+#   ./start_vkgqa.sh webqsp-rdf   # force WebQSP as native RDF (Virtuoso)
 #
 # Requires: docker + docker compose. All services bind to 127.0.0.1 only.
 set -euo pipefail

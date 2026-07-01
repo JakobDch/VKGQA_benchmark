@@ -13,7 +13,7 @@
 | `webqsp_vkg_postgres.dump` | the **VKG**: `pg_restore` into PostgreSQL (13084 tables), query virtually via Ontop with `mappings/webqsp_big.r2rml.ttl`. This is the primary VKG form, consistent with the other datasets. |
 | `webqsp_vkg_graph.nt.gz`   | the **prebuilt RDF graph** (668M triples): load into a triplestore (Virtuoso) — a convenience so you don't have to materialize, and the native-KG comparison partner. |
 
-`start_benchmark.sh webqsp` uses whichever is present (VKG dump preferred);
+`start_vkgqa.sh webqsp` uses whichever is present (VKG dump preferred);
 `webqsp-vkg` / `webqsp-rdf` force one mode.
 
 ## Note on the ontology

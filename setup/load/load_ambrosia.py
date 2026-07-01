@@ -12,7 +12,7 @@ Usage:
   python load/load_ambrosia.py                 # all
   python load/load_ambrosia.py <db_base> ...   # only named cases
 Requires: mysql-connector-python (pip install mysql-connector-python) and the
-bench_ambrosia_mysql container running (start_benchmark.sh brings it up).
+bench_ambrosia_mysql container running (start_vkgqa.sh brings it up).
 """
 import os, sys, glob, sqlite3
 

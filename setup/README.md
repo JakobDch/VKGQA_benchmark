@@ -1,14 +1,19 @@
-# Benchmark setup — one command
+# Benchmark setup — choose your mode
 
-Bring the whole benchmark up as live SPARQL endpoints with a single script. Two modes:
+First decide **how you want to query the data** — this benchmark supports two settings,
+and you pick one:
 
-- **VKG mode (default)** — start the backing databases, load the data, and expose each
-  dataset through an **Ontop** SPARQL endpoint (query the relational data virtually).
-- **Materialize mode (optional)** — turn each VKG into a real RDF graph on disk.
+| Mode | Script | What it does |
+|---|---|---|
+| **VKGQA** — Virtual KG | `start_vkgqa.sh` | Loads the relational data into Postgres/MySQL and serves each dataset as a live **Ontop** SPARQL endpoint over its R2RML mapping + ontology. Nothing is materialized; queries are answered virtually. |
+| **KGQA** — native KG | `start_kgqa.sh` | **Materializes** each dataset to a real RDF graph (`datasets/<ds>/rdf/<ds>.nt`) that you load into the triplestore of your choice. |
 
-WebQSP is special: its 668M-triple RDF graph **ships pre-built** in
-`../datasets/webqsp/graph/webqsp_vkg_graph.nt.gz`, so you never have to materialize it.
-The setup bulk-loads it into a Virtuoso triplestore.
+**WebQSP is special in KGQA mode:** its 668M-triple graph is *not* re-materialized (that
+takes hours). It ships pre-built as `datasets/webqsp/graph/webqsp_vkg_graph.nt.gz` (from
+Zenodo); `start_kgqa.sh webqsp` just unpacks it into `datasets/webqsp/rdf/webqsp.nt`.
+(In VKGQA mode, WebQSP is served from its PostgreSQL dump via Ontop like the others.)
+
+Windows: use the `.ps1` equivalents.
 
 ## Requirements
 
@@ -18,20 +23,21 @@ The setup bulk-loads it into a Virtuoso triplestore.
   installed on the host.
 - `unzip` (or PowerShell `Expand-Archive` on Windows — the `.ps1` uses it automatically).
 - **Only for AMBROSIA**: `python` + `pip install mysql-connector-python` (to load the 846 DBs).
-- On **Windows**, run `start_benchmark.ps1` (PowerShell), not the `.sh`. In Docker Desktop,
+- On **Windows**, run `start_vkgqa.ps1` (PowerShell), not the `.sh`. In Docker Desktop,
   make sure the drive holding this folder is enabled under *Settings → Resources → File sharing*.
 
 **Disk — you do NOT need it all; each part is independent.** Pick what you start:
 
 | Part | What it needs on disk | Notes |
 |---|---|---|
-| **noise** (8 datasets) | ~1–2 GB | small dumps → Postgres |
+| **noise** (6 datasets) | ~1–2 GB | small dumps → Postgres |
 | **AMBROSIA** (846 DBs) | ~0.5 GB | tiny DBs → MySQL |
-| **WebQSP** | **~130 GB total** ⚠️ | 5.7 GB shipped `.nt.gz` → **~83 GB** unzipped `.nt` + **~30–40 GB** Virtuoso DB. This is by far the heaviest part. |
-| **materialize mode** (optional) | +a few GB per noise dataset | writes `<ds>.nt` files |
+| **WebQSP (VKGQA)** | ~5.2 GB download → ~85 GB restored PostgreSQL | pg_restore + Ontop |
+| **WebQSP (KGQA)** | 5.7 GB `.nt.gz` → **~83 GB** unzipped `.nt` | by far the heaviest part |
+| **KGQA materialization** | +a few GB per noise dataset | writes `rdf/<ds>.nt` files |
 
 So: **noise + AMBROSIA alone need only ~3–4 GB**. The big cost is WebQSP's 668M-triple
-graph. If you don't need WebQSP, just run `start_benchmark.sh noise` / `ambrosia`.
+graph. If you don't need WebQSP, just run `start_vkgqa.sh noise` / `ambrosia`.
 
 **RAM:**
 - noise + AMBROSIA endpoints: ~1–2 GB each Ontop JVM; a few running at once → 4–8 GB is fine.
@@ -46,20 +52,20 @@ starts are fast (data persists in Docker volumes).
 
 ```bash
 cd benchmark/setup
-./start_benchmark.sh            # backends + load all + start endpoints
+./start_vkgqa.sh            # backends + load all + start endpoints
 # or a single group:
-./start_benchmark.sh noise      # the 8 noise datasets  (Postgres + Ontop)
-./start_benchmark.sh webqsp     # WebQSP 668M RDF -> Virtuoso
-./start_benchmark.sh ambrosia   # AMBROSIA schemas -> MySQL
+./start_vkgqa.sh noise      # the 6 noise datasets  (Postgres + Ontop)
+./start_vkgqa.sh webqsp     # WebQSP 668M RDF -> Virtuoso
+./start_vkgqa.sh ambrosia   # AMBROSIA schemas -> MySQL
 ```
 
-Windows (PowerShell): use `start_benchmark.ps1` with the same arguments.
+Windows (PowerShell): use `start_vkgqa.ps1` with the same arguments.
 
 ## What comes up
 
 | Service | Port (localhost) | What |
 |---|---|---|
-| Postgres (noise) | 55432 | 8 noise datasets, one db each |
+| Postgres (noise) | 55432 | 6 noise datasets, one db each |
 | MySQL (ambrosia) | 3307 | 846 AMBROSIA schemas |
 | Virtuoso (webqsp) | 8890 | WebQSP 668M RDF; SPARQL at `/sparql` |
 | Ontop per noise ds | 13001… | one SPARQL endpoint per noise dataset |
@@ -71,7 +77,7 @@ After startup, `docker ps` lists every running endpoint with its port.
 
 AMBROSIA has 846 tiny databases. Running 846 Ontop endpoints at once is wasteful, so:
 
-1. `start_benchmark.sh ambrosia` creates the MySQL schemas and (via `load/load_ambrosia.py`)
+1. `start_vkgqa.sh ambrosia` creates the MySQL schemas and (via `load/load_ambrosia.py`)
    loads the data from your local AMBROSIA source.
 2. Start an endpoint for **one** case when you need it:
    ```bash
@@ -82,12 +88,22 @@ AMBROSIA has 846 tiny databases. Running 846 Ontop endpoints at once is wasteful
 > AMBROSIA source DBs are **not** bundled (license). Obtain them and place under
 > `sources/AMBROSIA/data/` — see `../datasets/ambrosia/DATA_ACCESS.md`.
 
-## Materialize mode (optional)
+## KGQA mode (materialize to native RDF)
+
+Instead of the virtual Ontop endpoints, produce real RDF graphs you load into your own
+triplestore:
 
 ```bash
-./materialize_all.sh    # each noise VKG -> datasets/<ds>/materialized/<ds>.nt
+./start_kgqa.sh            # noise + AMBROSIA + WebQSP graph
+./start_kgqa.sh noise      # each noise KG   -> datasets/<ds>/rdf/<ds>.nt
+./start_kgqa.sh ambrosia   # all 846 AMBROSIA DBs -> datasets/ambrosia/rdf/ambrosia.nt
+./start_kgqa.sh webqsp     # unpack the shipped 668M graph -> datasets/webqsp/rdf/webqsp.nt
 ```
-WebQSP is skipped (already RDF). Run `start_benchmark.sh` first so the DBs are loaded.
+
+`start_kgqa.sh` brings up the databases, materializes each mapping with `ontop
+materialize`, and writes `.nt` files. **WebQSP is not materialized** (too large) — its
+prebuilt graph is unpacked instead. Load the resulting `.nt` files into Virtuoso / Fuseki /
+Blazegraph / GraphDB / … yourself.
 
 ## Querying the ground truth
 

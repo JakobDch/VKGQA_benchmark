@@ -1,6 +1,6 @@
 # One-command setup for the Ambiguity VKGQA benchmark (Windows / PowerShell).
-#   .\start_benchmark.ps1              # backends + load all + start endpoints
-#   .\start_benchmark.ps1 noise|ambrosia|webqsp
+#   .\start_vkgqa.ps1              # backends + load all + start endpoints
+#   .\start_vkgqa.ps1 noise|ambrosia|webqsp
 # Requires Docker Desktop. All services bind to 127.0.0.1 only.
 param([string]$Target = "all")
 $ErrorActionPreference = "Stop"
@@ -97,6 +97,6 @@ switch ($Target) {
   "noise"    { Load-Noise }
   "ambrosia" { Load-Ambrosia }
   "webqsp"   { Load-Webqsp }
-  default    { Write-Host "usage: .\start_benchmark.ps1 [all|noise|ambrosia|webqsp]"; exit 1 }
+  default    { Write-Host "usage: .\start_vkgqa.ps1 [all|noise|ambrosia|webqsp]"; exit 1 }
 }
 Log "done. 'docker ps' shows running endpoints."
