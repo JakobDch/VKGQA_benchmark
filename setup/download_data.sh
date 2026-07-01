@@ -38,9 +38,11 @@ get(){  # get <filename> <dest>
 
 download_webqsp(){
   check_zenodo
-  mkdir -p "$DATASETS/webqsp/graph"
-  get "webqsp_vkg_graph.nt.gz" "$DATASETS/webqsp/graph/webqsp_vkg_graph.nt.gz"
-  log "WebQSP graph ready."
+  mkdir -p "$DATASETS/webqsp/graph" "$DATASETS/webqsp/data"
+  # (a) the PostgreSQL dump -> VKG mode (5.2 GB); (b) the prebuilt RDF graph -> native mode (5.7 GB)
+  get "webqsp_vkg_postgres.dump" "$DATASETS/webqsp/data/webqsp_vkg_postgres.dump"
+  get "webqsp_vkg_graph.nt.gz"   "$DATASETS/webqsp/graph/webqsp_vkg_graph.nt.gz"
+  log "WebQSP data ready (PostgreSQL dump + RDF graph)."
 }
 
 download_noise(){

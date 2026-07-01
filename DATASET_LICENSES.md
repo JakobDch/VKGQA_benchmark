@@ -9,8 +9,8 @@ level that license permits — summarised here.
 
 - **GitHub (this repo):** mappings, ontologies, queries, ground truth, expander, setup —
   all small, all license-clean.
-- **Zenodo (DOI):** the large + openly-licensed data — the WebQSP 668M RDF graph and the
-  6 open noise datasets. Fetched by `setup/download_data.sh`.
+- **Zenodo (DOI):** the large + openly-licensed data — the WebQSP PostgreSQL dump (VKG) +
+  prebuilt RDF graph, and the 6 open noise datasets. Fetched by `setup/download_data.sh`.
 - **Bring-your-own (restricted):** datasets whose license forbids redistribution — you
   obtain them from the original source (see each `DATA_ACCESS.md`).
 
@@ -19,7 +19,7 @@ level that license permits — summarised here.
 | Dataset | Underlying source | License | Distributed via |
 |---|---|---|---|
 | **AMBROSIA** | Saparina & Lapata (Edinburgh) | CC BY 4.0, **authors request no re-hosting** | bring-your-own → ambrosia-benchmark.github.io |
-| **WebQSP graph** | Freebase slice (WebQSP over Freebase) | Freebase = CC BY 2.5/… ; large | **Zenodo** |
+| **WebQSP** (PG dump + RDF graph) | Freebase slice (WebQSP over Freebase) | Freebase = CC BY 2.5/… ; large | **Zenodo** |
 | **npd** | Norwegian Offshore Directorate FactPages | NLOD 2.0 (open gov, attribution) | **Zenodo** |
 | **cwd** | datadotworld/cwd-benchmark-data (ACME) | Apache 2.0 | **Zenodo** |
 | **gtfs** | oeg-upm/gtfs-bench (Madrid) | Apache 2.0 | **Zenodo** |

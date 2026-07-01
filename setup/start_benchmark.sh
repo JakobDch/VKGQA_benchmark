@@ -117,28 +117,86 @@ load_ambrosia(){
   log "   AMBROSIA Ontop endpoints are started per-DB on demand: setup/run_ontop_ambrosia.sh <db_base> <port>"
 }
 
-# ---------------------------------------------------------------- webqsp (rdf -> virtuoso)
-load_webqsp(){
-  log "== WebQSP: bulk-loading the shipped 668M RDF graph into Virtuoso =="
-  local gz; gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1)
-  [ -n "${gz:-}" ] || { log "   no RDF graph found in datasets/webqsp/graph/ (see DATA_ACCESS.md)"; return; }
-  log "   found $(basename "$gz") — loading (this takes a while for 668M triples) ..."
-  # Virtuoso bulk load: gunzip into the mounted /graph dir, register, run loader.
+# ---------------------------------------------------------------- webqsp
+# WebQSP can be served two ways (both come from Zenodo — see download_data.sh):
+#   (a) VKG mode  : restore the PostgreSQL dump -> query virtually via Ontop (like the
+#                   other datasets). This is the "VKG" that the benchmark is about.
+#   (b) native RDF: bulk-load the prebuilt 668M-triple RDF graph into Virtuoso — a
+#                   convenience so you don't have to materialize, and the native-KG
+#                   comparison partner.
+# We do whichever data file is present (prefer the graph if both, unless mode=vkg).
+load_webqsp(){ # optional arg: "vkg" | "rdf" (default: auto)
+  local mode="${1:-auto}"
+  local dump; dump=$(ls "$DATASETS/webqsp/data/"*.dump 2>/dev/null | head -1)
+  local gz;   gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1)
+
+  if { [ "$mode" = "vkg" ] || [ "$mode" = "auto" ]; } && [ -n "${dump:-}" ]; then
+    load_webqsp_vkg "$dump"; [ "$mode" = "vkg" ] && return
+  fi
+  if [ -n "${gz:-}" ]; then
+    load_webqsp_rdf "$gz"
+  elif [ -z "${dump:-}" ]; then
+    log "   no WebQSP data found (run setup/download_data.sh webqsp) — see DATA_ACCESS.md"
+  fi
+}
+
+load_webqsp_vkg(){  # PostgreSQL dump -> restore -> Ontop endpoint (like noise, but big)
+  local dump="$1"
+  log "== WebQSP (VKG): restoring PostgreSQL dump (13084 tables, ~85 GB restored) =="
+  docker exec bench_noise_pg psql -U noise -d postgres -tc \
+    "SELECT 1 FROM pg_database WHERE datname='freebase_vkg_big'" | grep -q 1 || \
+    docker exec bench_noise_pg createdb -U noise freebase_vkg_big
+  docker cp "$dump" bench_noise_pg:/webqsp.dump
+  log "   pg_restore -j4 (this takes a while) ..."
+  docker exec bench_noise_pg pg_restore -U noise -d freebase_vkg_big --no-owner -j4 /webqsp.dump >/dev/null 2>&1 \
+    || log "   (some restore warnings — usually harmless)"
+  docker exec bench_noise_pg rm -f /webqsp.dump
+  start_ontop_pg_named freebase_vkg_big "$DATASETS/webqsp" 13010
+  log "   WebQSP VKG SPARQL -> http://localhost:13010/sparql"
+}
+
+load_webqsp_rdf(){  # prebuilt RDF graph -> Virtuoso bulk load
+  local gz="$1"
+  log "== WebQSP (native RDF): bulk-loading $(basename "$gz") into Virtuoso (668M triples) =="
   docker exec bench_webqsp_store bash -lc '
     cd /graph && for f in *.nt.gz; do [ -f "${f%.gz}" ] || gunzip -k "$f"; done'
   docker exec bench_webqsp_store isql 1111 dba dba exec="ld_dir('/graph', '*.nt', 'http://rdf.freebase.com/');" 2>/dev/null || true
   docker exec bench_webqsp_store isql 1111 dba dba exec="rdf_loader_run();" 2>/dev/null || true
   docker exec bench_webqsp_store isql 1111 dba dba exec="checkpoint;" 2>/dev/null || true
-  log "   WebQSP SPARQL -> http://localhost:8890/sparql"
+  log "   WebQSP RDF SPARQL -> http://localhost:8890/sparql"
+}
+
+# start an Ontop endpoint against an explicitly-named PG database (used by WebQSP VKG)
+start_ontop_pg_named(){
+  local db="$1" dir="$2" port="$3"
+  local mapping; mapping=$(ls "$dir"/mappings/*.r2rml.ttl "$dir"/mapping/*.r2rml.ttl 2>/dev/null | head -1)
+  [ -n "${mapping:-}" ] || { log "   (no mapping for $db)"; return; }
+  local work="$HERE/.ontop/$db"; rm -rf "$work"; mkdir -p "$work"
+  cat > "$work/ontop.properties" <<EOF
+jdbc.url=jdbc:postgresql://bench_noise_pg:5432/$db
+jdbc.user=noise
+jdbc.password=noise
+jdbc.driver=org.postgresql.Driver
+EOF
+  cp "$mapping" "$work/mapping.ttl"
+  docker rm -f "bench_ontop_$db" >/dev/null 2>&1 || true
+  docker run -d --name "bench_ontop_$db" --network "$NET" \
+    -p "127.0.0.1:$port:8080" \
+    -v "$(hostpath "$work"):/opt/ontop/input:ro" \
+    -v "$(hostpath "$JDBC_DIR"):/opt/ontop/jdbc:ro" \
+    "$ONTOP_IMAGE" ontop endpoint \
+      -m /opt/ontop/input/mapping.ttl -p /opt/ontop/input/ontop.properties >/dev/null
 }
 
 # ---------------------------------------------------------------- main
 start_backends
 case "$TARGET" in
-  all)      load_noise; load_ambrosia; load_webqsp ;;
-  noise)    load_noise ;;
-  ambrosia) load_ambrosia ;;
-  webqsp)   load_webqsp ;;
-  *) echo "usage: $0 [all|noise|ambrosia|webqsp]"; exit 1 ;;
+  all)         load_noise; load_ambrosia; load_webqsp ;;
+  noise)       load_noise ;;
+  ambrosia)    load_ambrosia ;;
+  webqsp)      load_webqsp ;;
+  webqsp-vkg)  load_webqsp vkg ;;
+  webqsp-rdf)  load_webqsp rdf ;;
+  *) echo "usage: $0 [all|noise|ambrosia|webqsp|webqsp-vkg|webqsp-rdf]"; exit 1 ;;
 esac
 log "done. See 'docker ps' for running endpoints."

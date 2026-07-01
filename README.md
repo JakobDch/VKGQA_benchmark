@@ -18,10 +18,11 @@ part (or all) of the benchmark up as live SPARQL endpoints:
 
 ```bash
 cd setup
-./start_benchmark.sh noise      # 8 noise datasets   (~3 GB disk, minutes)
-./start_benchmark.sh ambrosia   # 846 AMBROSIA DBs   (~0.5 GB disk)
-./start_benchmark.sh webqsp     # WebQSP 668M graph  (~130 GB disk, 30–90 min) ⚠️
+./start_benchmark.sh noise      # 6 noise datasets    (~3 GB disk, minutes)
+./start_benchmark.sh ambrosia   # 846 AMBROSIA DBs    (~0.5 GB disk)
+./start_benchmark.sh webqsp     # WebQSP 668M (VKG dump preferred, else RDF) ⚠️ large
 ./start_benchmark.sh            # all of the above
+# force one WebQSP form:  ./start_benchmark.sh webqsp-vkg   |   webqsp-rdf
 ```
 Windows: use `setup\start_benchmark.ps1`.
 
@@ -32,7 +33,8 @@ you run**:
 | If you start… | Disk | RAM |
 |---|---|---|
 | noise + AMBROSIA | ~3–4 GB | ~4–8 GB |
-| WebQSP (668M triples) | **~130 GB** (5.7 GB shipped `.nt.gz` → ~83 GB unzipped → ~30–40 GB triplestore) | 8 GB min, 16 GB+ recommended |
+| WebQSP as **VKG** (PG dump) | ~5.2 GB download → ~85 GB restored PostgreSQL | 8 GB+ |
+| WebQSP as **native RDF** (graph) | 5.7 GB `.nt.gz` → ~83 GB unzipped → ~30–40 GB triplestore | 8 GB min, 16 GB+ rec. |
 
 See **[setup/README.md](setup/README.md)** for the full requirements table, ports,
 per-dataset details, tear-down, and the optional *materialize* mode.
@@ -44,11 +46,11 @@ questions, ground truth, scripts). The **data** is fetched separately:
 
 ```bash
 cd setup
-./download_data.sh all     # open datasets + WebQSP graph, from Zenodo
+./download_data.sh all     # open datasets + WebQSP (PG dump + RDF graph), from Zenodo
 ```
-The restricted dataset (AMBROSIA) is **not** downloadable — obtain it
-yourself per the `DATA_ACCESS.md` in each dataset folder. Full breakdown of every
-dataset's source, license, and distribution channel: **[DATASET_LICENSES.md](DATASET_LICENSES.md)**.
+The restricted dataset (AMBROSIA) is **not** downloadable — obtain it yourself per
+`datasets/ambrosia/DATA_ACCESS.md`. Full breakdown of every dataset's source, license,
+and distribution channel: **[DATASET_LICENSES.md](DATASET_LICENSES.md)**.
 
 > Licensing: our artefacts are **CC BY 4.0** ([LICENSE](LICENSE)); each dataset's
 > underlying data keeps its own license — you must comply with both.
