@@ -33,9 +33,11 @@ hostpath(){ case "$1" in /?/*) echo "$1" | sed -E 's#^/([a-zA-Z])/#\1:/#';; *) e
 # bring up backing DBs (needed to materialize from the relational data)
 start_backends(){
   log "starting backing databases (for materialization) ..."
-  docker compose -f "$HERE/docker-compose.yml" up -d noise_pg ambrosia_mysql
+  ( cd "$HERE" && docker compose up -d noise_pg ambrosia_mysql )
   until docker exec bench_noise_pg pg_isready -U noise >/dev/null 2>&1; do sleep 2; done
   until docker exec bench_ambrosia_mysql mysqladmin ping -h localhost -pambrosia >/dev/null 2>&1; do sleep 2; done
+  # let the ambrosia user create/use the per-DB amb_* schemas that load_ambrosia.py makes
+  docker exec bench_ambrosia_mysql mysql -uroot -pambrosia -e "GRANT ALL PRIVILEGES ON *.* TO 'ambrosia'@'%'; FLUSH PRIVILEGES;" >/dev/null 2>&1 || true
 }
 
 # --- noise: load PG dump (if not loaded) then ontop materialize -> .nt ---------
@@ -45,7 +47,7 @@ kgqa_noise(){
     [ -d "$dir" ] || { log "skip $ds"; continue; }
     log "== $ds =="
     # ensure data is loaded (idempotent)
-    [ -d "$dir/data" ] || { [ -f "$dir/data.zip" ] && ( cd "$dir" && unzip -q -o data.zip ); }
+    [ -d "$dir/data" ] || { [ -f "$dir/data.zip" ] && { ( cd "$dir" && unzip -q -o data.zip ) || true; }; }
     docker exec bench_noise_pg psql -U noise -d postgres -tc \
       "SELECT 1 FROM pg_database WHERE datname='$ds'" | grep -q 1 || \
       docker exec bench_noise_pg createdb -U noise "$ds"
@@ -60,8 +62,8 @@ kgqa_noise(){
 # generic: ontop materialize a mapping over a JDBC url -> <out>/<name>.nt
 materialize_pg(){
   local name="$1" dir="$2" jdbc="$3"
-  local mapping; mapping=$(ls "$dir"/mapping/*.r2rml.ttl "$dir"/mappings/*.r2rml.ttl 2>/dev/null | head -1)
-  local ontology; ontology=$(ls "$dir"/ontology/*.ttl "$dir"/ontology/*.owl 2>/dev/null | head -1)
+  local mapping; mapping=$(ls "$dir"/mapping/*.r2rml.ttl "$dir"/mappings/*.r2rml.ttl 2>/dev/null | head -1) || true
+  local ontology; ontology=$(ls "$dir"/ontology/*.ttl "$dir"/ontology/*.owl 2>/dev/null | head -1) || true
   [ -n "${mapping:-}" ] || { log "$name: no mapping, skip"; return; }
   local out="$dir/rdf"; mkdir -p "$out"
   local work="$HERE/.ontop/mat_$name"; rm -rf "$work"; mkdir -p "$work"
@@ -70,6 +72,7 @@ jdbc.url=$jdbc
 jdbc.user=noise
 jdbc.password=noise
 jdbc.driver=org.postgresql.Driver
+ontop.inferDefaultDatatype=true
 EOF
   cp "$mapping" "$work/mapping.ttl"
   local onto_arg=""
@@ -101,13 +104,14 @@ kgqa_ambrosia(){
     local base; base=$(basename "$mp" .r2rml.ttl)
     local domain; domain=$(basename "$(dirname "$mp")")
     local schema="amb_${base}"
-    local onto; onto=$(ls "$onto_dir/$(echo "$domain" | tr 'A-Z' 'a-z').ttl" 2>/dev/null | head -1)
+    local onto; onto=$(ls "$onto_dir/$(echo "$domain" | tr 'A-Z' 'a-z').ttl" 2>/dev/null | head -1) || true
     local work="$HERE/.ontop/mat_amb_$base"; rm -rf "$work"; mkdir -p "$work"
     cat > "$work/ontop.properties" <<EOF
 jdbc.url=jdbc:mysql://bench_ambrosia_mysql:3306/${schema}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 jdbc.user=ambrosia
 jdbc.password=ambrosia
 jdbc.driver=com.mysql.cj.jdbc.Driver
+ontop.inferDefaultDatatype=true
 EOF
     cp "$mp" "$work/mapping.ttl"; local oarg=""
     [ -n "${onto:-}" ] && { cp "$onto" "$work/ontology.ttl"; oarg="-t /in/ontology.ttl"; }
@@ -124,7 +128,7 @@ EOF
 
 # --- WebQSP: DO NOT materialize; unpack the shipped Zenodo graph ---------------
 kgqa_webqsp(){
-  local gz; gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1)
+  local gz; gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1) || true
   if [ -z "${gz:-}" ]; then
     log "WebQSP graph not found — run setup/download_data.sh webqsp (it is NOT materialized; too large)"
     return

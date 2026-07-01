@@ -24,7 +24,7 @@ hostpath(){ case "$1" in /?/*) echo "$1" | sed -E 's#^/([a-zA-Z])/#\1:/#';; *) e
 MAPPING=$(find "$BENCH/datasets/ambrosia/mappings" -name "${DB_BASE}.r2rml.ttl" | head -1)
 [ -n "$MAPPING" ] || { echo "no mapping for $DB_BASE"; exit 1; }
 DOMAIN=$(basename "$(dirname "$MAPPING")")                       # e.g. Agriculture
-ONTO=$(ls "$BENCH/datasets/ambrosia/ontology/$(echo "$DOMAIN" | tr 'A-Z' 'a-z').ttl" 2>/dev/null | head -1)
+ONTO=$(ls "$BENCH/datasets/ambrosia/ontology/$(echo "$DOMAIN" | tr 'A-Z' 'a-z').ttl" 2>/dev/null | head -1) || true
 
 WORK="$HERE/.ontop/amb_${DB_BASE}"; rm -rf "$WORK"; mkdir -p "$WORK"
 cat > "$WORK/ontop.properties" <<EOF
@@ -32,6 +32,7 @@ jdbc.url=jdbc:mysql://bench_ambrosia_mysql:3306/${SCHEMA}?useSSL=false&allowPubl
 jdbc.user=ambrosia
 jdbc.password=ambrosia
 jdbc.driver=com.mysql.cj.jdbc.Driver
+ontop.inferDefaultDatatype=true
 EOF
 cp "$MAPPING" "$WORK/mapping.ttl"
 ONTO_ARG=""

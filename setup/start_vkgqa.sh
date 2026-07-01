@@ -33,11 +33,14 @@ hostpath(){ case "$1" in /?/*) echo "$1" | sed -E 's#^/([a-zA-Z])/#\1:/#';; *) e
 # ---------------------------------------------------------------- backends
 start_backends(){
   log "starting backing services (postgres / mysql / virtuoso) ..."
-  docker compose -f "$HERE/docker-compose.yml" up -d
+  # run compose from its own dir so the -f path never hits MSYS path conversion
+  ( cd "$HERE" && docker compose up -d )
   log "waiting for postgres ..."
   until docker exec bench_noise_pg pg_isready -U noise >/dev/null 2>&1; do sleep 2; done
   log "waiting for mysql ..."
   until docker exec bench_ambrosia_mysql mysqladmin ping -h localhost -pambrosia >/dev/null 2>&1; do sleep 2; done
+  # let the ambrosia user create/use the per-DB amb_* schemas that load_ambrosia.py makes
+  docker exec bench_ambrosia_mysql mysql -uroot -pambrosia -e "GRANT ALL PRIVILEGES ON *.* TO 'ambrosia'@'%'; FLUSH PRIVILEGES;" >/dev/null 2>&1 || true
   log "backends up."
 }
 
@@ -54,7 +57,7 @@ load_noise(){
     log "== noise: $ds =="
     # 1. unzip data if needed
     if [ -f "$dir/data.zip" ] && [ ! -d "$dir/data" ]; then
-      ( cd "$dir" && unzip -q -o data.zip )
+      ( cd "$dir" && unzip -q -o data.zip ) || true
     fi
     # 2. create db + load the postgres dump (each set ships one .sql / .psql / .postgres)
     docker exec bench_noise_pg psql -U noise -d postgres -tc \
@@ -77,8 +80,8 @@ load_noise(){
 
 start_ontop_pg(){
   local ds="$1" dir="$2" port="$3"
-  local mapping; mapping=$(ls "$dir"/mapping/*.r2rml.ttl 2>/dev/null | head -1)
-  local ontology; ontology=$(ls "$dir"/ontology/*.ttl "$dir"/ontology/*.owl 2>/dev/null | head -1)
+  local mapping; mapping=$(ls "$dir"/mapping/*.r2rml.ttl 2>/dev/null | head -1) || true
+  local ontology; ontology=$(ls "$dir"/ontology/*.ttl "$dir"/ontology/*.owl 2>/dev/null | head -1) || true
   [ -n "${mapping:-}" ] || { log "   (no mapping for $ds, skip endpoint)"; return; }
   # work dir under setup/ (Docker Desktop shares the project drive; /tmp of Git-Bash isn't shared)
   local work="$HERE/.ontop/$ds"; rm -rf "$work"; mkdir -p "$work"
@@ -87,6 +90,7 @@ jdbc.url=jdbc:postgresql://bench_noise_pg:5432/$ds
 jdbc.user=noise
 jdbc.password=noise
 jdbc.driver=org.postgresql.Driver
+ontop.inferDefaultDatatype=true
 EOF
   cp "$mapping" "$work/mapping.ttl"
   local onto_arg=""
@@ -134,8 +138,8 @@ load_ambrosia(){
 # We do whichever data file is present (prefer the graph if both, unless mode=vkg).
 load_webqsp(){ # optional arg: "vkg" | "rdf" (default: auto)
   local mode="${1:-auto}"
-  local dump; dump=$(ls "$DATASETS/webqsp/data/"*.dump 2>/dev/null | head -1)
-  local gz;   gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1)
+  local dump; dump=$(ls "$DATASETS/webqsp/data/"*.dump 2>/dev/null | head -1) || true
+  local gz;   gz=$(ls "$DATASETS/webqsp/graph/"*.nt.gz 2>/dev/null | head -1) || true
 
   if { [ "$mode" = "vkg" ] || [ "$mode" = "auto" ]; } && [ -n "${dump:-}" ]; then
     load_webqsp_vkg "$dump"; [ "$mode" = "vkg" ] && return
@@ -176,7 +180,7 @@ load_webqsp_rdf(){  # prebuilt RDF graph -> Virtuoso bulk load
 # start an Ontop endpoint against an explicitly-named PG database (used by WebQSP VKG)
 start_ontop_pg_named(){
   local db="$1" dir="$2" port="$3"
-  local mapping; mapping=$(ls "$dir"/mappings/*.r2rml.ttl "$dir"/mapping/*.r2rml.ttl 2>/dev/null | head -1)
+  local mapping; mapping=$(ls "$dir"/mappings/*.r2rml.ttl "$dir"/mapping/*.r2rml.ttl 2>/dev/null | head -1) || true
   [ -n "${mapping:-}" ] || { log "   (no mapping for $db)"; return; }
   local work="$HERE/.ontop/$db"; rm -rf "$work"; mkdir -p "$work"
   cat > "$work/ontop.properties" <<EOF
@@ -184,6 +188,7 @@ jdbc.url=jdbc:postgresql://bench_noise_pg:5432/$db
 jdbc.user=noise
 jdbc.password=noise
 jdbc.driver=org.postgresql.Driver
+ontop.inferDefaultDatatype=true
 EOF
   cp "$mapping" "$work/mapping.ttl"
   docker rm -f "bench_ontop_$db" >/dev/null 2>&1 || true

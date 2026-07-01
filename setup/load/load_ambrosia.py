@@ -56,12 +56,21 @@ def main():
         tabs = [r[0] for r in sc.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
         for t in tabs:
             cols = sc.execute(f'PRAGMA table_info("{t}")').fetchall()
+            has_pk = any(c["pk"] for c in cols)
+            # AMBROSIA's R2RML references a surrogate key `_amb_rowid` on PK-less (junction)
+            # tables (the server build added it via migration). Reproduce it here: for a
+            # table without a declared PK, prepend `_amb_rowid` = SQLite rowid.
+            add_rowid = not has_pk
             defs = ", ".join(f'`{c["name"]}` {mysql_type(c["type"])}' for c in cols)
+            if add_rowid:
+                defs = "`_amb_rowid` BIGINT, " + defs
             cur.execute(f'CREATE TABLE `{t}` ({defs})')
-            rows = sc.execute(f'SELECT * FROM "{t}"').fetchall()
+            sel = ("rowid, " if add_rowid else "") + ", ".join(f'"{c["name"]}"' for c in cols)
+            rows = sc.execute(f'SELECT {sel} FROM "{t}"').fetchall()
             if rows:
-                ph = ", ".join(["%s"] * len(cols))
-                cn = ", ".join(f'`{c["name"]}`' for c in cols)
+                incols = (["_amb_rowid"] if add_rowid else []) + [c["name"] for c in cols]
+                ph = ", ".join(["%s"] * len(incols))
+                cn = ", ".join(f'`{c}`' for c in incols)
                 cur.executemany(f'INSERT INTO `{t}` ({cn}) VALUES ({ph})',
                                 [tuple(r) for r in rows])
         cx.commit(); sc.close()
