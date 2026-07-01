@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Platforms_base
+target		ex:Platforms/{platformID} a :Platforms ; p:platformID {platformID} ; p:name {name} .
+source		SELECT `platformID`, `name` FROM `Platforms`
+
+mappingId	Games_base
+target		ex:Games/{gameID} a :Games ; p:gameID {gameID} ; p:title {title} ; p:genre {genre} ; p:releaseDate {releaseDate} .
+source		SELECT `gameID`, `title`, `genre`, `releaseDate` FROM `Games`
+
+mappingId	Games_Platforms_base
+target		ex:Games_Platforms/{_amb_rowid} a :Games_Platforms ; p:gamesID {gamesID} ; p:platformsID {platformsID} .
+source		SELECT `_amb_rowid`, `gamesID`, `platformsID` FROM `Games_Platforms`
+
+mappingId	Games_Platforms_platformsID_fk
+target		ex:Games_Platforms/{_amb_rowid} p:hasPlatforms ex:Platforms/{platformsID} .
+source		SELECT `_amb_rowid`, `platformsID` FROM `Games_Platforms` WHERE `platformsID` IS NOT NULL
+
+mappingId	Games_Platforms_gamesID_fk
+target		ex:Games_Platforms/{_amb_rowid} p:hasGames ex:Games/{gamesID} .
+source		SELECT `_amb_rowid`, `gamesID` FROM `Games_Platforms` WHERE `gamesID` IS NOT NULL
+
+]]

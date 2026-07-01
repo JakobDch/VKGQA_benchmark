@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Agencies_base
+target		ex:Agency/{AgencyID} a :Agency ; p:AgencyID {AgencyID} ; p:name {Name} .
+source		SELECT `AgencyID`, `Name` FROM `Agencies`
+
+mappingId	TourGuides_base
+target		ex:TourGuides/{GuideID} a :TourGuides ; p:GuideID {GuideID} ; p:name {Name} ; p:Age {Age} ; p:Experience {Experience} ; p:AgencyID {AgencyID} .
+source		SELECT `GuideID`, `Name`, `Age`, `Experience`, `AgencyID` FROM `TourGuides`
+
+mappingId	TourGuides_AgencyID_fk
+target		ex:TourGuides/{GuideID} p:hasAgency ex:Agency/{AgencyID} .
+source		SELECT `GuideID`, `AgencyID` FROM `TourGuides` WHERE `AgencyID` IS NOT NULL
+
+mappingId	TravelAgents_base
+target		ex:TravelAgents/{AgentID} a :TravelAgents ; p:AgentID {AgentID} ; p:name {Name} ; p:Salary {Salary} ; p:CommissionRate {CommissionRate} ; p:AgencyID {AgencyID} .
+source		SELECT `AgentID`, `Name`, `Salary`, `CommissionRate`, `AgencyID` FROM `TravelAgents`
+
+mappingId	TravelAgents_AgencyID_fk
+target		ex:TravelAgents/{AgentID} p:hasAgency ex:Agency/{AgencyID} .
+source		SELECT `AgentID`, `AgencyID` FROM `TravelAgents` WHERE `AgencyID` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:TourGUIDEID {TourGUIDEID} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `TourGUIDEID` FROM `Customers`
+
+mappingId	Customers_TourGUIDEID_fk
+target		ex:Customers/{CustomerID} p:hasTourGuides ex:TourGuides/{TourGUIDEID} .
+source		SELECT `CustomerID`, `TourGUIDEID` FROM `Customers` WHERE `TourGUIDEID` IS NOT NULL
+
+mappingId	BookedTrips_base
+target		ex:BookedTrips/{TripID} a :BookedTrips ; p:TripID {TripID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:NumOfPeople {NumOfPeople} ; p:TotalCost {TotalCost} ; p:AgentID {AgentID} ; p:GuideID {GuideID} .
+source		SELECT `TripID`, `StartDate`, `EndDate`, `NumOfPeople`, `TotalCost`, `AgentID`, `GuideID` FROM `BookedTrips`
+
+mappingId	BookedTrips_GuideID_fk
+target		ex:BookedTrips/{TripID} p:hasTourGuides ex:TourGuides/{GuideID} .
+source		SELECT `TripID`, `GuideID` FROM `BookedTrips` WHERE `GuideID` IS NOT NULL
+
+mappingId	BookedTrips_AgentID_fk
+target		ex:BookedTrips/{TripID} p:hasTravelAgents ex:TravelAgents/{AgentID} .
+source		SELECT `TripID`, `AgentID` FROM `BookedTrips` WHERE `AgentID` IS NOT NULL
+
+]]

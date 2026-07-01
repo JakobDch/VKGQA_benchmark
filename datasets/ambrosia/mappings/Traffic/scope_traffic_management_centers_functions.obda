@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Functions_base
+target		ex:Function/{id} a :Function ; p:id {id} ; p:name {functionName} .
+source		SELECT `id`, `functionName` FROM `Functions`
+
+mappingId	Traffic_Management_Centers_base
+target		ex:Traffic_Management_Centers/{centerID} a :Traffic_Management_Centers ; p:centerID {centerID} ; p:name {name} ; p:location {location} .
+source		SELECT `centerID`, `name`, `location` FROM `Traffic_Management_Centers`
+
+mappingId	Traffic_Management_Centers_Functions_base
+target		ex:Traffic_Management_Centers_Functions/{Function_id}/{TMC_id} a :Traffic_Management_Centers_Functions .
+source		SELECT `TMC_id`, `Function_id` FROM `Traffic_Management_Centers_Functions`
+
+mappingId	Traffic_Management_Centers_Functions_Function_id_fk
+target		ex:Traffic_Management_Centers_Functions/{Function_id}/{TMC_id} p:hasFunction ex:Function/{Function_id} .
+source		SELECT `Function_id`, `TMC_id` FROM `Traffic_Management_Centers_Functions` WHERE `Function_id` IS NOT NULL
+
+mappingId	Traffic_Management_Centers_Functions_TMC_id_fk
+target		ex:Traffic_Management_Centers_Functions/{Function_id}/{TMC_id} p:hasTraffic_Management_Centers ex:Traffic_Management_Centers/{TMC_id} .
+source		SELECT `Function_id`, `TMC_id` FROM `Traffic_Management_Centers_Functions` WHERE `TMC_id` IS NOT NULL
+
+]]

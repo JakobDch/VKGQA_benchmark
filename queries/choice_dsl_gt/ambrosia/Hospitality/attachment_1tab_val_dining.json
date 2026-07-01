@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_dining",
+  "schema": "amb_attachment_1tab_val_dining",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of takeaway meal descriptions with any best before date as well as prepared meal descriptions with a best before date of 10.11.2018.",
+      "qtype": "unambig",
+      "sql": "SELECT Meals.Description \nFROM Meals\nWHERE Meals.MealType = \"Prepared Meal\" OR Meals.MealType = \"Takeaway\" AND Meals.BestBefore = \"10.11.2018\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?meals a :Meals .\n  ?meals p:Description ?description .\n  ?meals p:MealType ?mealtype_w .\n  ?meals p:MealType ?mealtype_w2 .\n  ?meals p:BestBefore ?bestbefore_w .\n  FILTER((STR(?mealtype_w) = \"Prepared Meal\" || (STR(?mealtype_w2) = \"Takeaway\" && STR(?bestbefore_w) = \"10.11.2018\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which takeaway meal descriptions have a best before date of 10.11.2018 and which prepared meal descriptions have the same best before date?",
+      "qtype": "unambig",
+      "sql": "SELECT Meals.Description \nFROM Meals\nWHERE (Meals.MealType = \"Prepared Meal\" OR Meals.MealType = \"Takeaway\") AND Meals.BestBefore = \"10.11.2018\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?meals a :Meals .\n  ?meals p:Description ?description .\n  ?meals p:MealType ?mealtype_w .\n  ?meals p:MealType ?mealtype_w2 .\n  ?meals p:BestBefore ?bestbefore_w .\n  FILTER((((STR(?mealtype_w) = \"Prepared Meal\" || STR(?mealtype_w2) = \"Takeaway\")) && STR(?bestbefore_w) = \"10.11.2018\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show takeaway descriptions and prepared meal descriptions with a best before date of 10.11.2018.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?description WHERE {\n  ?meals a :Meals .\n  ?meals p:Description ?description .\n  ?meals p:MealType ?mealtype_w .\n  ?meals p:MealType ?mealtype_w2 .\n  ?meals p:BestBefore ?bestbefore_w .\n  FILTER((STR(?mealtype_w) = \"Prepared Meal\" || (STR(?mealtype_w2) = \"Takeaway\" && STR(?bestbefore_w) = \"10.11.2018\")))\n} }\n  high: { SELECT ?description WHERE {\n  ?meals a :Meals .\n  ?meals p:Description ?description .\n  ?meals p:MealType ?mealtype_w .\n  ?meals p:MealType ?mealtype_w2 .\n  ?meals p:BestBefore ?bestbefore_w .\n  FILTER((((STR(?mealtype_w) = \"Prepared Meal\" || STR(?mealtype_w2) = \"Takeaway\")) && STR(?bestbefore_w) = \"10.11.2018\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

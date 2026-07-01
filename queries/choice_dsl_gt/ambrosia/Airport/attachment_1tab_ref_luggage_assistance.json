@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_luggage_assistance",
+  "schema": "amb_attachment_1tab_ref_luggage_assistance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show passengers who have requested either a luggage trolleys or the porter service, either being from Exit A.",
+      "qtype": "unambig",
+      "sql": "SELECT Passengers.Name \nFROM LuggageRequests JOIN Bookings ON LuggageRequests.RequestID = Bookings.LuggageRequestID JOIN Locations ON Bookings.LocationID = Locations.LocationID JOIN Passengers ON Passengers.PassengerID = LuggageRequests.PassengerID\nWHERE (LuggageRequests.AssistanceType = 'Luggage Trolley' OR LuggageRequests.AssistanceType = 'Porter Service') AND Locations.LocationName = 'Exit A'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?luggagerequests a :LuggageRequests .\n  ?bookings a :Bookings .\n  ?bookings p:hasLuggageRequests ?luggagerequests .\n  ?locations a :Locations .\n  ?bookings p:hasLocations ?locations .\n  ?passengers a :Passengers .\n  ?luggagerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?name .\n  ?luggagerequests p:AssistanceType ?assistancetype_w .\n  ?luggagerequests p:AssistanceType ?assistancetype_w2 .\n  ?locations p:LocationName ?locationname_w .\n  FILTER((((STR(?assistancetype_w) = \"Luggage Trolley\" || STR(?assistancetype_w2) = \"Porter Service\")) && STR(?locationname_w) = \"Exit A\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Which passengers request luggage trolleys and porter services from Exit A?",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.Name \nFROM LuggageRequests JOIN Bookings ON LuggageRequests.RequestID = Bookings.LuggageRequestID JOIN Locations ON Bookings.LocationID = Locations.LocationID JOIN Passengers ON Passengers.PassengerID = LuggageRequests.PassengerID\nWHERE LuggageRequests.AssistanceType = 'Luggage Trolley' OR LuggageRequests.AssistanceType = 'Porter Service' AND Locations.LocationName = 'Exit A'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?luggagerequests a :LuggageRequests .\n  ?bookings a :Bookings .\n  ?bookings p:hasLuggageRequests ?luggagerequests .\n  ?locations a :Locations .\n  ?bookings p:hasLocations ?locations .\n  ?passengers a :Passengers .\n  ?luggagerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?name .\n  ?luggagerequests p:AssistanceType ?assistancetype_w .\n  ?luggagerequests p:AssistanceType ?assistancetype_w2 .\n  ?locations p:LocationName ?locationname_w .\n  FILTER((STR(?assistancetype_w) = \"Luggage Trolley\" || (STR(?assistancetype_w2) = \"Porter Service\" && STR(?locationname_w) = \"Exit A\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which passengers request luggage trolleys and porter services from Exit A?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?luggagerequests a :LuggageRequests .\n  ?bookings a :Bookings .\n  ?bookings p:hasLuggageRequests ?luggagerequests .\n  ?locations a :Locations .\n  ?bookings p:hasLocations ?locations .\n  ?passengers a :Passengers .\n  ?luggagerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?name .\n  ?luggagerequests p:AssistanceType ?assistancetype_w .\n  ?luggagerequests p:AssistanceType ?assistancetype_w2 .\n  ?locations p:LocationName ?locationname_w .\n  FILTER((((STR(?assistancetype_w) = \"Luggage Trolley\" || STR(?assistancetype_w2) = \"Porter Service\")) && STR(?locationname_w) = \"Exit A\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?luggagerequests a :LuggageRequests .\n  ?bookings a :Bookings .\n  ?bookings p:hasLuggageRequests ?luggagerequests .\n  ?locations a :Locations .\n  ?bookings p:hasLocations ?locations .\n  ?passengers a :Passengers .\n  ?luggagerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?name .\n  ?luggagerequests p:AssistanceType ?assistancetype_w .\n  ?luggagerequests p:AssistanceType ?assistancetype_w2 .\n  ?locations p:LocationName ?locationname_w .\n  FILTER((STR(?assistancetype_w) = \"Luggage Trolley\" || (STR(?assistancetype_w2) = \"Porter Service\" && STR(?locationname_w) = \"Exit A\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

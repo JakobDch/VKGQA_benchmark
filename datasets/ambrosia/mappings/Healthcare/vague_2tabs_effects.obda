@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Patient_base
+target		ex:Patients/{patientID} a :Patients ; p:patientID {patientID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} .
+source		SELECT `patientID`, `firstName`, `lastName`, `dateOfBirth` FROM `Patient`
+
+mappingId	Doctor_base
+target		ex:Doctors/{doctorID} a :Doctors ; p:doctorID {doctorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:specialty {specialty} .
+source		SELECT `doctorID`, `firstName`, `lastName`, `specialty` FROM `Doctor`
+
+mappingId	Prescription_base
+target		ex:Prescriptions/{prescriptionID} a :Prescriptions ; p:prescriptionID {prescriptionID} ; p:patientID {patientID} ; p:drugID {drugID} ; p:quantity {quantity} .
+source		SELECT `prescriptionID`, `patientID`, `drugID`, `quantity` FROM `Prescription`
+
+mappingId	Prescription_drugID_fk
+target		ex:Prescriptions/{prescriptionID} p:hasDrug ex:Drug/{drugID} .
+source		SELECT `prescriptionID`, `drugID` FROM `Prescription` WHERE `drugID` IS NOT NULL
+
+mappingId	Prescription_patientID_fk
+target		ex:Prescriptions/{prescriptionID} p:hasPatients ex:Patients/{patientID} .
+source		SELECT `prescriptionID`, `patientID` FROM `Prescription` WHERE `patientID` IS NOT NULL
+
+mappingId	MedicalRecord_base
+target		ex:MedicalRecord/{recordID} a :MedicalRecord ; p:recordID {recordID} ; p:patientID {patientID} ; p:diagnosis {diagnosis} ; p:treatmentPlan {treatmentPlan} .
+source		SELECT `recordID`, `patientID`, `diagnosis`, `treatmentPlan` FROM `MedicalRecord`
+
+mappingId	MedicalRecord_patientID_fk
+target		ex:MedicalRecord/{recordID} p:hasPatients ex:Patients/{patientID} .
+source		SELECT `recordID`, `patientID` FROM `MedicalRecord` WHERE `patientID` IS NOT NULL
+
+mappingId	Drug_base
+target		ex:Drug/{drugID} a :Drug ; p:drugID {drugID} ; p:name {name} ; p:dosage {dosage} ; p:sideEffectID {sideEffectID} ; p:effectivenessID {effectivenessID} .
+source		SELECT `drugID`, `name`, `dosage`, `sideEffectID`, `effectivenessID` FROM `Drug`
+
+mappingId	Drug_effectivenessID_fk
+target		ex:Drug/{drugID} p:hasEffectiveness ex:Effectiveness/{effectivenessID} .
+source		SELECT `drugID`, `effectivenessID` FROM `Drug` WHERE `effectivenessID` IS NOT NULL
+
+mappingId	Drug_sideEffectID_fk
+target		ex:Drug/{drugID} p:hasSide_Effects ex:Side_Effects/{sideEffectID} .
+source		SELECT `drugID`, `sideEffectID` FROM `Drug` WHERE `sideEffectID` IS NOT NULL
+
+mappingId	Side_Effects_base
+target		ex:Side_Effects/{sideEffectID} a :Side_Effects ; p:sideEffectID {sideEffectID} ; p:effectText {effectText} ; p:severity {severity} .
+source		SELECT `sideEffectID`, `effectText`, `severity` FROM `Side_Effects`
+
+mappingId	Effectiveness_base
+target		ex:Effectiveness/{effectivenessID} a :Effectiveness ; p:effectivenessID {effectivenessID} ; p:percentage {percentage} .
+source		SELECT `effectivenessID`, `percentage` FROM `Effectiveness`
+
+]]

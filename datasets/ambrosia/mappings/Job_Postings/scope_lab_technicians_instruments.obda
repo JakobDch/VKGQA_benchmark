@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Lab_Technicians_base
+target		ex:Lab_Technicians/{id} a :Lab_Technicians ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Lab_Technicians`
+
+mappingId	Instruments_base
+target		ex:Instruments/{id} a :Instruments ; p:id {id} ; p:instrumentName {instrumentName} ; p:description {description} .
+source		SELECT `id`, `instrumentName`, `description` FROM `Instruments`
+
+mappingId	Lab_Technicians_Instruments_base
+target		ex:Lab_Technicians_Instruments/{_amb_rowid} a :Lab_Technicians_Instruments ; p:technicianId {technicianId} ; p:instrumentId {instrumentId} .
+source		SELECT `_amb_rowid`, `technicianId`, `instrumentId` FROM `Lab_Technicians_Instruments`
+
+mappingId	Lab_Technicians_Instruments_instrumentId_fk
+target		ex:Lab_Technicians_Instruments/{_amb_rowid} p:hasInstruments ex:Instruments/{instrumentId} .
+source		SELECT `_amb_rowid`, `instrumentId` FROM `Lab_Technicians_Instruments` WHERE `instrumentId` IS NOT NULL
+
+mappingId	Lab_Technicians_Instruments_technicianId_fk
+target		ex:Lab_Technicians_Instruments/{_amb_rowid} p:hasLab_Technicians ex:Lab_Technicians/{technicianId} .
+source		SELECT `_amb_rowid`, `technicianId` FROM `Lab_Technicians_Instruments` WHERE `technicianId` IS NOT NULL
+
+]]

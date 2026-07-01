@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_open-end_funds",
+  "schema": "amb_attachment_1tab_val_open_end_funds",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What money market fund customers are from February and what bond fund customers are from the same time?",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.Name \nFROM InvestmentPortfolios JOIN Customers ON Customers.CustomerID = InvestmentPortfolios.CustomerID\nWHERE (InvestmentPortfolios.OpenEndFunds = \"Money Market Fund\" OR InvestmentPortfolios.OpenEndFunds = \"Bond Fund\") AND InvestmentPortfolios.Month = \"February\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?investmentportfolios a :InvestmentPortfolios .\n  ?customers a :Customers .\n  ?investmentportfolios p:hasCustomers ?customers .\n  ?customers p:name ?name .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w2 .\n  ?investmentportfolios p:Month ?month_w .\n  FILTER((((STR(?openendfunds_w) = \"Money Market Fund\" || STR(?openendfunds_w2) = \"Bond Fund\")) && STR(?month_w) = \"February\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all money market fund customers and also list bond fund customers from February.",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.Name \nFROM InvestmentPortfolios JOIN Customers ON Customers.CustomerID = InvestmentPortfolios.CustomerID\nWHERE InvestmentPortfolios.OpenEndFunds = \"Money Market Fund\" OR InvestmentPortfolios.OpenEndFunds = \"Bond Fund\" AND InvestmentPortfolios.Month = \"February\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?investmentportfolios a :InvestmentPortfolios .\n  ?customers a :Customers .\n  ?investmentportfolios p:hasCustomers ?customers .\n  ?customers p:name ?name .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w2 .\n  ?investmentportfolios p:Month ?month_w .\n  FILTER((STR(?openendfunds_w) = \"Money Market Fund\" || (STR(?openendfunds_w2) = \"Bond Fund\" && STR(?month_w) = \"February\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show money market customers and bond fund customers from February.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?investmentportfolios a :InvestmentPortfolios .\n  ?customers a :Customers .\n  ?investmentportfolios p:hasCustomers ?customers .\n  ?customers p:name ?name .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w2 .\n  ?investmentportfolios p:Month ?month_w .\n  FILTER((((STR(?openendfunds_w) = \"Money Market Fund\" || STR(?openendfunds_w2) = \"Bond Fund\")) && STR(?month_w) = \"February\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?investmentportfolios a :InvestmentPortfolios .\n  ?customers a :Customers .\n  ?investmentportfolios p:hasCustomers ?customers .\n  ?customers p:name ?name .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w .\n  ?investmentportfolios p:OpenEndFunds ?openendfunds_w2 .\n  ?investmentportfolios p:Month ?month_w .\n  FILTER((STR(?openendfunds_w) = \"Money Market Fund\" || (STR(?openendfunds_w2) = \"Bond Fund\" && STR(?month_w) = \"February\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

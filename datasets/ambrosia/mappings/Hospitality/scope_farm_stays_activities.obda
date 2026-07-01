@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Farm_Stays_base
+target		ex:Farm_Stays/{id} a :Farm_Stays ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Farm_Stays`
+
+mappingId	Activities_base
+target		ex:Activities/{activity_id} a :Activities ; p:activity_id {activity_id} ; p:description {description} .
+source		SELECT `activity_id`, `description` FROM `Activities`
+
+mappingId	Farm_Stays_Activities_base
+target		ex:Farm_Stays_Activities/{farm_stay_id}/{activity_id} a :Farm_Stays_Activities ; p:farm_stay_id {farm_stay_id} ; p:activity_id {activity_id} .
+source		SELECT `farm_stay_id`, `activity_id` FROM `Farm_Stays_Activities`
+
+mappingId	Farm_Stays_Activities_activity_id_fk
+target		ex:Farm_Stays_Activities/{farm_stay_id}/{activity_id} p:hasActivities ex:Activities/{activity_id} .
+source		SELECT `farm_stay_id`, `activity_id` FROM `Farm_Stays_Activities` WHERE `activity_id` IS NOT NULL
+
+mappingId	Farm_Stays_Activities_farm_stay_id_fk
+target		ex:Farm_Stays_Activities/{farm_stay_id}/{activity_id} p:hasFarm_Stays ex:Farm_Stays/{farm_stay_id} .
+source		SELECT `farm_stay_id`, `activity_id` FROM `Farm_Stays_Activities` WHERE `farm_stay_id` IS NOT NULL
+
+]]

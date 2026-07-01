@@ -1,0 +1,108 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_housing_finance_agencies_loan_programs",
+  "schema": "amb_scope_housing_finance_agencies_loan_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What loan program interest rate do all housing finance agencies have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Loan_Programs.interest_rate  from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id   GROUP BY Housing_Finance_Agencies_Loan_Programs.loan_program_id HAVING COUNT(DISTINCT Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id) = (SELECT COUNT(*) FROM  Housing_Finance_Agencies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?interest_rate WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:interest_rate ?interest_rate .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the loan program interest rate that corresponds to each housing finance agency respectively.",
+      "qtype": "unambig",
+      "sql": "select housing_finance_agencies.name , loan_programs.interest_rate from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?interest_rate WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:interest_rate ?interest_rate .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the interest rates and descriptions of the loan programs every finance agency offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Loan_Programs.description, Loan_Programs.interest_rate  from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id   GROUP BY Housing_Finance_Agencies_Loan_Programs.loan_program_id HAVING COUNT(DISTINCT Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id) = (SELECT COUNT(*) FROM  Housing_Finance_Agencies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?interest_rate WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:interest_rate ?interest_rate .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the interest rates and descriptions of the loan programs every finance agency offers.",
+      "qtype": "ambig",
+      "sql": "select housing_finance_agencies.name , loan_programs.description , loan_programs.interest_rate from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description ?interest_rate WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:description ?description .\n  ?loan_programs p:interest_rate ?interest_rate .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the descriptions of the loan programs that each finance agency offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Loan_Programs.description  from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id   GROUP BY Housing_Finance_Agencies_Loan_Programs.loan_program_id HAVING COUNT(DISTINCT Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id) = (SELECT COUNT(*) FROM  Housing_Finance_Agencies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the descriptions of the loan programs that each finance agency offers.",
+      "qtype": "ambig",
+      "sql": "select housing_finance_agencies.name , loan_programs.description from Housing_Finance_Agencies_Loan_Programs join Loan_Programs on Housing_Finance_Agencies_Loan_Programs.loan_program_id = Loan_Programs.program_id join Housing_Finance_Agencies on Housing_Finance_Agencies_Loan_Programs.housing_finance_agency_id = Housing_Finance_Agencies.agency_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the loan program interest rate for each housing finance agency.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?interest_rate WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:interest_rate ?interest_rate .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?interest_rate WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:interest_rate ?interest_rate .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the descriptions of the loan programs that each finance agency offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the interest rates and descriptions of the loan programs every finance agency offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description ?interest_rate WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLoan_Programs ?child ; p:hasHousing_Finance_Agencies ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:interest_rate ?interest_rate .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Housing_Finance_Agencies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description ?interest_rate WHERE {\n  ?housing_finance_agencies_loan_programs a :Housing_Finance_Agencies_Loan_Programs .\n  ?loan_programs a :Loan_Programs .\n  ?housing_finance_agencies_loan_programs p:hasLoan_Programs ?loan_programs .\n  ?housing_finance_agencies a :Housing_Finance_Agencies .\n  ?housing_finance_agencies_loan_programs p:hasHousing_Finance_Agencies ?housing_finance_agencies .\n  ?housing_finance_agencies p:name ?name .\n  ?loan_programs p:description ?description .\n  ?loan_programs p:interest_rate ?interest_rate .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

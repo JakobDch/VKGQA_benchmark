@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_costume_designers_eras",
+  "schema": "amb_scope_costume_designers_eras",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the eras for which every costume designer has created costumes.",
+      "qtype": "ambig",
+      "sql": "SELECT Eras.era_name  from Costume_Designers_Eras join Eras on Costume_Designers_Eras.eras_id = Eras.id join Costume_Designers on Costume_Designers_Eras.costume_designer_id = Costume_Designers.id   GROUP BY Costume_Designers_Eras.eras_id HAVING COUNT(DISTINCT Costume_Designers_Eras.costume_designer_id) = (SELECT COUNT(*) FROM  Costume_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?era_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEras ?child ; p:hasCostume_Designers ?parent . } GROUP BY ?child }\n  ?child p:era_name ?era_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Costume_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the eras for which every costume designer has created costumes.",
+      "qtype": "ambig",
+      "sql": "select costume_designers.name , eras.era_name from Costume_Designers_Eras join Eras on Costume_Designers_Eras.eras_id = Eras.id join Costume_Designers on Costume_Designers_Eras.costume_designer_id = Costume_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?era_name WHERE {\n  ?costume_designers_eras a :Costume_Designers_Eras .\n  ?eras a :Eras .\n  ?costume_designers_eras p:hasEras ?eras .\n  ?costume_designers a :Costume_Designers .\n  ?costume_designers_eras p:hasCostume_Designers ?costume_designers .\n  ?costume_designers p:name ?name .\n  ?eras p:era_name ?era_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the eras for which every costume designer has created costumes.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?era_name WHERE {\n  ?costume_designers_eras a :Costume_Designers_Eras .\n  ?eras a :Eras .\n  ?costume_designers_eras p:hasEras ?eras .\n  ?costume_designers a :Costume_Designers .\n  ?costume_designers_eras p:hasCostume_Designers ?costume_designers .\n  ?costume_designers p:name ?name .\n  ?eras p:era_name ?era_name .\n} }\n  collective: { SELECT ?era_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEras ?child ; p:hasCostume_Designers ?parent . } GROUP BY ?child }\n  ?child p:era_name ?era_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Costume_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

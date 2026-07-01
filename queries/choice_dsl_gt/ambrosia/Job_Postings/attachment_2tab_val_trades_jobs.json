@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_trades_jobs",
+  "schema": "amb_attachment_2tab_val_trades_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all employees of Derek Brown from the construction workers and electricians.",
+      "qtype": "unambig",
+      "sql": "SELECT Construction_Workers.name\nFROM Construction_Workers\nWHERE Construction_Workers.company_owner = \"Derek Brown\"\nUNION\nSELECT Electricians.name\nFROM Electricians\nWHERE Electricians.company_owner = \"Derek Brown\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?construction_workers a :Construction_Workers .\n    ?construction_workers p:name ?name .\n    ?construction_workers p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?electricians a :Electricians .\n    ?electricians p:name ?name .\n    ?electricians p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all the construction workers listed and also just those electricians who work for Derek Brown.",
+      "qtype": "unambig",
+      "sql": "SELECT Construction_Workers.name\nFROM Construction_Workers\nUNION\nSELECT Electricians.name\nFROM Electricians\nWHERE Electricians.company_owner = \"Derek Brown\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?construction_workers a :Construction_Workers .\n    ?construction_workers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?electricians a :Electricians .\n    ?electricians p:name ?name .\n    ?electricians p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide all construction workers and electricians who work for Derek Brown.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?construction_workers a :Construction_Workers .\n    ?construction_workers p:name ?name .\n    ?construction_workers p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?electricians a :Electricians .\n    ?electricians p:name ?name .\n    ?electricians p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?construction_workers a :Construction_Workers .\n    ?construction_workers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?electricians a :Electricians .\n    ?electricians p:name ?name .\n    ?electricians p:company_owner ?company_owner_f .\n    FILTER(STR(?company_owner_f) = \"Derek Brown\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

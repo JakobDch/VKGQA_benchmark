@@ -1,0 +1,53 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_dining_0_Customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CustomerID\", \"FirstName\", \"LastName\", \"EmailAddress\", \"PhoneNumber\" FROM \"Customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Customers/{CustomerID}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "EmailAddress" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PhoneNumber ; rr:objectMap [ rr:column "PhoneNumber" ] ] .
+
+<#tm_attachment_1tab_ref_dining_1_FoodTypes_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FoodTypeID\", \"TypeName\" FROM \"FoodTypes\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/FoodTypes/{FoodTypeID}" ; rr:class :FoodTypes ] ;
+  rr:predicateObjectMap [ rr:predicate p:FoodTypeID ; rr:objectMap [ rr:column "FoodTypeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TypeName ; rr:objectMap [ rr:column "TypeName" ] ] .
+
+<#tm_attachment_1tab_ref_dining_2_Products_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProductID\", \"Name\", \"Dining\", \"Best_Before\" FROM \"Products\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Products/{ProductID}" ; rr:class :Products ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProductID ; rr:objectMap [ rr:column "ProductID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Dining ; rr:objectMap [ rr:column "Dining" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Best_Before ; rr:objectMap [ rr:column "Best_Before" ] ] .
+
+<#tm_attachment_1tab_ref_dining_3_Products_Dining_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProductID\", \"Dining\" FROM \"Products\" WHERE \"Dining\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Products/{ProductID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFoodTypes ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/FoodTypes/{Dining}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_dining_4_Orders_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"OrderID\", \"CustomerID\", \"TotalAmount\", \"OrderDate\" FROM \"Orders\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{OrderID}" ; rr:class :Orders ] ;
+  rr:predicateObjectMap [ rr:predicate p:OrderID ; rr:objectMap [ rr:column "OrderID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalAmount ; rr:objectMap [ rr:column "TotalAmount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:OrderDate ; rr:objectMap [ rr:column "OrderDate" ] ] .
+
+<#tm_attachment_1tab_ref_dining_5_Orders_OrderID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"OrderID\" FROM \"Orders\" WHERE \"OrderID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{OrderID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasProducts ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Products/{OrderID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_dining_6_Orders_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"OrderID\", \"CustomerID\" FROM \"Orders\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{OrderID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+

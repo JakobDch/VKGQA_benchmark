@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_narrative_form",
+  "schema": "amb_attachment_1tab_val_narrative_form",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the autobiographies and just those historical accounts that are from the 20th century.",
+      "qtype": "unambig",
+      "sql": "SELECT Books.Title \nFROM Books\nWHERE Books.Narrative_Form = \"Autobiography\" OR Books.Narrative_Form = \"Historical Account\" AND Books.Epoch = \"20th Century\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Book .\n  ?books p:Title ?title .\n  ?books p:Narrative_Form ?narrative_form_w .\n  ?books p:Narrative_Form ?narrative_form_w2 .\n  ?books p:Epoch ?epoch_w .\n  FILTER((STR(?narrative_form_w) = \"Autobiography\" || (STR(?narrative_form_w2) = \"Historical Account\" && STR(?epoch_w) = \"20th Century\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show any autobiographies or historical accounts where either is from the 20th century.",
+      "qtype": "unambig",
+      "sql": "SELECT Books.Title \nFROM Books\nWHERE (Books.Narrative_Form = \"Autobiography\" OR Books.Narrative_Form = \"Historical Account\") AND Books.Epoch = \"20th Century\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Book .\n  ?books p:Title ?title .\n  ?books p:Narrative_Form ?narrative_form_w .\n  ?books p:Narrative_Form ?narrative_form_w2 .\n  ?books p:Epoch ?epoch_w .\n  FILTER((((STR(?narrative_form_w) = \"Autobiography\" || STR(?narrative_form_w2) = \"Historical Account\")) && STR(?epoch_w) = \"20th Century\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all autobiographies and historical accounts from the 20th century.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?books a :Book .\n  ?books p:Title ?title .\n  ?books p:Narrative_Form ?narrative_form_w .\n  ?books p:Narrative_Form ?narrative_form_w2 .\n  ?books p:Epoch ?epoch_w .\n  FILTER((STR(?narrative_form_w) = \"Autobiography\" || (STR(?narrative_form_w2) = \"Historical Account\" && STR(?epoch_w) = \"20th Century\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?books a :Book .\n  ?books p:Title ?title .\n  ?books p:Narrative_Form ?narrative_form_w .\n  ?books p:Narrative_Form ?narrative_form_w2 .\n  ?books p:Epoch ?epoch_w .\n  FILTER((((STR(?narrative_form_w) = \"Autobiography\" || STR(?narrative_form_w2) = \"Historical Account\")) && STR(?epoch_w) = \"20th Century\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

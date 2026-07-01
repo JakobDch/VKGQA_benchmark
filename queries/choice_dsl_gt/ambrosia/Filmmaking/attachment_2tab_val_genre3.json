@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_genre3",
+  "schema": "amb_attachment_2tab_val_genre3",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What action movies run for 120 minutes and what romantic comedies have the same duration?",
+      "qtype": "unambig",
+      "sql": "SELECT Action_Movies.title\nFROM Action_Movies\nWHERE Action_Movies.Duration = 120\nUNION\nSELECT Romantic_Comedies.title\nFROM Romantic_Comedies\nWHERE Romantic_Comedies.Duration = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:Title ?title .\n    ?action_movies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romantic_comedies a :Romantic_Comedies .\n    ?romantic_comedies p:Title ?title .\n    ?romantic_comedies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all action movies and also list romantic comedies with a duration of 120 minutes.",
+      "qtype": "unambig",
+      "sql": "SELECT Action_Movies.title\nFROM Action_Movies\nUNION\nSELECT Romantic_Comedies.title\nFROM Romantic_Comedies\nWHERE Romantic_Comedies.Duration = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romantic_comedies a :Romantic_Comedies .\n    ?romantic_comedies p:Title ?title .\n    ?romantic_comedies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show action movies and romantic comedies that run for 120 minutes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:Title ?title .\n    ?action_movies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romantic_comedies a :Romantic_Comedies .\n    ?romantic_comedies p:Title ?title .\n    ?romantic_comedies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romantic_comedies a :Romantic_Comedies .\n    ?romantic_comedies p:Title ?title .\n    ?romantic_comedies p:Duration ?duration_f .\n    FILTER((STR(?duration_f) = \"120\" || STR(?duration_f) = \"120.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_news_sources",
+  "schema": "amb_attachment_2tab_val_news_sources",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all interviews and also provide a list of press releases for \"Britain Is Cutting Taxes Again. Why Now?\".",
+      "qtype": "unambig",
+      "sql": "SELECT PressReleases.title as title\nFROM PressReleases JOIN Articles ON PressReleases.FK_articleID = Articles.articleID\nUNION\nSELECT Interviews.intervieweeName as title\nFROM Interviews JOIN Articles ON Interviews.FK_articleID = Articles.articleID\nWHERE Articles.title = \"Britain Is Cutting Taxes Again. Why Now?\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?pressreleases a :PressReleases .\n    ?articles a :Articles .\n    ?pressreleases p:hasArticles ?articles .\n    ?pressreleases p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?articles a :Articles .\n    ?interviews p:hasArticles ?articles .\n    ?interviews p:intervieweeName ?intervieweename .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?intervieweename AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which press releases are for \"Britain Is Cutting Taxes Again. Why Now?\" and what interviews are for the same article?",
+      "qtype": "unambig",
+      "sql": "SELECT PressReleases.title as title\nFROM PressReleases JOIN Articles ON PressReleases.FK_articleID = Articles.articleID\nWHERE Articles.title = \"Britain Is Cutting Taxes Again. Why Now?\"\nUNION\nSELECT Interviews.intervieweeName as title\nFROM Interviews JOIN Articles ON Interviews.FK_articleID = Articles.articleID\nWHERE Articles.title = \"Britain Is Cutting Taxes Again. Why Now?\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?pressreleases a :PressReleases .\n    ?articles a :Articles .\n    ?pressreleases p:hasArticles ?articles .\n    ?pressreleases p:title ?title .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?articles a :Articles .\n    ?interviews p:hasArticles ?articles .\n    ?interviews p:intervieweeName ?intervieweename .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?intervieweename AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me press releases and interviews for \"Britain Is Cutting Taxes Again. Why Now?\".",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?pressreleases a :PressReleases .\n    ?articles a :Articles .\n    ?pressreleases p:hasArticles ?articles .\n    ?pressreleases p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?articles a :Articles .\n    ?interviews p:hasArticles ?articles .\n    ?interviews p:intervieweeName ?intervieweename .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?intervieweename AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?pressreleases a :PressReleases .\n    ?articles a :Articles .\n    ?pressreleases p:hasArticles ?articles .\n    ?pressreleases p:title ?title .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?articles a :Articles .\n    ?interviews p:hasArticles ?articles .\n    ?interviews p:intervieweeName ?intervieweename .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Britain Is Cutting Taxes Again. Why Now?\")\n    BIND(?intervieweename AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

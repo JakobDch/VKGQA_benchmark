@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_resources",
+  "schema": "amb_vague_2cols_resources",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the projects in Los Angeles and their dates, budget and staff",
+      "qtype": "unambig",
+      "sql": "SELECT Budget, Staff, StartDate, EndDate  FROM Construction_Projects WHERE Location = 'Los Angeles';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?budget ?staff ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the location, budget and staff required for each project, sorted by start date.",
+      "qtype": "unambig",
+      "sql": "SELECT Budget, Staff, Location FROM Construction_Projects ORDER BY StartDate DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?budget ?staff ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "List the location and budget required for each project, sorted by start date.",
+      "qtype": "unambig",
+      "sql": "SELECT Budget, Location FROM Construction_Projects ORDER BY StartDate DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?budget ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the location and resources required for each project sorted by start date",
+      "qtype": "ambig",
+      "sql": "SELECT Staff, Location FROM Construction_Projects ORDER BY StartDate DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?staff ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "List all the projects in Los Angeles and their dates and budget",
+      "qtype": "unambig",
+      "sql": "SELECT Budget, StartDate, EndDate  FROM Construction_Projects WHERE Location = 'Los Angeles';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?budget ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What resources and dates are associated with the projects in Los Angeles?",
+      "qtype": "ambig",
+      "sql": "SELECT Staff, StartDate, EndDate  FROM Construction_Projects WHERE Location = 'Los Angeles';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?staff ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What resources and dates are associated with the projects in Los Angeles?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?budget ?staff ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n} }\n  component: { SELECT ?budget ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n} }\n  component_2: { SELECT ?staff ?startdate ?enddate WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:StartDate ?startdate .\n  ?construction_projects p:EndDate ?enddate .\n  ?construction_projects p:location ?location_f .\n  FILTER(?location_f = \"Los Angeles\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the location and resources required for each project sorted by start date",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?budget ?staff ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o) }\n  component: { SELECT ?budget ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:budget ?budget .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o) }\n  component_2: { SELECT ?staff ?location WHERE {\n  ?construction_projects a :Construction_Projects .\n  ?construction_projects p:Staff ?staff .\n  ?construction_projects p:location ?location .\n  ?construction_projects p:StartDate ?startdate_o .\n}\nORDER BY DESC(?startdate_o) }\n}",
+      "verified": true
+    }
+  ]
+}

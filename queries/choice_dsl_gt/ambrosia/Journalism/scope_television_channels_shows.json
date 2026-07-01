@@ -1,0 +1,108 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_television_channels_shows",
+  "schema": "amb_scope_television_channels_shows",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the genre of shows each channel runs.",
+      "qtype": "ambig",
+      "sql": "SELECT Shows.genre  from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id   GROUP BY Television_Channels_Shows.shows_id HAVING COUNT(DISTINCT Television_Channels_Shows.television_channels_id) = (SELECT COUNT(*) FROM  Television_Channels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the genre of shows each channel runs.",
+      "qtype": "ambig",
+      "sql": "select television_channels.channel_name , shows.genre from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?channel_name ?genre WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:genre ?genre .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "For each television channel, what is the corresponding show title and genre of shows?",
+      "qtype": "unambig",
+      "sql": "select television_channels.channel_name , shows.show_title , shows.genre from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?channel_name ?show_title ?genre WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:show_title ?show_title .\n  ?shows p:genre ?genre .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "What are the show titles and genres common to all television channels?",
+      "qtype": "unambig",
+      "sql": "SELECT Shows.show_title, Shows.genre  from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id   GROUP BY Television_Channels_Shows.shows_id HAVING COUNT(DISTINCT Television_Channels_Shows.television_channels_id) = (SELECT COUNT(*) FROM  Television_Channels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?show_title ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:show_title ?show_title .\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What shows are associated with each television channel?",
+      "qtype": "ambig",
+      "sql": "SELECT Shows.show_title  from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id   GROUP BY Television_Channels_Shows.shows_id HAVING COUNT(DISTINCT Television_Channels_Shows.television_channels_id) = (SELECT COUNT(*) FROM  Television_Channels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?show_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:show_title ?show_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What shows are associated with each television channel?",
+      "qtype": "ambig",
+      "sql": "select television_channels.channel_name , shows.show_title from Television_Channels_Shows join Shows on Television_Channels_Shows.shows_id = Shows.id join Television_Channels on Television_Channels_Shows.television_channels_id = Television_Channels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?channel_name ?show_title WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:show_title ?show_title .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What show title and genre of shows are available for each television channel?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?channel_name ?show_title ?genre WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:show_title ?show_title .\n  ?shows p:genre ?genre .\n} }\n  collective: { SELECT ?show_title ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:show_title ?show_title .\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the genre of shows each channel runs.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?channel_name ?genre WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:genre ?genre .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What shows are associated with each television channel?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?show_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasShows ?child ; p:hasTelevision_Channels ?parent . } GROUP BY ?child }\n  ?child p:show_title ?show_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Television_Channels } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?channel_name ?show_title WHERE {\n  ?television_channels_shows a :Television_Channels_Shows .\n  ?shows a :Shows .\n  ?television_channels_shows p:hasShows ?shows .\n  ?television_channels a :Television_Channels .\n  ?television_channels_shows p:hasTelevision_Channels ?television_channels .\n  ?television_channels p:channel_name ?channel_name .\n  ?shows p:show_title ?show_title .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

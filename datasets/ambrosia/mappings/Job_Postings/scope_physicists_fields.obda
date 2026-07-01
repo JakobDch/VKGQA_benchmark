@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Physicists_base
+target		ex:Physicists/{id} a :Physicists ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Physicists`
+
+mappingId	Fields_base
+target		ex:Fields/{id} a :Fields ; p:id {id} ; p:fieldName {fieldName} .
+source		SELECT `id`, `fieldName` FROM `Fields`
+
+mappingId	Physicist_Fields_base
+target		ex:Physicist_Fields/{_amb_rowid} a :Physicist_Fields ; p:physicistId {physicistId} ; p:fieldId {fieldId} .
+source		SELECT `_amb_rowid`, `physicistId`, `fieldId` FROM `Physicist_Fields`
+
+mappingId	Physicist_Fields_fieldId_fk
+target		ex:Physicist_Fields/{_amb_rowid} p:hasFields ex:Fields/{fieldId} .
+source		SELECT `_amb_rowid`, `fieldId` FROM `Physicist_Fields` WHERE `fieldId` IS NOT NULL
+
+mappingId	Physicist_Fields_physicistId_fk
+target		ex:Physicist_Fields/{_amb_rowid} p:hasPhysicists ex:Physicists/{physicistId} .
+source		SELECT `_amb_rowid`, `physicistId` FROM `Physicist_Fields` WHERE `physicistId` IS NOT NULL
+
+]]

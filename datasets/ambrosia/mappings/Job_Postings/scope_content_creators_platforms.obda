@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Content_Creators_base
+target		ex:Content_Creators/{id} a :Content_Creators ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Content_Creators`
+
+mappingId	Platforms_base
+target		ex:Platforms/{id} a :Platforms ; p:id {id} ; p:platform_name {platform_name} .
+source		SELECT `id`, `platform_name` FROM `Platforms`
+
+mappingId	Content_Creators_Platforms_base
+target		ex:Content_Creators_Platforms/{content_creator_id}/{platform_id} a :Content_Creators_Platforms ; p:content_creator_id {content_creator_id} ; p:platform_id {platform_id} .
+source		SELECT `content_creator_id`, `platform_id` FROM `Content_Creators_Platforms`
+
+mappingId	Content_Creators_Platforms_platform_id_fk
+target		ex:Content_Creators_Platforms/{content_creator_id}/{platform_id} p:hasPlatforms ex:Platforms/{platform_id} .
+source		SELECT `content_creator_id`, `platform_id` FROM `Content_Creators_Platforms` WHERE `platform_id` IS NOT NULL
+
+mappingId	Content_Creators_Platforms_content_creator_id_fk
+target		ex:Content_Creators_Platforms/{content_creator_id}/{platform_id} p:hasContent_Creators ex:Content_Creators/{content_creator_id} .
+source		SELECT `content_creator_id`, `platform_id` FROM `Content_Creators_Platforms` WHERE `content_creator_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_customer_facing_roles",
+  "schema": "amb_attachment_1tab_ref_customer_facing_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide the customer service advisors and IT support technicians who are bilingual.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Customer_Facing_Roles JOIN Employees ON Customer_Facing_Roles.id = Employees.customer_role_id JOIN Language_Proficiencies ON Employees.language_proficiency_id = Language_Proficiencies.id\nWHERE (Customer_Facing_Roles.role = \"Customer Service Advisor\" OR Customer_Facing_Roles.role = \"IT Support Technician\") AND Language_Proficiencies.language = \"Bilingual\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customer_facing_roles a :Customer_Facing_Roles .\n  ?employees a :Employees .\n  ?employees p:hasCustomer_Facing_Roles ?customer_facing_roles .\n  ?language_proficiencies a :Language_Proficiencies .\n  ?employees p:hasLanguage_Proficiencies ?language_proficiencies .\n  ?employees p:name ?fullname .\n  ?customer_facing_roles p:role ?role_w .\n  ?customer_facing_roles p:role ?role_w2 .\n  ?language_proficiencies p:language ?language_w .\n  FILTER((((STR(?role_w) = \"Customer Service Advisor\" || STR(?role_w2) = \"IT Support Technician\")) && STR(?language_w) = \"Bilingual\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide the customer service advisors and IT support technicians who are bilingual.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Customer_Facing_Roles JOIN Employees ON Customer_Facing_Roles.id = Employees.customer_role_id JOIN Language_Proficiencies ON Employees.language_proficiency_id = Language_Proficiencies.id\nWHERE Customer_Facing_Roles.role = \"Customer Service Advisor\" OR Customer_Facing_Roles.role = \"IT Support Technician\" AND Language_Proficiencies.language = \"Bilingual\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customer_facing_roles a :Customer_Facing_Roles .\n  ?employees a :Employees .\n  ?employees p:hasCustomer_Facing_Roles ?customer_facing_roles .\n  ?language_proficiencies a :Language_Proficiencies .\n  ?employees p:hasLanguage_Proficiencies ?language_proficiencies .\n  ?employees p:name ?fullname .\n  ?customer_facing_roles p:role ?role_w .\n  ?customer_facing_roles p:role ?role_w2 .\n  ?language_proficiencies p:language ?language_w .\n  FILTER((STR(?role_w) = \"Customer Service Advisor\" || (STR(?role_w2) = \"IT Support Technician\" && STR(?language_w) = \"Bilingual\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide the customer service advisors and IT support technicians who are bilingual.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?customer_facing_roles a :Customer_Facing_Roles .\n  ?employees a :Employees .\n  ?employees p:hasCustomer_Facing_Roles ?customer_facing_roles .\n  ?language_proficiencies a :Language_Proficiencies .\n  ?employees p:hasLanguage_Proficiencies ?language_proficiencies .\n  ?employees p:name ?fullname .\n  ?customer_facing_roles p:role ?role_w .\n  ?customer_facing_roles p:role ?role_w2 .\n  ?language_proficiencies p:language ?language_w .\n  FILTER((STR(?role_w) = \"Customer Service Advisor\" || (STR(?role_w2) = \"IT Support Technician\" && STR(?language_w) = \"Bilingual\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?customer_facing_roles a :Customer_Facing_Roles .\n  ?employees a :Employees .\n  ?employees p:hasCustomer_Facing_Roles ?customer_facing_roles .\n  ?language_proficiencies a :Language_Proficiencies .\n  ?employees p:hasLanguage_Proficiencies ?language_proficiencies .\n  ?employees p:name ?fullname .\n  ?customer_facing_roles p:role ?role_w .\n  ?customer_facing_roles p:role ?role_w2 .\n  ?language_proficiencies p:language ?language_w .\n  FILTER((((STR(?role_w) = \"Customer Service Advisor\" || STR(?role_w2) = \"IT Support Technician\")) && STR(?language_w) = \"Bilingual\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_projects_research_techniques",
+  "schema": "amb_scope_projects_research_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with the research technique that is common for all projects.",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Techniques.technique_name  from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id   GROUP BY Projects_Research_Techniques.technique_id HAVING COUNT(DISTINCT Projects_Research_Techniques.project_id) = (SELECT COUNT(*) FROM  Projects)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the research technique description for all projects.",
+      "qtype": "ambig",
+      "sql": "SELECT Research_Techniques.description  from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id   GROUP BY Projects_Research_Techniques.technique_id HAVING COUNT(DISTINCT Projects_Research_Techniques.project_id) = (SELECT COUNT(*) FROM  Projects)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List the research technique description for all projects.",
+      "qtype": "ambig",
+      "sql": "select projects.project_name , research_techniques.description from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?description WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "which research techniques are utilized for each project?",
+      "qtype": "ambig",
+      "sql": "select projects.project_name , research_techniques.technique_name from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?technique_name WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:technique_name ?technique_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every project, list information on research techniques used (names and descriptions).",
+      "qtype": "unambig",
+      "sql": "select projects.project_name , research_techniques.technique_name , research_techniques.description from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?technique_name ?description WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:technique_name ?technique_name .\n  ?research_techniques p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What information is there on research techniques all projects use (names and descriptions)?",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Techniques.technique_name, Research_Techniques.description  from Projects_Research_Techniques join Research_Techniques on Projects_Research_Techniques.technique_id = Research_Techniques.id join Projects on Projects_Research_Techniques.project_id = Projects.id   GROUP BY Projects_Research_Techniques.technique_id HAVING COUNT(DISTINCT Projects_Research_Techniques.project_id) = (SELECT COUNT(*) FROM  Projects)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "which research techniques are utilized for each project?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?project_name ?technique_name WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:technique_name ?technique_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the research technique description for all projects.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?project_name ?description WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me information on each project's research techniques (names and descriptions).",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?project_name ?technique_name ?description WHERE {\n  ?projects_research_techniques a :Projects_Research_Techniques .\n  ?research_techniques a :Research_Techniques .\n  ?projects_research_techniques p:hasResearch_Techniques ?research_techniques .\n  ?projects a :Projects .\n  ?projects_research_techniques p:hasProjects ?projects .\n  ?projects p:project_name ?project_name .\n  ?research_techniques p:technique_name ?technique_name .\n  ?research_techniques p:description ?description .\n} }\n  collective: { SELECT ?technique_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResearch_Techniques ?child ; p:hasProjects ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Projects } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

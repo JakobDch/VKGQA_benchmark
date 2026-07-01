@@ -1,0 +1,174 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_political_reporters_elections",
+  "schema": "amb_scope_political_reporters_elections",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What type of election and start date are associated with each political reporter?",
+      "qtype": "ambig",
+      "sql": "SELECT Elections.election_type, Elections.start_date  from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id   GROUP BY Political_Reporters_Elections.election_id HAVING COUNT(DISTINCT Political_Reporters_Elections.reporter_id) = (SELECT COUNT(*) FROM  Political_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?election_type ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What type of election and start date are associated with each political reporter?",
+      "qtype": "ambig",
+      "sql": "select political_reporters.name , elections.election_type , elections.start_date from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?election_type ?start_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n  ?elections p:start_date ?start_date .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "For each reporter, list the end date of elections they cover.",
+      "qtype": "unambig",
+      "sql": "select political_reporters.name , elections.end_date from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?end_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:end_date ?end_date .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "For every political reporter list all of the election start dates.",
+      "qtype": "unambig",
+      "sql": "select political_reporters.name , elections.start_date from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?start_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:start_date ?start_date .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the election types, including start and end dates, that are common to all reporters",
+      "qtype": "unambig",
+      "sql": "SELECT Elections.election_type, Elections.start_date, Elections.end_date  from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id   GROUP BY Political_Reporters_Elections.election_id HAVING COUNT(DISTINCT Political_Reporters_Elections.reporter_id) = (SELECT COUNT(*) FROM  Political_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?election_type ?start_date ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  ?child p:start_date ?start_date .\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What are the end dates of elections all reporters equally cover?",
+      "qtype": "unambig",
+      "sql": "SELECT Elections.end_date  from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id   GROUP BY Political_Reporters_Elections.election_id HAVING COUNT(DISTINCT Political_Reporters_Elections.reporter_id) = (SELECT COUNT(*) FROM  Political_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "List all the election start dates for every political reporter.",
+      "qtype": "ambig",
+      "sql": "SELECT Elections.start_date  from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id   GROUP BY Political_Reporters_Elections.election_id HAVING COUNT(DISTINCT Political_Reporters_Elections.reporter_id) = (SELECT COUNT(*) FROM  Political_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "What elections do all political reporters cover together?",
+      "qtype": "unambig",
+      "sql": "SELECT Elections.election_type  from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id   GROUP BY Political_Reporters_Elections.election_id HAVING COUNT(DISTINCT Political_Reporters_Elections.reporter_id) = (SELECT COUNT(*) FROM  Political_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?election_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 8,
+      "question": "Show me the elections that every political reporter covers.",
+      "qtype": "ambig",
+      "sql": "select political_reporters.name , elections.election_type from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?election_type WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 9,
+      "question": "For each reporter, give me a list of all the election types, plus the start and end dates.",
+      "qtype": "unambig",
+      "sql": "select political_reporters.name , elections.election_type , elections.start_date , elections.end_date from Political_Reporters_Elections join Elections on Political_Reporters_Elections.election_id = Elections.id join Political_Reporters on Political_Reporters_Elections.reporter_id = Political_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?election_type ?start_date ?end_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n  ?elections p:start_date ?start_date .\n  ?elections p:end_date ?end_date .\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the end dates of elections every reporter covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?end_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:end_date ?end_date .\n} }\n  collective: { SELECT ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all the election start dates for every political reporter.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        6
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?start_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:start_date ?start_date .\n} }\n  collective: { SELECT ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What types of elections, including start and end dates, are there for every reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?election_type ?start_date ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  ?child p:start_date ?start_date .\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?election_type ?start_date ?end_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n  ?elections p:start_date ?start_date .\n  ?elections p:end_date ?end_date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the elections that every political reporter covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        7,
+        8
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?election_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?election_type WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What type of election and start date are associated with each political reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?election_type ?start_date WHERE {\n  ?political_reporters_elections a :Political_Reporters_Elections .\n  ?elections a :Elections .\n  ?political_reporters_elections p:hasElections ?elections .\n  ?political_reporters a :Political_Reporters .\n  ?political_reporters_elections p:hasPolitical_Reporters ?political_reporters .\n  ?political_reporters p:name ?name .\n  ?elections p:election_type ?election_type .\n  ?elections p:start_date ?start_date .\n} }\n  collective: { SELECT ?election_type ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElections ?child ; p:hasPolitical_Reporters ?parent . } GROUP BY ?child }\n  ?child p:election_type ?election_type .\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Political_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

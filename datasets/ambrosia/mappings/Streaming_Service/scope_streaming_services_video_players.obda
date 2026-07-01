@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:service_name {service_name} ; p:description {description} .
+source		SELECT `id`, `service_name`, `description` FROM `Streaming_Services`
+
+mappingId	Video_Players_base
+target		ex:Video_Players/{id} a :Video_Players ; p:id {id} ; p:player_type {player_type} ; p:version {version} .
+source		SELECT `id`, `player_type`, `version` FROM `Video_Players`
+
+mappingId	Streaming_Services_Video_Players_base
+target		ex:Streaming_Services_Video_Players/{_amb_rowid} a :Streaming_Services_Video_Players ; p:streaming_service_id {streaming_service_id} ; p:video_player_id {video_player_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id`, `video_player_id` FROM `Streaming_Services_Video_Players`
+
+mappingId	Streaming_Services_Video_Players_video_player_id_fk
+target		ex:Streaming_Services_Video_Players/{_amb_rowid} p:hasVideo_Players ex:Video_Players/{video_player_id} .
+source		SELECT `_amb_rowid`, `video_player_id` FROM `Streaming_Services_Video_Players` WHERE `video_player_id` IS NOT NULL
+
+mappingId	Streaming_Services_Video_Players_streaming_service_id_fk
+target		ex:Streaming_Services_Video_Players/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id` FROM `Streaming_Services_Video_Players` WHERE `streaming_service_id` IS NOT NULL
+
+]]

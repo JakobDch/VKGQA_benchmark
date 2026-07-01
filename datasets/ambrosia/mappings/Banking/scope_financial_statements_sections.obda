@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Financial_Statements_base
+target		ex:Financial_Statements/{id} a :Financial_Statements ; p:id {id} ; p:name {Name} ; p:Date {Date} .
+source		SELECT `id`, `Name`, `Date` FROM `Financial_Statements`
+
+mappingId	Sections_base
+target		ex:Sections/{id} a :Sections ; p:id {id} ; p:SectionName {SectionName} .
+source		SELECT `id`, `SectionName` FROM `Sections`
+
+mappingId	Financial_Statements_Sections_base
+target		ex:Financial_Statements_Sections/{Financial_Statement_id}/{Section_id} a :Financial_Statements_Sections ; p:Financial_Statement_id {Financial_Statement_id} ; p:Section_id {Section_id} .
+source		SELECT `Financial_Statement_id`, `Section_id` FROM `Financial_Statements_Sections`
+
+mappingId	Financial_Statements_Sections_Section_id_fk
+target		ex:Financial_Statements_Sections/{Financial_Statement_id}/{Section_id} p:hasSections ex:Sections/{Section_id} .
+source		SELECT `Financial_Statement_id`, `Section_id` FROM `Financial_Statements_Sections` WHERE `Section_id` IS NOT NULL
+
+mappingId	Financial_Statements_Sections_Financial_Statement_id_fk
+target		ex:Financial_Statements_Sections/{Financial_Statement_id}/{Section_id} p:hasFinancial_Statements ex:Financial_Statements/{Financial_Statement_id} .
+source		SELECT `Financial_Statement_id`, `Section_id` FROM `Financial_Statements_Sections` WHERE `Financial_Statement_id` IS NOT NULL
+
+]]

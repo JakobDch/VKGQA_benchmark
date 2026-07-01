@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_educational_methods",
+  "schema": "amb_attachment_2tab_val_educational_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both courses with peer tutoring and courses with group work where either has 10 participants.",
+      "qtype": "unambig",
+      "sql": "SELECT courses.courseName\nFROM peer_tutoring JOIN courses ON courses.courseID = peer_tutoring.courseID\nWHERE peer_tutoring.participants = 10\nUNION\nSELECT courses.courseName\nFROM group_work JOIN courses ON courses.courseID = group_work.courseID\nWHERE group_work.participants = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?peer_tutoring a :peer_tutoring .\n    ?courses a :Courses .\n    ?peer_tutoring p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?peer_tutoring p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n  UNION\n  {\n    ?group_work a :group_work .\n    ?courses a :Courses .\n    ?group_work p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?group_work p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show all courses with peer tutoring and also show only courses with group work which have 10 participants.",
+      "qtype": "unambig",
+      "sql": "SELECT courses.courseName\nFROM peer_tutoring JOIN courses ON courses.courseID = peer_tutoring.courseID\nUNION\nSELECT courses.courseName\nFROM group_work JOIN courses ON courses.courseID = group_work.courseID\nWHERE group_work.participants = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?peer_tutoring a :peer_tutoring .\n    ?courses a :Courses .\n    ?peer_tutoring p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    BIND(?coursename AS ?o0)\n  }\n  UNION\n  {\n    ?group_work a :group_work .\n    ?courses a :Courses .\n    ?group_work p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?group_work p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What courses have peer tutoring and group work with 10 participants?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?peer_tutoring a :peer_tutoring .\n    ?courses a :Courses .\n    ?peer_tutoring p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?peer_tutoring p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n  UNION\n  {\n    ?group_work a :group_work .\n    ?courses a :Courses .\n    ?group_work p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?group_work p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?peer_tutoring a :peer_tutoring .\n    ?courses a :Courses .\n    ?peer_tutoring p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    BIND(?coursename AS ?o0)\n  }\n  UNION\n  {\n    ?group_work a :group_work .\n    ?courses a :Courses .\n    ?group_work p:hascourses ?courses .\n    ?courses p:courseName ?coursename .\n    ?group_work p:participants ?participants_f .\n    FILTER((STR(?participants_f) = \"10\" || STR(?participants_f) = \"10.0\"))\n    BIND(?coursename AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

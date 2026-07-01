@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_cars_safety_features",
+  "schema": "amb_scope_cars_safety_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each car, list the corresponding safety features.",
+      "qtype": "unambig",
+      "sql": "select cars.make , safety_features.name from Cars_Safety_Features join Safety_Features on Cars_Safety_Features.featureId = Safety_Features.featureId join Cars on Cars_Safety_Features.carId = Cars.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?make ?name WHERE {\n  ?cars_safety_features a :Cars_Safety_Features .\n  ?safety_features a :Safety_Features .\n  ?cars_safety_features p:hasSafety_Features ?safety_features .\n  ?cars a :Cars .\n  ?cars_safety_features p:hasCars ?cars .\n  ?cars p:make ?make .\n  ?safety_features p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 1,
+      "question": "Which safety features are associated with each car?",
+      "qtype": "ambig",
+      "sql": "SELECT Safety_Features.name  from Cars_Safety_Features join Safety_Features on Cars_Safety_Features.featureId = Safety_Features.featureId join Cars on Cars_Safety_Features.carId = Cars.id   GROUP BY Cars_Safety_Features.featureId HAVING COUNT(DISTINCT Cars_Safety_Features.carId) = (SELECT COUNT(*) FROM  Cars)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSafety_Features ?child ; p:hasCars ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cars } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which safety features are associated with each car?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?make ?name WHERE {\n  ?cars_safety_features a :Cars_Safety_Features .\n  ?safety_features a :Safety_Features .\n  ?cars_safety_features p:hasSafety_Features ?safety_features .\n  ?cars a :Cars .\n  ?cars_safety_features p:hasCars ?cars .\n  ?cars p:make ?make .\n  ?safety_features p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSafety_Features ?child ; p:hasCars ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cars } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

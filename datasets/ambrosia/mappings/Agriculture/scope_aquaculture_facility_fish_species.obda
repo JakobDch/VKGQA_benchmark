@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Aquaculture_Facility_base
+target		ex:Aquaculture_Facility/{id} a :Aquaculture_Facility ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Aquaculture_Facility`
+
+mappingId	Fish_Species_base
+target		ex:Species/{id} a :Species ; p:id {id} ; p:name {species_name} .
+source		SELECT `id`, `species_name` FROM `Fish_Species`
+
+mappingId	Aquaculture_Facility_Fish_Species_base
+target		ex:Aquaculture_Facility_Fish_Species/{aquaculture_facility_id}/{fish_species_id} a :Aquaculture_Facility_Fish_Species ; p:aquaculture_facility_id {aquaculture_facility_id} ; p:fish_species_id {fish_species_id} .
+source		SELECT `aquaculture_facility_id`, `fish_species_id` FROM `Aquaculture_Facility_Fish_Species`
+
+mappingId	Aquaculture_Facility_Fish_Species_fish_species_id_fk
+target		ex:Aquaculture_Facility_Fish_Species/{aquaculture_facility_id}/{fish_species_id} p:hasSpecies ex:Species/{fish_species_id} .
+source		SELECT `aquaculture_facility_id`, `fish_species_id` FROM `Aquaculture_Facility_Fish_Species` WHERE `fish_species_id` IS NOT NULL
+
+mappingId	Aquaculture_Facility_Fish_Species_aquaculture_facility_id_fk
+target		ex:Aquaculture_Facility_Fish_Species/{aquaculture_facility_id}/{fish_species_id} p:hasAquaculture_Facility ex:Aquaculture_Facility/{aquaculture_facility_id} .
+source		SELECT `aquaculture_facility_id`, `fish_species_id` FROM `Aquaculture_Facility_Fish_Species` WHERE `aquaculture_facility_id` IS NOT NULL
+
+]]

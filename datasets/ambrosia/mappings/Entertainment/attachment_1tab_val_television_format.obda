@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	TelevisionShows_base
+target		ex:Tv_Show/{ID} a :Tv_Show ; p:ID {ID} ; p:name {Name} ; p:Genre {Genre} ; p:Country {Country} ; p:Television_Format {Television_Format} ; p:Audience_Score {Audience_Score} .
+source		SELECT `ID`, `Name`, `Genre`, `Country`, `Television_Format`, `Audience_Score` FROM `TelevisionShows`
+
+mappingId	Actors_base
+target		ex:Actor/{ActorID} a :Actor ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `DateOfBirth`, `Nationality` FROM `Actors`
+
+mappingId	ShowsActors_base
+target		ex:ShowsActors/{_amb_rowid} a :ShowsActors ; p:ShowID {ShowID} ; p:ActorID {ActorID} ; p:Role {Role} .
+source		SELECT `_amb_rowid`, `ShowID`, `ActorID`, `Role` FROM `ShowsActors`
+
+mappingId	ShowsActors_ActorID_fk
+target		ex:ShowsActors/{_amb_rowid} p:hasActor ex:Actor/{ActorID} .
+source		SELECT `_amb_rowid`, `ActorID` FROM `ShowsActors` WHERE `ActorID` IS NOT NULL
+
+mappingId	ShowsActors_ShowID_fk
+target		ex:ShowsActors/{_amb_rowid} p:hasTv_Show ex:Tv_Show/{ShowID} .
+source		SELECT `_amb_rowid`, `ShowID` FROM `ShowsActors` WHERE `ShowID` IS NOT NULL
+
+mappingId	Directors_base
+target		ex:Director/{DirectorID} a :Director ; p:DirectorID {DirectorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:Nationality {Nationality} .
+source		SELECT `DirectorID`, `FirstName`, `LastName`, `BirthDate`, `Nationality` FROM `Directors`
+
+mappingId	ShowDirectors_base
+target		ex:ShowDirectors/{_amb_rowid} a :ShowDirectors ; p:ShowID {ShowID} ; p:DirectorID {DirectorID} .
+source		SELECT `_amb_rowid`, `ShowID`, `DirectorID` FROM `ShowDirectors`
+
+mappingId	ShowDirectors_DirectorID_fk
+target		ex:ShowDirectors/{_amb_rowid} p:hasDirector ex:Director/{DirectorID} .
+source		SELECT `_amb_rowid`, `DirectorID` FROM `ShowDirectors` WHERE `DirectorID` IS NOT NULL
+
+mappingId	ShowDirectors_ShowID_fk
+target		ex:ShowDirectors/{_amb_rowid} p:hasTv_Show ex:Tv_Show/{ShowID} .
+source		SELECT `_amb_rowid`, `ShowID` FROM `ShowDirectors` WHERE `ShowID` IS NOT NULL
+
+]]

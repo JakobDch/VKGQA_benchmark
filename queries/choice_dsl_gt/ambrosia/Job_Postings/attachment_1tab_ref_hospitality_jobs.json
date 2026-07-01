@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_hospitality_jobs",
+  "schema": "amb_attachment_1tab_ref_hospitality_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all tour guides and also list travel agents from Expedia.",
+      "qtype": "unambig",
+      "sql": "SELECT JobPosting.title \nFROM HospitalityJobType JOIN JobPosting ON HospitalityJobType.id = JobPosting.hospitality_job_type_id JOIN Agency ON JobPosting.agency_id = Agency.id\nWHERE HospitalityJobType.job_type = \"Tour Guide\" OR HospitalityJobType.job_type = \"Travel Agent\" AND Agency.name = \"Expedia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?hospitalityjobtype a :HospitalityJobType .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHospitalityJobType ?hospitalityjobtype .\n  ?agency a :Agency .\n  ?jobposting p:hasAgency ?agency .\n  ?jobposting p:title ?title .\n  ?hospitalityjobtype p:job_type ?job_type_w .\n  ?hospitalityjobtype p:job_type ?job_type_w2 .\n  ?agency p:name ?name_w .\n  FILTER((STR(?job_type_w) = \"Tour Guide\" || (STR(?job_type_w2) = \"Travel Agent\" && STR(?name_w) = \"Expedia\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "What tour guides are from Expedia and what travel agents are from the same agency?",
+      "qtype": "unambig",
+      "sql": "SELECT JobPosting.title \nFROM HospitalityJobType JOIN JobPosting ON HospitalityJobType.id = JobPosting.hospitality_job_type_id JOIN Agency ON JobPosting.agency_id = Agency.id\nWHERE (HospitalityJobType.job_type = \"Tour Guide\" OR HospitalityJobType.job_type = \"Travel Agent\") AND Agency.name = \"Expedia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?hospitalityjobtype a :HospitalityJobType .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHospitalityJobType ?hospitalityjobtype .\n  ?agency a :Agency .\n  ?jobposting p:hasAgency ?agency .\n  ?jobposting p:title ?title .\n  ?hospitalityjobtype p:job_type ?job_type_w .\n  ?hospitalityjobtype p:job_type ?job_type_w2 .\n  ?agency p:name ?name_w .\n  FILTER((((STR(?job_type_w) = \"Tour Guide\" || STR(?job_type_w2) = \"Travel Agent\")) && STR(?name_w) = \"Expedia\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me tour guides and travel agents from the Expedia agency.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?hospitalityjobtype a :HospitalityJobType .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHospitalityJobType ?hospitalityjobtype .\n  ?agency a :Agency .\n  ?jobposting p:hasAgency ?agency .\n  ?jobposting p:title ?title .\n  ?hospitalityjobtype p:job_type ?job_type_w .\n  ?hospitalityjobtype p:job_type ?job_type_w2 .\n  ?agency p:name ?name_w .\n  FILTER((STR(?job_type_w) = \"Tour Guide\" || (STR(?job_type_w2) = \"Travel Agent\" && STR(?name_w) = \"Expedia\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?hospitalityjobtype a :HospitalityJobType .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHospitalityJobType ?hospitalityjobtype .\n  ?agency a :Agency .\n  ?jobposting p:hasAgency ?agency .\n  ?jobposting p:title ?title .\n  ?hospitalityjobtype p:job_type ?job_type_w .\n  ?hospitalityjobtype p:job_type ?job_type_w2 .\n  ?agency p:name ?name_w .\n  FILTER((((STR(?job_type_w) = \"Tour Guide\" || STR(?job_type_w2) = \"Travel Agent\")) && STR(?name_w) = \"Expedia\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

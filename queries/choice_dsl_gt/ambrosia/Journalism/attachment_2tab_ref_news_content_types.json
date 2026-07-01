@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_news_content_types",
+  "schema": "amb_attachment_2tab_ref_news_content_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all opinion pieces and also provide a list of all feature articles where they have 3 volumes.",
+      "qtype": "unambig",
+      "sql": "SELECT Opinion_Pieces.title\nFROM Volumes JOIN Opinion_Pieces ON Volumes.volume_id = Opinion_Pieces.volume_id\nUNION\nSELECT Feature_Articles.title\nFROM Volumes JOIN Feature_Articles ON Volumes.volume_id = Feature_Articles.volume_id\nWHERE Volumes.number = \"03\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?volumes a :Volumes .\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:hasVolumes ?volumes .\n    ?opinion_pieces p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?volumes a :Volumes .\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:hasVolumes ?volumes .\n    ?feature_articles p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Give me opinion pieces and feature articles where they have 3 volumes.",
+      "qtype": "ambig",
+      "sql": "SELECT Opinion_Pieces.title\nFROM Volumes JOIN Opinion_Pieces ON Volumes.volume_id = Opinion_Pieces.volume_id\nWHERE Volumes.number = \"03\"\nUNION\nSELECT Feature_Articles.title\nFROM Volumes JOIN Feature_Articles ON Volumes.volume_id = Feature_Articles.volume_id\nWHERE Volumes.number = \"03\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?volumes a :Volumes .\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:hasVolumes ?volumes .\n    ?opinion_pieces p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?volumes a :Volumes .\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:hasVolumes ?volumes .\n    ?feature_articles p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me opinion pieces and feature articles where they have 3 volumes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?volumes a :Volumes .\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:hasVolumes ?volumes .\n    ?opinion_pieces p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?volumes a :Volumes .\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:hasVolumes ?volumes .\n    ?feature_articles p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?volumes a :Volumes .\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:hasVolumes ?volumes .\n    ?opinion_pieces p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?volumes a :Volumes .\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:hasVolumes ?volumes .\n    ?feature_articles p:title ?title .\n    ?volumes p:number ?number_f .\n    FILTER((STR(?number_f) = \"03\" || STR(?number_f) = \"3\" || STR(?number_f) = \"3.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

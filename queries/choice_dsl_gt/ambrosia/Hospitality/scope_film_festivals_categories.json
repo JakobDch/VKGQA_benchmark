@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_film_festivals_categories",
+  "schema": "amb_scope_film_festivals_categories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Please provide categories that are shared across all film festivals",
+      "qtype": "unambig",
+      "sql": "SELECT Categories.category_name  from Film_Festivals_Categories join Categories on Film_Festivals_Categories.category_id = Categories.id join Film_Festivals on Film_Festivals_Categories.film_festival_id = Film_Festivals.id   GROUP BY Film_Festivals_Categories.category_id HAVING COUNT(DISTINCT Film_Festivals_Categories.film_festival_id) = (SELECT COUNT(*) FROM  Film_Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?category_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasFilm_Festivals ?parent . } GROUP BY ?child }\n  ?child p:category_name ?category_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Could you provide the categories for all film festivals?",
+      "qtype": "unambig",
+      "sql": "select film_festivals.name , categories.category_name from Film_Festivals_Categories join Categories on Film_Festivals_Categories.category_id = Categories.id join Film_Festivals on Film_Festivals_Categories.film_festival_id = Film_Festivals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?category_name WHERE {\n  ?film_festivals_categories a :Film_Festivals_Categories .\n  ?categories a :Categories .\n  ?film_festivals_categories p:hasCategories ?categories .\n  ?film_festivals a :Film_Festivals .\n  ?film_festivals_categories p:hasFilm_Festivals ?film_festivals .\n  ?film_festivals p:name ?name .\n  ?categories p:category_name ?category_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What categories are associated with each film festival?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?category_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasFilm_Festivals ?parent . } GROUP BY ?child }\n  ?child p:category_name ?category_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Festivals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?category_name WHERE {\n  ?film_festivals_categories a :Film_Festivals_Categories .\n  ?categories a :Categories .\n  ?film_festivals_categories p:hasCategories ?categories .\n  ?film_festivals a :Film_Festivals .\n  ?film_festivals_categories p:hasFilm_Festivals ?film_festivals .\n  ?film_festivals p:name ?name .\n  ?categories p:category_name ?category_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

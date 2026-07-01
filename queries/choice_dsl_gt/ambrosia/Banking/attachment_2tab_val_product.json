@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_val_product",
+  "schema": "amb_attachment_2tab_val_product",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all saving accounts combined with a list of checking accounts with an interest rate of 1%.",
+      "qtype": "unambig",
+      "sql": "SELECT Savings_Accounts.AccountNumber\nFROM Savings_Accounts\nUNION\nSELECT Checking_Accounts.AccountNumber\nFROM Checking_Accounts\nWHERE Checking_Accounts.Interest_Rate = \"1%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?savings_accounts a :SavingsAccounts .\n    ?savings_accounts p:AccountNumber ?accountnumber .\n    BIND(?accountnumber AS ?o0)\n  }\n  UNION\n  {\n    ?checking_accounts a :CheckingAccounts .\n    ?checking_accounts p:AccountNumber ?accountnumber .\n    ?checking_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which saving accounts have an interest rate of 1% and which checking accounts have the same interest rate?",
+      "qtype": "unambig",
+      "sql": "SELECT Savings_Accounts.AccountNumber\nFROM Savings_Accounts\nWHERE Savings_Accounts.Interest_Rate = \"1%\"\nUNION\nSELECT Checking_Accounts.AccountNumber\nFROM Checking_Accounts\nWHERE Checking_Accounts.Interest_Rate = \"1%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?savings_accounts a :SavingsAccounts .\n    ?savings_accounts p:AccountNumber ?accountnumber .\n    ?savings_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n  UNION\n  {\n    ?checking_accounts a :CheckingAccounts .\n    ?checking_accounts p:AccountNumber ?accountnumber .\n    ?checking_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List saving accounts and checking accounts with an interest rate of 1%.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?savings_accounts a :SavingsAccounts .\n    ?savings_accounts p:AccountNumber ?accountnumber .\n    BIND(?accountnumber AS ?o0)\n  }\n  UNION\n  {\n    ?checking_accounts a :CheckingAccounts .\n    ?checking_accounts p:AccountNumber ?accountnumber .\n    ?checking_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?savings_accounts a :SavingsAccounts .\n    ?savings_accounts p:AccountNumber ?accountnumber .\n    ?savings_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n  UNION\n  {\n    ?checking_accounts a :CheckingAccounts .\n    ?checking_accounts p:AccountNumber ?accountnumber .\n    ?checking_accounts p:Interest_Rate ?interest_rate_f .\n    FILTER(STR(?interest_rate_f) = \"1%\")\n    BIND(?accountnumber AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

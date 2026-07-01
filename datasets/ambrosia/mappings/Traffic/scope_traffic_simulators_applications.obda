@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Applications_base
+target		ex:Applications/{application_id} a :Applications ; p:application_id {application_id} ; p:name {application_name} .
+source		SELECT `application_id`, `application_name` FROM `Applications`
+
+mappingId	Traffic_Simulators_base
+target		ex:Traffic_Simulators/{simulator_id} a :Traffic_Simulators ; p:name {simulator_name} ; p:version {simulator_version} .
+source		SELECT `simulator_id`, `simulator_name`, `simulator_version` FROM `Traffic_Simulators`
+
+mappingId	Traffic_Simulators_simulator_id_fk
+target		ex:Traffic_Simulators/{simulator_id} p:hasTraffic_Simulators_Applications ex:Traffic_Simulators_Applications/{simulator_id} .
+source		SELECT `simulator_id` FROM `Traffic_Simulators` WHERE `simulator_id` IS NOT NULL
+
+mappingId	Traffic_Simulators_Applications_base
+target		ex:Traffic_Simulators_Applications/{application_id}/{traffic_simulator_id} a :Traffic_Simulators_Applications .
+source		SELECT `traffic_simulator_id`, `application_id` FROM `Traffic_Simulators_Applications`
+
+mappingId	Traffic_Simulators_Applications_application_id_fk
+target		ex:Traffic_Simulators_Applications/{application_id}/{traffic_simulator_id} p:hasApplications ex:Applications/{application_id} .
+source		SELECT `application_id`, `traffic_simulator_id` FROM `Traffic_Simulators_Applications` WHERE `application_id` IS NOT NULL
+
+mappingId	Traffic_Simulators_Applications_traffic_simulator_id_fk
+target		ex:Traffic_Simulators_Applications/{application_id}/{traffic_simulator_id} p:hasTraffic_Simulators ex:Traffic_Simulators/{traffic_simulator_id} .
+source		SELECT `application_id`, `traffic_simulator_id` FROM `Traffic_Simulators_Applications` WHERE `traffic_simulator_id` IS NOT NULL
+
+]]

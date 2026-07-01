@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:Organization {Organization} ; p:Year_of_establishment {Year_of_establishment} ; p:name {FullName} .
+source		SELECT `CustomerID`, `Organization`, `Year_of_establishment`, `FullName` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountNumber`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountNumber {AccountNumber} ; p:Amount {Amount} ; p:CurrencyID {CurrencyID} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountNumber`, `Amount`, `CurrencyID`, `Date` FROM `Transactions`
+
+mappingId	Transactions_CurrencyID_fk
+target		ex:Transactions/{TransactionID} p:hasCurrencies ex:Currencies/{CurrencyID} .
+source		SELECT `TransactionID`, `CurrencyID` FROM `Transactions` WHERE `CurrencyID` IS NOT NULL
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Currencies_base
+target		ex:Currencies/{CurrencyID} a :Currencies ; p:CurrencyID {CurrencyID} ; p:name {Name} ; p:Symbol {Symbol} .
+source		SELECT `CurrencyID`, `Name`, `Symbol` FROM `Currencies`
+
+]]

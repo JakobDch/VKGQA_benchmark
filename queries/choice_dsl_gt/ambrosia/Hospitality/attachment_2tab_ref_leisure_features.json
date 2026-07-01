@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_ref_leisure_features",
+  "schema": "amb_attachment_2tab_ref_leisure_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What size are the swimming pools in Miami and what size are the hot tubs there?",
+      "qtype": "unambig",
+      "sql": "SELECT SwimmingPool.Size\nFROM City JOIN Hotel ON City.ID = Hotel.ID JOIN SwimmingPool ON Hotel.ID = SwimmingPool.ID\nWHERE City.Name = 'Miami'\nUNION\nSELECT HotTub.Capacity\nFROM City JOIN Hotel ON City.ID = Hotel.ID JOIN HotTub ON Hotel.ID = HotTub.ID\nWHERE City.Name = 'Miami'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?swimmingpool a :SwimmingPool .\n    ?swimmingpool p:hasHotel ?hotel .\n    ?swimmingpool p:Size ?size .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?size AS ?o0)\n  }\n  UNION\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?hottub a :HotTub .\n    ?hottub p:hasHotel ?hotel .\n    ?hottub p:Capacity ?capacity .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?capacity AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Can you show me the sizes of all hot tubs in Miami along with the sizes of all swimming pools in any given location?",
+      "qtype": "unambig",
+      "sql": "SELECT SwimmingPool.Size\nFROM City JOIN Hotel ON City.ID = Hotel.ID JOIN SwimmingPool ON Hotel.ID = SwimmingPool.ID\nUNION\nSELECT HotTub.Capacity\nFROM City JOIN Hotel ON City.ID = Hotel.ID JOIN HotTub ON Hotel.ID = HotTub.ID\nWHERE City.Name = 'Miami'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?swimmingpool a :SwimmingPool .\n    ?swimmingpool p:hasHotel ?hotel .\n    ?swimmingpool p:Size ?size .\n    BIND(?size AS ?o0)\n  }\n  UNION\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?hottub a :HotTub .\n    ?hottub p:hasHotel ?hotel .\n    ?hottub p:Capacity ?capacity .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?capacity AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What size are all swimming pools and hot tubs in Miami?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?swimmingpool a :SwimmingPool .\n    ?swimmingpool p:hasHotel ?hotel .\n    ?swimmingpool p:Size ?size .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?size AS ?o0)\n  }\n  UNION\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?hottub a :HotTub .\n    ?hottub p:hasHotel ?hotel .\n    ?hottub p:Capacity ?capacity .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?capacity AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?swimmingpool a :SwimmingPool .\n    ?swimmingpool p:hasHotel ?hotel .\n    ?swimmingpool p:Size ?size .\n    BIND(?size AS ?o0)\n  }\n  UNION\n  {\n    ?city a :City .\n    ?hotel a :Hotels .\n    ?hotel p:hasCity ?city .\n    ?hottub a :HotTub .\n    ?hottub p:hasHotel ?hotel .\n    ?hottub p:Capacity ?capacity .\n    ?city p:name ?name_f .\n    FILTER(STR(?name_f) = \"Miami\")\n    BIND(?capacity AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

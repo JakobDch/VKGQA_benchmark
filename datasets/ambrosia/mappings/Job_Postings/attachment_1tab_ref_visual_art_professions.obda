@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employers_base
+target		ex:Employers/{employerID} a :Employers ; p:employerID {employerID} ; p:name {name} ; p:email {email} ; p:phoneNumber {phoneNumber} .
+source		SELECT `employerID`, `name`, `email`, `phoneNumber` FROM `Employers`
+
+mappingId	Locations_base
+target		ex:Locations/{locationID} a :Locations ; p:locationID {locationID} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `locationID`, `city`, `state`, `country` FROM `Locations`
+
+mappingId	Pricing_base
+target		ex:Pricing/{pricingID} a :Pricing ; p:pricingID {pricingID} ; p:price {price} .
+source		SELECT `pricingID`, `price` FROM `Pricing`
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{jobID} a :JobPostings ; p:jobID {jobID} ; p:title {title} ; p:postingDate {postingDate} ; p:employerID {employerID} ; p:skills {skills} ; p:locationID {locationID} ; p:visualArtProfession {visualArtProfession} ; p:pricingID {pricingID} .
+source		SELECT `jobID`, `title`, `postingDate`, `employerID`, `skills`, `locationID`, `visualArtProfession`, `pricingID` FROM `JobPostings`
+
+mappingId	JobPostings_pricingID_fk
+target		ex:JobPostings/{jobID} p:hasPricing ex:Pricing/{pricingID} .
+source		SELECT `jobID`, `pricingID` FROM `JobPostings` WHERE `pricingID` IS NOT NULL
+
+mappingId	JobPostings_locationID_fk
+target		ex:JobPostings/{jobID} p:hasLocations ex:Locations/{locationID} .
+source		SELECT `jobID`, `locationID` FROM `JobPostings` WHERE `locationID` IS NOT NULL
+
+mappingId	JobPostings_employerID_fk
+target		ex:JobPostings/{jobID} p:hasEmployers ex:Employers/{employerID} .
+source		SELECT `jobID`, `employerID` FROM `JobPostings` WHERE `employerID` IS NOT NULL
+
+]]

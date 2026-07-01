@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Color_Palette_base
+target		ex:Color_Palette/{color_id} a :Color_Palette ; p:color_id {color_id} ; p:color_name {color_name} .
+source		SELECT `color_id`, `color_name` FROM `Color_Palette`
+
+mappingId	Fabric_Choice_base
+target		ex:Fabric_Choice/{fabric_id} a :Fabric_Choice ; p:fabric_id {fabric_id} ; p:fabric_type {fabric_type} .
+source		SELECT `fabric_id`, `fabric_type` FROM `Fabric_Choice`
+
+mappingId	Fashion_Design_base
+target		ex:Fashion_Design/{design_id} a :Fashion_Design ; p:design_id {design_id} ; p:design_name {design_name} ; p:color_id {color_id} ; p:fabric_id {fabric_id} .
+source		SELECT `design_id`, `design_name`, `color_id`, `fabric_id` FROM `Fashion_Design`
+
+mappingId	Fashion_Design_fabric_id_fk
+target		ex:Fashion_Design/{design_id} p:hasFabric_Choice ex:Fabric_Choice/{fabric_id} .
+source		SELECT `design_id`, `fabric_id` FROM `Fashion_Design` WHERE `fabric_id` IS NOT NULL
+
+mappingId	Fashion_Design_color_id_fk
+target		ex:Fashion_Design/{design_id} p:hasColor_Palette ex:Color_Palette/{color_id} .
+source		SELECT `design_id`, `color_id` FROM `Fashion_Design` WHERE `color_id` IS NOT NULL
+
+]]

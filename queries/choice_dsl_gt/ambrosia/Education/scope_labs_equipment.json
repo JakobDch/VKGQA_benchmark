@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_labs_equipment",
+  "schema": "amb_scope_labs_equipment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every lab, list the equipment they use.",
+      "qtype": "unambig",
+      "sql": "select labs.name , equipment.type from Labs_Equipment join Equipment on Labs_Equipment.equipment_id = Equipment.id join Labs on Labs_Equipment.labs_id = Labs.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?labs_equipment a :Labs_Equipment .\n  ?equipment a :Equipment .\n  ?labs_equipment p:hasEquipment ?equipment .\n  ?labs a :Labs .\n  ?labs_equipment p:hasLabs ?labs .\n  ?labs p:name ?name .\n  ?equipment p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the equipment each lab uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.type  from Labs_Equipment join Equipment on Labs_Equipment.equipment_id = Equipment.id join Labs on Labs_Equipment.labs_id = Labs.id   GROUP BY Labs_Equipment.equipment_id HAVING COUNT(DISTINCT Labs_Equipment.labs_id) = (SELECT COUNT(*) FROM  Labs)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLabs ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Labs } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the equipment each lab uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?labs_equipment a :Labs_Equipment .\n  ?equipment a :Equipment .\n  ?labs_equipment p:hasEquipment ?equipment .\n  ?labs a :Labs .\n  ?labs_equipment p:hasLabs ?labs .\n  ?labs p:name ?name .\n  ?equipment p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLabs ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Labs } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

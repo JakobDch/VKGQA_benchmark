@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_loan_applications_requirements",
+  "schema": "amb_scope_loan_applications_requirements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which requirements are associated with each loan application?",
+      "qtype": "ambig",
+      "sql": "SELECT Requirements.RequirementDescription  from Loan_Applications_Requirements join Requirements on Loan_Applications_Requirements.ReqID = Requirements.RequirementID join Loan_Applications on Loan_Applications_Requirements.AppID = Loan_Applications.ApplicationID   GROUP BY Loan_Applications_Requirements.ReqID HAVING COUNT(DISTINCT Loan_Applications_Requirements.AppID) = (SELECT COUNT(*) FROM  Loan_Applications)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?requirementdescription WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRequirements ?child ; p:hasLoan_Applications ?parent . } GROUP BY ?child }\n  ?child p:RequirementDescription ?requirementdescription .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Loan_Applications } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which requirements are associated with each loan application?",
+      "qtype": "ambig",
+      "sql": "select loan_applications.customername , requirements.requirementdescription from Loan_Applications_Requirements join Requirements on Loan_Applications_Requirements.ReqID = Requirements.RequirementID join Loan_Applications on Loan_Applications_Requirements.AppID = Loan_Applications.ApplicationID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?customername ?requirementdescription WHERE {\n  ?loan_applications_requirements a :Loan_Applications_Requirements .\n  ?requirements a :Requirements .\n  ?loan_applications_requirements p:hasRequirements ?requirements .\n  ?loan_applications a :Loan_Applications .\n  ?loan_applications_requirements p:hasLoan_Applications ?loan_applications .\n  ?loan_applications p:CustomerName ?customername .\n  ?requirements p:RequirementDescription ?requirementdescription .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which requirements are associated with each loan application?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?customername ?requirementdescription WHERE {\n  ?loan_applications_requirements a :Loan_Applications_Requirements .\n  ?requirements a :Requirements .\n  ?loan_applications_requirements p:hasRequirements ?requirements .\n  ?loan_applications a :Loan_Applications .\n  ?loan_applications_requirements p:hasLoan_Applications ?loan_applications .\n  ?loan_applications p:CustomerName ?customername .\n  ?requirements p:RequirementDescription ?requirementdescription .\n} }\n  collective: { SELECT ?requirementdescription WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRequirements ?child ; p:hasLoan_Applications ?parent . } GROUP BY ?child }\n  ?child p:RequirementDescription ?requirementdescription .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Loan_Applications } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

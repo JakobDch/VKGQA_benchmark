@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streets_base
+target		ex:Streets/{StreetID} a :Streets ; p:StreetID {StreetID} ; p:Street_Name {Street_Name} ; p:Block_Number {Block_Number} ; p:Bus_Stop {Bus_Stop} ; p:NumLanes {NumLanes} ; p:MaxSpeed {MaxSpeed} .
+source		SELECT `StreetID`, `Street_Name`, `Block_Number`, `Bus_Stop`, `NumLanes`, `MaxSpeed` FROM `Streets`
+
+mappingId	Accidents_base
+target		ex:Accidents/{AccidentID} a :Accidents ; p:AccidentID {AccidentID} ; p:Date {Date} ; p:severity {Severity} .
+source		SELECT `AccidentID`, `Date`, `LocationID`, `Severity` FROM `Accidents`
+
+mappingId	Accidents_LocationID_fk
+target		ex:Accidents/{AccidentID} p:hasStreets ex:Streets/{LocationID} .
+source		SELECT `AccidentID`, `LocationID` FROM `Accidents` WHERE `LocationID` IS NOT NULL
+
+mappingId	Vehicles_base
+target		ex:Vehicles/{VehicleID} a :Vehicles ; p:VehicleID {VehicleID} ; p:type {Type} ; p:LicensePlate {LicensePlate} .
+source		SELECT `VehicleID`, `Type`, `LicensePlate`, `OwnerID` FROM `Vehicles`
+
+mappingId	Vehicles_OwnerID_fk
+target		ex:Vehicles/{VehicleID} p:hasUsers ex:Users/{OwnerID} .
+source		SELECT `VehicleID`, `OwnerID` FROM `Vehicles` WHERE `OwnerID` IS NOT NULL
+
+mappingId	Users_base
+target		ex:Users/{UserID} a :Users ; p:UserID {UserID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `UserID`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Users`
+
+mappingId	RoadWorks_base
+target		ex:RoadWorks/{WorkID} a :RoadWorks ; p:WorkID {WorkID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:WorkType {WorkType} .
+source		SELECT `WorkID`, `StartDate`, `EndDate`, `StreetID`, `WorkType` FROM `RoadWorks`
+
+mappingId	RoadWorks_StreetID_fk
+target		ex:RoadWorks/{WorkID} p:hasStreets ex:Streets/{StreetID} .
+source		SELECT `WorkID`, `StreetID` FROM `RoadWorks` WHERE `StreetID` IS NOT NULL
+
+mappingId	SpeedingTickets_base
+target		ex:SpeedingTickets/{TicketID} a :SpeedingTickets ; p:TicketID {TicketID} ; p:IssueDate {IssueDate} ; p:FineAmount {FineAmount} .
+source		SELECT `TicketID`, `IssueDate`, `OffenderVehicleID`, `FineAmount` FROM `SpeedingTickets`
+
+mappingId	SpeedingTickets_OffenderVehicleID_fk
+target		ex:SpeedingTickets/{TicketID} p:hasVehicles ex:Vehicles/{OffenderVehicleID} .
+source		SELECT `TicketID`, `OffenderVehicleID` FROM `SpeedingTickets` WHERE `OffenderVehicleID` IS NOT NULL
+
+]]

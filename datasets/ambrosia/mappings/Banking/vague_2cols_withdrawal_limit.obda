@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `EmailAddress` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:AccountType {AccountType} ; p:Balance {Balance} ; p:OpenDate {OpenDate} ; p:CustomerID {CustomerID} .
+source		SELECT `AccountNumber`, `AccountType`, `Balance`, `OpenDate`, `CustomerID` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Limits_base
+target		ex:Limits/{TransactionID} a :Limits ; p:TransactionID {TransactionID} ; p:Daily_Limit {Daily_Limit} ; p:Transaction_Limit {Transaction_Limit} ; p:Atms {Atms} ; p:AccountNumber {AccountNumber} .
+source		SELECT `TransactionID`, `Daily_Limit`, `Transaction_Limit`, `Atms`, `AccountNumber` FROM `Limits`
+
+mappingId	Limits_AccountNumber_fk
+target		ex:Limits/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Limits` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:Amount {Amount} ; p:DateAndTime {DateAndTime} ; p:Description {Description} ; p:AccountNumber {AccountNumber} .
+source		SELECT `TransactionID`, `Amount`, `DateAndTime`, `Description`, `AccountNumber` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Overdrafts_base
+target		ex:Overdrafts/{OverdraftID} a :Overdrafts ; p:OverdraftID {OverdraftID} ; p:ApprovalStatus {ApprovalStatus} ; p:LimitAmount {LimitAmount} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:AccountNumber {AccountNumber} .
+source		SELECT `OverdraftID`, `ApprovalStatus`, `LimitAmount`, `StartDate`, `EndDate`, `AccountNumber` FROM `Overdrafts`
+
+mappingId	Overdrafts_AccountNumber_fk
+target		ex:Overdrafts/{OverdraftID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `OverdraftID`, `AccountNumber` FROM `Overdrafts` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Rewards_base
+target		ex:Rewards/{RewardID} a :Rewards ; p:RewardID {RewardID} ; p:Points {Points} ; p:ExpiryDate {ExpiryDate} ; p:AccountNumber {AccountNumber} .
+source		SELECT `RewardID`, `Points`, `ExpiryDate`, `AccountNumber` FROM `Rewards`
+
+mappingId	Rewards_AccountNumber_fk
+target		ex:Rewards/{RewardID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `RewardID`, `AccountNumber` FROM `Rewards` WHERE `AccountNumber` IS NOT NULL
+
+]]

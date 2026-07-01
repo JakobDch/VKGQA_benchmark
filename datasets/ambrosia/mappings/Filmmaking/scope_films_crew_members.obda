@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Films_base
+target		ex:Films/{film_id} a :Films ; p:film_id {film_id} ; p:title {title} ; p:release_year {release_year} .
+source		SELECT `film_id`, `title`, `release_year` FROM `Films`
+
+mappingId	Crew_Members_base
+target		ex:Crew_Members/{member_id} a :Crew_Members ; p:member_id {member_id} ; p:role {role} ; p:name {name} .
+source		SELECT `member_id`, `role`, `name` FROM `Crew_Members`
+
+mappingId	Films_Crew_Members_base
+target		ex:Films_Crew_Members/{film_id}/{member_id} a :Films_Crew_Members ; p:film_id {film_id} ; p:member_id {member_id} .
+source		SELECT `film_id`, `member_id` FROM `Films_Crew_Members`
+
+mappingId	Films_Crew_Members_member_id_fk
+target		ex:Films_Crew_Members/{film_id}/{member_id} p:hasCrew_Members ex:Crew_Members/{member_id} .
+source		SELECT `film_id`, `member_id` FROM `Films_Crew_Members` WHERE `member_id` IS NOT NULL
+
+mappingId	Films_Crew_Members_film_id_fk
+target		ex:Films_Crew_Members/{film_id}/{member_id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `film_id`, `member_id` FROM `Films_Crew_Members` WHERE `film_id` IS NOT NULL
+
+mappingId	Film_Genres_base
+target		ex:Film_Genre/{film_genre_id} a :Film_Genre ; p:film_genre_id {film_genre_id} ; p:genre {genre} .
+source		SELECT `film_genre_id`, `genre` FROM `Film_Genres`
+
+mappingId	Actors_base
+target		ex:Actors/{actor_id} a :Actors ; p:actor_id {actor_id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `actor_id`, `first_name`, `last_name` FROM `Actors`
+
+mappingId	Films_Actors_base
+target		ex:FilmActors/{film_id}/{actor_id} a :FilmActors ; p:film_id {film_id} ; p:actor_id {actor_id} ; p:character {character} .
+source		SELECT `film_id`, `actor_id`, `character` FROM `Films_Actors`
+
+mappingId	Films_Actors_actor_id_fk
+target		ex:FilmActors/{film_id}/{actor_id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `film_id`, `actor_id` FROM `Films_Actors` WHERE `actor_id` IS NOT NULL
+
+mappingId	Films_Actors_film_id_fk
+target		ex:FilmActors/{film_id}/{actor_id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `film_id`, `actor_id` FROM `Films_Actors` WHERE `film_id` IS NOT NULL
+
+]]

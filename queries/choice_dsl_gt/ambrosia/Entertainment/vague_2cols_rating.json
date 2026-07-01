@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_rating",
+  "schema": "amb_vague_2cols_rating",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the average age rating and average critical rating for all action movies?",
+      "qtype": "unambig",
+      "sql": "SELECT AVG(ageRating), AVG(criticalRating) FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId JOIN Genre ON Movie.genreId = Genre.id WHERE Genre.name = \"Action\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?agerating_a) AS ?agg) (AVG(?criticalrating_a) AS ?agg2) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:ageRating ?agerating_a .\n  ?rating p:criticalRating ?criticalrating_a .\n  FILTER(STR(?name_f) = \"Action\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the average rating for all action movies?",
+      "qtype": "ambig",
+      "sql": "SELECT AVG(ageRating) AS average_rating FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId JOIN Genre ON Movie.genreId = Genre.id WHERE Genre.name = \"Action\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?agerating_a) AS ?agg) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:ageRating ?agerating_a .\n  FILTER(STR(?name_f) = \"Action\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the average rating for all action movies?",
+      "qtype": "ambig",
+      "sql": "SELECT AVG(criticalRating) AS average_rating FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId JOIN Genre ON Movie.genreId = Genre.id WHERE Genre.name = \"Action\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?criticalrating_a) AS ?agg) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:criticalRating ?criticalrating_a .\n  FILTER(STR(?name_f) = \"Action\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Rank the movies based on their critical rating, from highest to lowest.",
+      "qtype": "unambig",
+      "sql": "SELECT movieId, criticalRating FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId ORDER BY criticalRating DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?movieid ?criticalrating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:criticalRating ?criticalrating .\n  ?rating p:criticalRating ?criticalrating_o .\n}\nORDER BY DESC(?criticalrating_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Rank the movies based on their ratings from highest to lowest.",
+      "qtype": "ambig",
+      "sql": "SELECT movieId, ageRating FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId ORDER BY ageRating DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?movieid ?agerating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:ageRating ?agerating .\n  ?rating p:ageRating ?agerating_o .\n}\nORDER BY DESC(?agerating_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Rank the movies based on their ratings from highest to lowest.",
+      "qtype": "ambig",
+      "sql": "SELECT movieId, ageRating, criticalRating FROM \"Rating\" JOIN Movie ON Movie.id = Rating.movieId ORDER BY ageRating, criticalRating DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?movieid ?agerating ?criticalrating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:ageRating ?agerating .\n  ?rating p:criticalRating ?criticalrating .\n  ?rating p:ageRating ?agerating_o .\n  ?rating p:criticalRating ?criticalrating_o .\n}\nORDER BY ASC(?agerating_o) DESC(?criticalrating_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the average rating for all action movies?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT (AVG(?agerating_a) AS ?agg) (AVG(?criticalrating_a) AS ?agg2) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:ageRating ?agerating_a .\n  ?rating p:criticalRating ?criticalrating_a .\n  FILTER(STR(?name_f) = \"Action\")\n} }\n  component: { SELECT (AVG(?agerating_a) AS ?agg) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:ageRating ?agerating_a .\n  FILTER(STR(?name_f) = \"Action\")\n} }\n  component_2: { SELECT (AVG(?criticalrating_a) AS ?agg) WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?genre a :Genre .\n  ?movie p:hasGenre ?genre .\n  ?genre p:name ?name_f .\n  ?rating p:criticalRating ?criticalrating_a .\n  FILTER(STR(?name_f) = \"Action\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Rank the movies based on their ratings from highest to lowest.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?movieid ?criticalrating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:criticalRating ?criticalrating .\n  ?rating p:criticalRating ?criticalrating_o .\n}\nORDER BY DESC(?criticalrating_o) }\n  component_2: { SELECT ?movieid ?agerating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:ageRating ?agerating .\n  ?rating p:ageRating ?agerating_o .\n}\nORDER BY DESC(?agerating_o) }\n  full: { SELECT ?movieid ?agerating ?criticalrating WHERE {\n  ?rating a :Rating .\n  ?movie a :Movie .\n  ?rating p:hasMovie ?movie .\n  ?rating p:movieId ?movieid .\n  ?rating p:ageRating ?agerating .\n  ?rating p:criticalRating ?criticalrating .\n  ?rating p:ageRating ?agerating_o .\n  ?rating p:criticalRating ?criticalrating_o .\n}\nORDER BY ASC(?agerating_o) DESC(?criticalrating_o) }\n}",
+      "verified": true
+    }
+  ]
+}

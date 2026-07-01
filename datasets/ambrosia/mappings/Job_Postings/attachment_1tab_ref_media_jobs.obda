@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Media_Types_base
+target		ex:Media_Types/{ID} a :Media_Types ; p:ID {ID} ; p:TypeName {TypeName} .
+source		SELECT `ID`, `TypeName` FROM `Media_Types`
+
+mappingId	Jobs_base
+target		ex:Jobs/{ID} a :Jobs ; p:ID {ID} ; p:Title {Title} ; p:Description {Description} ; p:Salary {Salary} ; p:PostedDate {PostedDate} ; p:ClosingDate {ClosingDate} ; p:Status {Status} ; p:MediaTypeID {MediaTypeID} ; p:LanguageProficiencyID {LanguageProficiencyID} .
+source		SELECT `ID`, `Title`, `Description`, `Salary`, `PostedDate`, `ClosingDate`, `Status`, `MediaTypeID`, `LanguageProficiencyID` FROM `Jobs`
+
+mappingId	Jobs_LanguageProficiencyID_fk
+target		ex:Jobs/{ID} p:hasLanguages ex:Languages/{LanguageProficiencyID} .
+source		SELECT `ID`, `LanguageProficiencyID` FROM `Jobs` WHERE `LanguageProficiencyID` IS NOT NULL
+
+mappingId	Jobs_MediaTypeID_fk
+target		ex:Jobs/{ID} p:hasMedia_Types ex:Media_Types/{MediaTypeID} .
+source		SELECT `ID`, `MediaTypeID` FROM `Jobs` WHERE `MediaTypeID` IS NOT NULL
+
+mappingId	Media_Types_Values_base
+target		ex:Media_Types_Values/{ID} a :Media_Types_Values ; p:ID {ID} ; p:Value {Value} .
+source		SELECT `ID`, `Value` FROM `Media_Types_Values`
+
+mappingId	Jobs_Values_base
+target		ex:Jobs_Values/{ID} a :Jobs_Values ; p:ID {ID} ; p:JobID {JobID} ; p:ValueID {ValueID} .
+source		SELECT `ID`, `JobID`, `ValueID` FROM `Jobs_Values`
+
+mappingId	Jobs_Values_ValueID_fk
+target		ex:Jobs_Values/{ID} p:hasMedia_Types_Values ex:Media_Types_Values/{ValueID} .
+source		SELECT `ID`, `ValueID` FROM `Jobs_Values` WHERE `ValueID` IS NOT NULL
+
+mappingId	Jobs_Values_JobID_fk
+target		ex:Jobs_Values/{ID} p:hasJobs ex:Jobs/{JobID} .
+source		SELECT `ID`, `JobID` FROM `Jobs_Values` WHERE `JobID` IS NOT NULL
+
+mappingId	Languages_base
+target		ex:Languages/{ID} a :Languages ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Languages`
+
+]]

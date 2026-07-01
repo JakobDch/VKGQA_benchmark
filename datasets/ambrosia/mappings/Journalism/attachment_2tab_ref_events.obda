@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Person_base
+target		ex:Persons/{id} a :Persons ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Person`
+
+mappingId	Press_Conference_base
+target		ex:Press_Conferences/{id} a :Press_Conferences ; p:id {id} ; p:personId {personId} ; p:date {date} ; p:time {time} ; p:venue {venue} ; p:notes {notes} .
+source		SELECT `id`, `personId`, `date`, `time`, `venue`, `notes` FROM `Press_Conference`
+
+mappingId	Press_Conference_personId_fk
+target		ex:Press_Conferences/{id} p:hasPersons ex:Persons/{personId} .
+source		SELECT `id`, `personId` FROM `Press_Conference` WHERE `personId` IS NOT NULL
+
+mappingId	Media_Scrum_base
+target		ex:Media_Scrums/{id} a :Media_Scrums ; p:id {id} ; p:personId {personId} ; p:date {date} ; p:time {time} ; p:location {location} ; p:topic {topic} .
+source		SELECT `id`, `personId`, `date`, `time`, `location`, `topic` FROM `Media_Scrum`
+
+mappingId	Media_Scrum_personId_fk
+target		ex:Media_Scrums/{id} p:hasPersons ex:Persons/{personId} .
+source		SELECT `id`, `personId` FROM `Media_Scrum` WHERE `personId` IS NOT NULL
+
+mappingId	Article_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:authorId {authorId} ; p:pressConferenceId {pressConferenceId} ; p:mediaScrumId {mediaScrumId} ; p:publicationDate {publicationDate} .
+source		SELECT `id`, `title`, `content`, `authorId`, `pressConferenceId`, `mediaScrumId`, `publicationDate` FROM `Article`
+
+mappingId	Article_mediaScrumId_fk
+target		ex:Articles/{id} p:hasMedia_Scrums ex:Media_Scrums/{mediaScrumId} .
+source		SELECT `id`, `mediaScrumId` FROM `Article` WHERE `mediaScrumId` IS NOT NULL
+
+mappingId	Article_pressConferenceId_fk
+target		ex:Articles/{id} p:hasPress_Conferences ex:Press_Conferences/{pressConferenceId} .
+source		SELECT `id`, `pressConferenceId` FROM `Article` WHERE `pressConferenceId` IS NOT NULL
+
+mappingId	Article_authorId_fk
+target		ex:Articles/{id} p:hasPersons ex:Persons/{authorId} .
+source		SELECT `id`, `authorId` FROM `Article` WHERE `authorId` IS NOT NULL
+
+]]

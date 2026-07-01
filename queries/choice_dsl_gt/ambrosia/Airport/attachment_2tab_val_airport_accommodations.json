@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_accommodations",
+  "schema": "amb_attachment_2tab_val_airport_accommodations",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all hotels and also provide a list of all sleep pods that cost 150.",
+      "qtype": "unambig",
+      "sql": "SELECT Hotel.Airport_Hotel as name\nFROM Hotel\nUNION\nSELECT SleepPod.Sleep_Pod as name\nFROM SleepPod\nWHERE SleepPod.Price = \"150\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotel a :Hotels .\n    ?hotel p:Airport_Hotel ?airport_hotel .\n    BIND(?airport_hotel AS ?o0)\n  }\n  UNION\n  {\n    ?sleeppod a :SleepPod .\n    ?sleeppod p:Sleep_Pod ?sleep_pod .\n    ?sleeppod p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?sleep_pod AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Which hotels cost 150 and which sleep pods cost the same price?",
+      "qtype": "unambig",
+      "sql": "SELECT Hotel.Airport_Hotel as name\nFROM Hotel\nWHERE Hotel.Price = \"150\"\nUNION\nSELECT SleepPod.Sleep_Pod as name\nFROM SleepPod\nWHERE SleepPod.Price = \"150\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotel a :Hotels .\n    ?hotel p:Airport_Hotel ?airport_hotel .\n    ?hotel p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?airport_hotel AS ?o0)\n  }\n  UNION\n  {\n    ?sleeppod a :SleepPod .\n    ?sleeppod p:Sleep_Pod ?sleep_pod .\n    ?sleeppod p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?sleep_pod AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show hotels and sleep pod that cost 150.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotel a :Hotels .\n    ?hotel p:Airport_Hotel ?airport_hotel .\n    BIND(?airport_hotel AS ?o0)\n  }\n  UNION\n  {\n    ?sleeppod a :SleepPod .\n    ?sleeppod p:Sleep_Pod ?sleep_pod .\n    ?sleeppod p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?sleep_pod AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotel a :Hotels .\n    ?hotel p:Airport_Hotel ?airport_hotel .\n    ?hotel p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?airport_hotel AS ?o0)\n  }\n  UNION\n  {\n    ?sleeppod a :SleepPod .\n    ?sleeppod p:Sleep_Pod ?sleep_pod .\n    ?sleeppod p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?sleep_pod AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

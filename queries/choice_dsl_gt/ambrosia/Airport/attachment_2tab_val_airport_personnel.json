@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_personnel",
+  "schema": "amb_attachment_2tab_val_airport_personnel",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Please list all air traffic controllers and also display ground staff members who earn $60,000 annually.",
+      "qtype": "unambig",
+      "sql": "SELECT Air_traffic_controller.name\nFROM Air_traffic_controller\nUNION\nSELECT Ground_staff.name\nFROM Ground_staff\nWHERE Ground_staff.Salary = \"60000 per year\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?air_traffic_controller a :Air_traffic_controller .\n    ?air_traffic_controller p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?ground_staff a :Ground_staff .\n    ?ground_staff p:name ?name .\n    ?ground_staff p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display the air traffic controllers and ground staff whose salary is $60,000 per year.",
+      "qtype": "ambig",
+      "sql": "SELECT Air_traffic_controller.name\nFROM Air_traffic_controller\nWHERE Air_traffic_controller.Salary = \"60000 per year\"\nUNION\nSELECT Ground_staff.name\nFROM Ground_staff\nWHERE Ground_staff.Salary = \"60000 per year\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?air_traffic_controller a :Air_traffic_controller .\n    ?air_traffic_controller p:name ?name .\n    ?air_traffic_controller p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?ground_staff a :Ground_staff .\n    ?ground_staff p:name ?name .\n    ?ground_staff p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display the air traffic controllers and ground staff whose salary is $60,000 per year.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?air_traffic_controller a :Air_traffic_controller .\n    ?air_traffic_controller p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?ground_staff a :Ground_staff .\n    ?ground_staff p:name ?name .\n    ?ground_staff p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?air_traffic_controller a :Air_traffic_controller .\n    ?air_traffic_controller p:name ?name .\n    ?air_traffic_controller p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?ground_staff a :Ground_staff .\n    ?ground_staff p:name ?name .\n    ?ground_staff p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"60000 per year\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

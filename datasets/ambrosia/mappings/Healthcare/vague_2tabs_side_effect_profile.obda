@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Patient_base
+target		ex:Patients/{patientID} a :Patients ; p:patientID {patientID} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `patientID`, `firstName`, `lastName` FROM `Patient`
+
+mappingId	Doctor_base
+target		ex:Doctors/{doctorID} a :Doctors ; p:doctorID {doctorID} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `doctorID`, `firstName`, `lastName` FROM `Doctor`
+
+mappingId	Prescription_base
+target		ex:Prescriptions/{prescriptionID} a :Prescriptions ; p:prescriptionID {prescriptionID} ; p:antibioticID {antibioticID} ; p:patientID {patientID} ; p:doctorID {doctorID} ; p:datePrescribed {datePrescribed} .
+source		SELECT `prescriptionID`, `antibioticID`, `patientID`, `doctorID`, `datePrescribed` FROM `Prescription`
+
+mappingId	Prescription_doctorID_fk
+target		ex:Prescriptions/{prescriptionID} p:hasDoctors ex:Doctors/{doctorID} .
+source		SELECT `prescriptionID`, `doctorID` FROM `Prescription` WHERE `doctorID` IS NOT NULL
+
+mappingId	Prescription_patientID_fk
+target		ex:Prescriptions/{prescriptionID} p:hasPatients ex:Patients/{patientID} .
+source		SELECT `prescriptionID`, `patientID` FROM `Prescription` WHERE `patientID` IS NOT NULL
+
+mappingId	Prescription_antibioticID_fk
+target		ex:Prescriptions/{prescriptionID} p:hasAntibiotic ex:Antibiotic/{antibioticID} .
+source		SELECT `prescriptionID`, `antibioticID` FROM `Prescription` WHERE `antibioticID` IS NOT NULL
+
+mappingId	Common_Side_Effects_base
+target		ex:Common_Side_Effects/{sideEffectID} a :Common_Side_Effects ; p:sideEffectID {sideEffectID} ; p:description {description} .
+source		SELECT `sideEffectID`, `description` FROM `Common_Side_Effects`
+
+mappingId	Serious_Side_Effects_base
+target		ex:Serious_Side_Effects/{seriousSideEffectID} a :Serious_Side_Effects ; p:seriousSideEffectID {seriousSideEffectID} ; p:description {description} .
+source		SELECT `seriousSideEffectID`, `description` FROM `Serious_Side_Effects`
+
+mappingId	Antibiotic_base
+target		ex:Antibiotic/{antibioticID} a :Antibiotic ; p:antibioticID {antibioticID} ; p:name {name} ; p:commonSideEffects {commonSideEffects} ; p:seriousSideEffects {seriousSideEffects} .
+source		SELECT `antibioticID`, `name`, `commonSideEffects`, `seriousSideEffects` FROM `Antibiotic`
+
+mappingId	Antibiotic_seriousSideEffects_fk
+target		ex:Antibiotic/{antibioticID} p:hasSerious_Side_Effects ex:Serious_Side_Effects/{seriousSideEffects} .
+source		SELECT `antibioticID`, `seriousSideEffects` FROM `Antibiotic` WHERE `seriousSideEffects` IS NOT NULL
+
+mappingId	Antibiotic_commonSideEffects_fk
+target		ex:Antibiotic/{antibioticID} p:hasCommon_Side_Effects ex:Common_Side_Effects/{commonSideEffects} .
+source		SELECT `antibioticID`, `commonSideEffects` FROM `Antibiotic` WHERE `commonSideEffects` IS NOT NULL
+
+]]

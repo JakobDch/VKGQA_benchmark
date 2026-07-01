@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	CompanyInfo_base
+target		ex:CompanyInfo/{id} a :CompanyInfo ; p:id {id} ; p:name {name} ; p:location {location} ; p:industry {industry} .
+source		SELECT `id`, `name`, `location`, `industry` FROM `CompanyInfo`
+
+mappingId	JobLocations_base
+target		ex:JobLocations/{id} a :JobLocations ; p:id {id} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `id`, `city`, `state`, `country` FROM `JobLocations`
+
+mappingId	SkillsRequired_base
+target		ex:SkillsRequired/{id} a :SkillsRequired ; p:id {id} ; p:skillName {skillName} .
+source		SELECT `id`, `skillName` FROM `SkillsRequired`
+
+mappingId	EducationRequirements_base
+target		ex:EducationRequirements/{id} a :EducationRequirements ; p:id {id} ; p:degreeLevel {degreeLevel} ; p:yearsOfExperience {yearsOfExperience} .
+source		SELECT `id`, `degreeLevel`, `yearsOfExperience` FROM `EducationRequirements`
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:itJobs {itJobs} ; p:salary {salary} ; p:companyId {companyId} ; p:locationId {locationId} ; p:skillsId {skillsId} ; p:educationId {educationId} .
+source		SELECT `id`, `title`, `description`, `itJobs`, `salary`, `companyId`, `locationId`, `skillsId`, `educationId` FROM `JobPostings`
+
+mappingId	JobPostings_educationId_fk
+target		ex:JobPostings/{id} p:hasEducationRequirements ex:EducationRequirements/{educationId} .
+source		SELECT `id`, `educationId` FROM `JobPostings` WHERE `educationId` IS NOT NULL
+
+mappingId	JobPostings_skillsId_fk
+target		ex:JobPostings/{id} p:hasSkillsRequired ex:SkillsRequired/{skillsId} .
+source		SELECT `id`, `skillsId` FROM `JobPostings` WHERE `skillsId` IS NOT NULL
+
+mappingId	JobPostings_locationId_fk
+target		ex:JobPostings/{id} p:hasJobLocations ex:JobLocations/{locationId} .
+source		SELECT `id`, `locationId` FROM `JobPostings` WHERE `locationId` IS NOT NULL
+
+mappingId	JobPostings_companyId_fk
+target		ex:JobPostings/{id} p:hasCompanyInfo ex:CompanyInfo/{companyId} .
+source		SELECT `id`, `companyId` FROM `JobPostings` WHERE `companyId` IS NOT NULL
+
+]]

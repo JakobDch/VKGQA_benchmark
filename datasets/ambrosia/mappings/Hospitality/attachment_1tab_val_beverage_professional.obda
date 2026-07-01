@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Beverages_base
+target		ex:Beverages/{id} a :Beverages ; p:id {id} ; p:name {Name} ; p:Type {Type} ; p:Price {Price} .
+source		SELECT `id`, `Name`, `Type`, `Price` FROM `Beverages`
+
+mappingId	Professionals_base
+target		ex:Professionals/{id} a :Professionals ; p:id {id} ; p:Position {Position} ; p:name {FullName} .
+source		SELECT `id`, `Position`, `FullName` FROM `Professionals`
+
+mappingId	Employees_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:Professional_id {Professional_id} ; p:Date_of_birth {Date_of_birth} ; p:email {Email} ; p:Phone_number {Phone_number} .
+source		SELECT `id`, `Professional_id`, `Date_of_birth`, `Email`, `Phone_number` FROM `Employees`
+
+mappingId	Employees_Professional_id_fk
+target		ex:Employees/{id} p:hasProfessionals ex:Professionals/{Professional_id} .
+source		SELECT `id`, `Professional_id` FROM `Employees` WHERE `Professional_id` IS NOT NULL
+
+mappingId	Restaurants_base
+target		ex:Restaurants/{id} a :Restaurants ; p:id {id} ; p:name {Name} ; p:location {Location} ; p:Opening_hours {Opening_hours} .
+source		SELECT `id`, `Name`, `Location`, `Opening_hours` FROM `Restaurants`
+
+mappingId	Reservations_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:Customer_id {Customer_id} ; p:Table_Number {Table_Number} ; p:Reservation_date {Reservation_date} ; p:Party_size {Party_size} ; p:Total_cost {Total_cost} .
+source		SELECT `id`, `Customer_id`, `Table_Number`, `Reservation_date`, `Party_size`, `Total_cost` FROM `Reservations`
+
+mappingId	Orders_base
+target		ex:Orders/{id} a :Orders ; p:id {id} ; p:Ordered_by {Ordered_by} ; p:Item_name {Item_name} ; p:Quantity {Quantity} ; p:Date_ordered {Date_ordered} ; p:Total_amount {Total_amount} .
+source		SELECT `id`, `Ordered_by`, `Item_name`, `Quantity`, `Date_ordered`, `Total_amount` FROM `Orders`
+
+mappingId	Orders_Ordered_by_fk
+target		ex:Orders/{id} p:hasReservations ex:Reservations/{Ordered_by} .
+source		SELECT `id`, `Ordered_by` FROM `Orders` WHERE `Ordered_by` IS NOT NULL
+
+]]

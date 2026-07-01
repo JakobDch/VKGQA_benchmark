@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Persons_base
+target		ex:Persons/{PersonID} a :Persons ; p:PersonID {PersonID} ; p:name {FullName} .
+source		SELECT `PersonID`, `FullName` FROM `Persons`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasPersons ex:Persons/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	MediaScrums_base
+target		ex:Media_Scrums/{MediaScrumID} a :Media_Scrums ; p:MediaScrumID {MediaScrumID} ; p:Description {Description} ; p:StartTime {StartTime} ; p:EndTime {EndTime} ; p:PersonID {PersonID} .
+source		SELECT `MediaScrumID`, `Description`, `StartTime`, `EndTime`, `PersonID` FROM `MediaScrums`
+
+mappingId	MediaScrums_PersonID_fk
+target		ex:Media_Scrums/{MediaScrumID} p:hasPersons ex:Persons/{PersonID} .
+source		SELECT `MediaScrumID`, `PersonID` FROM `MediaScrums` WHERE `PersonID` IS NOT NULL
+
+mappingId	Events_base
+target		ex:Events/{EventID} a :Events ; p:EventID {EventID} ; p:EventName {EventName} ; p:EventType {EventType} ; p:Date {Date} ; p:location {Location} ; p:PersonID {PersonID} .
+source		SELECT `EventID`, `EventName`, `EventType`, `Date`, `Location`, `PersonID` FROM `Events`
+
+mappingId	Events_PersonID_fk
+target		ex:Events/{EventID} p:hasPersons ex:Persons/{PersonID} .
+source		SELECT `EventID`, `PersonID` FROM `Events` WHERE `PersonID` IS NOT NULL
+
+]]

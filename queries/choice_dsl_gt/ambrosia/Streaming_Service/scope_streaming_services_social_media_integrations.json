@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_social_media_integrations",
+  "schema": "amb_scope_streaming_services_social_media_integrations",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each streaming service, what is the corresponding social media integration description?",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , social_media_integrations.description from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?description WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "For every streaming service, show me the corresponding integration types of social media integrations.",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , social_media_integrations.integration_type from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?integration_type WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:integration_type ?integration_type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "For every streaming service, list the types and descriptions of social media integration.",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , social_media_integrations.integration_type , social_media_integrations.description from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?integration_type ?description WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:integration_type ?integration_type .\n  ?social_media_integrations p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "What is the social media integration description for each streaming service?",
+      "qtype": "ambig",
+      "sql": "SELECT Social_Media_Integrations.description  from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Social_Media_Integrations.social_media_integration_id HAVING COUNT(DISTINCT Streaming_Services_Social_Media_Integrations.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the types and descriptions of social media each streaming service integrates.",
+      "qtype": "ambig",
+      "sql": "SELECT Social_Media_Integrations.integration_type, Social_Media_Integrations.description  from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Social_Media_Integrations.social_media_integration_id HAVING COUNT(DISTINCT Streaming_Services_Social_Media_Integrations.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?integration_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:integration_type ?integration_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "which types of social media integrations are associated with each streaming service?",
+      "qtype": "ambig",
+      "sql": "SELECT Social_Media_Integrations.integration_type  from Streaming_Services_Social_Media_Integrations join Social_Media_Integrations on Streaming_Services_Social_Media_Integrations.social_media_integration_id = Social_Media_Integrations.id join Streaming_Services on Streaming_Services_Social_Media_Integrations.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Social_Media_Integrations.social_media_integration_id HAVING COUNT(DISTINCT Streaming_Services_Social_Media_Integrations.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?integration_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:integration_type ?integration_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the social media integration description for each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?description WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which types of social media integrations are associated with each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?integration_type WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:integration_type ?integration_type .\n} }\n  collective: { SELECT ?integration_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:integration_type ?integration_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the types and descriptions of social media each streaming service integrates.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?integration_type ?description WHERE {\n  ?streaming_services_social_media_integrations a :Streaming_Services_Social_Media_Integrations .\n  ?social_media_integrations a :Social_Media_Integrations .\n  ?streaming_services_social_media_integrations p:hasSocial_Media_Integrations ?social_media_integrations .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_social_media_integrations p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?social_media_integrations p:integration_type ?integration_type .\n  ?social_media_integrations p:description ?description .\n} }\n  collective: { SELECT ?integration_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSocial_Media_Integrations ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:integration_type ?integration_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

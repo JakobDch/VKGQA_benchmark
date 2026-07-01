@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Service_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:subscription_fee {subscription_fee} .
+source		SELECT `id`, `name`, `subscription_fee` FROM `Streaming_Service`
+
+mappingId	Content_base
+target		ex:Content/{content_id} a :Content ; p:content_id {content_id} ; p:type {type} ; p:description {description} ; p:price {price} .
+source		SELECT `content_id`, `type`, `description`, `price` FROM `Content`
+
+mappingId	Streaming_Service_Content_base
+target		ex:Streaming_Service_Content/{streaming_service_id}/{content_id} a :Streaming_Service_Content ; p:streaming_service_id {streaming_service_id} ; p:content_id {content_id} .
+source		SELECT `streaming_service_id`, `content_id` FROM `Streaming_Service_Content`
+
+mappingId	Streaming_Service_Content_content_id_fk
+target		ex:Streaming_Service_Content/{streaming_service_id}/{content_id} p:hasContent ex:Content/{content_id} .
+source		SELECT `streaming_service_id`, `content_id` FROM `Streaming_Service_Content` WHERE `content_id` IS NOT NULL
+
+mappingId	Streaming_Service_Content_streaming_service_id_fk
+target		ex:Streaming_Service_Content/{streaming_service_id}/{content_id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `streaming_service_id`, `content_id` FROM `Streaming_Service_Content` WHERE `streaming_service_id` IS NOT NULL
+
+]]

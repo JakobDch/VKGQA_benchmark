@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customer_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Customer`
+
+mappingId	AccountType_base
+target		ex:AccountTypes/{TypeID} a :AccountTypes ; p:TypeID {TypeID} ; p:AccountTypeName {AccountTypeName} .
+source		SELECT `TypeID`, `AccountTypeName` FROM `AccountType`
+
+mappingId	Account_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:InterestRate {InterestRate} ; p:ConsumerLending {ConsumerLending} ; p:ForeignKeyCustomerID {ForeignKeyCustomerID} .
+source		SELECT `AccountNumber`, `Balance`, `InterestRate`, `ConsumerLending`, `ForeignKeyCustomerID` FROM `Account`
+
+mappingId	Account_ForeignKeyCustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{ForeignKeyCustomerID} .
+source		SELECT `AccountNumber`, `ForeignKeyCustomerID` FROM `Account` WHERE `ForeignKeyCustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:Amount {Amount} ; p:TypeID {TypeID} ; p:AccountNumber {AccountNumber} ; p:ForeignKeyAccountNumber {ForeignKeyAccountNumber} .
+source		SELECT `TransactionID`, `Amount`, `TypeID`, `AccountNumber`, `ForeignKeyAccountNumber` FROM `Transactions`
+
+mappingId	Transactions_TypeID_fk
+target		ex:Transactions/{TransactionID} p:hasAccountTypes ex:AccountTypes/{TypeID} .
+source		SELECT `TransactionID`, `TypeID` FROM `Transactions` WHERE `TypeID` IS NOT NULL
+
+mappingId	Transactions_ForeignKeyAccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{ForeignKeyAccountNumber} .
+source		SELECT `TransactionID`, `ForeignKeyAccountNumber` FROM `Transactions` WHERE `ForeignKeyAccountNumber` IS NOT NULL
+
+]]

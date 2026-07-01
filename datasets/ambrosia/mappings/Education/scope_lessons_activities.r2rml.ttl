@@ -1,0 +1,68 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_lessons_activities_0_Lessons_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"lessonName\", \"teacherId\" FROM \"Lessons\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons/{id}" ; rr:class :Lessons ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lessonName ; rr:objectMap [ rr:column "lessonName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:teacherId ; rr:objectMap [ rr:column "teacherId" ] ] .
+
+<#tm_scope_lessons_activities_1_Activities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"activityType\", \"description\" FROM \"Activities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Activities/{activityType}" ; rr:class :Activities ] ;
+  rr:predicateObjectMap [ rr:predicate p:activityType ; rr:objectMap [ rr:column "activityType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_lessons_activities_2_Students_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"studentId\", \"name\", \"age\" FROM \"Students\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{studentId}" ; rr:class :Students ] ;
+  rr:predicateObjectMap [ rr:predicate p:studentId ; rr:objectMap [ rr:column "studentId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] .
+
+<#tm_scope_lessons_activities_3_Teachers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"teacherId\", \"name\", \"subject\" FROM \"Teachers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Teachers/{teacherId}" ; rr:class :Teachers ] ;
+  rr:predicateObjectMap [ rr:predicate p:teacherId ; rr:objectMap [ rr:column "teacherId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:subject ; rr:objectMap [ rr:column "subject" ] ] .
+
+<#tm_scope_lessons_activities_4_Enrollments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollmentId\", \"studentId\", \"classId\" FROM \"Enrollments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{enrollmentId}" ; rr:class :Enrollments ] ;
+  rr:predicateObjectMap [ rr:predicate p:enrollmentId ; rr:objectMap [ rr:column "enrollmentId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:studentId ; rr:objectMap [ rr:column "studentId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:classId ; rr:objectMap [ rr:column "classId" ] ] .
+
+<#tm_scope_lessons_activities_5_Enrollments_classId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollmentId\", \"classId\" FROM \"Enrollments\" WHERE \"classId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{enrollmentId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasLessons ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons/{classId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_lessons_activities_6_Enrollments_studentId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollmentId\", \"studentId\" FROM \"Enrollments\" WHERE \"studentId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{enrollmentId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStudents ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{studentId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_lessons_activities_7_Lessons_Activities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"lessonsActivityId\", \"lessonsId\", \"activitiesType\" FROM \"Lessons_Activities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons_Activities/{lessonsActivityId}" ; rr:class :Lessons_Activities ] ;
+  rr:predicateObjectMap [ rr:predicate p:lessonsActivityId ; rr:objectMap [ rr:column "lessonsActivityId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lessonsId ; rr:objectMap [ rr:column "lessonsId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:activitiesType ; rr:objectMap [ rr:column "activitiesType" ] ] .
+
+<#tm_scope_lessons_activities_8_Lessons_Activities_activitiesType_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"lessonsActivityId\", \"activitiesType\" FROM \"Lessons_Activities\" WHERE \"activitiesType\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons_Activities/{lessonsActivityId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasActivities ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Activities/{activitiesType}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_lessons_activities_9_Lessons_Activities_lessonsId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"lessonsActivityId\", \"lessonsId\" FROM \"Lessons_Activities\" WHERE \"lessonsId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons_Activities/{lessonsActivityId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasLessons ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Lessons/{lessonsId}" ; rr:termType rr:IRI ] ] .
+

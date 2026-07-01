@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Duty_Free_Shops_base
+target		ex:Duty_Free_Shops/{shop_id} a :Duty_Free_Shops ; p:shop_id {shop_id} ; p:name {name} ; p:location {location} .
+source		SELECT `shop_id`, `name`, `location` FROM `Duty_Free_Shops`
+
+mappingId	Products_base
+target		ex:Products/{product_id} a :Products ; p:product_id {product_id} ; p:category {category} ; p:price {price} .
+source		SELECT `product_id`, `category`, `price` FROM `Products`
+
+mappingId	Duty_Free_Shops_Products_base
+target		ex:Duty_Free_Shops_Products/{shop_id}/{product_id} a :Duty_Free_Shops_Products ; p:shop_id {shop_id} ; p:product_id {product_id} ; p:quantity {quantity} .
+source		SELECT `shop_id`, `product_id`, `quantity` FROM `Duty_Free_Shops_Products`
+
+mappingId	Duty_Free_Shops_Products_product_id_fk
+target		ex:Duty_Free_Shops_Products/{shop_id}/{product_id} p:hasProducts ex:Products/{product_id} .
+source		SELECT `shop_id`, `product_id` FROM `Duty_Free_Shops_Products` WHERE `product_id` IS NOT NULL
+
+mappingId	Duty_Free_Shops_Products_shop_id_fk
+target		ex:Duty_Free_Shops_Products/{shop_id}/{product_id} p:hasDuty_Free_Shops ex:Duty_Free_Shops/{shop_id} .
+source		SELECT `shop_id`, `product_id` FROM `Duty_Free_Shops_Products` WHERE `shop_id` IS NOT NULL
+
+]]

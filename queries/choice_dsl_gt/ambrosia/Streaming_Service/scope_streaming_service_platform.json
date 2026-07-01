@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_platform",
+  "schema": "amb_scope_streaming_service_platform",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the platform name common for all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Platform.name  from Streaming_Service_Platform join Platform on Streaming_Service_Platform.platform_id = Platform.id join Streaming_Service on Streaming_Service_Platform.streaming_id = Streaming_Service.id   GROUP BY Streaming_Service_Platform.platform_id HAVING COUNT(DISTINCT Streaming_Service_Platform.streaming_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlatform ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each streaming service, what is the name of the corresponding platform?",
+      "qtype": "unambig",
+      "sql": "select streaming_service.service_name , platform.name from Streaming_Service_Platform join Platform on Streaming_Service_Platform.platform_id = Platform.id join Streaming_Service on Streaming_Service_Platform.streaming_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?name WHERE {\n  ?streaming_service_platform a :Streaming_Service_Platform .\n  ?platform a :Platforms .\n  ?streaming_service_platform p:hasPlatform ?platform .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_platform p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:service_name ?service_name .\n  ?platform p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the name of the platform for every streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlatform ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?name WHERE {\n  ?streaming_service_platform a :Streaming_Service_Platform .\n  ?platform a :Platforms .\n  ?streaming_service_platform p:hasPlatform ?platform .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_platform p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:service_name ?service_name .\n  ?platform p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

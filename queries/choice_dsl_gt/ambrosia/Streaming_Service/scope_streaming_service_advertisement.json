@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_advertisement",
+  "schema": "amb_scope_streaming_service_advertisement",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each streaming service, give me the advertisement durations.",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , advertisement.duration from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?duration WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which advertisement types and durations do all streaming services have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Advertisement.type, Advertisement.duration  from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Advertisement.advertisement_id HAVING COUNT(DISTINCT Streaming_Service_Advertisement.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the advertisement duration we have on every streaming service.",
+      "qtype": "ambig",
+      "sql": "SELECT Advertisement.duration  from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Advertisement.advertisement_id HAVING COUNT(DISTINCT Streaming_Service_Advertisement.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the advertisement types and durations that each streaming service has.",
+      "qtype": "ambig",
+      "sql": "select streaming_service.name , advertisement.type , advertisement.duration from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?duration WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:type ?type .\n  ?advertisement p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Provide me with the advertisement type that is common for all streaming services.",
+      "qtype": "unambig",
+      "sql": "SELECT Advertisement.type  from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Advertisement.advertisement_id HAVING COUNT(DISTINCT Streaming_Service_Advertisement.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which advertisement types are associated with each streaming service?",
+      "qtype": "ambig",
+      "sql": "select streaming_service.name , advertisement.type from Streaming_Service_Advertisement join Advertisement on Streaming_Service_Advertisement.advertisement_id = Advertisement.id join Streaming_Service on Streaming_Service_Advertisement.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the advertisement duration we have on every streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?duration WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:duration ?duration .\n} }\n  collective: { SELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the advertisement types and durations that each streaming service has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?duration WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:type ?type .\n  ?advertisement p:duration ?duration .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which advertisement types are associated with each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdvertisement ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?streaming_service_advertisement a :Streaming_Service_Advertisement .\n  ?advertisement a :Advertisement .\n  ?streaming_service_advertisement p:hasAdvertisement ?advertisement .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_advertisement p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?advertisement p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

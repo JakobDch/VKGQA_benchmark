@@ -1,0 +1,54 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_val_consumer_lending_0_Customer_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CustomerID\", \"FirstName\", \"LastName\", \"DateOfBirth\" FROM \"Customer\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DateOfBirth ; rr:objectMap [ rr:column "DateOfBirth" ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_1_AccountType_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TypeID\", \"AccountTypeName\" FROM \"AccountType\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/AccountTypes/{TypeID}" ; rr:class :AccountTypes ] ;
+  rr:predicateObjectMap [ rr:predicate p:TypeID ; rr:objectMap [ rr:column "TypeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountTypeName ; rr:objectMap [ rr:column "AccountTypeName" ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_2_Account_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"Balance\", \"InterestRate\", \"ConsumerLending\", \"ForeignKeyCustomerID\" FROM \"Account\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ; rr:class :Accounts ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Balance ; rr:objectMap [ rr:column "Balance" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:InterestRate ; rr:objectMap [ rr:column "InterestRate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ConsumerLending ; rr:objectMap [ rr:column "ConsumerLending" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ForeignKeyCustomerID ; rr:objectMap [ rr:column "ForeignKeyCustomerID" ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_3_Account_ForeignKeyCustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"ForeignKeyCustomerID\" FROM \"Account\" WHERE \"ForeignKeyCustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{ForeignKeyCustomerID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_4_Transactions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"Amount\", \"TypeID\", \"AccountNumber\", \"ForeignKeyAccountNumber\" FROM \"Transactions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ; rr:class :Transactions ] ;
+  rr:predicateObjectMap [ rr:predicate p:TransactionID ; rr:objectMap [ rr:column "TransactionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Amount ; rr:objectMap [ rr:column "Amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TypeID ; rr:objectMap [ rr:column "TypeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ForeignKeyAccountNumber ; rr:objectMap [ rr:column "ForeignKeyAccountNumber" ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_5_Transactions_TypeID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"TypeID\" FROM \"Transactions\" WHERE \"TypeID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAccountTypes ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/AccountTypes/{TypeID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_consumer_lending_6_Transactions_ForeignKeyAccountNumber_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"ForeignKeyAccountNumber\" FROM \"Transactions\" WHERE \"ForeignKeyAccountNumber\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAccounts ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{ForeignKeyAccountNumber}" ; rr:termType rr:IRI ] ] .
+

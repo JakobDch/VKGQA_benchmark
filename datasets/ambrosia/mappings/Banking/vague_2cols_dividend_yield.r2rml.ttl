@@ -1,0 +1,82 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_dividend_yield_0_Customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CustomerID\", \"FirstName\", \"LastName\" FROM \"Customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] .
+
+<#tm_vague_2cols_dividend_yield_1_Accounts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"CustomerID\", \"Balance\" FROM \"Accounts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ; rr:class :Accounts ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Balance ; rr:objectMap [ rr:column "Balance" ] ] .
+
+<#tm_vague_2cols_dividend_yield_2_Accounts_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"CustomerID\" FROM \"Accounts\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_dividend_yield_3_Transactions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"AccountNumber\", \"Amount\", \"TransactionDate\" FROM \"Transactions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ; rr:class :Transactions ] ;
+  rr:predicateObjectMap [ rr:predicate p:TransactionID ; rr:objectMap [ rr:column "TransactionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Amount ; rr:objectMap [ rr:column "Amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TransactionDate ; rr:objectMap [ rr:column "TransactionDate" ] ] .
+
+<#tm_vague_2cols_dividend_yield_4_Transactions_AccountNumber_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"AccountNumber\" FROM \"Transactions\" WHERE \"AccountNumber\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAccounts ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_dividend_yield_5_Shares_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ShareID\", \"Stock\", \"NumberOfShares\" FROM \"Shares\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Shares/{ShareID}" ; rr:class :Shares ] ;
+  rr:predicateObjectMap [ rr:predicate p:ShareID ; rr:objectMap [ rr:column "ShareID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Stock ; rr:objectMap [ rr:column "Stock" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:NumberOfShares ; rr:objectMap [ rr:column "NumberOfShares" ] ] .
+
+<#tm_vague_2cols_dividend_yield_6_ShareTransactions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ShareTransactionID\", \"BuyOrSell\", \"CustomerID\", \"ShareID\", \"Quantity\", \"Price\", \"Commission\" FROM \"ShareTransactions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/ShareTransactions/{ShareTransactionID}" ; rr:class :ShareTransactions ] ;
+  rr:predicateObjectMap [ rr:predicate p:ShareTransactionID ; rr:objectMap [ rr:column "ShareTransactionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BuyOrSell ; rr:objectMap [ rr:column "BuyOrSell" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ShareID ; rr:objectMap [ rr:column "ShareID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Quantity ; rr:objectMap [ rr:column "Quantity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Price ; rr:objectMap [ rr:column "Price" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Commission ; rr:objectMap [ rr:column "Commission" ] ] .
+
+<#tm_vague_2cols_dividend_yield_7_ShareTransactions_ShareID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ShareTransactionID\", \"ShareID\" FROM \"ShareTransactions\" WHERE \"ShareID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/ShareTransactions/{ShareTransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasShares ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Shares/{ShareID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_dividend_yield_8_ShareTransactions_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ShareTransactionID\", \"CustomerID\" FROM \"ShareTransactions\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/ShareTransactions/{ShareTransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_dividend_yield_9_Dividends_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DividendID\", \"ShareID\", \"DividendAmount\", \"ExpectedPaymentDate\", \"Dividend_Percentage\", \"Dividend_Value\" FROM \"Dividends\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Dividends/{DividendID}" ; rr:class :Dividends ] ;
+  rr:predicateObjectMap [ rr:predicate p:DividendID ; rr:objectMap [ rr:column "DividendID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ShareID ; rr:objectMap [ rr:column "ShareID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DividendAmount ; rr:objectMap [ rr:column "DividendAmount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ExpectedPaymentDate ; rr:objectMap [ rr:column "ExpectedPaymentDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Dividend_Percentage ; rr:objectMap [ rr:column "Dividend_Percentage" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Dividend_Value ; rr:objectMap [ rr:column "Dividend_Value" ] ] .
+
+<#tm_vague_2cols_dividend_yield_10_Dividends_ShareID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DividendID\", \"ShareID\" FROM \"Dividends\" WHERE \"ShareID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Dividends/{DividendID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasShares ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Shares/{ShareID}" ; rr:termType rr:IRI ] ] .
+

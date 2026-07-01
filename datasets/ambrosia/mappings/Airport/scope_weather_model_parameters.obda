@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Weather_Model_base
+target		ex:Weather_Model/{modelID} a :Weather_Model ; p:modelID {modelID} ; p:modelName {modelName} ; p:manufacturer {manufacturer} .
+source		SELECT `modelID`, `modelName`, `manufacturer` FROM `Weather_Model`
+
+mappingId	Parameters_base
+target		ex:Parameters/{parameterID} a :Parameters ; p:parameterID {parameterID} ; p:parameterName {parameterName} ; p:unit {unit} .
+source		SELECT `parameterID`, `parameterName`, `unit` FROM `Parameters`
+
+mappingId	Weather_Model_Parameters_base
+target		ex:Weather_Model_Parameters/{_amb_rowid} a :Weather_Model_Parameters ; p:weatherModelId {weatherModelId} ; p:parameterId {parameterId} ; p:value {value} .
+source		SELECT `_amb_rowid`, `weatherModelId`, `parameterId`, `value` FROM `Weather_Model_Parameters`
+
+mappingId	Weather_Model_Parameters_parameterId_fk
+target		ex:Weather_Model_Parameters/{_amb_rowid} p:hasParameters ex:Parameters/{parameterId} .
+source		SELECT `_amb_rowid`, `parameterId` FROM `Weather_Model_Parameters` WHERE `parameterId` IS NOT NULL
+
+mappingId	Weather_Model_Parameters_weatherModelId_fk
+target		ex:Weather_Model_Parameters/{_amb_rowid} p:hasWeather_Model ex:Weather_Model/{weatherModelId} .
+source		SELECT `_amb_rowid`, `weatherModelId` FROM `Weather_Model_Parameters` WHERE `weatherModelId` IS NOT NULL
+
+]]

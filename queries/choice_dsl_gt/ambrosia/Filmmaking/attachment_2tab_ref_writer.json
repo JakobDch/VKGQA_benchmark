@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_writer",
+  "schema": "amb_attachment_2tab_ref_writer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of the screenwriters as well as a list of the playwrights but only who are from American Film Institute.",
+      "qtype": "unambig",
+      "sql": "SELECT Screenwriter.name\nFROM Education JOIN Screenwriter ON Education.id = Screenwriter.educationId\nUNION\nSELECT Playwright.name\nFROM Education JOIN Playwright ON Education.id = Playwright.educationId\nWHERE Education.institution = \"American Film Institute\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?education a :Education .\n    ?screenwriter a :Screenwriters .\n    ?screenwriter p:hasEducation ?education .\n    ?screenwriter p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?education a :Education .\n    ?playwright a :Playwrights .\n    ?playwright p:hasEducation ?education .\n    ?playwright p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show the screenwriters and playwrights from American Film Institute.",
+      "qtype": "ambig",
+      "sql": "SELECT Screenwriter.name\nFROM Education JOIN Screenwriter ON Education.id = Screenwriter.educationId\nWHERE Education.institution = \"American Film Institute\"\nUNION\nSELECT Playwright.name\nFROM Education JOIN Playwright ON Education.id = Playwright.educationId\nWHERE Education.institution = \"American Film Institute\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?education a :Education .\n    ?screenwriter a :Screenwriters .\n    ?screenwriter p:hasEducation ?education .\n    ?screenwriter p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?education a :Education .\n    ?playwright a :Playwrights .\n    ?playwright p:hasEducation ?education .\n    ?playwright p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the screenwriters and playwrights from American Film Institute.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?education a :Education .\n    ?screenwriter a :Screenwriters .\n    ?screenwriter p:hasEducation ?education .\n    ?screenwriter p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?education a :Education .\n    ?playwright a :Playwrights .\n    ?playwright p:hasEducation ?education .\n    ?playwright p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?education a :Education .\n    ?screenwriter a :Screenwriters .\n    ?screenwriter p:hasEducation ?education .\n    ?screenwriter p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?education a :Education .\n    ?playwright a :Playwrights .\n    ?playwright p:hasEducation ?education .\n    ?playwright p:name ?name .\n    ?education p:institution ?institution_f .\n    FILTER(STR(?institution_f) = \"American Film Institute\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

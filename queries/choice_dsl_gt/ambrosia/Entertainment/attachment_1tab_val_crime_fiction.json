@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_crime_fiction",
+  "schema": "amb_attachment_1tab_val_crime_fiction",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the Warner Bros produced films that are either mysteries or thrillers.",
+      "qtype": "unambig",
+      "sql": "SELECT Movie.Title \nFROM Movie\nWHERE (Movie.Crime_Fiction = \"Mystery\" OR Movie.Crime_Fiction = \"Thriller\") AND Movie.Studio = \"Warner Bros\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movie a :Movie .\n  ?movie p:title ?title .\n  ?movie p:Crime_Fiction ?crime_fiction_w .\n  ?movie p:Crime_Fiction ?crime_fiction_w2 .\n  ?movie p:Studio ?studio_w .\n  FILTER((((STR(?crime_fiction_w) = \"Mystery\" || STR(?crime_fiction_w2) = \"Thriller\")) && STR(?studio_w) = \"Warner Bros\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the mystery films, then also show the thrillers from Warner Bros.",
+      "qtype": "unambig",
+      "sql": "SELECT Movie.Title \nFROM Movie\nWHERE Movie.Crime_Fiction = \"Mystery\" OR Movie.Crime_Fiction = \"Thriller\" AND Movie.Studio = \"Warner Bros\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movie a :Movie .\n  ?movie p:title ?title .\n  ?movie p:Crime_Fiction ?crime_fiction_w .\n  ?movie p:Crime_Fiction ?crime_fiction_w2 .\n  ?movie p:Studio ?studio_w .\n  FILTER((STR(?crime_fiction_w) = \"Mystery\" || (STR(?crime_fiction_w2) = \"Thriller\" && STR(?studio_w) = \"Warner Bros\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide me with the mysteries and thrillers from Warner Bros studio.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?movie a :Movie .\n  ?movie p:title ?title .\n  ?movie p:Crime_Fiction ?crime_fiction_w .\n  ?movie p:Crime_Fiction ?crime_fiction_w2 .\n  ?movie p:Studio ?studio_w .\n  FILTER((((STR(?crime_fiction_w) = \"Mystery\" || STR(?crime_fiction_w2) = \"Thriller\")) && STR(?studio_w) = \"Warner Bros\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?movie a :Movie .\n  ?movie p:title ?title .\n  ?movie p:Crime_Fiction ?crime_fiction_w .\n  ?movie p:Crime_Fiction ?crime_fiction_w2 .\n  ?movie p:Studio ?studio_w .\n  FILTER((STR(?crime_fiction_w) = \"Mystery\" || (STR(?crime_fiction_w2) = \"Thriller\" && STR(?studio_w) = \"Warner Bros\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2tabs_waste_management",
+  "schema": "amb_vague_2tabs_waste_management",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Return waste disposal methods and recycling programs in alphabetical order",
+      "qtype": "unambig",
+      "sql": "SELECT wm.method_name, rp.program_name FROM Waste_Disposal_Method wm JOIN Construction_Site c ON wm.id =c.waste_disposal_method_id JOIN Recycling_Program rp ON rp.id =c.Recycling_Program_id ORDER BY wm.method_name, rp.program_name ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method_name ?program_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?rp a :Recycling_Program .\n  ?c p:hasRecycling_Program ?rp .\n  ?wm p:method_name ?method_name .\n  ?rp p:program_name ?program_name .\n  ?wm p:method_name ?method_name_o .\n  ?rp p:program_name ?program_name_o .\n}\nORDER BY ASC(?method_name_o) ASC(?program_name_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Return waste disposal methods in alphabetical order",
+      "qtype": "unambig",
+      "sql": "SELECT method_name FROM Waste_Disposal_Method ORDER BY method_name ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method_name WHERE {\n  ?waste_disposal_method a :Waste_Disposal_Method .\n  ?waste_disposal_method p:method_name ?method_name .\n  ?waste_disposal_method p:method_name ?method_name_o .\n}\nORDER BY ASC(?method_name_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Return waste management types in alphabetical order",
+      "qtype": "ambig",
+      "sql": "SELECT program_name FROM Recycling_Program ORDER BY program_name ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_name WHERE {\n  ?recycling_program a :Recycling_Program .\n  ?recycling_program p:program_name ?program_name .\n  ?recycling_program p:program_name ?program_name_o .\n}\nORDER BY ASC(?program_name_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "What happens to waste in New York?",
+      "qtype": "ambig",
+      "sql": "SELECT  wm.method_name  FROM Waste_Disposal_Method wm JOIN Construction_Site c ON wm.id =c.waste_disposal_method_id  WHERE c.location = 'New York City'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?wm p:method_name ?method_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What happens to waste in New York?",
+      "qtype": "ambig",
+      "sql": "SELECT  wm.program_name  FROM Recycling_Program wm JOIN Construction_Site c ON wm.id =c.Recycling_Program_id  WHERE c.location = 'New York City'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_name WHERE {\n  ?wm a :Recycling_Program .\n  ?c a :Construction_Site .\n  ?c p:hasRecycling_Program ?wm .\n  ?wm p:program_name ?program_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What happens to waste in New York?",
+      "qtype": "ambig",
+      "sql": "SELECT  wm.method_name, rp.program_name  FROM Waste_Disposal_Method wm JOIN Construction_Site c ON wm.id =c.waste_disposal_method_id JOIN Recycling_Program rp ON rp.id =c.Recycling_Program_id  WHERE c.location = 'New York City'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method_name ?program_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?rp a :Recycling_Program .\n  ?c p:hasRecycling_Program ?rp .\n  ?wm p:method_name ?method_name .\n  ?rp p:program_name ?program_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Return waste management types in alphabetical order",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?method_name ?program_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?rp a :Recycling_Program .\n  ?c p:hasRecycling_Program ?rp .\n  ?wm p:method_name ?method_name .\n  ?rp p:program_name ?program_name .\n  ?wm p:method_name ?method_name_o .\n  ?rp p:program_name ?program_name_o .\n}\nORDER BY ASC(?method_name_o) ASC(?program_name_o) }\n  component: { SELECT ?method_name WHERE {\n  ?waste_disposal_method a :Waste_Disposal_Method .\n  ?waste_disposal_method p:method_name ?method_name .\n  ?waste_disposal_method p:method_name ?method_name_o .\n}\nORDER BY ASC(?method_name_o) }\n  component_2: { SELECT ?program_name WHERE {\n  ?recycling_program a :Recycling_Program .\n  ?recycling_program p:program_name ?program_name .\n  ?recycling_program p:program_name ?program_name_o .\n}\nORDER BY ASC(?program_name_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "What happens to waste in New York?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?method_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?wm p:method_name ?method_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n} }\n  component_2: { SELECT ?program_name WHERE {\n  ?wm a :Recycling_Program .\n  ?c a :Construction_Site .\n  ?c p:hasRecycling_Program ?wm .\n  ?wm p:program_name ?program_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n} }\n  full: { SELECT ?method_name ?program_name WHERE {\n  ?wm a :Waste_Disposal_Method .\n  ?c a :Construction_Site .\n  ?c p:hasWaste_Disposal_Method ?wm .\n  ?rp a :Recycling_Program .\n  ?c p:hasRecycling_Program ?rp .\n  ?wm p:method_name ?method_name .\n  ?rp p:program_name ?program_name .\n  ?c p:location ?location_f .\n  FILTER(?location_f = \"New York City\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

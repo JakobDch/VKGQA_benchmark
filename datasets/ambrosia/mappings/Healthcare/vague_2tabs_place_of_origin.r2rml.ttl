@@ -1,0 +1,79 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_place_of_origin_0_Country_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"population\" FROM \"Country\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Country/{id}" ; rr:class :Country ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:population ; rr:objectMap [ rr:column "population" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_1_Manufacturing_Company_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"company_name\", \"address\" FROM \"Manufacturing_Company\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Manufacturing_Company/{id}" ; rr:class :Manufacturing_Company ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:company_name ; rr:objectMap [ rr:column "company_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:address ; rr:objectMap [ rr:column "address" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_2_Medical_Device_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"device_name\", \"manufacturing_company_id\", \"country_id\" FROM \"Medical_Device\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/MedicalDevices/{id}" ; rr:class :MedicalDevices ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:device_name ; rr:objectMap [ rr:column "device_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:manufacturing_company_id ; rr:objectMap [ rr:column "manufacturing_company_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country_id ; rr:objectMap [ rr:column "country_id" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_3_Medical_Device_country_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"country_id\" FROM \"Medical_Device\" WHERE \"country_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/MedicalDevices/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountry ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Country/{country_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_place_of_origin_4_Medical_Device_manufacturing_company_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"manufacturing_company_id\" FROM \"Medical_Device\" WHERE \"manufacturing_company_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/MedicalDevices/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasManufacturing_Company ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Manufacturing_Company/{manufacturing_company_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_place_of_origin_5_Patient_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"first_name\", \"last_name\", \"age\" FROM \"Patient\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{id}" ; rr:class :Patients ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:first_name ; rr:objectMap [ rr:column "first_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:last_name ; rr:objectMap [ rr:column "last_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_6_Doctor_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"doctor_name\", \"speciality\" FROM \"Doctor\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{id}" ; rr:class :Doctors ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:doctor_name ; rr:objectMap [ rr:column "doctor_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:speciality ; rr:objectMap [ rr:column "speciality" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_7_Prescription_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"patient_id\", \"doctor_id\", \"medical_device_id\", \"quantity\", \"date\" FROM \"Prescription\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ; rr:class :Prescriptions ] ;
+  rr:predicateObjectMap [ rr:predicate p:prescription_id ; rr:objectMap [ rr:column "prescription_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:patient_id ; rr:objectMap [ rr:column "patient_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:doctor_id ; rr:objectMap [ rr:column "doctor_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:medical_device_id ; rr:objectMap [ rr:column "medical_device_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:quantity ; rr:objectMap [ rr:column "quantity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] .
+
+<#tm_vague_2tabs_place_of_origin_8_Prescription_medical_device_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"medical_device_id\" FROM \"Prescription\" WHERE \"medical_device_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedicalDevices ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/MedicalDevices/{medical_device_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_place_of_origin_9_Prescription_doctor_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"doctor_id\" FROM \"Prescription\" WHERE \"doctor_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDoctors ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{doctor_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_place_of_origin_10_Prescription_patient_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"patient_id\" FROM \"Prescription\" WHERE \"patient_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPatients ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{patient_id}" ; rr:termType rr:IRI ] ] .
+

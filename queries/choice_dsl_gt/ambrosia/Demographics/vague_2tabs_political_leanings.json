@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2tabs_political_leanings",
+  "schema": "amb_vague_2tabs_political_leanings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the name, total population and dominant party for each district with a population greater than 70000",
+      "qtype": "unambig",
+      "sql": "SELECT name, totalPopulation, partyName\nFROM Districts\nJOIN Dominating_Party ON Districts.districtId = Dominating_Party.districtId\nWHERE totalPopulation > 70000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?totalpopulation ?partyname WHERE {\n  ?districts a :Districts .\n  ?dominating_party a :Dominating_Party .\n  ?dominating_party p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?dominating_party p:partyName ?partyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "show me the dominating party of the district C",
+      "qtype": "unambig",
+      "sql": "SELECT pl.partyName \nFROM Districts d\nJOIN Dominating_Party pl\nON d.districtId = pl.districtId WHERE d.name = 'District C'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?partyname WHERE {\n  ?d a :Districts .\n  ?pl a :Dominating_Party .\n  ?pl p:hasDistricts ?d .\n  ?pl p:partyName ?partyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the name, total population and political leanings for districts with a population greater than 70000",
+      "qtype": "ambig",
+      "sql": "SELECT name, totalPopulation, IdeologyName\nFROM Districts\nJOIN Prevalent_Ideology ON Districts.districtId = Prevalent_Ideology.districtId\nWHERE totalPopulation > 70000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?totalpopulation ?ideologyname WHERE {\n  ?districts a :Districts .\n  ?prevalent_ideology a :Prevalent_Ideology .\n  ?prevalent_ideology p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?prevalent_ideology p:ideologyName ?ideologyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the name, total population and political leanings for districts with a population greater than 70000",
+      "qtype": "ambig",
+      "sql": "SELECT name, totalPopulation, partyName, IdeologyName\nFROM Districts\nJOIN Dominating_Party ON Districts.districtId = Dominating_Party.districtId JOIN Prevalent_Ideology\nON Districts.districtId = Prevalent_Ideology.districtId\nWHERE totalPopulation > 70000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?totalpopulation ?partyname ?ideologyname WHERE {\n  ?districts a :Districts .\n  ?dominating_party a :Dominating_Party .\n  ?dominating_party p:hasDistricts ?districts .\n  ?prevalent_ideology a :Prevalent_Ideology .\n  ?prevalent_ideology p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?dominating_party p:partyName ?partyname .\n  ?prevalent_ideology p:ideologyName ?ideologyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "show me the political leanings of the district C",
+      "qtype": "ambig",
+      "sql": "SELECT pl.IdeologyName \nFROM Districts d\nJOIN Prevalent_Ideology pl\nON d.districtId = pl.districtId WHERE d.name = 'District C'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ideologyname WHERE {\n  ?d a :Districts .\n  ?pl a :Prevalent_Ideology .\n  ?pl p:hasDistricts ?d .\n  ?pl p:ideologyName ?ideologyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "show me the political leanings of the district C",
+      "qtype": "ambig",
+      "sql": "SELECT pl.partyName, pi.IdeologyName \nFROM Districts d\nJOIN Dominating_Party pl\nON d.districtId = pl.districtId JOIN Prevalent_Ideology pi\nON d.districtId = pi.districtId WHERE d.name = 'District C'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?partyname ?ideologyname WHERE {\n  ?d a :Districts .\n  ?pl a :Dominating_Party .\n  ?pl p:hasDistricts ?d .\n  ?pi a :Prevalent_Ideology .\n  ?pi p:hasDistricts ?d .\n  ?pl p:partyName ?partyname .\n  ?pi p:ideologyName ?ideologyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the name, total population and political leanings for districts with a population greater than 70000",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?totalpopulation ?partyname WHERE {\n  ?districts a :Districts .\n  ?dominating_party a :Dominating_Party .\n  ?dominating_party p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?dominating_party p:partyName ?partyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n} }\n  component_2: { SELECT ?name ?totalpopulation ?ideologyname WHERE {\n  ?districts a :Districts .\n  ?prevalent_ideology a :Prevalent_Ideology .\n  ?prevalent_ideology p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?prevalent_ideology p:ideologyName ?ideologyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n} }\n  full: { SELECT ?name ?totalpopulation ?partyname ?ideologyname WHERE {\n  ?districts a :Districts .\n  ?dominating_party a :Dominating_Party .\n  ?dominating_party p:hasDistricts ?districts .\n  ?prevalent_ideology a :Prevalent_Ideology .\n  ?prevalent_ideology p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?districts p:totalPopulation ?totalpopulation .\n  ?dominating_party p:partyName ?partyname .\n  ?prevalent_ideology p:ideologyName ?ideologyname .\n  ?districts p:totalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f > 70000)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "show me the political leanings of the district C",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?partyname WHERE {\n  ?d a :Districts .\n  ?pl a :Dominating_Party .\n  ?pl p:hasDistricts ?d .\n  ?pl p:partyName ?partyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n} }\n  component_2: { SELECT ?ideologyname WHERE {\n  ?d a :Districts .\n  ?pl a :Prevalent_Ideology .\n  ?pl p:hasDistricts ?d .\n  ?pl p:ideologyName ?ideologyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n} }\n  full: { SELECT ?partyname ?ideologyname WHERE {\n  ?d a :Districts .\n  ?pl a :Dominating_Party .\n  ?pl p:hasDistricts ?d .\n  ?pi a :Prevalent_Ideology .\n  ?pi p:hasDistricts ?d .\n  ?pl p:partyName ?partyname .\n  ?pi p:ideologyName ?ideologyname .\n  ?d p:name ?name_f .\n  FILTER(?name_f = \"District C\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:City {City} ; p:Coordinates {Coordinates} ; p:IATA_Code {IATA_Code} ; p:ICAO_Code {ICAO_Code} ; p:Altitude {Altitude} .
+source		SELECT `id`, `City`, `Coordinates`, `IATA_Code`, `ICAO_Code`, `Altitude` FROM `Airports`
+
+mappingId	Airports_ICAO_Code_fk
+target		ex:Airports/{id} p:hasFlights_ICAO_Code ex:Flights/{ICAO_Code} .
+source		SELECT `id`, `ICAO_Code` FROM `Airports` WHERE `ICAO_Code` IS NOT NULL
+
+mappingId	Airports_IATA_Code_fk
+target		ex:Airports/{id} p:hasFlights_IATA_Code ex:Flights/{IATA_Code} .
+source		SELECT `id`, `IATA_Code` FROM `Airports` WHERE `IATA_Code` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{Flight_ID} a :Flights ; p:Flight_ID {Flight_ID} ; p:Departure_Time {Departure_Time} ; p:Arrival_Time {Arrival_Time} ; p:Duration {Duration} ; p:Seats {Seats} ; p:IATA_Departure {IATA_Departure} ; p:ICAO_Arrival {ICAO_Arrival} ; p:Price {Price} ; p:ForeignKey_Airline {ForeignKey_Airline} .
+source		SELECT `Flight_ID`, `Departure_Time`, `Arrival_Time`, `Duration`, `Seats`, `IATA_Departure`, `ICAO_Arrival`, `Price`, `ForeignKey_Airline` FROM `Flights`
+
+mappingId	Flights_ForeignKey_Airline_fk
+target		ex:Flights/{Flight_ID} p:hasAirlines ex:Airlines/{ForeignKey_Airline} .
+source		SELECT `Flight_ID`, `ForeignKey_Airline` FROM `Flights` WHERE `ForeignKey_Airline` IS NOT NULL
+
+mappingId	Flights_ICAO_Arrival_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_ICAO_Arrival ex:Airports/{ICAO_Arrival} .
+source		SELECT `Flight_ID`, `ICAO_Arrival` FROM `Flights` WHERE `ICAO_Arrival` IS NOT NULL
+
+mappingId	Flights_IATA_Departure_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_IATA_Departure ex:Airports/{IATA_Departure} .
+source		SELECT `Flight_ID`, `IATA_Departure` FROM `Flights` WHERE `IATA_Departure` IS NOT NULL
+
+mappingId	Airlines_base
+target		ex:Airlines/{Airlines_Id} a :Airlines ; p:Airlines_Id {Airlines_Id} ; p:name {Name} ; p:Callsign {Callsign} ; p:Headquarters {Headquarters} .
+source		SELECT `Airlines_Id`, `Name`, `Callsign`, `Headquarters` FROM `Airlines`
+
+mappingId	Employees_base
+target		ex:Employees/{Employee_Id} a :Employees ; p:Employee_Id {Employee_Id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:HireDate {HireDate} .
+source		SELECT `Employee_Id`, `FirstName`, `LastName`, `DateOfBirth`, `Email`, `PhoneNumber`, `HireDate` FROM `Employees`
+
+]]

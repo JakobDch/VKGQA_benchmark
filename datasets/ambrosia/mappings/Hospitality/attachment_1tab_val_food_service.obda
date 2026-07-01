@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Restaurants_base
+target		ex:Restaurants/{ID} a :Restaurants ; p:ID {ID} ; p:name {Name} ; p:Address {Address} ; p:Food_Service {Food_Service} ; p:Cuisine {Cuisine} .
+source		SELECT `ID`, `Name`, `Address`, `Food_Service`, `Cuisine` FROM `Restaurants`
+
+mappingId	Tables_base
+target		ex:Tables/{ID} a :Tables ; p:ID {ID} ; p:Number {Number} ; p:Status {Status} ; p:RestaurantID {RestaurantID} .
+source		SELECT `ID`, `Number`, `Status`, `RestaurantID` FROM `Tables`
+
+mappingId	Tables_RestaurantID_fk
+target		ex:Tables/{ID} p:hasRestaurants ex:Restaurants/{RestaurantID} .
+source		SELECT `ID`, `RestaurantID` FROM `Tables` WHERE `RestaurantID` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{ID} a :Reservations ; p:ID {ID} ; p:Date {Date} ; p:Time {Time} ; p:TableNumber {TableNumber} ; p:Guests {Guests} ; p:TotalCost {TotalCost} ; p:CustomerName {CustomerName} ; p:TableID {TableID} .
+source		SELECT `ID`, `Date`, `Time`, `TableNumber`, `Guests`, `TotalCost`, `CustomerName`, `TableID` FROM `Reservations`
+
+mappingId	Reservations_TableID_fk
+target		ex:Reservations/{ID} p:hasTables ex:Tables/{TableID} .
+source		SELECT `ID`, `TableID` FROM `Reservations` WHERE `TableID` IS NOT NULL
+
+mappingId	Orders_base
+target		ex:Orders/{ID} a :Orders ; p:ID {ID} ; p:OrderDate {OrderDate} ; p:Item {Item} ; p:Quantity {Quantity} ; p:Price {Price} ; p:ReservationID {ReservationID} .
+source		SELECT `ID`, `OrderDate`, `Item`, `Quantity`, `Price`, `ReservationID` FROM `Orders`
+
+mappingId	Orders_ReservationID_fk
+target		ex:Orders/{ID} p:hasReservations ex:Reservations/{ReservationID} .
+source		SELECT `ID`, `ReservationID` FROM `Orders` WHERE `ReservationID` IS NOT NULL
+
+]]

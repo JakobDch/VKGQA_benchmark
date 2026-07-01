@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_mental_health_careers",
+  "schema": "amb_attachment_2tab_val_mental_health_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all psychologist and also show psychiatrists associated with Harmony Wellness Center.",
+      "qtype": "unambig",
+      "sql": "SELECT Psychologists.name\nFROM Psychologists JOIN Clinics ON Psychologists.clinic = Clinics.name\nUNION\nSELECT Psychiatrists.name\nFROM Psychiatrists JOIN Clinics ON Psychiatrists.clinic = Clinics.name\nWHERE Clinics.name = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?psychologists a :Psychologists .\n    ?clinics a :Clinics .\n    ?psychologists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychologists p:name ?name .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?psychiatrists a :Psychiatrists .\n    ?clinics a :Clinics .\n    ?psychiatrists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display psychologists and psychiatrists affiliated with Harmony Wellness Center.",
+      "qtype": "ambig",
+      "sql": "SELECT Psychologists.name\nFROM Psychologists JOIN Clinics ON Psychologists.clinic = Clinics.name\nWHERE Clinics.name = \"Harmony Wellness Center\"\nUNION\nSELECT Psychiatrists.name\nFROM Psychiatrists JOIN Clinics ON Psychiatrists.clinic = Clinics.name\nWHERE Clinics.name = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?psychologists a :Psychologists .\n    ?clinics a :Clinics .\n    ?psychologists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychologists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?psychiatrists a :Psychiatrists .\n    ?clinics a :Clinics .\n    ?psychiatrists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display psychologists and psychiatrists affiliated with Harmony Wellness Center.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?psychologists a :Psychologists .\n    ?clinics a :Clinics .\n    ?psychologists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychologists p:name ?name .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?psychiatrists a :Psychiatrists .\n    ?clinics a :Clinics .\n    ?psychiatrists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?psychologists a :Psychologists .\n    ?clinics a :Clinics .\n    ?psychologists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychologists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?psychiatrists a :Psychiatrists .\n    ?clinics a :Clinics .\n    ?psychiatrists p:clinic ?clinic_l .\n    ?clinics p:name ?name_r .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?clinic_l) = STR(?name_r))\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

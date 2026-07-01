@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_events_industry",
+  "schema": "amb_attachment_2tab_val_events_industry",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all event planners and also show wedding coordinators employed by Events Unlimited.",
+      "qtype": "unambig",
+      "sql": "SELECT Event_Planner.Position\nFROM Event_Planner JOIN Company ON Event_Planner.companyId = Company.id\nUNION\nSELECT Wedding_Coordinator.Position\nFROM Wedding_Coordinator JOIN Company ON Wedding_Coordinator.companyId = Company.id\nWHERE Company.name = \"Events Unlimited\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?event_planner a :Event_Planner .\n    ?company a :Companies .\n    ?event_planner p:hasCompany ?company .\n    ?event_planner p:Position ?position .\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?wedding_coordinator a :Wedding_Coordinator .\n    ?company a :Companies .\n    ?wedding_coordinator p:hasCompany ?company .\n    ?wedding_coordinator p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which event planners and wedding coordinators work for Events Unlimited?",
+      "qtype": "unambig",
+      "sql": "SELECT Event_Planner.Position\nFROM Event_Planner JOIN Company ON Event_Planner.companyId = Company.id\nWHERE Company.name = \"Events Unlimited\"\nUNION\nSELECT Wedding_Coordinator.Position\nFROM Wedding_Coordinator JOIN Company ON Wedding_Coordinator.companyId = Company.id\nWHERE Company.name = \"Events Unlimited\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?event_planner a :Event_Planner .\n    ?company a :Companies .\n    ?event_planner p:hasCompany ?company .\n    ?event_planner p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?wedding_coordinator a :Wedding_Coordinator .\n    ?company a :Companies .\n    ?wedding_coordinator p:hasCompany ?company .\n    ?wedding_coordinator p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display event planners and wedding coordinators from Events Unlimited.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?event_planner a :Event_Planner .\n    ?company a :Companies .\n    ?event_planner p:hasCompany ?company .\n    ?event_planner p:Position ?position .\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?wedding_coordinator a :Wedding_Coordinator .\n    ?company a :Companies .\n    ?wedding_coordinator p:hasCompany ?company .\n    ?wedding_coordinator p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?event_planner a :Event_Planner .\n    ?company a :Companies .\n    ?event_planner p:hasCompany ?company .\n    ?event_planner p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?wedding_coordinator a :Wedding_Coordinator .\n    ?company a :Companies .\n    ?wedding_coordinator p:hasCompany ?company .\n    ?wedding_coordinator p:Position ?position .\n    ?company p:name ?name_f .\n    FILTER(STR(?name_f) = \"Events Unlimited\")\n    BIND(?position AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

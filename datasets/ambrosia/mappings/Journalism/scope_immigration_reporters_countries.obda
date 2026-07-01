@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Countries_base
+target		ex:Countries/{id} a :Countries ; p:id {id} ; p:countryName {countryName} .
+source		SELECT `id`, `countryName` FROM `Countries`
+
+mappingId	Immigration_Reporters_base
+target		ex:Immigration_Reporters/{id} a :Immigration_Reporters ; p:id {id} ; p:reporterName {reporterName} ; p:email {email} .
+source		SELECT `id`, `reporterName`, `email` FROM `Immigration_Reporters`
+
+mappingId	Immigration_Reporters_Countries_base
+target		ex:Immigration_Reporters_Countries/{_amb_rowid} a :Immigration_Reporters_Countries ; p:immigrationReporterId {immigrationReporterId} ; p:countryId {countryId} .
+source		SELECT `_amb_rowid`, `immigrationReporterId`, `countryId` FROM `Immigration_Reporters_Countries`
+
+mappingId	Immigration_Reporters_Countries_countryId_fk
+target		ex:Immigration_Reporters_Countries/{_amb_rowid} p:hasCountries ex:Countries/{countryId} .
+source		SELECT `_amb_rowid`, `countryId` FROM `Immigration_Reporters_Countries` WHERE `countryId` IS NOT NULL
+
+mappingId	Immigration_Reporters_Countries_immigrationReporterId_fk
+target		ex:Immigration_Reporters_Countries/{_amb_rowid} p:hasImmigration_Reporters ex:Immigration_Reporters/{immigrationReporterId} .
+source		SELECT `_amb_rowid`, `immigrationReporterId` FROM `Immigration_Reporters_Countries` WHERE `immigrationReporterId` IS NOT NULL
+
+]]

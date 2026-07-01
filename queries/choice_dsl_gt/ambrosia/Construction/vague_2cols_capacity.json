@@ -1,0 +1,53 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_capacity",
+  "schema": "amb_vague_2cols_capacity",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List each stadium and its seating capacity and maximum occupancy.",
+      "qtype": "unambig",
+      "sql": "select name, Seating_Capacity, Maximum_Occupancy from stadiums",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?seating_capacity ?maximum_occupancy WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Seating_Capacity ?seating_capacity .\n  ?stadiums p:Maximum_Occupancy ?maximum_occupancy .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "show me the capacity of each stadium",
+      "qtype": "ambig",
+      "sql": "select name, Seating_Capacity from stadiums",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?seating_capacity WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Seating_Capacity ?seating_capacity .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "show me the capacity of each stadium",
+      "qtype": "ambig",
+      "sql": "select name, Maximum_Occupancy from stadiums",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?maximum_occupancy WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Maximum_Occupancy ?maximum_occupancy .\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me the capacity of each stadium",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?seating_capacity ?maximum_occupancy WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Seating_Capacity ?seating_capacity .\n  ?stadiums p:Maximum_Occupancy ?maximum_occupancy .\n} }\n  component: { SELECT ?name ?maximum_occupancy WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Maximum_Occupancy ?maximum_occupancy .\n} }\n  component_2: { SELECT ?name ?seating_capacity WHERE {\n  ?stadiums a :Stadiums .\n  ?stadiums p:name ?name .\n  ?stadiums p:Seating_Capacity ?seating_capacity .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_college_campuses_buildings",
+  "schema": "amb_scope_college_campuses_buildings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every college campus list all of the associated building descriptions.",
+      "qtype": "unambig",
+      "sql": "select college_campuses.name , buildings.description from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the types of building that every college campus has and their descriptions.",
+      "qtype": "ambig",
+      "sql": "SELECT Buildings.type, Buildings.description  from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id   GROUP BY College_Campuses_Buildings.buildingId HAVING COUNT(DISTINCT College_Campuses_Buildings.campusId) = (SELECT COUNT(*) FROM  College_Campuses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the types of building that every college campus has and their descriptions.",
+      "qtype": "ambig",
+      "sql": "select college_campuses.name , buildings.type , buildings.description from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:type ?type .\n  ?buildings p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "List the building description for every college campus.",
+      "qtype": "ambig",
+      "sql": "SELECT Buildings.description  from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id   GROUP BY College_Campuses_Buildings.buildingId HAVING COUNT(DISTINCT College_Campuses_Buildings.campusId) = (SELECT COUNT(*) FROM  College_Campuses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me a list of buildings that are available at each specific campus",
+      "qtype": "unambig",
+      "sql": "select college_campuses.name , buildings.type from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "Show me a list of buildings that are used at multiple of our campuses",
+      "qtype": "unambig",
+      "sql": "SELECT Buildings.type  from College_Campuses_Buildings join Buildings on College_Campuses_Buildings.buildingId = Buildings.id join College_Campuses on College_Campuses_Buildings.campusId = College_Campuses.id   GROUP BY College_Campuses_Buildings.buildingId HAVING COUNT(DISTINCT College_Campuses_Buildings.campusId) = (SELECT COUNT(*) FROM  College_Campuses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the building description for every college campus.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the types of building that every college campus has and their descriptions.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:type ?type .\n  ?buildings p:description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give a list of buildings at our campuses",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?college_campuses_buildings a :College_Campuses_Buildings .\n  ?buildings a :Buildings .\n  ?college_campuses_buildings p:hasBuildings ?buildings .\n  ?college_campuses a :College_Campuses .\n  ?college_campuses_buildings p:hasCollege_Campuses ?college_campuses .\n  ?college_campuses p:name ?name .\n  ?buildings p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBuildings ?child ; p:hasCollege_Campuses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :College_Campuses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

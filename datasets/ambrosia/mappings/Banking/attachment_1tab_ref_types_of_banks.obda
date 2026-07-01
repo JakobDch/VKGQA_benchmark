@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Types_of_banks_base
+target		ex:Types_of_banks/{id} a :Types_of_banks ; p:id {id} ; p:bank_type {bank_type} .
+source		SELECT `id`, `bank_type` FROM `Types_of_banks`
+
+mappingId	Countries_base
+target		ex:Country/{id} a :Country ; p:id {id} ; p:country_name {country_name} .
+source		SELECT `id`, `country_name` FROM `Countries`
+
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:name {name} ; p:type_id {type_id} ; p:country_id {country_id} .
+source		SELECT `id`, `name`, `type_id`, `country_id` FROM `Banks`
+
+mappingId	Banks_country_id_fk
+target		ex:Banks/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Banks` WHERE `country_id` IS NOT NULL
+
+mappingId	Banks_type_id_fk
+target		ex:Banks/{id} p:hasTypes_of_banks ex:Types_of_banks/{type_id} .
+source		SELECT `id`, `type_id` FROM `Banks` WHERE `type_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birthdate {birthdate} ; p:account_number {account_number} ; p:bank_id {bank_id} .
+source		SELECT `id`, `first_name`, `last_name`, `birthdate`, `account_number`, `bank_id` FROM `Customers`
+
+mappingId	Customers_bank_id_fk
+target		ex:Customers/{id} p:hasBanks ex:Banks/{bank_id} .
+source		SELECT `id`, `bank_id` FROM `Customers` WHERE `bank_id` IS NOT NULL
+
+mappingId	Customers_account_number_fk
+target		ex:Customers/{id} p:hasAccounts ex:Accounts/{account_number} .
+source		SELECT `id`, `account_number` FROM `Customers` WHERE `account_number` IS NOT NULL
+
+mappingId	Accounts_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:balance {balance} ; p:customer_id {customer_id} .
+source		SELECT `id`, `balance`, `customer_id` FROM `Accounts`
+
+mappingId	Accounts_customer_id_fk
+target		ex:Accounts/{id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `id`, `customer_id` FROM `Accounts` WHERE `customer_id` IS NOT NULL
+
+]]

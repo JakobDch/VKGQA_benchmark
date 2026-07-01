@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_directors_additional_roles",
+  "schema": "amb_scope_directors_additional_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every director, list information on roles they hire including corresponding fees.",
+      "qtype": "unambig",
+      "sql": "select directors.name , additional_roles.role , additional_roles.fee from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?role ?fee WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Role ?role .\n  ?additional_roles p:Fee ?fee .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the roles each director has.",
+      "qtype": "ambig",
+      "sql": "SELECT Additional_Roles.Role  from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID   GROUP BY Directors_Roles.AdditionalRoleID HAVING COUNT(DISTINCT Directors_Roles.DirectorID) = (SELECT COUNT(*) FROM  Directors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?role WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Role ?role .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the roles each director has.",
+      "qtype": "ambig",
+      "sql": "select directors.name , additional_roles.role from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?role WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Role ?role .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "What fees are associated with each director's additional roles?",
+      "qtype": "ambig",
+      "sql": "SELECT Additional_Roles.Fee  from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID   GROUP BY Directors_Roles.AdditionalRoleID HAVING COUNT(DISTINCT Directors_Roles.DirectorID) = (SELECT COUNT(*) FROM  Directors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fee WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Fee ?fee .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What fees are associated with each director's additional roles?",
+      "qtype": "ambig",
+      "sql": "select directors.name , additional_roles.fee from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?fee WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Fee ?fee .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the roles and corresponding fees each director hires.",
+      "qtype": "ambig",
+      "sql": "SELECT Additional_Roles.Role, Additional_Roles.Fee  from Directors_Roles join Additional_Roles on Directors_Roles.AdditionalRoleID = Additional_Roles.AdditionalRoleID join Directors on Directors_Roles.DirectorID = Directors.DirectorID   GROUP BY Directors_Roles.AdditionalRoleID HAVING COUNT(DISTINCT Directors_Roles.DirectorID) = (SELECT COUNT(*) FROM  Directors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?role ?fee WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Role ?role .\n  ?child p:Fee ?fee .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the roles and corresponding fees each director hires.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?role ?fee WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Role ?role .\n  ?additional_roles p:Fee ?fee .\n} }\n  collective: { SELECT ?role ?fee WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Role ?role .\n  ?child p:Fee ?fee .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the roles each director has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?role WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Role ?role .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?role WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Role ?role .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What fees are associated with each director's additional roles?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?fee WHERE {\n  ?directors_roles a :Directors_Roles .\n  ?additional_roles a :Additional_Roles .\n  ?directors_roles p:hasAdditional_Roles ?additional_roles .\n  ?directors a :Directors .\n  ?directors_roles p:hasDirectors ?directors .\n  ?directors p:name ?name .\n  ?additional_roles p:Fee ?fee .\n} }\n  collective: { SELECT ?fee WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAdditional_Roles ?child ; p:hasDirectors ?parent . } GROUP BY ?child }\n  ?child p:Fee ?fee .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Directors } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

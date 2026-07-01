@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_musician",
+  "schema": "amb_attachment_1tab_val_musician",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the country and bluegrass singers who play guitar.",
+      "qtype": "unambig",
+      "sql": "SELECT Musician.Name \nFROM Musician\nWHERE (Musician.Genre = \"Country Singer\" OR Musician.Genre = \"Bluegrass Singer\") AND Musician.Instrument = \"Guitar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?musician a :Musician .\n  ?musician p:name ?name .\n  ?musician p:Genre ?genre_w .\n  ?musician p:Genre ?genre_w2 .\n  ?musician p:Instrument ?instrument_w .\n  FILTER((((STR(?genre_w) = \"Country Singer\" || STR(?genre_w2) = \"Bluegrass Singer\")) && STR(?instrument_w) = \"Guitar\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all country singers and bluegrass singers who play guitar.",
+      "qtype": "ambig",
+      "sql": "SELECT Musician.Name \nFROM Musician\nWHERE Musician.Genre = \"Country Singer\" OR Musician.Genre = \"Bluegrass Singer\" AND Musician.Instrument = \"Guitar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?musician a :Musician .\n  ?musician p:name ?name .\n  ?musician p:Genre ?genre_w .\n  ?musician p:Genre ?genre_w2 .\n  ?musician p:Instrument ?instrument_w .\n  FILTER((STR(?genre_w) = \"Country Singer\" || (STR(?genre_w2) = \"Bluegrass Singer\" && STR(?instrument_w) = \"Guitar\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all country singers and bluegrass singers who play guitar.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?musician a :Musician .\n  ?musician p:name ?name .\n  ?musician p:Genre ?genre_w .\n  ?musician p:Genre ?genre_w2 .\n  ?musician p:Instrument ?instrument_w .\n  FILTER((((STR(?genre_w) = \"Country Singer\" || STR(?genre_w2) = \"Bluegrass Singer\")) && STR(?instrument_w) = \"Guitar\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?musician a :Musician .\n  ?musician p:name ?name .\n  ?musician p:Genre ?genre_w .\n  ?musician p:Genre ?genre_w2 .\n  ?musician p:Instrument ?instrument_w .\n  FILTER((STR(?genre_w) = \"Country Singer\" || (STR(?genre_w2) = \"Bluegrass Singer\" && STR(?instrument_w) = \"Guitar\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

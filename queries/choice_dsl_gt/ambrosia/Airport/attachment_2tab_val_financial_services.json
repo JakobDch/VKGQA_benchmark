@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_financial_services",
+  "schema": "amb_attachment_2tab_val_financial_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What currency exchange services are near gate 10 and what ATM machines are at the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Currency_Exchange_Service.name\nFROM Currency_Exchange_Service\nWHERE Currency_Exchange_Service.Location_Within_Terminal = \"Near Gate 10\"\nUNION\nSELECT ATM_Machine.name\nFROM ATM_Machine\nWHERE ATM_Machine.Location_Within_Terminal = \"Near Gate 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?currency_exchange_service a :Currency_Exchange_Service .\n    ?currency_exchange_service p:name ?name .\n    ?currency_exchange_service p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?atm_machine a :ATM_Machine .\n    ?atm_machine p:name ?name .\n    ?atm_machine p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show currency exchange services and ATM machines near gate 10.",
+      "qtype": "ambig",
+      "sql": "SELECT Currency_Exchange_Service.name\nFROM Currency_Exchange_Service\nUNION\nSELECT ATM_Machine.name\nFROM ATM_Machine\nWHERE ATM_Machine.Location_Within_Terminal = \"Near Gate 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?currency_exchange_service a :Currency_Exchange_Service .\n    ?currency_exchange_service p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?atm_machine a :ATM_Machine .\n    ?atm_machine p:name ?name .\n    ?atm_machine p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show currency exchange services and ATM machines near gate 10.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?currency_exchange_service a :Currency_Exchange_Service .\n    ?currency_exchange_service p:name ?name .\n    ?currency_exchange_service p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?atm_machine a :ATM_Machine .\n    ?atm_machine p:name ?name .\n    ?atm_machine p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?currency_exchange_service a :Currency_Exchange_Service .\n    ?currency_exchange_service p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?atm_machine a :ATM_Machine .\n    ?atm_machine p:name ?name .\n    ?atm_machine p:Location_Within_Terminal ?location_within_terminal_f .\n    FILTER(STR(?location_within_terminal_f) = \"Near Gate 10\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

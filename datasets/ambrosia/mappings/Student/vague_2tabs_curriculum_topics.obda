@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:name {name} ; p:age {age} .
+source		SELECT `id`, `name`, `age` FROM `Students`
+
+mappingId	Core_Concepts_base
+target		ex:Core_Concepts/{concept_id} a :Core_Concepts ; p:concept_id {concept_id} ; p:concept_name {concept_name} ; p:description {description} .
+source		SELECT `concept_id`, `concept_name`, `description` FROM `Core_Concepts`
+
+mappingId	Advanced_Topics_base
+target		ex:Advanced_Topics/{topic_id} a :Advanced_Topics ; p:topic_id {topic_id} ; p:topic_name {topic_name} ; p:difficulty {difficulty} .
+source		SELECT `topic_id`, `topic_name`, `difficulty` FROM `Advanced_Topics`
+
+mappingId	School_Subjects_base
+target		ex:School_Subjects/{subject_id} a :School_Subjects ; p:subject_id {subject_id} ; p:subject_name {subject_name} ; p:core_concept_id {core_concept_id} ; p:advanced_topic_id {advanced_topic_id} .
+source		SELECT `subject_id`, `subject_name`, `core_concept_id`, `advanced_topic_id` FROM `School_Subjects`
+
+mappingId	School_Subjects_advanced_topic_id_fk
+target		ex:School_Subjects/{subject_id} p:hasAdvanced_Topics ex:Advanced_Topics/{advanced_topic_id} .
+source		SELECT `subject_id`, `advanced_topic_id` FROM `School_Subjects` WHERE `advanced_topic_id` IS NOT NULL
+
+mappingId	School_Subjects_core_concept_id_fk
+target		ex:School_Subjects/{subject_id} p:hasCore_Concepts ex:Core_Concepts/{core_concept_id} .
+source		SELECT `subject_id`, `core_concept_id` FROM `School_Subjects` WHERE `core_concept_id` IS NOT NULL
+
+mappingId	EnrolledStudents_base
+target		ex:Enrollments/{enrollment_id} a :Enrollments ; p:enrollment_id {enrollment_id} ; p:student_id {student_id} ; p:subject_id {subject_id} ; p:grade {grade} .
+source		SELECT `enrollment_id`, `student_id`, `subject_id`, `grade` FROM `EnrolledStudents`
+
+mappingId	EnrolledStudents_subject_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasSchool_Subjects ex:School_Subjects/{subject_id} .
+source		SELECT `enrollment_id`, `subject_id` FROM `EnrolledStudents` WHERE `subject_id` IS NOT NULL
+
+mappingId	EnrolledStudents_student_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `enrollment_id`, `student_id` FROM `EnrolledStudents` WHERE `student_id` IS NOT NULL
+
+]]

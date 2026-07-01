@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:customerId {customerId} ; p:balance {balance} .
+source		SELECT `id`, `customerId`, `balance` FROM `Accounts`
+
+mappingId	Accounts_customerId_fk
+target		ex:Accounts/{id} p:hasCustomers ex:Customers/{customerId} .
+source		SELECT `id`, `customerId` FROM `Accounts` WHERE `customerId` IS NOT NULL
+
+mappingId	Credit_Cards_base
+target		ex:Credit_Cards/{id} a :Credit_Cards ; p:id {id} ; p:accountId {accountId} ; p:cardNumber {cardNumber} ; p:expiryDate {expiryDate} ; p:securityCode {securityCode} ; p:creditLimit {creditLimit} .
+source		SELECT `id`, `accountId`, `cardNumber`, `expiryDate`, `securityCode`, `creditLimit` FROM `Credit_Cards`
+
+mappingId	Credit_Cards_accountId_fk
+target		ex:Credit_Cards/{id} p:hasAccounts ex:Accounts/{accountId} .
+source		SELECT `id`, `accountId` FROM `Credit_Cards` WHERE `accountId` IS NOT NULL
+
+mappingId	Benefits_base
+target		ex:Benefits/{id} a :Benefits ; p:id {id} ; p:benefitName {benefitName} .
+source		SELECT `id`, `benefitName` FROM `Benefits`
+
+mappingId	Credit_Card_Benefits_base
+target		ex:Credit_Card_Benefits/{id} a :Credit_Card_Benefits ; p:id {id} ; p:creditCardId {creditCardId} ; p:benefitId {benefitId} .
+source		SELECT `id`, `creditCardId`, `benefitId` FROM `Credit_Card_Benefits`
+
+mappingId	Credit_Card_Benefits_benefitId_fk
+target		ex:Credit_Card_Benefits/{id} p:hasBenefits ex:Benefits/{benefitId} .
+source		SELECT `id`, `benefitId` FROM `Credit_Card_Benefits` WHERE `benefitId` IS NOT NULL
+
+mappingId	Credit_Card_Benefits_creditCardId_fk
+target		ex:Credit_Card_Benefits/{id} p:hasCredit_Cards ex:Credit_Cards/{creditCardId} .
+source		SELECT `id`, `creditCardId` FROM `Credit_Card_Benefits` WHERE `creditCardId` IS NOT NULL
+
+]]

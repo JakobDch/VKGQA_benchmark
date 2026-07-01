@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Medical_Schools_base
+target		ex:Medical_Schools/{id} a :Medical_Schools ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Medical_Schools`
+
+mappingId	Courses_base
+target		ex:Courses/{id} a :Courses ; p:id {id} ; p:courseName {courseName} ; p:duration {duration} .
+source		SELECT `id`, `courseName`, `duration` FROM `Courses`
+
+mappingId	Medical_School_Courses_base
+target		ex:Medical_School_Courses/{id} a :Medical_School_Courses ; p:id {id} ; p:schoolId {schoolId} ; p:courseId {courseId} .
+source		SELECT `id`, `schoolId`, `courseId` FROM `Medical_School_Courses`
+
+mappingId	Medical_School_Courses_courseId_fk
+target		ex:Medical_School_Courses/{id} p:hasCourses ex:Courses/{courseId} .
+source		SELECT `id`, `courseId` FROM `Medical_School_Courses` WHERE `courseId` IS NOT NULL
+
+mappingId	Medical_School_Courses_schoolId_fk
+target		ex:Medical_School_Courses/{id} p:hasMedical_Schools ex:Medical_Schools/{schoolId} .
+source		SELECT `id`, `schoolId` FROM `Medical_School_Courses` WHERE `schoolId` IS NOT NULL
+
+]]

@@ -1,0 +1,34 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_minimum_requirement",
+  "schema": "amb_vague_2cols_minimum_requirement",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List each savings account number, along with minimum balances.",
+      "qtype": "unambig",
+      "sql": "SELECT \nm.minimum_balance,\na.account_number",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nSELECT ?mb ?an WHERE { ?m a :minimum_requirements ; p:minimum_balance ?mb ; p:hasaccounts ?a . ?a p:account_number ?an }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): no-FROM gold; alias m=minimum_requirements, a=accounts -> JOIN ON account_number"
+    },
+    {
+      "qid": 1,
+      "question": "Show me minimum requirements for savings accounts along with the account numbers",
+      "qtype": "ambig",
+      "sql": "SELECT \nm.minimum_age,\na.account_number",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nSELECT ?ma ?an WHERE { ?m a :minimum_requirements ; p:minimum_age ?ma ; p:hasaccounts ?a . ?a p:account_number ?an }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): no-FROM gold; alias-dictated JOIN ON account_number"
+    },
+    {
+      "qid": 2,
+      "question": "Show me minimum requirements for savings accounts along with the account numbers",
+      "qtype": "ambig",
+      "sql": "SELECT \nm.minimum_balance, minimum_age,\na.account_number",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nSELECT ?mb ?ma ?an WHERE { ?m a :minimum_requirements ; p:minimum_balance ?mb ; p:minimum_age ?ma ; p:hasaccounts ?a . ?a p:account_number ?an }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): no-FROM gold; alias-dictated JOIN ON account_number"
+    }
+  ]
+}

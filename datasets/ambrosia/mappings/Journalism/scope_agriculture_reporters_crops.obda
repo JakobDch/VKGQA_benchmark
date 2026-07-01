@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Agriculture_Reporters_base
+target		ex:Agriculture_Reporters/{id} a :Agriculture_Reporters ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Agriculture_Reporters`
+
+mappingId	Crops_base
+target		ex:Crops/{id} a :Crops ; p:id {id} ; p:crop_name {crop_name} ; p:description {description} .
+source		SELECT `id`, `crop_name`, `description` FROM `Crops`
+
+mappingId	Agriculture_Reporters_Crops_base
+target		ex:Agriculture_Reporters_Crops/{agriculture_reporter_id}/{crop_id} a :Agriculture_Reporters_Crops ; p:agriculture_reporter_id {agriculture_reporter_id} ; p:crop_id {crop_id} .
+source		SELECT `agriculture_reporter_id`, `crop_id` FROM `Agriculture_Reporters_Crops`
+
+mappingId	Agriculture_Reporters_Crops_crop_id_fk
+target		ex:Agriculture_Reporters_Crops/{agriculture_reporter_id}/{crop_id} p:hasCrops ex:Crops/{crop_id} .
+source		SELECT `agriculture_reporter_id`, `crop_id` FROM `Agriculture_Reporters_Crops` WHERE `crop_id` IS NOT NULL
+
+mappingId	Agriculture_Reporters_Crops_agriculture_reporter_id_fk
+target		ex:Agriculture_Reporters_Crops/{agriculture_reporter_id}/{crop_id} p:hasAgriculture_Reporters ex:Agriculture_Reporters/{agriculture_reporter_id} .
+source		SELECT `agriculture_reporter_id`, `crop_id` FROM `Agriculture_Reporters_Crops` WHERE `agriculture_reporter_id` IS NOT NULL
+
+]]

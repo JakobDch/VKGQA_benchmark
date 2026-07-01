@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_timing",
+  "schema": "amb_vague_2cols_timing",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the assignments with the best 2 grades and the dates and times they were submitted.",
+      "qtype": "unambig",
+      "sql": "SELECT date, time, submitted_time FROM Assignments JOIN Submissions ON Submissions.assignment_id =  Assignments.assignment_id  ORDER BY grade DESC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date ?time ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:date ?date .\n  ?assignments p:time ?time .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all assignment descriptions and corresponding dates and times.",
+      "qtype": "unambig",
+      "sql": "SELECT date, time, description FROM Assignments ORDER BY date, time ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date ?time ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:date ?date .\n  ?assignments p:time ?time .\n  ?assignments p:description ?description .\n  ?assignments p:date ?date_o .\n  ?assignments p:time ?time_o .\n}\nORDER BY ASC(?date_o) ASC(?time_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me all the assignment descriptions and the corresponding timings",
+      "qtype": "ambig",
+      "sql": "SELECT date, description FROM Assignments ORDER BY date ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:date ?date .\n  ?assignments p:description ?description .\n  ?assignments p:date ?date_o .\n}\nORDER BY ASC(?date_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me all the assignment descriptions and the corresponding timings",
+      "qtype": "ambig",
+      "sql": "SELECT time, description FROM Assignments ORDER BY time ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?time ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:time ?time .\n  ?assignments p:description ?description .\n  ?assignments p:time ?time_o .\n}\nORDER BY ASC(?time_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "When were the assignments with the best 2 grades submitted and what was the timing for these assignments?",
+      "qtype": "ambig",
+      "sql": "SELECT date, submitted_time FROM Assignments JOIN Submissions ON Submissions.assignment_id =  Assignments.assignment_id  ORDER BY grade DESC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:date ?date .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "When were the assignments with the best 2 grades submitted and what was the timing for these assignments?",
+      "qtype": "ambig",
+      "sql": "SELECT time, submitted_time FROM Assignments JOIN Submissions ON Submissions.assignment_id =  Assignments.assignment_id  ORDER BY grade DESC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?time ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:time ?time .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When were the assignments with the best 2 grades submitted and what was the timing for these assignments?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?date ?time ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:date ?date .\n  ?assignments p:time ?time .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2 }\n  component: { SELECT ?time ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:time ?time .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2 }\n  component_2: { SELECT ?date ?submitted_time WHERE {\n  ?assignments a :Assignments .\n  ?submissions a :Submissions .\n  ?submissions p:hasAssignments ?assignments .\n  ?assignments p:date ?date .\n  ?submissions p:submitted_time ?submitted_time .\n  ?assignments p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 2 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me all the assignment descriptions and the corresponding timings",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?date ?time ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:date ?date .\n  ?assignments p:time ?time .\n  ?assignments p:description ?description .\n  ?assignments p:date ?date_o .\n  ?assignments p:time ?time_o .\n}\nORDER BY ASC(?date_o) ASC(?time_o)\nLIMIT 1 }\n  component: { SELECT ?time ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:time ?time .\n  ?assignments p:description ?description .\n  ?assignments p:time ?time_o .\n}\nORDER BY ASC(?time_o)\nLIMIT 1 }\n  component_2: { SELECT ?date ?description WHERE {\n  ?assignments a :Assignments .\n  ?assignments p:date ?date .\n  ?assignments p:description ?description .\n  ?assignments p:date ?date_o .\n}\nORDER BY ASC(?date_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

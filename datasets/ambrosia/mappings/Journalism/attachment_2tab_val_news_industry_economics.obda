@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{ID} a :Authors ; p:ID {ID} ; p:name {Name} ; p:email {Email} ; p:Birthdate {Birthdate} ; p:Nationality {Nationality} .
+source		SELECT `ID`, `Name`, `Email`, `Birthdate`, `Nationality` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{ID} a :Articles ; p:ID {ID} ; p:Title {Title} ; p:Content {Content} ; p:AuthorID {AuthorID} ; p:PublishDate {PublishDate} .
+source		SELECT `ID`, `Title`, `Content`, `AuthorID`, `PublishDate` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Magazines_base
+target		ex:Magazines/{ID} a :Magazines ; p:ID {ID} ; p:name {Name} ; p:Category {Category} ; p:EditorInChief {EditorInChief} ; p:PublishingHouse {PublishingHouse} .
+source		SELECT `ID`, `Name`, `Category`, `EditorInChief`, `PublishingHouse` FROM `Magazines`
+
+mappingId	Issues_base
+target		ex:Issues/{IssueNumber} a :Issues ; p:IssueNumber {IssueNumber} ; p:MagazineID {MagazineID} ; p:ReleaseDate {ReleaseDate} .
+source		SELECT `IssueNumber`, `MagazineID`, `ReleaseDate` FROM `Issues`
+
+mappingId	Issues_MagazineID_fk
+target		ex:Issues/{IssueNumber} p:hasMagazines ex:Magazines/{MagazineID} .
+source		SELECT `IssueNumber`, `MagazineID` FROM `Issues` WHERE `MagazineID` IS NOT NULL
+
+mappingId	Advertising_base
+target		ex:Advertising/{ID} a :Advertising ; p:ID {ID} ; p:Magazine {Magazine} ; p:Advertising_Revenue {Advertising_Revenue} ; p:Subscribers {Subscribers} ; p:Country {Country} ; p:Type {Type} .
+source		SELECT `ID`, `Magazine`, `Advertising_Revenue`, `Subscribers`, `Country`, `Type` FROM `Advertising`
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{ID} a :Subscriptions ; p:ID {ID} ; p:Magazine {Magazine} ; p:Subscription_Fees {Subscription_Fees} ; p:NumberOfSubscribers {NumberOfSubscribers} ; p:Type {Type} .
+source		SELECT `ID`, `Magazine`, `Subscription_Fees`, `NumberOfSubscribers`, `Type` FROM `Subscriptions`
+
+]]

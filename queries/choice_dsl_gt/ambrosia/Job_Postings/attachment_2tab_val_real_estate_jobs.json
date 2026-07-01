@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_real_estate_jobs",
+  "schema": "amb_attachment_2tab_val_real_estate_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the real estate agents and also the property managers, but only those who got 5% commission from the latter.",
+      "qtype": "unambig",
+      "sql": "SELECT Real_Estate_Agents.name\nFROM Real_Estate_Agents\nUNION\nSELECT Property_Managers.name\nFROM Property_Managers\nWHERE Property_Managers.commission = \"5%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?real_estate_agents a :Real_Estate_Agents .\n    ?real_estate_agents p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?property_managers a :Property_Managers .\n    ?property_managers p:name ?name .\n    ?property_managers p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "List all real estate agents and property managers who got 5% commission.",
+      "qtype": "ambig",
+      "sql": "SELECT Real_Estate_Agents.name\nFROM Real_Estate_Agents\nWHERE Real_Estate_Agents.commission = \"5%\"\nUNION\nSELECT Property_Managers.name\nFROM Property_Managers\nWHERE Property_Managers.commission = \"5%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?real_estate_agents a :Real_Estate_Agents .\n    ?real_estate_agents p:name ?name .\n    ?real_estate_agents p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?property_managers a :Property_Managers .\n    ?property_managers p:name ?name .\n    ?property_managers p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all real estate agents and property managers who got 5% commission.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?real_estate_agents a :Real_Estate_Agents .\n    ?real_estate_agents p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?property_managers a :Property_Managers .\n    ?property_managers p:name ?name .\n    ?property_managers p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?real_estate_agents a :Real_Estate_Agents .\n    ?real_estate_agents p:name ?name .\n    ?real_estate_agents p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?property_managers a :Property_Managers .\n    ?property_managers p:name ?name .\n    ?property_managers p:commission ?commission_f .\n    FILTER(STR(?commission_f) = \"5%\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

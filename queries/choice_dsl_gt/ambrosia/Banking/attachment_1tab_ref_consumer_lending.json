@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_ref_consumer_lending",
+  "schema": "amb_attachment_1tab_ref_consumer_lending",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the customers where either the credit card or personal loan rate is 15%.",
+      "qtype": "unambig",
+      "sql": "SELECT customers.FullName\nFROM loans JOIN rates ON loans.interestRateId = rates.id JOIN customers ON customers.Id = loans.customerId\nWHERE (loans.loanType = \"Credit Card\" OR loans.loanType = \"Personal Loan\") AND rates.interestRate = 15.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?loans a :Loans .\n  ?rates a :rates .\n  ?loans p:hasrates ?rates .\n  ?customers a :Customers .\n  ?loans p:hascustomers ?customers .\n  ?customers p:name ?fullname .\n  ?loans p:loanType ?loantype_w .\n  ?loans p:loanType ?loantype_w2 .\n  ?rates p:interestRate ?interestrate_w .\n  FILTER((((STR(?loantype_w) = \"Credit Card\" || STR(?loantype_w2) = \"Personal Loan\")) && (STR(?interestrate_w) = \"15\" || STR(?interestrate_w) = \"15.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Which customers have credit cards and personal loans with a 15% interest rate?",
+      "qtype": "ambig",
+      "sql": "SELECT customers.FullName\nFROM loans JOIN rates ON loans.interestRateId = rates.id JOIN customers ON customers.Id = loans.customerId\nWHERE loans.loanType = \"Credit Card\" OR loans.loanType = \"Personal Loan\" AND rates.interestRate = 15.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?loans a :Loans .\n  ?rates a :rates .\n  ?loans p:hasrates ?rates .\n  ?customers a :Customers .\n  ?loans p:hascustomers ?customers .\n  ?customers p:name ?fullname .\n  ?loans p:loanType ?loantype_w .\n  ?loans p:loanType ?loantype_w2 .\n  ?rates p:interestRate ?interestrate_w .\n  FILTER((STR(?loantype_w) = \"Credit Card\" || (STR(?loantype_w2) = \"Personal Loan\" && (STR(?interestrate_w) = \"15\" || STR(?interestrate_w) = \"15.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which customers have credit cards and personal loans with a 15% interest rate?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?loans a :Loans .\n  ?rates a :rates .\n  ?loans p:hasrates ?rates .\n  ?customers a :Customers .\n  ?loans p:hascustomers ?customers .\n  ?customers p:name ?fullname .\n  ?loans p:loanType ?loantype_w .\n  ?loans p:loanType ?loantype_w2 .\n  ?rates p:interestRate ?interestrate_w .\n  FILTER((((STR(?loantype_w) = \"Credit Card\" || STR(?loantype_w2) = \"Personal Loan\")) && (STR(?interestrate_w) = \"15\" || STR(?interestrate_w) = \"15.0\")))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?loans a :Loans .\n  ?rates a :rates .\n  ?loans p:hasrates ?rates .\n  ?customers a :Customers .\n  ?loans p:hascustomers ?customers .\n  ?customers p:name ?fullname .\n  ?loans p:loanType ?loantype_w .\n  ?loans p:loanType ?loantype_w2 .\n  ?rates p:interestRate ?interestrate_w .\n  FILTER((STR(?loantype_w) = \"Credit Card\" || (STR(?loantype_w2) = \"Personal Loan\" && (STR(?interestrate_w) = \"15\" || STR(?interestrate_w) = \"15.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

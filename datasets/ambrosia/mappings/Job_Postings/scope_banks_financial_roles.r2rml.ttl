@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_banks_financial_roles_0_Banks_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BankID\", \"Name\", \"Location\" FROM \"Banks\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Banks/{BankID}" ; rr:class :Banks ] ;
+  rr:predicateObjectMap [ rr:predicate p:BankID ; rr:objectMap [ rr:column "BankID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_banks_financial_roles_1_Financial_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"RoleName\" FROM \"Financial_Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Financial_Roles/{RoleID}" ; rr:class :Financial_Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleName ; rr:objectMap [ rr:column "RoleName" ] ] .
+
+<#tm_scope_banks_financial_roles_2_Banks_Financial_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BankID\", \"RoleID\" FROM \"Banks_Financial_Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Banks_Financial_Roles/{BankID}/{RoleID}" ; rr:class :Banks_Financial_Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:BankID ; rr:objectMap [ rr:column "BankID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] .
+
+<#tm_scope_banks_financial_roles_3_Banks_Financial_Roles_RoleID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BankID\", \"RoleID\" FROM \"Banks_Financial_Roles\" WHERE \"RoleID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Banks_Financial_Roles/{BankID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFinancial_Roles ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Financial_Roles/{RoleID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_banks_financial_roles_4_Banks_Financial_Roles_BankID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BankID\", \"RoleID\" FROM \"Banks_Financial_Roles\" WHERE \"BankID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Banks_Financial_Roles/{BankID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBanks ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Banks/{BankID}" ; rr:termType rr:IRI ] ] .
+

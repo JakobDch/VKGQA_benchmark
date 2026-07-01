@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_green_buildings_features",
+  "schema": "amb_scope_green_buildings_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which features do all green buildings have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Features.name  from Green_Buildings_Features join Features on Green_Buildings_Features.feature_id = Features.feature_id join Green_Buildings on Green_Buildings_Features.green_building_id = Green_Buildings.id   GROUP BY Green_Buildings_Features.feature_id HAVING COUNT(DISTINCT Green_Buildings_Features.green_building_id) = (SELECT COUNT(*) FROM  Green_Buildings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasGreen_Buildings ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Green_Buildings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every green building, show the features that they have.",
+      "qtype": "unambig",
+      "sql": "select green_buildings.address , features.name from Green_Buildings_Features join Features on Green_Buildings_Features.feature_id = Features.feature_id join Green_Buildings on Green_Buildings_Features.green_building_id = Green_Buildings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?address ?name WHERE {\n  ?green_buildings_features a :Green_Buildings_Features .\n  ?features a :Features .\n  ?green_buildings_features p:hasFeatures ?features .\n  ?green_buildings a :Green_Buildings .\n  ?green_buildings_features p:hasGreen_Buildings ?green_buildings .\n  ?green_buildings p:address ?address .\n  ?features p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=13"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the features for each green building.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasGreen_Buildings ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Green_Buildings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?address ?name WHERE {\n  ?green_buildings_features a :Green_Buildings_Features .\n  ?features a :Features .\n  ?green_buildings_features p:hasFeatures ?features .\n  ?green_buildings a :Green_Buildings .\n  ?green_buildings_features p:hasGreen_Buildings ?green_buildings .\n  ?green_buildings p:address ?address .\n  ?features p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

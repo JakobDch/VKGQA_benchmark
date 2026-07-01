@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_suburbs_schools",
+  "schema": "amb_scope_suburbs_schools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each suburb, list the schools they have.",
+      "qtype": "unambig",
+      "sql": "select suburbs.name , schools.school_type from suburbs_schools join schools on suburbs_schools.school_id = schools.id join suburbs on suburbs_schools.suburb_id = suburbs.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?school_type WHERE {\n  ?suburbs_schools a :suburbs_schools .\n  ?schools a :schools .\n  ?suburbs_schools p:hasschools ?schools .\n  ?suburbs a :suburbs .\n  ?suburbs_schools p:hassuburbs ?suburbs .\n  ?suburbs p:name ?name .\n  ?schools p:school_type ?school_type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the schools every suburb has.",
+      "qtype": "ambig",
+      "sql": "SELECT schools.school_type  from suburbs_schools join schools on suburbs_schools.school_id = schools.id join suburbs on suburbs_schools.suburb_id = suburbs.id   GROUP BY suburbs_schools.school_id HAVING COUNT(DISTINCT suburbs_schools.suburb_id) = (SELECT COUNT(*) FROM  suburbs)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?school_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasschools ?child ; p:hassuburbs ?parent . } GROUP BY ?child }\n  ?child p:school_type ?school_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :suburbs } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the schools every suburb has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?school_type WHERE {\n  ?suburbs_schools a :suburbs_schools .\n  ?schools a :schools .\n  ?suburbs_schools p:hasschools ?schools .\n  ?suburbs a :suburbs .\n  ?suburbs_schools p:hassuburbs ?suburbs .\n  ?suburbs p:name ?name .\n  ?schools p:school_type ?school_type .\n} }\n  collective: { SELECT ?school_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasschools ?child ; p:hassuburbs ?parent . } GROUP BY ?child }\n  ?child p:school_type ?school_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :suburbs } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

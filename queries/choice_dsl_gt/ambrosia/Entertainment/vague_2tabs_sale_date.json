@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_sale_date",
+  "schema": "amb_vague_2tabs_sale_date",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "When did the latest sale begin for the pop concerts?",
+      "qtype": "ambig",
+      "sql": "SELECT MAX(start_time) FROM On_Sale_Date JOIN Events ON Events.event_id = On_Sale_Date.event_id JOIN Artists ON Artists.artist_id = Events.artist_id WHERE genre = \"Pop\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MAX(?start_time_a) AS ?agg) WHERE {\n  ?on_sale_date a :On_Sale_Date .\n  ?events a :Events .\n  ?on_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?on_sale_date p:start_time ?start_time_a .\n  FILTER(STR(?genre_f) = \"Pop\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "When did the latest sale begin for the pop concerts?",
+      "qtype": "ambig",
+      "sql": "SELECT MAX(start_time) FROM Pre_sale_Date JOIN Events ON Events.event_id = Pre_sale_Date.event_id JOIN Artists ON Artists.artist_id = Events.artist_id WHERE genre = \"Pop\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MAX(?start_time_a) AS ?agg) WHERE {\n  ?pre_sale_date a :Pre_sale_Date .\n  ?events a :Events .\n  ?pre_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?pre_sale_date p:start_time ?start_time_a .\n  FILTER(STR(?genre_f) = \"Pop\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "When did the latest sale begin for the pop concerts?",
+      "qtype": "ambig",
+      "sql": "SELECT MAX(Pre_sale_Date.start_time), MAX(On_Sale_Date.start_time) FROM On_Sale_Date JOIN Events ON Events.event_id = On_Sale_Date.event_id JOIN Pre_sale_Date ON Events.event_id = Pre_sale_Date.event_id JOIN Artists ON Artists.artist_id = Events.artist_id WHERE genre = \"Pop\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MAX(?start_time_a) AS ?agg) (MAX(?start_time_a2) AS ?agg2) WHERE {\n  ?on_sale_date a :On_Sale_Date .\n  ?events a :Events .\n  ?on_sale_date p:hasEvents ?events .\n  ?pre_sale_date a :Pre_sale_Date .\n  ?pre_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?pre_sale_date p:start_time ?start_time_a .\n  ?on_sale_date p:start_time ?start_time_a2 .\n  FILTER(STR(?genre_f) = \"Pop\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show the average sale duration for seat A1 based on the pre-sale date.",
+      "qtype": "unambig",
+      "sql": "SELECT AVG(end_time - start_time) FROM Pre_sale_Date JOIN Tickets ON Tickets.Presale_Date_ID = Pre_sale_Date.presale_id WHERE seat_number = \"A1\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?diff) AS ?a) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasPre_sale_Date ?ps . ?ps p:start_time ?st ; p:end_time ?et . BIND(xsd:integer(SUBSTR(STR(?et),1,2)) - xsd:integer(SUBSTR(STR(?st),1,2)) AS ?diff) FILTER(STR(?sn)=\"A1\") }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): AVG(end_time-start_time) on 'HH:MM' strings (MySQL leading-int coercion) -> AVG "
+    },
+    {
+      "qid": 4,
+      "question": "Calculate the average duration of sales for seat A1.",
+      "qtype": "ambig",
+      "sql": "SELECT AVG(end_time - start_time) FROM On_Sale_Date JOIN Tickets ON Tickets.ON_SALE_DATE_ID = On_Sale_Date.sale_id WHERE seat_number = \"A1\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?diff) AS ?a) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasOn_Sale_Date ?os . ?os p:start_time ?st ; p:end_time ?et . BIND(xsd:integer(SUBSTR(STR(?et),1,2)) - xsd:integer(SUBSTR(STR(?st),1,2)) AS ?diff) FILTER(STR(?sn)=\"A1\") }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): AVG(end-start) On_Sale_Date 'HH:MM'; seat A1"
+    },
+    {
+      "qid": 5,
+      "question": "Calculate the average duration of sales for seat A1.",
+      "qtype": "ambig",
+      "sql": "SELECT AVG(Pre_sale_Date.end_time - Pre_sale_Date.start_time), AVG(On_Sale_Date.end_time - On_Sale_Date.start_time) FROM On_Sale_Date JOIN Tickets ON Tickets.ON_SALE_DATE_ID = On_Sale_Date.sale_id JOIN Pre_sale_Date ON Pre_sale_Date.presale_id = Tickets.Presale_Date_ID WHERE seat_number = \"A1\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?pd) AS ?pavg) (AVG(?od) AS ?oavg) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasPre_sale_Date ?ps ; p:hasOn_Sale_Date ?os . ?ps p:start_time ?pst ; p:end_time ?pet . ?os p:start_time ?ost ; p:end_time ?oet . BIND(xsd:integer(SUBSTR(STR(?pet),1,2)) - xsd:integer(SUBSTR(STR(?pst),1,2)) AS ?pd) BIND(xsd:integer(SUBSTR(STR(?oet),1,2)) - xsd:integer(SUBSTR(STR(?ost),1,2)) AS ?od) FILTER(STR(?sn)=\"A1\") }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): two AVG(hour-diff) over 3-way join (ticket A1 -> presale & onsale)"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When did the latest sale begin for the pop concerts?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT (MAX(?start_time_a) AS ?agg) WHERE {\n  ?pre_sale_date a :Pre_sale_Date .\n  ?events a :Events .\n  ?pre_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?pre_sale_date p:start_time ?start_time_a .\n  FILTER(STR(?genre_f) = \"Pop\")\n} }\n  component_2: { SELECT (MAX(?start_time_a) AS ?agg) WHERE {\n  ?on_sale_date a :On_Sale_Date .\n  ?events a :Events .\n  ?on_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?on_sale_date p:start_time ?start_time_a .\n  FILTER(STR(?genre_f) = \"Pop\")\n} }\n  full: { SELECT (MAX(?start_time_a) AS ?agg) (MAX(?start_time_a2) AS ?agg2) WHERE {\n  ?on_sale_date a :On_Sale_Date .\n  ?events a :Events .\n  ?on_sale_date p:hasEvents ?events .\n  ?pre_sale_date a :Pre_sale_Date .\n  ?pre_sale_date p:hasEvents ?events .\n  ?artists a :Artist .\n  ?events p:hasArtists ?artists .\n  ?artists p:genre ?genre_f .\n  ?pre_sale_date p:start_time ?start_time_a .\n  ?on_sale_date p:start_time ?start_time_a2 .\n  FILTER(STR(?genre_f) = \"Pop\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Calculate the average duration of sales for seat A1.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT (AVG(?diff) AS ?a) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasPre_sale_Date ?ps . ?ps p:start_time ?st ; p:end_time ?et . BIND(xsd:integer(SUBSTR(STR(?et),1,2)) - xsd:integer(SUBSTR(STR(?st),1,2)) AS ?diff) FILTER(STR(?sn)=\"A1\") } }\n  full: { SELECT (AVG(?pd) AS ?pavg) (AVG(?od) AS ?oavg) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasPre_sale_Date ?ps ; p:hasOn_Sale_Date ?os . ?ps p:start_time ?pst ; p:end_time ?pet . ?os p:start_time ?ost ; p:end_time ?oet . BIND(xsd:integer(SUBSTR(STR(?pet),1,2)) - xsd:integer(SUBSTR(STR(?pst),1,2)) AS ?pd) BIND(xsd:integer(SUBSTR(STR(?oet),1,2)) - xsd:integer(SUBSTR(STR(?ost),1,2)) AS ?od) FILTER(STR(?sn)=\"A1\") } }\n  component_2: { SELECT (AVG(?diff) AS ?a) WHERE { ?t a :Tickets ; p:seat_number ?sn ; p:hasOn_Sale_Date ?os . ?os p:start_time ?st ; p:end_time ?et . BIND(xsd:integer(SUBSTR(STR(?et),1,2)) - xsd:integer(SUBSTR(STR(?st),1,2)) AS ?diff) FILTER(STR(?sn)=\"A1\") } }\n}",
+      "verified": true
+    }
+  ]
+}

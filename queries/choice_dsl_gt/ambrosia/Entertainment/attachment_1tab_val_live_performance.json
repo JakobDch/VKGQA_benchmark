@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_live_performance",
+  "schema": "amb_attachment_1tab_val_live_performance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all concerts and also provide a list of theater play with a venue with a capacity of 500.",
+      "qtype": "unambig",
+      "sql": "SELECT Live_Event.Title \nFROM Live_Event\nWHERE Live_Event.Live_Performance = \"Concert\" OR Live_Event.Live_Performance = \"Theater Play\" AND Live_Event.Venue_Capacity = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?live_event a :Live_Event .\n  ?live_event p:Title ?title .\n  ?live_event p:Live_Performance ?live_performance_w .\n  ?live_event p:Live_Performance ?live_performance_w2 .\n  ?live_event p:Venue_Capacity ?venue_capacity_w .\n  FILTER((STR(?live_performance_w) = \"Concert\" || (STR(?live_performance_w2) = \"Theater Play\" && (STR(?venue_capacity_w) = \"500\" || STR(?venue_capacity_w) = \"500.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show concerts and theater plays taking place in a venue with a capacity of 500.",
+      "qtype": "ambig",
+      "sql": "SELECT Live_Event.Title \nFROM Live_Event\nWHERE (Live_Event.Live_Performance = \"Concert\" OR Live_Event.Live_Performance = \"Theater Play\") AND Live_Event.Venue_Capacity = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?live_event a :Live_Event .\n  ?live_event p:Title ?title .\n  ?live_event p:Live_Performance ?live_performance_w .\n  ?live_event p:Live_Performance ?live_performance_w2 .\n  ?live_event p:Venue_Capacity ?venue_capacity_w .\n  FILTER((((STR(?live_performance_w) = \"Concert\" || STR(?live_performance_w2) = \"Theater Play\")) && (STR(?venue_capacity_w) = \"500\" || STR(?venue_capacity_w) = \"500.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show concerts and theater plays taking place in a venue with a capacity of 500.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?live_event a :Live_Event .\n  ?live_event p:Title ?title .\n  ?live_event p:Live_Performance ?live_performance_w .\n  ?live_event p:Live_Performance ?live_performance_w2 .\n  ?live_event p:Venue_Capacity ?venue_capacity_w .\n  FILTER((STR(?live_performance_w) = \"Concert\" || (STR(?live_performance_w2) = \"Theater Play\" && (STR(?venue_capacity_w) = \"500\" || STR(?venue_capacity_w) = \"500.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?live_event a :Live_Event .\n  ?live_event p:Title ?title .\n  ?live_event p:Live_Performance ?live_performance_w .\n  ?live_event p:Live_Performance ?live_performance_w2 .\n  ?live_event p:Venue_Capacity ?venue_capacity_w .\n  FILTER((((STR(?live_performance_w) = \"Concert\" || STR(?live_performance_w2) = \"Theater Play\")) && (STR(?venue_capacity_w) = \"500\" || STR(?venue_capacity_w) = \"500.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

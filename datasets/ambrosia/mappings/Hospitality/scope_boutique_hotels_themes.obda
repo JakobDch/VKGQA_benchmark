@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Boutique_Hotels_base
+target		ex:Boutique_Hotels/{hotel_id} a :Boutique_Hotels ; p:hotel_id {hotel_id} ; p:name {name} ; p:location {location} .
+source		SELECT `hotel_id`, `name`, `location` FROM `Boutique_Hotels`
+
+mappingId	Themes_base
+target		ex:Themes/{theme_id} a :Themes ; p:theme_id {theme_id} ; p:theme_name {theme_name} .
+source		SELECT `theme_id`, `theme_name` FROM `Themes`
+
+mappingId	Boutique_Hotels_Themes_base
+target		ex:Boutique_Hotels_Themes/{_amb_rowid} a :Boutique_Hotels_Themes ; p:boutique_hotel_id {boutique_hotel_id} ; p:theme_id {theme_id} .
+source		SELECT `_amb_rowid`, `boutique_hotel_id`, `theme_id` FROM `Boutique_Hotels_Themes`
+
+mappingId	Boutique_Hotels_Themes_theme_id_fk
+target		ex:Boutique_Hotels_Themes/{_amb_rowid} p:hasThemes ex:Themes/{theme_id} .
+source		SELECT `_amb_rowid`, `theme_id` FROM `Boutique_Hotels_Themes` WHERE `theme_id` IS NOT NULL
+
+mappingId	Boutique_Hotels_Themes_boutique_hotel_id_fk
+target		ex:Boutique_Hotels_Themes/{_amb_rowid} p:hasBoutique_Hotels ex:Boutique_Hotels/{boutique_hotel_id} .
+source		SELECT `_amb_rowid`, `boutique_hotel_id` FROM `Boutique_Hotels_Themes` WHERE `boutique_hotel_id` IS NOT NULL
+
+]]

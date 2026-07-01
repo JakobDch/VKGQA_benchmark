@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_events",
+  "schema": "amb_attachment_2tab_ref_events",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you display the locations of all press conferences and also the locations of all media scrums, but recorded by Jane Smith?",
+      "qtype": "unambig",
+      "sql": "SELECT Press_Conference.venue\nFROM Person JOIN Press_Conference ON Person.id = Press_Conference.personId\nUNION\nSELECT Media_Scrum.location\nFROM Person JOIN Media_Scrum ON Person.id = Media_Scrum.personId\nWHERE Person.name = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?person a :Persons .\n    ?press_conference a :Press_Conferences .\n    ?press_conference p:hasPerson ?person .\n    ?press_conference p:venue ?venue .\n    BIND(?venue AS ?o0)\n  }\n  UNION\n  {\n    ?person a :Persons .\n    ?media_scrum a :Media_Scrums .\n    ?media_scrum p:hasPerson ?person .\n    ?media_scrum p:location ?location .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?location AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Where were all Jane Smith's media scrums and press conferences?",
+      "qtype": "ambig",
+      "sql": "SELECT Press_Conference.venue\nFROM Person JOIN Press_Conference ON Person.id = Press_Conference.personId\nWHERE Person.name = \"Jane Smith\"\nUNION\nSELECT Media_Scrum.location\nFROM Person JOIN Media_Scrum ON Person.id = Media_Scrum.personId\nWHERE Person.name = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?person a :Persons .\n    ?press_conference a :Press_Conferences .\n    ?press_conference p:hasPerson ?person .\n    ?press_conference p:venue ?venue .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?venue AS ?o0)\n  }\n  UNION\n  {\n    ?person a :Persons .\n    ?media_scrum a :Media_Scrums .\n    ?media_scrum p:hasPerson ?person .\n    ?media_scrum p:location ?location .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?location AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where were all Jane Smith's media scrums and press conferences?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?person a :Persons .\n    ?press_conference a :Press_Conferences .\n    ?press_conference p:hasPerson ?person .\n    ?press_conference p:venue ?venue .\n    BIND(?venue AS ?o0)\n  }\n  UNION\n  {\n    ?person a :Persons .\n    ?media_scrum a :Media_Scrums .\n    ?media_scrum p:hasPerson ?person .\n    ?media_scrum p:location ?location .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?location AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?person a :Persons .\n    ?press_conference a :Press_Conferences .\n    ?press_conference p:hasPerson ?person .\n    ?press_conference p:venue ?venue .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?venue AS ?o0)\n  }\n  UNION\n  {\n    ?person a :Persons .\n    ?media_scrum a :Media_Scrums .\n    ?media_scrum p:hasPerson ?person .\n    ?media_scrum p:location ?location .\n    ?person p:name ?name_f .\n    FILTER(STR(?name_f) = \"Jane Smith\")\n    BIND(?location AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

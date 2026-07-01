@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_portable_computer",
+  "schema": "amb_attachment_1tab_val_portable_computer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the prices of Windows 10 tablets and prices of laptops with same operating system?",
+      "qtype": "unambig",
+      "sql": "SELECT Devices.Price \nFROM Devices\nWHERE (Devices.Portable_Computer = \"Tablet\" OR Devices.Portable_Computer = \"Laptop\") AND Devices.Operating_System = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?price WHERE {\n  ?devices a :Devices .\n  ?devices p:Price ?price .\n  ?devices p:Portable_Computer ?portable_computer_w .\n  ?devices p:Portable_Computer ?portable_computer_w2 .\n  ?devices p:Operating_System ?operating_system_w .\n  FILTER((((STR(?portable_computer_w) = \"Tablet\" || STR(?portable_computer_w2) = \"Laptop\")) && STR(?operating_system_w) = \"Windows 10\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all tablet prices and also list prices of laptops that come with Windows 10.",
+      "qtype": "unambig",
+      "sql": "SELECT Devices.Price \nFROM Devices\nWHERE Devices.Portable_Computer = \"Tablet\" OR Devices.Portable_Computer = \"Laptop\" AND Devices.Operating_System = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?price WHERE {\n  ?devices a :Devices .\n  ?devices p:Price ?price .\n  ?devices p:Portable_Computer ?portable_computer_w .\n  ?devices p:Portable_Computer ?portable_computer_w2 .\n  ?devices p:Operating_System ?operating_system_w .\n  FILTER((STR(?portable_computer_w) = \"Tablet\" || (STR(?portable_computer_w2) = \"Laptop\" && STR(?operating_system_w) = \"Windows 10\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the prices of tablets and laptops that come with Windows 10?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?price WHERE {\n  ?devices a :Devices .\n  ?devices p:Price ?price .\n  ?devices p:Portable_Computer ?portable_computer_w .\n  ?devices p:Portable_Computer ?portable_computer_w2 .\n  ?devices p:Operating_System ?operating_system_w .\n  FILTER((((STR(?portable_computer_w) = \"Tablet\" || STR(?portable_computer_w2) = \"Laptop\")) && STR(?operating_system_w) = \"Windows 10\"))\n} }\n  low: { SELECT ?price WHERE {\n  ?devices a :Devices .\n  ?devices p:Price ?price .\n  ?devices p:Portable_Computer ?portable_computer_w .\n  ?devices p:Portable_Computer ?portable_computer_w2 .\n  ?devices p:Operating_System ?operating_system_w .\n  FILTER((STR(?portable_computer_w) = \"Tablet\" || (STR(?portable_computer_w2) = \"Laptop\" && STR(?operating_system_w) = \"Windows 10\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

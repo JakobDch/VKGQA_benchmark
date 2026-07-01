@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_art_galleries_exhibitions",
+  "schema": "amb_scope_art_galleries_exhibitions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me descriptions of exhibitions each art gallery has on display.",
+      "qtype": "ambig",
+      "sql": "SELECT Exhibitions.Description  from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID   GROUP BY Art_Galleries_Exhibitions.ExhibitionID HAVING COUNT(DISTINCT Art_Galleries_Exhibitions.GalleryID) = (SELECT COUNT(*) FROM  Art_Galleries)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me descriptions of exhibitions each art gallery has on display.",
+      "qtype": "ambig",
+      "sql": "select art_galleries.name , exhibitions.description from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "For each art gallery, list the types and descriptions of the exhibitions.",
+      "qtype": "unambig",
+      "sql": "select art_galleries.name , exhibitions.type , exhibitions.description from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Type ?type .\n  ?exhibitions p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the types and descriptions of the exhibitions taking place in each art gallery.",
+      "qtype": "ambig",
+      "sql": "SELECT Exhibitions.Type, Exhibitions.Description  from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID   GROUP BY Art_Galleries_Exhibitions.ExhibitionID HAVING COUNT(DISTINCT Art_Galleries_Exhibitions.GalleryID) = (SELECT COUNT(*) FROM  Art_Galleries)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which type of exhibition is common to every art gallery?",
+      "qtype": "unambig",
+      "sql": "SELECT Exhibitions.Type  from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID   GROUP BY Art_Galleries_Exhibitions.ExhibitionID HAVING COUNT(DISTINCT Art_Galleries_Exhibitions.GalleryID) = (SELECT COUNT(*) FROM  Art_Galleries)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each art gallery, show me the types of exhibitions they have",
+      "qtype": "unambig",
+      "sql": "select art_galleries.name , exhibitions.type from Art_Galleries_Exhibitions join Exhibitions on Art_Galleries_Exhibitions.ExhibitionID = Exhibitions.ExhibitionID join Art_Galleries on Art_Galleries_Exhibitions.GalleryID = Art_Galleries.GalleryID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the types and descriptions of the exhibitions taking place in each art gallery.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Type ?type .\n  ?exhibitions p:Description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me descriptions of exhibitions each art gallery has on display.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What type of exhibitions is at every art gallery?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExhibitions ?child ; p:hasArt_Galleries ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Art_Galleries } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?art_galleries_exhibitions a :Art_Galleries_Exhibitions .\n  ?exhibitions a :Exhibitions .\n  ?art_galleries_exhibitions p:hasExhibitions ?exhibitions .\n  ?art_galleries a :Art_Galleries .\n  ?art_galleries_exhibitions p:hasArt_Galleries ?art_galleries .\n  ?art_galleries p:name ?name .\n  ?exhibitions p:Type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

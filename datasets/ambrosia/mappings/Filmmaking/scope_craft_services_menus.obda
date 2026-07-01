@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Menus_base
+target		ex:Menus/{MenuID} a :Menus ; p:MenuID {MenuID} ; p:name {Name} .
+source		SELECT `MenuID`, `Name` FROM `Menus`
+
+mappingId	Craft_Services_base
+target		ex:Craft_Services/{ServiceID} a :Craft_Services ; p:ServiceID {ServiceID} ; p:Description {Description} ; p:Price {Price} .
+source		SELECT `ServiceID`, `Description`, `Price` FROM `Craft_Services`
+
+mappingId	Craft_Services_Menus_base
+target		ex:Craft_Services_Menus/{ID} a :Craft_Services_Menus ; p:ID {ID} ; p:ServiceID {ServiceID} ; p:MenuID {MenuID} .
+source		SELECT `ID`, `ServiceID`, `MenuID` FROM `Craft_Services_Menus`
+
+mappingId	Craft_Services_Menus_MenuID_fk
+target		ex:Craft_Services_Menus/{ID} p:hasMenus ex:Menus/{MenuID} .
+source		SELECT `ID`, `MenuID` FROM `Craft_Services_Menus` WHERE `MenuID` IS NOT NULL
+
+mappingId	Craft_Services_Menus_ServiceID_fk
+target		ex:Craft_Services_Menus/{ID} p:hasCraft_Services ex:Craft_Services/{ServiceID} .
+source		SELECT `ID`, `ServiceID` FROM `Craft_Services_Menus` WHERE `ServiceID` IS NOT NULL
+
+]]

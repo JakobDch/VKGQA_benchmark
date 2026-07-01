@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_technology_careers",
+  "schema": "amb_attachment_2tab_val_technology_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which software developers and data analysts have a middle grade?",
+      "qtype": "unambig",
+      "sql": "SELECT Software_Developers.name\nFROM Software_Developers\nWHERE Software_Developers.grade = \"Middle\"\nUNION\nSELECT Data_Analysts.name\nFROM Data_Analysts\nWHERE Data_Analysts.grade = \"Middle\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?software_developers a :Software_Developers .\n    ?software_developers p:name ?name .\n    ?software_developers p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?data_analysts a :Data_Analysts .\n    ?data_analysts p:name ?name .\n    ?data_analysts p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all software developers and also show middle data analysts.",
+      "qtype": "unambig",
+      "sql": "SELECT Software_Developers.name\nFROM Software_Developers\nUNION\nSELECT Data_Analysts.name\nFROM Data_Analysts\nWHERE Data_Analysts.grade = \"Middle\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?software_developers a :Software_Developers .\n    ?software_developers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?data_analysts a :Data_Analysts .\n    ?data_analysts p:name ?name .\n    ?data_analysts p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display middle data analysts and software developers.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?software_developers a :Software_Developers .\n    ?software_developers p:name ?name .\n    ?software_developers p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?data_analysts a :Data_Analysts .\n    ?data_analysts p:name ?name .\n    ?data_analysts p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?software_developers a :Software_Developers .\n    ?software_developers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?data_analysts a :Data_Analysts .\n    ?data_analysts p:name ?name .\n    ?data_analysts p:grade ?grade_f .\n    FILTER(STR(?grade_f) = \"Middle\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

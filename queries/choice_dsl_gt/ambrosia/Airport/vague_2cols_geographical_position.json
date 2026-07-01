@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_geographical_position",
+  "schema": "amb_vague_2cols_geographical_position",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What city did the cheapest flight depart from and what are the coordinates of that place?",
+      "qtype": "unambig",
+      "sql": "SELECT A.City, Coordinates\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nORDER BY F.Price ASC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?coordinates WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:City ?city .\n  ?a p:Coordinates ?coordinates .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What are the headquarter coordinates of the airline with the most flights and the corresponding city?",
+      "qtype": "unambig",
+      "sql": "SELECT A.City, Coordinates\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nJOIN Airlines AL\n    ON F.ForeignKey_Airline = AL.Airlines_Id\nWHERE\n    AL.Airlines_Id = (\n        SELECT ForeignKey_Airline\n        FROM Flights\n        GROUP BY ForeignKey_Airline\n        ORDER BY COUNT(*) DESC\n        LIMIT 1\n    );",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nSELECT ?city ?coord WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:City ?city ; p:Coordinates ?coord .\n}",
+      "status": "pass",
+      "note": "override OK (gold-SQL): scalar mode-subquery (airline with most flights); SPARQL nested GROUP BY ORDER D"
+    },
+    {
+      "qid": 2,
+      "question": "In which city is the headquarters of the airline with the most flights?",
+      "qtype": "unambig",
+      "sql": "SELECT A.City\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nJOIN Airlines AL\n    ON F.ForeignKey_Airline = AL.Airlines_Id\nWHERE\n    AL.Airlines_Id = (\n        SELECT ForeignKey_Airline\n        FROM Flights\n        GROUP BY ForeignKey_Airline\n        ORDER BY COUNT(*) DESC\n        LIMIT 1\n    );",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nSELECT ?city WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:City ?city .\n}",
+      "status": "pass",
+      "note": "override OK (gold-SQL): scalar mode-subquery (airline with most flights) -> city"
+    },
+    {
+      "qid": 3,
+      "question": "What are the headquarters coordinates of the airline with the most flights?",
+      "qtype": "unambig",
+      "sql": "SELECT A.Coordinates\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nJOIN Airlines AL\n    ON F.ForeignKey_Airline = AL.Airlines_Id\nWHERE\n    AL.Airlines_Id = (\n        SELECT ForeignKey_Airline\n        FROM Flights\n        GROUP BY ForeignKey_Airline\n        ORDER BY COUNT(*) DESC\n        LIMIT 1\n    );",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nSELECT ?coord WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:Coordinates ?coord .\n}",
+      "status": "pass",
+      "note": "override OK (gold-SQL): scalar mode-subquery (airline with most flights) -> coordinates"
+    },
+    {
+      "qid": 4,
+      "question": "What are the coordinates of the cheapest flight departure?",
+      "qtype": "unambig",
+      "sql": "SELECT A.Coordinates\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nORDER BY F.Price ASC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coordinates WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:Coordinates ?coordinates .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What city did the cheapest flight depart from?",
+      "qtype": "unambig",
+      "sql": "SELECT A.City\nFROM Airports A\nJOIN Flights F\n    ON A.IATA_Code = F.IATA_Departure\nORDER BY F.Price ASC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:City ?city .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where did the cheapest flight depart from?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?city ?coordinates WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:City ?city .\n  ?a p:Coordinates ?coordinates .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  component: { SELECT ?coordinates WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:Coordinates ?coordinates .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  component_2: { SELECT ?city WHERE {\n  ?a a :Airports .\n  ?f a :Flights .\n  ?a p:IATA_Code ?iata_code_l .\n  ?f p:IATA_Departure ?iata_departure_r .\n  ?a p:City ?city .\n  ?f p:Price ?price_o .\n  FILTER(STR(?iata_code_l) = STR(?iata_departure_r))\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where is the headquarters of the airline with the most flights located?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nCHOICE vague {\n  full: { SELECT ?city ?coord WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:City ?city ; p:Coordinates ?coord .\n} }\n  component: { SELECT ?city WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:City ?city .\n} }\n  component_2: { SELECT ?coord WHERE {\n  { SELECT ?fka WHERE { ?f a :Flights ; p:ForeignKey_Airline ?fka } GROUP BY ?fka ORDER BY DESC(COUNT(*)) LIMIT 1 }\n  ?al a :Airlines ; p:Airlines_Id ?fka .\n  ?f2 a :Flights ; p:ForeignKey_Airline ?fka ; p:IATA_Departure ?dep .\n  ?ap a :Airports ; p:IATA_Code ?dep ; p:Coordinates ?coord .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

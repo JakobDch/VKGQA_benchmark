@@ -1,0 +1,74 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_origins_0_Countries_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"country_name\" FROM \"Countries\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{id}" ; rr:class :Countries ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country_name ; rr:objectMap [ rr:column "country_name" ] ] .
+
+<#tm_vague_2cols_origins_1_Regions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"region_id\", \"region_name\" FROM \"Regions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{region_id}" ; rr:class :Regions ] ;
+  rr:predicateObjectMap [ rr:predicate p:region_id ; rr:objectMap [ rr:column "region_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:region_name ; rr:objectMap [ rr:column "region_name" ] ] .
+
+<#tm_vague_2cols_origins_2_Immigrants_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"immigrant_id\", \"country_of_origin\", \"region_of_origin\", \"age\", \"gender\" FROM \"Immigrants\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Immigrants/{immigrant_id}" ; rr:class :Immigrants ] ;
+  rr:predicateObjectMap [ rr:predicate p:immigrant_id ; rr:objectMap [ rr:column "immigrant_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country_of_origin ; rr:objectMap [ rr:column "country_of_origin" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:region_of_origin ; rr:objectMap [ rr:column "region_of_origin" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:gender ; rr:objectMap [ rr:column "gender" ] ] .
+
+<#tm_vague_2cols_origins_3_Immigrants_region_of_origin_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"immigrant_id\", \"region_of_origin\" FROM \"Immigrants\" WHERE \"region_of_origin\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Immigrants/{immigrant_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRegions ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{region_of_origin}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_origins_4_Immigrants_country_of_origin_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"immigrant_id\", \"country_of_origin\" FROM \"Immigrants\" WHERE \"country_of_origin\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Immigrants/{immigrant_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{country_of_origin}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_origins_5_Occupations_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"occupation_id\", \"occupation_title\" FROM \"Occupations\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Occupations/{occupation_id}" ; rr:class :Occupations ] ;
+  rr:predicateObjectMap [ rr:predicate p:occupation_id ; rr:objectMap [ rr:column "occupation_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:occupation_title ; rr:objectMap [ rr:column "occupation_title" ] ] .
+
+<#tm_vague_2cols_origins_6_Education_Levels_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"education_level_id\", \"level_description\" FROM \"Education_Levels\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/EducationLevel/{education_level_id}" ; rr:class :EducationLevel ] ;
+  rr:predicateObjectMap [ rr:predicate p:education_level_id ; rr:objectMap [ rr:column "education_level_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:level_description ; rr:objectMap [ rr:column "level_description" ] ] .
+
+<#tm_vague_2cols_origins_7_Employment_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employment_id\", \"immigrant_id\", \"occupation_id\", \"education_level_id\", \"salary\" FROM \"Employment\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Employment/{employment_id}" ; rr:class :Employment ] ;
+  rr:predicateObjectMap [ rr:predicate p:employment_id ; rr:objectMap [ rr:column "employment_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:immigrant_id ; rr:objectMap [ rr:column "immigrant_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:occupation_id ; rr:objectMap [ rr:column "occupation_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:education_level_id ; rr:objectMap [ rr:column "education_level_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:salary ; rr:objectMap [ rr:column "salary" ] ] .
+
+<#tm_vague_2cols_origins_8_Employment_education_level_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employment_id\", \"education_level_id\" FROM \"Employment\" WHERE \"education_level_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Employment/{employment_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEducationLevel ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/EducationLevel/{education_level_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_origins_9_Employment_occupation_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employment_id\", \"occupation_id\" FROM \"Employment\" WHERE \"occupation_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Employment/{employment_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasOccupations ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Occupations/{occupation_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_origins_10_Employment_immigrant_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employment_id\", \"immigrant_id\" FROM \"Employment\" WHERE \"immigrant_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Employment/{employment_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasImmigrants ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Immigrants/{immigrant_id}" ; rr:termType rr:IRI ] ] .
+

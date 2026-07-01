@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_educational_materials",
+  "schema": "amb_attachment_1tab_ref_educational_materials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show textbooks and e-books published by someone with phone number 1234567890.",
+      "qtype": "ambig",
+      "sql": "SELECT EducationalMaterials.Title \nFROM EducationalMaterials JOIN Publishers ON EducationalMaterials.PublisherID = Publishers.PublisherID\nWHERE (EducationalMaterials.Type = \"Textbook\" OR EducationalMaterials.Type = \"E-Book\") AND Publishers.PhoneNumber = \"1234567890\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?educationalmaterials a :EducationalMaterials .\n  ?publishers a :Publishers .\n  ?educationalmaterials p:hasPublishers ?publishers .\n  ?educationalmaterials p:Title ?title .\n  ?educationalmaterials p:Type ?type_w .\n  ?educationalmaterials p:Type ?type_w2 .\n  ?publishers p:PhoneNumber ?phonenumber_w .\n  FILTER((((STR(?type_w) = \"Textbook\" || STR(?type_w2) = \"E-Book\")) && (STR(?phonenumber_w) = \"1234567890\" || STR(?phonenumber_w) = \"1234567890.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show textbooks and e-books published by someone with phone number 1234567890.",
+      "qtype": "ambig",
+      "sql": "SELECT EducationalMaterials.Title \nFROM EducationalMaterials JOIN Publishers ON EducationalMaterials.PublisherID = Publishers.PublisherID\nWHERE EducationalMaterials.Type = \"Textbook\" OR EducationalMaterials.Type = \"E-Book\" AND Publishers.PhoneNumber = \"1234567890\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?educationalmaterials a :EducationalMaterials .\n  ?publishers a :Publishers .\n  ?educationalmaterials p:hasPublishers ?publishers .\n  ?educationalmaterials p:Title ?title .\n  ?educationalmaterials p:Type ?type_w .\n  ?educationalmaterials p:Type ?type_w2 .\n  ?publishers p:PhoneNumber ?phonenumber_w .\n  FILTER((STR(?type_w) = \"Textbook\" || (STR(?type_w2) = \"E-Book\" && (STR(?phonenumber_w) = \"1234567890\" || STR(?phonenumber_w) = \"1234567890.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show textbooks and e-books published by someone with phone number 1234567890.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?educationalmaterials a :EducationalMaterials .\n  ?publishers a :Publishers .\n  ?educationalmaterials p:hasPublishers ?publishers .\n  ?educationalmaterials p:Title ?title .\n  ?educationalmaterials p:Type ?type_w .\n  ?educationalmaterials p:Type ?type_w2 .\n  ?publishers p:PhoneNumber ?phonenumber_w .\n  FILTER((STR(?type_w) = \"Textbook\" || (STR(?type_w2) = \"E-Book\" && (STR(?phonenumber_w) = \"1234567890\" || STR(?phonenumber_w) = \"1234567890.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?educationalmaterials a :EducationalMaterials .\n  ?publishers a :Publishers .\n  ?educationalmaterials p:hasPublishers ?publishers .\n  ?educationalmaterials p:Title ?title .\n  ?educationalmaterials p:Type ?type_w .\n  ?educationalmaterials p:Type ?type_w2 .\n  ?publishers p:PhoneNumber ?phonenumber_w .\n  FILTER((((STR(?type_w) = \"Textbook\" || STR(?type_w2) = \"E-Book\")) && (STR(?phonenumber_w) = \"1234567890\" || STR(?phonenumber_w) = \"1234567890.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

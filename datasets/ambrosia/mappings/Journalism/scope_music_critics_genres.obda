@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Music_Critics_base
+target		ex:Music_Critics/{critic_id} a :Music_Critics ; p:critic_id {critic_id} ; p:name {name} ; p:email {email} .
+source		SELECT `critic_id`, `name`, `email` FROM `Music_Critics`
+
+mappingId	Genres_base
+target		ex:Genres/{genre_id} a :Genres ; p:genre_id {genre_id} ; p:name {name} .
+source		SELECT `genre_id`, `name` FROM `Genres`
+
+mappingId	Music_Critics_Genres_base
+target		ex:Music_Critics_Genres/{music_critic_id}/{genre_id} a :Music_Critics_Genres ; p:music_critic_id {music_critic_id} ; p:genre_id {genre_id} .
+source		SELECT `music_critic_id`, `genre_id` FROM `Music_Critics_Genres`
+
+mappingId	Music_Critics_Genres_genre_id_fk
+target		ex:Music_Critics_Genres/{music_critic_id}/{genre_id} p:hasGenres ex:Genres/{genre_id} .
+source		SELECT `music_critic_id`, `genre_id` FROM `Music_Critics_Genres` WHERE `genre_id` IS NOT NULL
+
+mappingId	Music_Critics_Genres_music_critic_id_fk
+target		ex:Music_Critics_Genres/{music_critic_id}/{genre_id} p:hasMusic_Critics ex:Music_Critics/{music_critic_id} .
+source		SELECT `music_critic_id`, `genre_id` FROM `Music_Critics_Genres` WHERE `music_critic_id` IS NOT NULL
+
+]]

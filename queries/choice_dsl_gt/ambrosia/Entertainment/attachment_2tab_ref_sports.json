@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_sports",
+  "schema": "amb_attachment_2tab_ref_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all baseball teams and also list basketball teams from the United States.",
+      "qtype": "unambig",
+      "sql": "SELECT BaseballTeams.teamname\nFROM Countries JOIN BaseballTeams ON Countries.id = BaseballTeams.countryId\nUNION\nSELECT BasketballTeams.teamname\nFROM Countries JOIN BasketballTeams ON Countries.id = BasketballTeams.countryId\nWHERE Countries.name = \"United States\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?countries a :Country .\n    ?baseballteams a :BaseballTeams .\n    ?baseballteams p:hasCountries ?countries .\n    ?baseballteams p:teamName ?teamname .\n    BIND(?teamname AS ?o0)\n  }\n  UNION\n  {\n    ?countries a :Country .\n    ?basketballteams a :BasketballTeams .\n    ?basketballteams p:hasCountries ?countries .\n    ?basketballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What baseball teams are from the United States, and what basketball teams are also from there?",
+      "qtype": "unambig",
+      "sql": "SELECT BaseballTeams.teamname\nFROM Countries JOIN BaseballTeams ON Countries.id = BaseballTeams.countryId\nWHERE Countries.name = \"United States\"\nUNION\nSELECT BasketballTeams.teamname\nFROM Countries JOIN BasketballTeams ON Countries.id = BasketballTeams.countryId\nWHERE Countries.name = \"United States\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?countries a :Country .\n    ?baseballteams a :BaseballTeams .\n    ?baseballteams p:hasCountries ?countries .\n    ?baseballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n  UNION\n  {\n    ?countries a :Country .\n    ?basketballteams a :BasketballTeams .\n    ?basketballteams p:hasCountries ?countries .\n    ?basketballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me baseball teams and basketball teams from the United States.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?countries a :Country .\n    ?baseballteams a :BaseballTeams .\n    ?baseballteams p:hasCountries ?countries .\n    ?baseballteams p:teamName ?teamname .\n    BIND(?teamname AS ?o0)\n  }\n  UNION\n  {\n    ?countries a :Country .\n    ?basketballteams a :BasketballTeams .\n    ?basketballteams p:hasCountries ?countries .\n    ?basketballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?countries a :Country .\n    ?baseballteams a :BaseballTeams .\n    ?baseballteams p:hasCountries ?countries .\n    ?baseballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n  UNION\n  {\n    ?countries a :Country .\n    ?basketballteams a :BasketballTeams .\n    ?basketballteams p:hasCountries ?countries .\n    ?basketballteams p:teamName ?teamname .\n    ?countries p:name ?name_f .\n    FILTER(STR(?name_f) = \"United States\")\n    BIND(?teamname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

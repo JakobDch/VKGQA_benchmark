@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Guests_base
+target		ex:Guests/{ID} a :Guests ; p:ID {ID} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} ; p:name {FullName} .
+source		SELECT `ID`, `EmailAddress`, `PhoneNumber`, `FullName` FROM `Guests`
+
+mappingId	Rooms_base
+target		ex:Rooms/{RoomID} a :Rooms ; p:RoomID {RoomID} ; p:TypeOfRoom {TypeOfRoom} ; p:ServiceID {ServiceID} .
+source		SELECT `RoomID`, `TypeOfRoom`, `ServiceID` FROM `Rooms`
+
+mappingId	Rooms_ServiceID_fk
+target		ex:Rooms/{RoomID} p:hasServices ex:Services/{ServiceID} .
+source		SELECT `RoomID`, `ServiceID` FROM `Rooms` WHERE `ServiceID` IS NOT NULL
+
+mappingId	Bookings_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} ; p:NumberOfAdults {NumberOfAdults} ; p:NumberOfChildren {NumberOfChildren} ; p:GuestID {GuestID} ; p:ROOMID {ROOMID} .
+source		SELECT `BookingID`, `CheckInDate`, `CheckOutDate`, `NumberOfAdults`, `NumberOfChildren`, `GuestID`, `ROOMID` FROM `Bookings`
+
+mappingId	Bookings_ROOMID_fk
+target		ex:Bookings/{BookingID} p:hasRooms ex:Rooms/{ROOMID} .
+source		SELECT `BookingID`, `ROOMID` FROM `Bookings` WHERE `ROOMID` IS NOT NULL
+
+mappingId	Bookings_GuestID_fk
+target		ex:Bookings/{BookingID} p:hasGuests ex:Guests/{GuestID} .
+source		SELECT `BookingID`, `GuestID` FROM `Bookings` WHERE `GuestID` IS NOT NULL
+
+mappingId	Services_base
+target		ex:Services/{ServiceID} a :Services ; p:ServiceID {ServiceID} ; p:Amenity {Amenity} ; p:Description {Description} .
+source		SELECT `ServiceID`, `Amenity`, `Description` FROM `Services`
+
+]]

@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/airport#> .
+@prefix p: <http://ambrosia.example.org/airport/prop#> .
+@prefix ex: <http://ambrosia.example.org/airport/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_terminals_facilities_0_Terminals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Terminals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{id}" ; rr:class :Terminals ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_terminals_facilities_1_Facilities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"facilityName\", \"description\" FROM \"Facilities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Facility/{id}" ; rr:class :Facility ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:facilityName ; rr:objectMap [ rr:column "facilityName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_terminals_facilities_2_Terminals_Facilities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"terminalId\", \"facilityId\" FROM \"Terminals_Facilities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals_Facilities/{terminalId}/{facilityId}" ; rr:class :Terminals_Facilities ] ;
+  rr:predicateObjectMap [ rr:predicate p:terminalId ; rr:objectMap [ rr:column "terminalId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:facilityId ; rr:objectMap [ rr:column "facilityId" ] ] .
+
+<#tm_scope_terminals_facilities_3_Terminals_Facilities_facilityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"terminalId\", \"facilityId\" FROM \"Terminals_Facilities\" WHERE \"facilityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals_Facilities/{terminalId}/{facilityId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFacility ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Facility/{facilityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_terminals_facilities_4_Terminals_Facilities_terminalId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"terminalId\", \"facilityId\" FROM \"Terminals_Facilities\" WHERE \"terminalId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals_Facilities/{terminalId}/{facilityId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{terminalId}" ; rr:termType rr:IRI ] ] .
+

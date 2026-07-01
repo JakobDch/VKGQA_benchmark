@@ -1,0 +1,108 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_journalism_schools_courses",
+  "schema": "amb_scope_journalism_schools_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the course names we have for each school",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.course_name  from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id   GROUP BY Journalism_Schools_Courses.course_id HAVING COUNT(DISTINCT Journalism_Schools_Courses.journalism_schools_id) = (SELECT COUNT(*) FROM  Journalism_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?course_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:course_name ?course_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What are the course names we have for each school",
+      "qtype": "ambig",
+      "sql": "select journalism_schools.name , courses.course_name from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?course_name WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:course_name ?course_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "For each journalism school, what are the corresponding course descriptions?",
+      "qtype": "unambig",
+      "sql": "select journalism_schools.name , courses.description from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "provide the course description that is common to all journalism schools.",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.description  from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id   GROUP BY Journalism_Schools_Courses.course_id HAVING COUNT(DISTINCT Journalism_Schools_Courses.journalism_schools_id) = (SELECT COUNT(*) FROM  Journalism_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the names and descriptions of courses that are the same at all journalism schools?",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.course_name, Courses.description  from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id   GROUP BY Journalism_Schools_Courses.course_id HAVING COUNT(DISTINCT Journalism_Schools_Courses.journalism_schools_id) = (SELECT COUNT(*) FROM  Journalism_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?course_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:course_name ?course_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the names and descriptions of courses each journalism school offers.",
+      "qtype": "ambig",
+      "sql": "select journalism_schools.name , courses.course_name , courses.description from Journalism_Schools_Courses join Courses on Journalism_Schools_Courses.course_id = Courses.id join Journalism_Schools on Journalism_Schools_Courses.journalism_schools_id = Journalism_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?course_name ?description WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:course_name ?course_name .\n  ?courses p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what course descriptions are available for each journalism school?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the course names we have for each school",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?course_name WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:course_name ?course_name .\n} }\n  collective: { SELECT ?course_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:course_name ?course_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the names and descriptions of courses each journalism school offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?course_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasJournalism_Schools ?parent . } GROUP BY ?child }\n  ?child p:course_name ?course_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Journalism_Schools } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?course_name ?description WHERE {\n  ?journalism_schools_courses a :Journalism_Schools_Courses .\n  ?courses a :Courses .\n  ?journalism_schools_courses p:hasCourses ?courses .\n  ?journalism_schools a :Journalism_Schools .\n  ?journalism_schools_courses p:hasJournalism_Schools ?journalism_schools .\n  ?journalism_schools p:name ?name .\n  ?courses p:course_name ?course_name .\n  ?courses p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

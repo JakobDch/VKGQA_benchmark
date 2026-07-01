@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2tabs_resources1",
+  "schema": "amb_vague_2tabs_resources1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the projects, and the required supplies",
+      "qtype": "unambig",
+      "sql": "SELECT project_name, name FROM Supplies JOIN Projects ON Supplies.id = Projects.Supplies_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?name WHERE {\n  ?supplies a :Supplies .\n  ?projects a :Projects .\n  ?projects p:hasSupplies ?supplies .\n  ?projects p:project_name ?project_name .\n  ?supplies p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What textbooks are available for optical spectroscopy?",
+      "qtype": "unambig",
+      "sql": "SELECT title FROM Textbooks JOIN Projects ON Textbooks.id = Projects.textbook_id WHERE Projects.project_name = 'Optical Spectroscopy'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What textbooks and supplies are available for optical spectroscopy?",
+      "qtype": "unambig",
+      "sql": "SELECT title, name FROM Textbooks JOIN Projects ON Textbooks.id = Projects.textbook_id JOIN Supplies ON Supplies.id = Projects.Supplies_id WHERE Projects.project_name = 'Optical Spectroscopy'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?supplies a :Supplies .\n  ?projects p:hasSupplies ?supplies .\n  ?textbooks p:title ?title .\n  ?supplies p:name ?name .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What resources are available for optical spectroscopy?",
+      "qtype": "ambig",
+      "sql": "SELECT name FROM Supplies JOIN Projects ON Supplies.id = Projects.Supplies_id WHERE Projects.project_name = 'Optical Spectroscopy'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?supplies a :Supplies .\n  ?projects a :Projects .\n  ?projects p:hasSupplies ?supplies .\n  ?supplies p:name ?name .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "List all the projects, and the required textbooks and other supplies",
+      "qtype": "unambig",
+      "sql": "SELECT project_name, title, name FROM Textbooks JOIN Projects ON Textbooks.id = Projects.textbook_id JOIN Supplies ON Supplies.id = Projects.Supplies_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?title ?name WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?supplies a :Supplies .\n  ?projects p:hasSupplies ?supplies .\n  ?projects p:project_name ?project_name .\n  ?textbooks p:title ?title .\n  ?supplies p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Give me a list of projects and related resources.",
+      "qtype": "ambig",
+      "sql": "SELECT project_name, title FROM Textbooks JOIN Projects ON Textbooks.id = Projects.textbook_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?title WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?projects p:project_name ?project_name .\n  ?textbooks p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me a list of projects and related resources.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?project_name ?name WHERE {\n  ?supplies a :Supplies .\n  ?projects a :Projects .\n  ?projects p:hasSupplies ?supplies .\n  ?projects p:project_name ?project_name .\n  ?supplies p:name ?name .\n} }\n  full: { SELECT ?project_name ?title ?name WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?supplies a :Supplies .\n  ?projects p:hasSupplies ?supplies .\n  ?projects p:project_name ?project_name .\n  ?textbooks p:title ?title .\n  ?supplies p:name ?name .\n} }\n  component_2: { SELECT ?project_name ?title WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?projects p:project_name ?project_name .\n  ?textbooks p:title ?title .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What resources are available for optical spectroscopy?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n} }\n  full: { SELECT ?title ?name WHERE {\n  ?textbooks a :Textbooks .\n  ?projects a :Projects .\n  ?projects p:hasTextbooks ?textbooks .\n  ?supplies a :Supplies .\n  ?projects p:hasSupplies ?supplies .\n  ?textbooks p:title ?title .\n  ?supplies p:name ?name .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?supplies a :Supplies .\n  ?projects a :Projects .\n  ?projects p:hasSupplies ?supplies .\n  ?supplies p:name ?name .\n  ?projects p:project_name ?project_name_f .\n  FILTER(STR(?project_name_f) = \"Optical Spectroscopy\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

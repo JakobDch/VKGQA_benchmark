@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Editing_Suites_base
+target		ex:Editing_Suites/{SuiteID} a :Editing_Suites ; p:SuiteID {SuiteID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `SuiteID`, `Name`, `Location` FROM `Editing_Suites`
+
+mappingId	Tools_base
+target		ex:Tools/{ToolID} a :Tools ; p:ToolID {ToolID} ; p:Type {Type} .
+source		SELECT `ToolID`, `Type` FROM `Tools`
+
+mappingId	Editing_Suites_Tools_base
+target		ex:Editing_Suites_Tools/{SuiteID}/{ToolID} a :Editing_Suites_Tools ; p:SuiteID {SuiteID} ; p:ToolID {ToolID} .
+source		SELECT `SuiteID`, `ToolID` FROM `Editing_Suites_Tools`
+
+mappingId	Editing_Suites_Tools_ToolID_fk
+target		ex:Editing_Suites_Tools/{SuiteID}/{ToolID} p:hasTools ex:Tools/{ToolID} .
+source		SELECT `SuiteID`, `ToolID` FROM `Editing_Suites_Tools` WHERE `ToolID` IS NOT NULL
+
+mappingId	Editing_Suites_Tools_SuiteID_fk
+target		ex:Editing_Suites_Tools/{SuiteID}/{ToolID} p:hasEditing_Suites ex:Editing_Suites/{SuiteID} .
+source		SELECT `SuiteID`, `ToolID` FROM `Editing_Suites_Tools` WHERE `SuiteID` IS NOT NULL
+
+]]

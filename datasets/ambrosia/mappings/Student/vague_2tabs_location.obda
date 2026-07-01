@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Building_Name_base
+target		ex:Buildings/{id} a :Buildings ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Building_Name`
+
+mappingId	University_base
+target		ex:Universities/{id} a :Universities ; p:id {id} ; p:university_name {university_name} ; p:website {website} .
+source		SELECT `id`, `university_name`, `website` FROM `University`
+
+mappingId	Libraries_base
+target		ex:Libraries/{id} a :Libraries ; p:id {id} ; p:library_name {library_name} ; p:building_id {building_id} ; p:university_id {university_id} .
+source		SELECT `id`, `library_name`, `building_id`, `university_id` FROM `Libraries`
+
+mappingId	Libraries_university_id_fk
+target		ex:Libraries/{id} p:hasUniversities ex:Universities/{university_id} .
+source		SELECT `id`, `university_id` FROM `Libraries` WHERE `university_id` IS NOT NULL
+
+mappingId	Libraries_building_id_fk
+target		ex:Libraries/{id} p:hasBuildings ex:Buildings/{building_id} .
+source		SELECT `id`, `building_id` FROM `Libraries` WHERE `building_id` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:student_name {student_name} ; p:birthdate {birthdate} ; p:major {major} .
+source		SELECT `id`, `student_name`, `birthdate`, `major` FROM `Students`
+
+mappingId	Buildings_base
+target		ex:Buildings/{id} a :Buildings ; p:id {id} ; p:building_type {building_type} ; p:capacity {capacity} ; p:address {address} .
+source		SELECT `id`, `building_type`, `capacity`, `address` FROM `Buildings`
+
+mappingId	Classrooms_base
+target		ex:Classrooms/{id} a :Classrooms ; p:id {id} ; p:classroom_number {classroom_number} ; p:building_id {building_id} .
+source		SELECT `id`, `classroom_number`, `building_id` FROM `Classrooms`
+
+mappingId	Classrooms_building_id_fk
+target		ex:Classrooms/{id} p:hasBuildings ex:Buildings/{building_id} .
+source		SELECT `id`, `building_id` FROM `Classrooms` WHERE `building_id` IS NOT NULL
+
+]]

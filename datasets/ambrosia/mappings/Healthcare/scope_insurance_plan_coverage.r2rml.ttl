@@ -1,0 +1,69 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_insurance_plan_coverage_0_Insurance_Plan_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlanID\", \"PlanName\", \"MonthlyPremium\" FROM \"Insurance_Plan\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/InsurancePlans/{PlanID}" ; rr:class :InsurancePlans ] ;
+  rr:predicateObjectMap [ rr:predicate p:PlanID ; rr:objectMap [ rr:column "PlanID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PlanName ; rr:objectMap [ rr:column "PlanName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:MonthlyPremium ; rr:objectMap [ rr:column "MonthlyPremium" ] ] .
+
+<#tm_scope_insurance_plan_coverage_1_Coverage_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CoverageID\", \"Description\" FROM \"Coverage\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Coverage/{CoverageID}" ; rr:class :Coverage ] ;
+  rr:predicateObjectMap [ rr:predicate p:CoverageID ; rr:objectMap [ rr:column "CoverageID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Description ; rr:objectMap [ rr:column "Description" ] ] .
+
+<#tm_scope_insurance_plan_coverage_2_Insurance_Plan_Coverage_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlanID\", \"CoverageID\" FROM \"Insurance_Plan_Coverage\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Insurance_Plan_Coverage/{PlanID}/{CoverageID}" ; rr:class :Insurance_Plan_Coverage ] ;
+  rr:predicateObjectMap [ rr:predicate p:PlanID ; rr:objectMap [ rr:column "PlanID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CoverageID ; rr:objectMap [ rr:column "CoverageID" ] ] .
+
+<#tm_scope_insurance_plan_coverage_3_Insurance_Plan_Coverage_CoverageID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlanID\", \"CoverageID\" FROM \"Insurance_Plan_Coverage\" WHERE \"CoverageID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Insurance_Plan_Coverage/{PlanID}/{CoverageID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCoverage ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Coverage/{CoverageID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_insurance_plan_coverage_4_Insurance_Plan_Coverage_PlanID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlanID\", \"CoverageID\" FROM \"Insurance_Plan_Coverage\" WHERE \"PlanID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Insurance_Plan_Coverage/{PlanID}/{CoverageID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasInsurancePlans ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/InsurancePlans/{PlanID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_insurance_plan_coverage_5_Patient_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PatientID\", \"Name\", \"DOB\" FROM \"Patient\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:class :Patients ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DOB ; rr:objectMap [ rr:column "DOB" ] ] .
+
+<#tm_scope_insurance_plan_coverage_6_Doctor_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DoctorID\", \"Name\", \"Specialty\" FROM \"Doctor\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{DoctorID}" ; rr:class :Doctors ] ;
+  rr:predicateObjectMap [ rr:predicate p:DoctorID ; rr:objectMap [ rr:column "DoctorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Specialty ; rr:objectMap [ rr:column "Specialty" ] ] .
+
+<#tm_scope_insurance_plan_coverage_7_Appointment_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"Date\", \"Reason\", \"PatientID\", \"DoctorID\" FROM \"Appointment\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ; rr:class :Appointments ] ;
+  rr:predicateObjectMap [ rr:predicate p:AppointmentID ; rr:objectMap [ rr:column "AppointmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Date ; rr:objectMap [ rr:column "Date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Reason ; rr:objectMap [ rr:column "Reason" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DoctorID ; rr:objectMap [ rr:column "DoctorID" ] ] .
+
+<#tm_scope_insurance_plan_coverage_8_Appointment_DoctorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"DoctorID\" FROM \"Appointment\" WHERE \"DoctorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDoctors ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{DoctorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_insurance_plan_coverage_9_Appointment_PatientID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"PatientID\" FROM \"Appointment\" WHERE \"PatientID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPatients ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:termType rr:IRI ] ] .
+

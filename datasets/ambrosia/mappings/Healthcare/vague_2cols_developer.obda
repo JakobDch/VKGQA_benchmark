@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Scientists_base
+target		ex:Scientists/{id} a :Scientists ; p:id {id} ; p:birthDate {birthDate} ; p:name {fullname} .
+source		SELECT `id`, `birthDate`, `fullname` FROM `Scientists`
+
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Companies`
+
+mappingId	MedicalDevices_base
+target		ex:MedicalDevices/{id} a :MedicalDevices ; p:id {id} ; p:deviceName {deviceName} ; p:description {description} ; p:price {price} .
+source		SELECT `id`, `deviceName`, `description`, `price` FROM `MedicalDevices`
+
+mappingId	DeviceDevelopment_base
+target		ex:DeviceDevelopment/{scientistId}/{companyId}/{medicalDeviceId} a :DeviceDevelopment ; p:scientistId {scientistId} ; p:companyId {companyId} ; p:medicalDeviceId {medicalDeviceId} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `scientistId`, `companyId`, `medicalDeviceId`, `startDate`, `endDate` FROM `DeviceDevelopment`
+
+mappingId	DeviceDevelopment_medicalDeviceId_fk
+target		ex:DeviceDevelopment/{scientistId}/{companyId}/{medicalDeviceId} p:hasMedicalDevices ex:MedicalDevices/{medicalDeviceId} .
+source		SELECT `scientistId`, `companyId`, `medicalDeviceId` FROM `DeviceDevelopment` WHERE `medicalDeviceId` IS NOT NULL
+
+mappingId	DeviceDevelopment_companyId_fk
+target		ex:DeviceDevelopment/{scientistId}/{companyId}/{medicalDeviceId} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `scientistId`, `companyId`, `medicalDeviceId` FROM `DeviceDevelopment` WHERE `companyId` IS NOT NULL
+
+mappingId	DeviceDevelopment_scientistId_fk
+target		ex:DeviceDevelopment/{scientistId}/{companyId}/{medicalDeviceId} p:hasScientists ex:Scientists/{scientistId} .
+source		SELECT `scientistId`, `companyId`, `medicalDeviceId` FROM `DeviceDevelopment` WHERE `scientistId` IS NOT NULL
+
+mappingId	Patients_base
+target		ex:Patients/{patientId} a :Patients ; p:patientId {patientId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} ; p:gender {gender} .
+source		SELECT `patientId`, `firstName`, `lastName`, `dateOfBirth`, `gender` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{appointmentId} a :Appointments ; p:appointmentId {appointmentId} ; p:doctorId {doctorId} ; p:patientId {patientId} ; p:date {date} .
+source		SELECT `appointmentId`, `doctorId`, `patientId`, `date` FROM `Appointments`
+
+mappingId	Appointments_patientId_fk
+target		ex:Appointments/{appointmentId} p:hasPatients ex:Patients/{patientId} .
+source		SELECT `appointmentId`, `patientId` FROM `Appointments` WHERE `patientId` IS NOT NULL
+
+mappingId	Appointments_doctorId_fk
+target		ex:Appointments/{appointmentId} p:hasDoctors ex:Doctors/{doctorId} .
+source		SELECT `appointmentId`, `doctorId` FROM `Appointments` WHERE `doctorId` IS NOT NULL
+
+mappingId	Doctors_base
+target		ex:Doctors/{doctorId} a :Doctors ; p:doctorId {doctorId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:specialty {specialty} .
+source		SELECT `doctorId`, `firstName`, `lastName`, `specialty` FROM `Doctors`
+
+]]

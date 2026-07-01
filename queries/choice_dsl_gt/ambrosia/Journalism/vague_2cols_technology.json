@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_technology",
+  "schema": "amb_vague_2cols_technology",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What web framework and content managment system does the author with email 'davidwilson@example.com' use?",
+      "qtype": "unambig",
+      "sql": "SELECT DISTINCT CMS.Content_Management_System, Web_Framework\nFROM Authors AS A\nJOIN Articles AS AR ON A.authorID = AR.authorID \nJOIN ContentManagementSystems AS CMS ON AR.articleID = CMS.cmsId\nWHERE A.email = 'davidwilson@example.com';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?content_management_system ?web_framework WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What technology does the author with email 'davidwilson@example.com' use?",
+      "qtype": "ambig",
+      "sql": "SELECT DISTINCT CMS.Content_Management_System\nFROM Authors AS A\nJOIN Articles AS AR ON A.authorID = AR.authorID \nJOIN ContentManagementSystems AS CMS ON AR.articleID = CMS.cmsId\nWHERE A.email = 'davidwilson@example.com';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?content_management_system WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What technology does the author with email 'davidwilson@example.com' use?",
+      "qtype": "ambig",
+      "sql": "SELECT DISTINCT CMS.Web_Framework\nFROM Authors AS A\nJOIN Articles AS AR ON A.authorID = AR.authorID \nJOIN ContentManagementSystems AS CMS ON AR.articleID = CMS.cmsId\nWHERE A.email = 'davidwilson@example.com';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?web_framework WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "show me the content management system and web framework that emily brown uses to write her articles",
+      "qtype": "unambig",
+      "sql": "SELECT CMS.Content_Management_System, Web_Framework\nFROM ContentManagementSystems AS CMS\nJOIN Articles AS AR ON CMS.cmsId = AR.articleID\nJOIN Authors AS A ON AR.authorID = A.authorID\nWHERE A.name = 'Emily Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?content_management_system ?web_framework WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What technology does Emily Brown use?",
+      "qtype": "ambig",
+      "sql": "SELECT CMS.Content_Management_System\nFROM ContentManagementSystems AS CMS\nJOIN Articles AS AR ON CMS.cmsId = AR.articleID\nJOIN Authors AS A ON AR.authorID = A.authorID\nWHERE A.name = 'Emily Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?content_management_system WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What technology does Emily Brown use?",
+      "qtype": "ambig",
+      "sql": "SELECT CMS.Web_Framework\nFROM ContentManagementSystems AS CMS\nJOIN Articles AS AR ON CMS.cmsId = AR.articleID\nJOIN Authors AS A ON AR.authorID = A.authorID\nWHERE A.name = 'Emily Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?web_framework WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What technology does the author with email 'davidwilson@example.com' use?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT DISTINCT ?content_management_system ?web_framework WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n} }\n  component: { SELECT DISTINCT ?content_management_system WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n} }\n  component_2: { SELECT DISTINCT ?web_framework WHERE {\n  ?a a :Authors .\n  ?ar a :Articles .\n  ?ar p:hasAuthors ?a .\n  ?cms a :ContentManagementSystems .\n  ?ar p:articleID ?articleid_l .\n  ?cms p:cmsId ?cmsid_r .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:email ?email_f .\n  FILTER(STR(?articleid_l) = STR(?cmsid_r))\n  FILTER(STR(?email_f) = \"davidwilson@example.com\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What technology does Emily Brown use?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?content_management_system ?web_framework WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n} }\n  component: { SELECT ?web_framework WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Web_Framework ?web_framework .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n} }\n  component_2: { SELECT ?content_management_system WHERE {\n  ?cms a :ContentManagementSystems .\n  ?ar a :Articles .\n  ?cms p:cmsId ?cmsid_l .\n  ?ar p:articleID ?articleid_r .\n  ?a a :Authors .\n  ?ar p:hasAuthors ?a .\n  ?cms p:Content_Management_System ?content_management_system .\n  ?a p:name ?name_f .\n  FILTER(STR(?cmsid_l) = STR(?articleid_r))\n  FILTER(STR(?name_f) = \"Emily Brown\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

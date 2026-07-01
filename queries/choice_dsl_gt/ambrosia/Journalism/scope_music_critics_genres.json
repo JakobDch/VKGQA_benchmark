@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_music_critics_genres",
+  "schema": "amb_scope_music_critics_genres",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the genres that each music critic reviews.",
+      "qtype": "ambig",
+      "sql": "SELECT Genres.name  from Music_Critics_Genres join Genres on Music_Critics_Genres.genre_id = Genres.genre_id join Music_Critics on Music_Critics_Genres.music_critic_id = Music_Critics.critic_id   GROUP BY Music_Critics_Genres.genre_id HAVING COUNT(DISTINCT Music_Critics_Genres.music_critic_id) = (SELECT COUNT(*) FROM  Music_Critics)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasMusic_Critics ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Music_Critics } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the genres that each music critic reviews.",
+      "qtype": "ambig",
+      "sql": "select music_critics.name , genres.name from Music_Critics_Genres join Genres on Music_Critics_Genres.genre_id = Genres.genre_id join Music_Critics on Music_Critics_Genres.music_critic_id = Music_Critics.critic_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?music_critics_genres a :Music_Critics_Genres .\n  ?genres a :Genres .\n  ?music_critics_genres p:hasGenres ?genres .\n  ?music_critics a :Music_Critics .\n  ?music_critics_genres p:hasMusic_Critics ?music_critics .\n  ?music_critics p:name ?name .\n  ?genres p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the genres that each music critic reviews.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasMusic_Critics ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Music_Critics } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?music_critics_genres a :Music_Critics_Genres .\n  ?genres a :Genres .\n  ?music_critics_genres p:hasGenres ?genres .\n  ?music_critics a :Music_Critics .\n  ?music_critics_genres p:hasMusic_Critics ?music_critics .\n  ?music_critics p:name ?name .\n  ?genres p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

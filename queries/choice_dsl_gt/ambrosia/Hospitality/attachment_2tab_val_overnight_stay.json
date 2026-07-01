@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_overnight_stay",
+  "schema": "amb_attachment_2tab_val_overnight_stay",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all guest rooms as well as a list of suites that have air conditioning.",
+      "qtype": "unambig",
+      "sql": "SELECT Guestrooms.room as room\nFROM Guestrooms\nUNION\nSELECT Suites.suite_name as room\nFROM Suites\nWHERE Suites.amenities = \"Air Conditioning\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?guestrooms a :GuestRooms .\n    ?guestrooms p:room ?room .\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?suites a :Suites .\n    ?suites p:suite_name ?suite_name .\n    ?suites p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?suite_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show guest rooms and suites that have air conditioning.",
+      "qtype": "ambig",
+      "sql": "SELECT Guestrooms.room as room\nFROM Guestrooms\nWHERE Guestrooms.amenities = \"Air Conditioning\"\nUNION\nSELECT Suites.suite_name as room\nFROM Suites\nWHERE Suites.amenities = \"Air Conditioning\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?guestrooms a :GuestRooms .\n    ?guestrooms p:room ?room .\n    ?guestrooms p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?suites a :Suites .\n    ?suites p:suite_name ?suite_name .\n    ?suites p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?suite_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show guest rooms and suites that have air conditioning.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?guestrooms a :GuestRooms .\n    ?guestrooms p:room ?room .\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?suites a :Suites .\n    ?suites p:suite_name ?suite_name .\n    ?suites p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?suite_name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?guestrooms a :GuestRooms .\n    ?guestrooms p:room ?room .\n    ?guestrooms p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?suites a :Suites .\n    ?suites p:suite_name ?suite_name .\n    ?suites p:amenities ?amenities_f .\n    FILTER(STR(?amenities_f) = \"Air Conditioning\")\n    BIND(?suite_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

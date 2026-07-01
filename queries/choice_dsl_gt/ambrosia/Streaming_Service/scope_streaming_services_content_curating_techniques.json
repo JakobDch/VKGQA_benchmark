@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_content_curating_techniques",
+  "schema": "amb_scope_streaming_services_content_curating_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which content curation technique is shared by all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Content_Curating_Techniques.technique  from Streaming_Services_Content_Curating_Techniques join Content_Curating_Techniques on Streaming_Services_Content_Curating_Techniques.content_curating_technique_id = Content_Curating_Techniques.id join Streaming_Services on Streaming_Services_Content_Curating_Techniques.streaming_service_id = Streaming_Services.service_id   GROUP BY Streaming_Services_Content_Curating_Techniques.content_curating_technique_id HAVING COUNT(DISTINCT Streaming_Services_Content_Curating_Techniques.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Curating_Techniques ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:technique ?technique .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each streaming service, what are the associated content curation techniques?",
+      "qtype": "unambig",
+      "sql": "select streaming_services.name , content_curating_techniques.technique from Streaming_Services_Content_Curating_Techniques join Content_Curating_Techniques on Streaming_Services_Content_Curating_Techniques.content_curating_technique_id = Content_Curating_Techniques.id join Streaming_Services on Streaming_Services_Content_Curating_Techniques.streaming_service_id = Streaming_Services.service_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?technique WHERE {\n  ?streaming_services_content_curating_techniques a :Streaming_Services_Content_Curating_Techniques .\n  ?content_curating_techniques a :Content_Curating_Techniques .\n  ?streaming_services_content_curating_techniques p:hasContent_Curating_Techniques ?content_curating_techniques .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_content_curating_techniques p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?content_curating_techniques p:technique ?technique .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What content curation techniques are utilized by each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?technique WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Curating_Techniques ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:technique ?technique .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?technique WHERE {\n  ?streaming_services_content_curating_techniques a :Streaming_Services_Content_Curating_Techniques .\n  ?content_curating_techniques a :Content_Curating_Techniques .\n  ?streaming_services_content_curating_techniques p:hasContent_Curating_Techniques ?content_curating_techniques .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_content_curating_techniques p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?content_curating_techniques p:technique ?technique .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

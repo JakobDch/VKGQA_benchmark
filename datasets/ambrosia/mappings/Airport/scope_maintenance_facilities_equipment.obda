@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Maintenance_Facilities_base
+target		ex:Maintenance_Facilities/{id} a :Maintenance_Facilities ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Maintenance_Facilities`
+
+mappingId	Equipment_base
+target		ex:Equipment/{equipmentId} a :Equipment ; p:equipmentId {equipmentId} ; p:type {type} .
+source		SELECT `equipmentId`, `type` FROM `Equipment`
+
+mappingId	Maintenance_Facilities_Equipment_base
+target		ex:Maintenance_Facilities_Equipment/{_amb_rowid} a :Maintenance_Facilities_Equipment ; p:maintenanceId {maintenanceId} ; p:equipmentTypeId {equipmentTypeId} .
+source		SELECT `_amb_rowid`, `maintenanceId`, `equipmentTypeId` FROM `Maintenance_Facilities_Equipment`
+
+mappingId	Maintenance_Facilities_Equipment_equipmentTypeId_fk
+target		ex:Maintenance_Facilities_Equipment/{_amb_rowid} p:hasEquipment ex:Equipment/{equipmentTypeId} .
+source		SELECT `_amb_rowid`, `equipmentTypeId` FROM `Maintenance_Facilities_Equipment` WHERE `equipmentTypeId` IS NOT NULL
+
+mappingId	Maintenance_Facilities_Equipment_maintenanceId_fk
+target		ex:Maintenance_Facilities_Equipment/{_amb_rowid} p:hasMaintenance_Facilities ex:Maintenance_Facilities/{maintenanceId} .
+source		SELECT `_amb_rowid`, `maintenanceId` FROM `Maintenance_Facilities_Equipment` WHERE `maintenanceId` IS NOT NULL
+
+]]

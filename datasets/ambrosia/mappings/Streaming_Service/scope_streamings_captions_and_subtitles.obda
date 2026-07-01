@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streamings_base
+target		ex:Streamings/{streaming_id} a :Streamings ; p:streaming_id {streaming_id} ; p:title {title} ; p:duration {duration} .
+source		SELECT `streaming_id`, `title`, `duration` FROM `Streamings`
+
+mappingId	Captions_and_subtitles_base
+target		ex:Captions_and_subtitles/{caption_id} a :Captions_and_subtitles ; p:caption_id {caption_id} ; p:type {type} ; p:language {language} .
+source		SELECT `caption_id`, `type`, `language` FROM `Captions_and_subtitles`
+
+mappingId	Streamings_captions_and_subtitles_base
+target		ex:Streamings_captions_and_subtitles/{_amb_rowid} a :Streamings_captions_and_subtitles ; p:streamings_id {streamings_id} ; p:captions_and_subtitles_id {captions_and_subtitles_id} .
+source		SELECT `_amb_rowid`, `streamings_id`, `captions_and_subtitles_id` FROM `Streamings_captions_and_subtitles`
+
+mappingId	Streamings_captions_and_subtitles_captions_and_subtitles_id_fk
+target		ex:Streamings_captions_and_subtitles/{_amb_rowid} p:hasCaptions_and_subtitles ex:Captions_and_subtitles/{captions_and_subtitles_id} .
+source		SELECT `_amb_rowid`, `captions_and_subtitles_id` FROM `Streamings_captions_and_subtitles` WHERE `captions_and_subtitles_id` IS NOT NULL
+
+mappingId	Streamings_captions_and_subtitles_streamings_id_fk
+target		ex:Streamings_captions_and_subtitles/{_amb_rowid} p:hasStreamings ex:Streamings/{streamings_id} .
+source		SELECT `_amb_rowid`, `streamings_id` FROM `Streamings_captions_and_subtitles` WHERE `streamings_id` IS NOT NULL
+
+mappingId	Users_base
+target		ex:Users/{user_id} a :Users ; p:user_id {user_id} ; p:username {username} ; p:email {email} .
+source		SELECT `user_id`, `username`, `email` FROM `Users`
+
+mappingId	Payments_base
+target		ex:Payments/{payment_id} a :Payments ; p:payment_id {payment_id} ; p:amount {amount} ; p:date {date} .
+source		SELECT `payment_id`, `amount`, `date` FROM `Payments`
+
+mappingId	User_Payments_base
+target		ex:User_Payments/{_amb_rowid} a :User_Payments ; p:user_id {user_id} ; p:payment_id {payment_id} .
+source		SELECT `_amb_rowid`, `user_id`, `payment_id` FROM `User_Payments`
+
+mappingId	User_Payments_payment_id_fk
+target		ex:User_Payments/{_amb_rowid} p:hasPayments ex:Payments/{payment_id} .
+source		SELECT `_amb_rowid`, `payment_id` FROM `User_Payments` WHERE `payment_id` IS NOT NULL
+
+mappingId	User_Payments_user_id_fk
+target		ex:User_Payments/{_amb_rowid} p:hasUsers ex:Users/{user_id} .
+source		SELECT `_amb_rowid`, `user_id` FROM `User_Payments` WHERE `user_id` IS NOT NULL
+
+]]

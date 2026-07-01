@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Scuba_Diving_Centers_base
+target		ex:Scuba_Diving_Centers/{id} a :Scuba_Diving_Centers ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Scuba_Diving_Centers`
+
+mappingId	Dive_Sites_base
+target		ex:Dive_Sites/{id} a :Dive_Sites ; p:id {id} ; p:site_name {site_name} ; p:type {type} .
+source		SELECT `id`, `site_name`, `type` FROM `Dive_Sites`
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Customers`
+
+mappingId	Bookings_base
+target		ex:Bookings/{booking_id} a :Bookings ; p:booking_id {booking_id} ; p:customer_id {customer_id} ; p:scuba_center_id {scuba_center_id} ; p:dive_site_id {dive_site_id} ; p:date {date} ; p:time {time} .
+source		SELECT `booking_id`, `customer_id`, `scuba_center_id`, `dive_site_id`, `date`, `time` FROM `Bookings`
+
+mappingId	Bookings_dive_site_id_fk
+target		ex:Bookings/{booking_id} p:hasDive_Sites ex:Dive_Sites/{dive_site_id} .
+source		SELECT `booking_id`, `dive_site_id` FROM `Bookings` WHERE `dive_site_id` IS NOT NULL
+
+mappingId	Bookings_scuba_center_id_fk
+target		ex:Bookings/{booking_id} p:hasScuba_Diving_Centers ex:Scuba_Diving_Centers/{scuba_center_id} .
+source		SELECT `booking_id`, `scuba_center_id` FROM `Bookings` WHERE `scuba_center_id` IS NOT NULL
+
+mappingId	Bookings_customer_id_fk
+target		ex:Bookings/{booking_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `booking_id`, `customer_id` FROM `Bookings` WHERE `customer_id` IS NOT NULL
+
+]]

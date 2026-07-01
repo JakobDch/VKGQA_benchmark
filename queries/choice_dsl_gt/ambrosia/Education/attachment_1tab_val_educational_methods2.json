@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_educational_methods2",
+  "schema": "amb_attachment_1tab_val_educational_methods2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What peer tutoring assignments had 10 students and what group work assignments had the same number of students?",
+      "qtype": "unambig",
+      "sql": "SELECT Assignment.title \nFROM Assignment\nWHERE (Assignment.educationalMethod = \"Peer Tutoring\" OR Assignment.educationalMethod = \"Group Work\") AND Assignment.participants = \"10 students\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?assignment a :Assignments .\n  ?assignment p:title ?title .\n  ?assignment p:educationalMethod ?educationalmethod_w .\n  ?assignment p:educationalMethod ?educationalmethod_w2 .\n  ?assignment p:participants ?participants_w .\n  FILTER((((STR(?educationalmethod_w) = \"Peer Tutoring\" || STR(?educationalmethod_w2) = \"Group Work\")) && STR(?participants_w) = \"10 students\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show peer tutoring assignments and group work assignments that had 10 students.",
+      "qtype": "ambig",
+      "sql": "SELECT Assignment.title \nFROM Assignment\nWHERE Assignment.educationalMethod = \"Peer Tutoring\" OR Assignment.educationalMethod = \"Group Work\" AND Assignment.participants = \"10 students\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?assignment a :Assignments .\n  ?assignment p:title ?title .\n  ?assignment p:educationalMethod ?educationalmethod_w .\n  ?assignment p:educationalMethod ?educationalmethod_w2 .\n  ?assignment p:participants ?participants_w .\n  FILTER((STR(?educationalmethod_w) = \"Peer Tutoring\" || (STR(?educationalmethod_w2) = \"Group Work\" && STR(?participants_w) = \"10 students\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show peer tutoring assignments and group work assignments that had 10 students.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?assignment a :Assignments .\n  ?assignment p:title ?title .\n  ?assignment p:educationalMethod ?educationalmethod_w .\n  ?assignment p:educationalMethod ?educationalmethod_w2 .\n  ?assignment p:participants ?participants_w .\n  FILTER((((STR(?educationalmethod_w) = \"Peer Tutoring\" || STR(?educationalmethod_w2) = \"Group Work\")) && STR(?participants_w) = \"10 students\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?assignment a :Assignments .\n  ?assignment p:title ?title .\n  ?assignment p:educationalMethod ?educationalmethod_w .\n  ?assignment p:educationalMethod ?educationalmethod_w2 .\n  ?assignment p:participants ?participants_w .\n  FILTER((STR(?educationalmethod_w) = \"Peer Tutoring\" || (STR(?educationalmethod_w2) = \"Group Work\" && STR(?participants_w) = \"10 students\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

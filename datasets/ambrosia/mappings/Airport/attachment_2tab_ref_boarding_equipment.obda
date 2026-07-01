@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Terminals_base
+target		ex:Terminals/{Id} a :Terminals ; p:Id {Id} ; p:name {Name} .
+source		SELECT `Id`, `Name` FROM `Terminals`
+
+mappingId	Aircraft_base
+target		ex:Aircraft/{Id} a :Aircraft ; p:Id {Id} ; p:Type {Type} ; p:Seats {Seats} .
+source		SELECT `Id`, `Type`, `Seats` FROM `Aircraft`
+
+mappingId	Jet_bridge_base
+target		ex:Jet_Bridges/{Id} a :Jet_Bridges ; p:Id {Id} ; p:Length {Length} ; p:Capacity {Capacity} ; p:Terminal_id {Terminal_id} .
+source		SELECT `Id`, `Length`, `Capacity`, `Terminal_id` FROM `Jet_bridge`
+
+mappingId	Jet_bridge_Terminal_id_fk
+target		ex:Jet_Bridges/{Id} p:hasTerminals ex:Terminals/{Terminal_id} .
+source		SELECT `Id`, `Terminal_id` FROM `Jet_bridge` WHERE `Terminal_id` IS NOT NULL
+
+mappingId	Staircar_base
+target		ex:Staircars/{Id} a :Staircars ; p:Id {Id} ; p:Number_of_Cars {Number_of_Cars} ; p:Capacity {Capacity} ; p:Terminal_id {Terminal_id} .
+source		SELECT `Id`, `Number_of_Cars`, `Capacity`, `Terminal_id` FROM `Staircar`
+
+mappingId	Staircar_Terminal_id_fk
+target		ex:Staircars/{Id} p:hasTerminals ex:Terminals/{Terminal_id} .
+source		SELECT `Id`, `Terminal_id` FROM `Staircar` WHERE `Terminal_id` IS NOT NULL
+
+mappingId	Flight_base
+target		ex:Flights/{Id} a :Flights ; p:Id {Id} ; p:Aircraft_id {Aircraft_id} ; p:Terminal_id {Terminal_id} ; p:Departure_time {Departure_time} ; p:Arrival_time {Arrival_time} .
+source		SELECT `Id`, `Aircraft_id`, `Terminal_id`, `Departure_time`, `Arrival_time` FROM `Flight`
+
+mappingId	Flight_Terminal_id_fk
+target		ex:Flights/{Id} p:hasTerminals ex:Terminals/{Terminal_id} .
+source		SELECT `Id`, `Terminal_id` FROM `Flight` WHERE `Terminal_id` IS NOT NULL
+
+mappingId	Flight_Aircraft_id_fk
+target		ex:Flights/{Id} p:hasAircraft ex:Aircraft/{Aircraft_id} .
+source		SELECT `Id`, `Aircraft_id` FROM `Flight` WHERE `Aircraft_id` IS NOT NULL
+
+]]

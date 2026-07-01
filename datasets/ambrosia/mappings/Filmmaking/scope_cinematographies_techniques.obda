@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cinematographies_base
+target		ex:Cinematographies/{id} a :Cinematographies ; p:id {id} ; p:name {name} ; p:release_year {release_year} .
+source		SELECT `id`, `name`, `release_year` FROM `Cinematographies`
+
+mappingId	Techniques_base
+target		ex:Techniques/{id} a :Techniques ; p:id {id} ; p:technique_name {technique_name} .
+source		SELECT `id`, `technique_name` FROM `Techniques`
+
+mappingId	Cinematographies_Techniques_base
+target		ex:Cinematographies_Techniques/{cinematography_id}/{technique_id} a :Cinematographies_Techniques ; p:cinematography_id {cinematography_id} ; p:technique_id {technique_id} .
+source		SELECT `cinematography_id`, `technique_id` FROM `Cinematographies_Techniques`
+
+mappingId	Cinematographies_Techniques_technique_id_fk
+target		ex:Cinematographies_Techniques/{cinematography_id}/{technique_id} p:hasTechniques ex:Techniques/{technique_id} .
+source		SELECT `cinematography_id`, `technique_id` FROM `Cinematographies_Techniques` WHERE `technique_id` IS NOT NULL
+
+mappingId	Cinematographies_Techniques_cinematography_id_fk
+target		ex:Cinematographies_Techniques/{cinematography_id}/{technique_id} p:hasCinematographies ex:Cinematographies/{cinematography_id} .
+source		SELECT `cinematography_id`, `technique_id` FROM `Cinematographies_Techniques` WHERE `cinematography_id` IS NOT NULL
+
+]]

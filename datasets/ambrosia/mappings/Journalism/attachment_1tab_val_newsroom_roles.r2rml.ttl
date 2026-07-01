@@ -1,0 +1,70 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_val_newsroom_roles_0_newsrooms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"newsrooms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/newsrooms/{id}" ; rr:class :newsrooms ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_1_reporters_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"role\", \"deadline\", \"assigned_newsroom\" FROM \"reporters\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Reporters/{id}" ; rr:class :Reporters ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:role ; rr:objectMap [ rr:column "role" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:deadline ; rr:objectMap [ rr:column "deadline" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:assigned_newsroom ; rr:objectMap [ rr:column "assigned_newsroom" ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_2_reporters_assigned_newsroom_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"assigned_newsroom\" FROM \"reporters\" WHERE \"assigned_newsroom\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Reporters/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasnewsrooms ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/newsrooms/{assigned_newsroom}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_3_storyIdeas_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"title\", \"description\", \"pitchDate\", \"assignedTo\", \"status\" FROM \"storyIdeas\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/storyIdeas/{id}" ; rr:class :storyIdeas ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:pitchDate ; rr:objectMap [ rr:column "pitchDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:assignedTo ; rr:objectMap [ rr:column "assignedTo" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:status ; rr:objectMap [ rr:column "status" ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_4_storyIdeas_assignedTo_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"assignedTo\" FROM \"storyIdeas\" WHERE \"assignedTo\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/storyIdeas/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasReporters ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Reporters/{assignedTo}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_5_publications_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"title\", \"content\", \"publishDate\", \"associatedStoryId\" FROM \"publications\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publications/{id}" ; rr:class :Publications ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:content ; rr:objectMap [ rr:column "content" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:publishDate ; rr:objectMap [ rr:column "publishDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:associatedStoryId ; rr:objectMap [ rr:column "associatedStoryId" ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_6_publications_associatedStoryId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"associatedStoryId\" FROM \"publications\" WHERE \"associatedStoryId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publications/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasstoryIdeas ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/storyIdeas/{associatedStoryId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_7_readershipStats_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"publicationId\", \"numPageViews\", \"avgTimeSpentReading\" FROM \"readershipStats\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/readershipStats/{id}" ; rr:class :readershipStats ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:publicationId ; rr:objectMap [ rr:column "publicationId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:numPageViews ; rr:objectMap [ rr:column "numPageViews" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:avgTimeSpentReading ; rr:objectMap [ rr:column "avgTimeSpentReading" ] ] .
+
+<#tm_attachment_1tab_val_newsroom_roles_8_readershipStats_publicationId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"publicationId\" FROM \"readershipStats\" WHERE \"publicationId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/readershipStats/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPublications ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publications/{publicationId}" ; rr:termType rr:IRI ] ] .
+

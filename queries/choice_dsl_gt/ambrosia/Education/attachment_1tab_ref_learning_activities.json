@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_learning_activities",
+  "schema": "amb_attachment_1tab_ref_learning_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Describe field trips and study groups organised to develop problem-solving skills.",
+      "qtype": "ambig",
+      "sql": "SELECT LearningActivity.Description \nFROM LearningActivity JOIN Purpose ON LearningActivity.PurposeID = Purpose.ID\nWHERE (LearningActivity.ActivityType = \"Field Trip\" OR LearningActivity.ActivityType = \"Study Group\") AND Purpose.Name = \"Problem Solving Skills Development\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?learningactivity a :LearningActivities .\n  ?purpose a :Purpose .\n  ?learningactivity p:hasPurpose ?purpose .\n  ?learningactivity p:Description ?description .\n  ?learningactivity p:ActivityType ?activitytype_w .\n  ?learningactivity p:ActivityType ?activitytype_w2 .\n  ?purpose p:name ?name_w .\n  FILTER((((STR(?activitytype_w) = \"Field Trip\" || STR(?activitytype_w2) = \"Study Group\")) && STR(?name_w) = \"Problem Solving Skills Development\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Describe field trips and study groups organised to develop problem-solving skills.",
+      "qtype": "ambig",
+      "sql": "SELECT LearningActivity.Description \nFROM LearningActivity JOIN Purpose ON LearningActivity.PurposeID = Purpose.ID\nWHERE LearningActivity.ActivityType = \"Field Trip\" OR LearningActivity.ActivityType = \"Study Group\" AND Purpose.Name = \"Problem Solving Skills Development\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?learningactivity a :LearningActivities .\n  ?purpose a :Purpose .\n  ?learningactivity p:hasPurpose ?purpose .\n  ?learningactivity p:Description ?description .\n  ?learningactivity p:ActivityType ?activitytype_w .\n  ?learningactivity p:ActivityType ?activitytype_w2 .\n  ?purpose p:name ?name_w .\n  FILTER((STR(?activitytype_w) = \"Field Trip\" || (STR(?activitytype_w2) = \"Study Group\" && STR(?name_w) = \"Problem Solving Skills Development\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Describe field trips and study groups organised to develop problem-solving skills.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?description WHERE {\n  ?learningactivity a :LearningActivities .\n  ?purpose a :Purpose .\n  ?learningactivity p:hasPurpose ?purpose .\n  ?learningactivity p:Description ?description .\n  ?learningactivity p:ActivityType ?activitytype_w .\n  ?learningactivity p:ActivityType ?activitytype_w2 .\n  ?purpose p:name ?name_w .\n  FILTER((((STR(?activitytype_w) = \"Field Trip\" || STR(?activitytype_w2) = \"Study Group\")) && STR(?name_w) = \"Problem Solving Skills Development\"))\n} }\n  low: { SELECT ?description WHERE {\n  ?learningactivity a :LearningActivities .\n  ?purpose a :Purpose .\n  ?learningactivity p:hasPurpose ?purpose .\n  ?learningactivity p:Description ?description .\n  ?learningactivity p:ActivityType ?activitytype_w .\n  ?learningactivity p:ActivityType ?activitytype_w2 .\n  ?purpose p:name ?name_w .\n  FILTER((STR(?activitytype_w) = \"Field Trip\" || (STR(?activitytype_w2) = \"Study Group\" && STR(?name_w) = \"Problem Solving Skills Development\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

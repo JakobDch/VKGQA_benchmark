@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_courses_assignments",
+  "schema": "amb_scope_courses_assignments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the descriptions of the assignments that every course requires.",
+      "qtype": "ambig",
+      "sql": "SELECT Assignments.description  from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID   GROUP BY Courses_Assignments.assignmentID HAVING COUNT(DISTINCT Courses_Assignments.courseID) = (SELECT COUNT(*) FROM  Courses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the descriptions of the assignments that every course requires.",
+      "qtype": "ambig",
+      "sql": "select courses.title , assignments.description from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?description WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "What is the type of assignment corresponding to each course?",
+      "qtype": "unambig",
+      "sql": "select courses.title , assignments.type from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the assignment types that are in common for all courses.",
+      "qtype": "unambig",
+      "sql": "SELECT Assignments.type  from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID   GROUP BY Courses_Assignments.assignmentID HAVING COUNT(DISTINCT Courses_Assignments.courseID) = (SELECT COUNT(*) FROM  Courses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For each course show the assignments offered and their descriptions",
+      "qtype": "unambig",
+      "sql": "select courses.title , assignments.type , assignments.description from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type ?description WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:type ?type .\n  ?assignments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "What type of assignments do all the courses have in common and what are their descriptions?",
+      "qtype": "unambig",
+      "sql": "SELECT Assignments.type, Assignments.description  from Courses_Assignments join Assignments on Courses_Assignments.assignmentID = Assignments.assignmentID join Courses on Courses_Assignments.courseID = Courses.courseID   GROUP BY Courses_Assignments.assignmentID HAVING COUNT(DISTINCT Courses_Assignments.courseID) = (SELECT COUNT(*) FROM  Courses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the type of assignments used in each course.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the types of assignments that every course comprises of abd their descriptions",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type ?description WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:type ?type .\n  ?assignments p:description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the descriptions of the assignments that every course requires.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?description WHERE {\n  ?courses_assignments a :Courses_Assignments .\n  ?assignments a :Assignments .\n  ?courses_assignments p:hasAssignments ?assignments .\n  ?courses a :Courses .\n  ?courses_assignments p:hasCourses ?courses .\n  ?courses p:title ?title .\n  ?assignments p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAssignments ?child ; p:hasCourses ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

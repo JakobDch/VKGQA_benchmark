@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_location2",
+  "schema": "amb_vague_2cols_location2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each customer and their resident cities, list all their transactions where the amount is less than 1000. Order this list by first date, and value i.e. for transactions that take place on the same date, list the smallest amounts first.",
+      "qtype": "unambig",
+      "sql": "SELECT\nAccounts.AccountNumber,\nCustomers.FullName,\nTransactions.Amount,\nTransactions.TransactionDate,\nAddresses.City\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Transactions ON Transactions.AccountNumber = Accounts.AccountNumber\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nWHERE Transactions.Amount < '1000'\nORDER BY Transactions.TransactionDate ASC, Transactions.Amount ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?amount ?transactiondate ?city WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:City ?city .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "For each customer and their resident cities and countries, list all their transactions where the amount is less than 1000. Order this list by first date, and value i.e. for transactions that take place on the same date, list the smallest amounts first.",
+      "qtype": "unambig",
+      "sql": "SELECT\nAccounts.AccountNumber,\nCustomers.FullName,\nTransactions.Amount,\nTransactions.TransactionDate,\nAddresses.City, Country\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Transactions ON Transactions.AccountNumber = Accounts.AccountNumber\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nWHERE Transactions.Amount < '1000'\nORDER BY Transactions.TransactionDate ASC, Transactions.Amount ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?amount ?transactiondate ?city ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:City ?city .\n  ?addresses p:Country ?country .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "Show a list of the accounts, customers, cities and banks ordered by banks and then by city.",
+      "qtype": "unambig",
+      "sql": "SELECT\nCustomers.FullName,\nAccounts.AccountNumber, \nAddresses.Banks,\nAddresses.City\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nORDER BY Banks ASC, City ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?accountnumber ?banks ?city WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:City ?city .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:City ?city_o .\n}\nORDER BY ASC(?banks_o) ASC(?city_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show a list of transactions by customer and location where the transaction amount is less than 1000 and order the list by date and lower amounts at the beginning of the list by date.",
+      "qtype": "ambig",
+      "sql": "SELECT\nAccounts.AccountNumber,\nCustomers.FullName,\nTransactions.Amount,\nTransactions.TransactionDate,\nAddresses.Country\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Transactions ON Transactions.AccountNumber = Accounts.AccountNumber\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nWHERE Transactions.Amount < '1000'\nORDER BY Transactions.TransactionDate ASC, Transactions.Amount ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?amount ?transactiondate ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:Country ?country .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "Show a list of the accounts, customers, locations and banks ordered by banks and then by location.",
+      "qtype": "ambig",
+      "sql": "SELECT\nCustomers.FullName,\nAccounts.AccountNumber, \nAddresses.Banks,\nAddresses.Country\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nORDER BY Banks ASC, Country ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?accountnumber ?banks ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:Country ?country .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:Country ?country_o .\n}\nORDER BY ASC(?banks_o) ASC(?country_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show a list of the accounts, customers, locations and banks ordered by banks and then by location.",
+      "qtype": "ambig",
+      "sql": "SELECT\nCustomers.FullName,\nAccounts.AccountNumber, \nAddresses.Banks,\nAddresses.City, Country\nFROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID\nJOIN Addresses ON Addresses.CustomerID = Accounts.CustomerID\nORDER BY Banks ASC, City, Country ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?accountnumber ?banks ?city ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:City ?city .\n  ?addresses p:Country ?country .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:City ?city_o .\n  ?addresses p:Country ?country_o .\n}\nORDER BY ASC(?banks_o) ASC(?city_o) ASC(?country_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show a list of transactions by customer and location where the transaction amount is less than 1000 and order the list by date and lower amounts at the beginning of the list by date.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?accountnumber ?fullname ?amount ?transactiondate ?city WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:City ?city .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o) }\n  full: { SELECT ?accountnumber ?fullname ?amount ?transactiondate ?city ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:City ?city .\n  ?addresses p:Country ?country .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o) }\n  component_2: { SELECT ?accountnumber ?fullname ?amount ?transactiondate ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?transactions a :Transactions .\n  ?transactions p:hasAccounts ?accounts .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?transactions p:Amount ?amount .\n  ?transactions p:TransactionDate ?transactiondate .\n  ?addresses p:Country ?country .\n  ?transactions p:Amount ?amount_f .\n  ?transactions p:TransactionDate ?transactiondate_o .\n  ?transactions p:Amount ?amount_o .\n  FILTER(xsd:double(?amount_f) < 1000)\n}\nORDER BY ASC(?transactiondate_o) ASC(?amount_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show a list of the accounts, customers, locations and banks ordered by banks and then by location.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?fullname ?accountnumber ?banks ?city WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:City ?city .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:City ?city_o .\n}\nORDER BY ASC(?banks_o) ASC(?city_o) }\n  component_2: { SELECT ?fullname ?accountnumber ?banks ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:Country ?country .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:Country ?country_o .\n}\nORDER BY ASC(?banks_o) ASC(?country_o) }\n  full: { SELECT ?fullname ?accountnumber ?banks ?city ?country WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?addresses a :Addresses .\n  ?addresses p:hasCustomers ?shared_customers .\n  ?accounts p:hasCustomers ?shared_customers .\n  ?customers p:name ?fullname .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?addresses p:Banks ?banks .\n  ?addresses p:City ?city .\n  ?addresses p:Country ?country .\n  ?addresses p:Banks ?banks_o .\n  ?addresses p:City ?city_o .\n  ?addresses p:Country ?country_o .\n}\nORDER BY ASC(?banks_o) ASC(?city_o) ASC(?country_o) }\n}",
+      "verified": true
+    }
+  ]
+}

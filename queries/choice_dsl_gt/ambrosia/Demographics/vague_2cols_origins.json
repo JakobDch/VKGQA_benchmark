@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_origins",
+  "schema": "amb_vague_2cols_origins",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What region are women immigrants from?",
+      "qtype": "unambig",
+      "sql": "SELECT  region_name  FROM Immigrants JOIN Regions ON Immigrants.region_of_origin = Regions.region_id WHERE gender  = 'F'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Where does the oldest immigrant come from?",
+      "qtype": "ambig",
+      "sql": "SELECT  country_name  FROM Immigrants JOIN Countries ON Immigrants.country_of_origin = Countries.id ORDER BY age ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?country_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Where does the oldest immigrant come from?",
+      "qtype": "ambig",
+      "sql": "SELECT  region_name  FROM Immigrants JOIN Regions ON Immigrants.region_of_origin = Regions.region_id ORDER BY age ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Where does the oldest immigrant come from?",
+      "qtype": "ambig",
+      "sql": "SELECT  country_name, region_name  FROM Immigrants JOIN Countries ON Immigrants.country_of_origin = Countries.id JOIN Regions ON Immigrants.region_of_origin = Regions.region_id  ORDER BY age ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?country_name ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?countries p:country_name ?country_name .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What country and region do women immigrants come from?",
+      "qtype": "unambig",
+      "sql": "SELECT  country_name, region_of_origin  FROM Immigrants JOIN Countries ON Immigrants.country_of_origin = Countries.id JOIN Regions ON Immigrants.region_of_origin = Regions.region_id  WHERE gender  = 'F'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?country_name ?region_of_origin WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:region_of_origin ?region_of_origin .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "Where do immigrant women come from?",
+      "qtype": "ambig",
+      "sql": "SELECT  country_name  FROM Immigrants JOIN Countries ON Immigrants.country_of_origin = Countries.id WHERE gender  = 'F'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?country_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where do immigrant women come from?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n} }\n  full: { SELECT ?country_name ?region_of_origin WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:region_of_origin ?region_of_origin .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n} }\n  component_2: { SELECT ?country_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:gender ?gender_f .\n  FILTER(?gender_f = \"F\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where does the oldest immigrant come from?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1 }\n  full: { SELECT ?country_name ?region_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?regions a :Regions .\n  ?immigrants p:hasRegions ?regions .\n  ?countries p:country_name ?country_name .\n  ?regions p:region_name ?region_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1 }\n  component_2: { SELECT ?country_name WHERE {\n  ?immigrants a :Immigrants .\n  ?countries a :Countries .\n  ?immigrants p:hasCountries ?countries .\n  ?countries p:country_name ?country_name .\n  ?immigrants p:age ?age_o .\n}\nORDER BY ASC(?age_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

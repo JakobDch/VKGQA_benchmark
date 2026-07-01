@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{TeacherID} a :Teachers ; p:TeacherID {TeacherID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Subject {Subject} .
+source		SELECT `TeacherID`, `FirstName`, `LastName`, `Subject` FROM `Teachers`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:Title {Title} ; p:Description {Description} ; p:Credit {Credit} .
+source		SELECT `CourseID`, `Title`, `Description`, `Credit` FROM `Courses`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Grades_base
+target		ex:Grades/{GradeID} a :Grades ; p:GradeID {GradeID} ; p:EnrollmentID {EnrollmentID} ; p:FinalGrade {FinalGrade} .
+source		SELECT `GradeID`, `EnrollmentID`, `FinalGrade` FROM `Grades`
+
+mappingId	Grades_EnrollmentID_fk
+target		ex:Grades/{GradeID} p:hasEnrollments ex:Enrollments/{EnrollmentID} .
+source		SELECT `GradeID`, `EnrollmentID` FROM `Grades` WHERE `EnrollmentID` IS NOT NULL
+
+mappingId	Programs_base
+target		ex:Programs/{ProgramID} a :Programs ; p:ProgramID {ProgramID} ; p:ProgramName {ProgramName} ; p:Core_Courses {Core_Courses} ; p:Electives {Electives} ; p:Requirements {Requirements} .
+source		SELECT `ProgramID`, `ProgramName`, `Core_Courses`, `Electives`, `Requirements` FROM `Programs`
+
+]]

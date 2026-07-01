@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_movie_sets_equipment",
+  "schema": "amb_scope_movie_sets_equipment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each movie set, list the equipment type used.",
+      "qtype": "unambig",
+      "sql": "select movie_sets.title , equipment.type from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 1,
+      "question": "What items of equipment are there for every movie set?",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.name  from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id   GROUP BY Movie_sets_equipment.equipment_id HAVING COUNT(DISTINCT Movie_sets_equipment.movie_set_id) = (SELECT COUNT(*) FROM  Movie_sets)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What items of equipment are there for every movie set?",
+      "qtype": "ambig",
+      "sql": "select movie_sets.title , equipment.name from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "Show me equipment type every movie set uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.type  from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id   GROUP BY Movie_sets_equipment.equipment_id HAVING COUNT(DISTINCT Movie_sets_equipment.movie_set_id) = (SELECT COUNT(*) FROM  Movie_sets)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For each movie set, show me the equipment name and type.",
+      "qtype": "unambig",
+      "sql": "select movie_sets.title , equipment.name , equipment.type from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?type WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:name ?name .\n  ?equipment p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the equipment name and type that is in common for all movie sets.",
+      "qtype": "unambig",
+      "sql": "SELECT Equipment.name, Equipment.type  from Movie_sets_equipment join Equipment on Movie_sets_equipment.equipment_id = Equipment.id join Movie_sets on Movie_sets_equipment.movie_set_id = Movie_sets.id   GROUP BY Movie_sets_equipment.equipment_id HAVING COUNT(DISTINCT Movie_sets_equipment.movie_set_id) = (SELECT COUNT(*) FROM  Movie_sets)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me equipment type every movie set uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the equipment names and types for each movie set.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?name ?type WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:name ?name .\n  ?equipment p:type ?type .\n} }\n  collective: { SELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What items of equipment are there for every movie set?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?name WHERE {\n  ?movie_sets_equipment a :Movie_sets_equipment .\n  ?equipment a :Equipment .\n  ?movie_sets_equipment p:hasEquipment ?equipment .\n  ?movie_sets a :Movie_sets .\n  ?movie_sets_equipment p:hasMovie_sets ?movie_sets .\n  ?movie_sets p:title ?title .\n  ?equipment p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMovie_sets ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Movie_sets } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

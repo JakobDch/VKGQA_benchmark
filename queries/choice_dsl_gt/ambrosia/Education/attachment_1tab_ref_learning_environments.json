@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_learning_environments",
+  "schema": "amb_attachment_1tab_ref_learning_environments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which virtual rooms have a capacity of 30 and which class rooms have the same capacity?",
+      "qtype": "unambig",
+      "sql": "SELECT Classrooms.Name \nFROM LearningEnvironments JOIN Classrooms ON LearningEnvironments.Environmentid = Classrooms.TypeOfEnvironment\nWHERE (LearningEnvironments.Value = \"Classroom\" OR LearningEnvironments.Value = \"Virtual Room\") AND Classrooms.Capacity = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learningenvironments a :LearningEnvironments .\n  ?classrooms a :Classrooms .\n  ?classrooms p:hasLearningEnvironments ?learningenvironments .\n  ?classrooms p:name ?name .\n  ?learningenvironments p:Value ?value_w .\n  ?learningenvironments p:Value ?value_w2 .\n  ?classrooms p:Capacity ?capacity_w .\n  FILTER((((STR(?value_w) = \"Classroom\" || STR(?value_w2) = \"Virtual Room\")) && (STR(?capacity_w) = \"30\" || STR(?capacity_w) = \"30.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display classrooms and virtual rooms with a capacity of 30.",
+      "qtype": "ambig",
+      "sql": "SELECT Classrooms.Name \nFROM LearningEnvironments JOIN Classrooms ON LearningEnvironments.Environmentid = Classrooms.TypeOfEnvironment\nWHERE LearningEnvironments.Value = \"Classroom\" OR LearningEnvironments.Value = \"Virtual Room\" AND Classrooms.Capacity = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learningenvironments a :LearningEnvironments .\n  ?classrooms a :Classrooms .\n  ?classrooms p:hasLearningEnvironments ?learningenvironments .\n  ?classrooms p:name ?name .\n  ?learningenvironments p:Value ?value_w .\n  ?learningenvironments p:Value ?value_w2 .\n  ?classrooms p:Capacity ?capacity_w .\n  FILTER((STR(?value_w) = \"Classroom\" || (STR(?value_w2) = \"Virtual Room\" && (STR(?capacity_w) = \"30\" || STR(?capacity_w) = \"30.0\"))))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display classrooms and virtual rooms with a capacity of 30.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?learningenvironments a :LearningEnvironments .\n  ?classrooms a :Classrooms .\n  ?classrooms p:hasLearningEnvironments ?learningenvironments .\n  ?classrooms p:name ?name .\n  ?learningenvironments p:Value ?value_w .\n  ?learningenvironments p:Value ?value_w2 .\n  ?classrooms p:Capacity ?capacity_w .\n  FILTER((((STR(?value_w) = \"Classroom\" || STR(?value_w2) = \"Virtual Room\")) && (STR(?capacity_w) = \"30\" || STR(?capacity_w) = \"30.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?learningenvironments a :LearningEnvironments .\n  ?classrooms a :Classrooms .\n  ?classrooms p:hasLearningEnvironments ?learningenvironments .\n  ?classrooms p:name ?name .\n  ?learningenvironments p:Value ?value_w .\n  ?learningenvironments p:Value ?value_w2 .\n  ?classrooms p:Capacity ?capacity_w .\n  FILTER((STR(?value_w) = \"Classroom\" || (STR(?value_w2) = \"Virtual Room\" && (STR(?capacity_w) = \"30\" || STR(?capacity_w) = \"30.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	TelevisionShows_base
+target		ex:Tv_Show/{id} a :Tv_Show ; p:id {id} ; p:title {title} ; p:year {year} ; p:network {network} ; p:genre {genre} .
+source		SELECT `id`, `title`, `year`, `network`, `genre` FROM `TelevisionShows`
+
+mappingId	TelevisionShows_genre_fk
+target		ex:Tv_Show/{id} p:hasGenre ex:Genre/{genre} .
+source		SELECT `id`, `genre` FROM `TelevisionShows` WHERE `genre` IS NOT NULL
+
+mappingId	Genres_base
+target		ex:Genre/{name} a :Genre ; p:name {name} .
+source		SELECT `name` FROM `Genres`
+
+mappingId	Seasons_base
+target		ex:Seasons/{id} a :Seasons ; p:id {id} ; p:show_id {show_id} ; p:number_of_seasons {number_of_seasons} ; p:release_year {release_year} .
+source		SELECT `id`, `show_id`, `number_of_seasons`, `release_year` FROM `Seasons`
+
+mappingId	Seasons_show_id_fk
+target		ex:Seasons/{id} p:hasTv_Show ex:Tv_Show/{show_id} .
+source		SELECT `id`, `show_id` FROM `Seasons` WHERE `show_id` IS NOT NULL
+
+mappingId	Episodes_base
+target		ex:Episodes/{id} a :Episodes ; p:id {id} ; p:season_id {season_id} ; p:episode_number {episode_number} ; p:title {title} ; p:run_time {run_time} ; p:airdate {airdate} .
+source		SELECT `id`, `season_id`, `episode_number`, `title`, `run_time`, `airdate` FROM `Episodes`
+
+mappingId	Episodes_season_id_fk
+target		ex:Episodes/{id} p:hasSeasons ex:Seasons/{season_id} .
+source		SELECT `id`, `season_id` FROM `Episodes` WHERE `season_id` IS NOT NULL
+
+]]

@@ -1,0 +1,174 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_construction_companies_projects",
+  "schema": "amb_scope_construction_companies_projects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the end date of the project where all the companies are involved?",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.end_date  from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id   GROUP BY Construction_Companies_Projects.project_id HAVING COUNT(DISTINCT Construction_Companies_Projects.construction_company_id) = (SELECT COUNT(*) FROM  Construction_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give the type and start date of the project that each construction company is working on.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.project_type, Projects.start_date  from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id   GROUP BY Construction_Companies_Projects.project_id HAVING COUNT(DISTINCT Construction_Companies_Projects.construction_company_id) = (SELECT COUNT(*) FROM  Construction_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_type ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:project_type ?project_type .\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give the type and start date of the project that each construction company is working on.",
+      "qtype": "ambig",
+      "sql": "select construction_companies.company_name , projects.project_type , projects.start_date from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?project_type ?start_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:project_type ?project_type .\n  ?projects p:start_date ?start_date .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Which project start dates do all construction companies have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.start_date  from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id   GROUP BY Construction_Companies_Projects.project_id HAVING COUNT(DISTINCT Construction_Companies_Projects.construction_company_id) = (SELECT COUNT(*) FROM  Construction_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the project end dates listed by company",
+      "qtype": "unambig",
+      "sql": "select construction_companies.company_name , projects.end_date from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?end_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:end_date ?end_date .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the projects for each construction company.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.project_type  from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id   GROUP BY Construction_Companies_Projects.project_id HAVING COUNT(DISTINCT Construction_Companies_Projects.construction_company_id) = (SELECT COUNT(*) FROM  Construction_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:project_type ?project_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "Show me the projects for each construction company.",
+      "qtype": "ambig",
+      "sql": "select construction_companies.company_name , projects.project_type from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?project_type WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:project_type ?project_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 7,
+      "question": "Show me the schedule of each construction company's projects.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.start_date, Projects.end_date  from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id   GROUP BY Construction_Companies_Projects.project_id HAVING COUNT(DISTINCT Construction_Companies_Projects.construction_company_id) = (SELECT COUNT(*) FROM  Construction_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?start_date ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 8,
+      "question": "Show me the schedule of each construction company's projects.",
+      "qtype": "ambig",
+      "sql": "select construction_companies.company_name , projects.start_date , projects.end_date from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?start_date ?end_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:start_date ?start_date .\n  ?projects p:end_date ?end_date .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 9,
+      "question": "For every construction company, show the project start dates.",
+      "qtype": "unambig",
+      "sql": "select construction_companies.company_name , projects.start_date from Construction_Companies_Projects join Projects on Construction_Companies_Projects.project_id = Projects.id join Construction_Companies on Construction_Companies_Projects.construction_company_id = Construction_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?start_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:start_date ?start_date .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the end date of the project each company is working on?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?end_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:end_date ?end_date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the project start dates for each construction company.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?start_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:start_date ?start_date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the schedule of each construction company's projects.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        7,
+        8
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?start_date ?end_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:start_date ?start_date .\n  ?child p:end_date ?end_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?start_date ?end_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:start_date ?start_date .\n  ?projects p:end_date ?end_date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give the type and start date of the project that each construction company is working on.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?project_type ?start_date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:project_type ?project_type .\n  ?child p:start_date ?start_date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?project_type ?start_date WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:project_type ?project_type .\n  ?projects p:start_date ?start_date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the projects for each construction company.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        6
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?project_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasConstruction_Companies ?parent . } GROUP BY ?child }\n  ?child p:project_type ?project_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Construction_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?project_type WHERE {\n  ?construction_companies_projects a :Construction_Companies_Projects .\n  ?projects a :Projects .\n  ?construction_companies_projects p:hasProjects ?projects .\n  ?construction_companies a :Construction_Companies .\n  ?construction_companies_projects p:hasConstruction_Companies ?construction_companies .\n  ?construction_companies p:company_name ?company_name .\n  ?projects p:project_type ?project_type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

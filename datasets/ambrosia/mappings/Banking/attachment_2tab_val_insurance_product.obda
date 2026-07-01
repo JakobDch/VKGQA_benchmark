@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:email {email} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `date_of_birth`, `email` FROM `customers`
+
+mappingId	accounts_base
+target		ex:Accounts/{account_number} a :Accounts ; p:account_number {account_number} ; p:balance {balance} ; p:interest_rate {interest_rate} ; p:customer_id {customer_id} .
+source		SELECT `account_number`, `balance`, `interest_rate`, `customer_id` FROM `accounts`
+
+mappingId	accounts_customer_id_fk
+target		ex:Accounts/{account_number} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `account_number`, `customer_id` FROM `accounts` WHERE `customer_id` IS NOT NULL
+
+mappingId	loans_base
+target		ex:Loans/{loan_id} a :Loans ; p:loan_id {loan_id} ; p:amount {amount} ; p:start_date {start_date} ; p:end_date {end_date} ; p:monthly_payment {monthly_payment} ; p:account_number {account_number} .
+source		SELECT `loan_id`, `amount`, `start_date`, `end_date`, `monthly_payment`, `account_number` FROM `loans`
+
+mappingId	loans_account_number_fk
+target		ex:Loans/{loan_id} p:hasAccounts ex:Accounts/{account_number} .
+source		SELECT `loan_id`, `account_number` FROM `loans` WHERE `account_number` IS NOT NULL
+
+mappingId	transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:type {type} ; p:amount {amount} ; p:account_number {account_number} .
+source		SELECT `transaction_id`, `type`, `amount`, `account_number` FROM `transactions`
+
+mappingId	transactions_account_number_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts ex:Accounts/{account_number} .
+source		SELECT `transaction_id`, `account_number` FROM `transactions` WHERE `account_number` IS NOT NULL
+
+mappingId	life_insurances_base
+target		ex:life_insurances/{id} a :life_insurances ; p:id {id} ; p:policy_number {policy_number} ; p:payout {payout} ; p:coverage_amount {coverage_amount} ; p:term_years {term_years} ; p:customer_id {customer_id} .
+source		SELECT `id`, `policy_number`, `payout`, `coverage_amount`, `term_years`, `customer_id` FROM `life_insurances`
+
+mappingId	life_insurances_customer_id_fk
+target		ex:life_insurances/{id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `id`, `customer_id` FROM `life_insurances` WHERE `customer_id` IS NOT NULL
+
+mappingId	annuities_base
+target		ex:annuities/{id} a :annuities ; p:id {id} ; p:contract_number {contract_number} ; p:payout {payout} ; p:premium_amount {premium_amount} ; p:start_date {start_date} ; p:end_date {end_date} ; p:customer_id {customer_id} .
+source		SELECT `id`, `contract_number`, `payout`, `premium_amount`, `start_date`, `end_date`, `customer_id` FROM `annuities`
+
+mappingId	annuities_customer_id_fk
+target		ex:annuities/{id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `id`, `customer_id` FROM `annuities` WHERE `customer_id` IS NOT NULL
+
+]]

@@ -1,0 +1,73 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Risks_base
+target		ex:Risks/{RiskID} a :Risks ; p:RiskID {RiskID} ; p:RiskName {RiskName} .
+source		SELECT `RiskID`, `RiskName` FROM `Risks`
+
+mappingId	Banks_base
+target		ex:Banks/{BankID} a :Banks ; p:BankID {BankID} ; p:BankName {BankName} ; p:location {Location} .
+source		SELECT `BankID`, `BankName`, `Location` FROM `Banks`
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:name {Name} ; p:Age {Age} .
+source		SELECT `CustomerID`, `Name`, `Age` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:OpenDate {OpenDate} .
+source		SELECT `AccountID`, `AccountNumber`, `Balance`, `OpenDate` FROM `Accounts`
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountID {AccountID} ; p:Amount {Amount} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountID`, `Amount`, `Date` FROM `Transactions`
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+mappingId	Bank_Products_base
+target		ex:Bank_Products/{ProductID} a :Bank_Products ; p:ProductID {ProductID} ; p:ProductName {ProductName} ; p:InterestRate {InterestRate} .
+source		SELECT `ProductID`, `ProductName`, `InterestRate` FROM `Bank_Products`
+
+mappingId	Bank_Customers_base
+target		ex:Bank_Customers/{_amb_rowid} a :Bank_Customers ; p:BankID {BankID} ; p:CustomerID {CustomerID} .
+source		SELECT `_amb_rowid`, `BankID`, `CustomerID` FROM `Bank_Customers`
+
+mappingId	Bank_Customers_CustomerID_fk
+target		ex:Bank_Customers/{_amb_rowid} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `_amb_rowid`, `CustomerID` FROM `Bank_Customers` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Bank_Customers_BankID_fk
+target		ex:Bank_Customers/{_amb_rowid} p:hasBanks ex:Banks/{BankID} .
+source		SELECT `_amb_rowid`, `BankID` FROM `Bank_Customers` WHERE `BankID` IS NOT NULL
+
+mappingId	Bank_Accounts_base
+target		ex:Bank_Accounts/{_amb_rowid} a :Bank_Accounts ; p:BankID {BankID} ; p:AccountID {AccountID} .
+source		SELECT `_amb_rowid`, `BankID`, `AccountID` FROM `Bank_Accounts`
+
+mappingId	Bank_Accounts_AccountID_fk
+target		ex:Bank_Accounts/{_amb_rowid} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `_amb_rowid`, `AccountID` FROM `Bank_Accounts` WHERE `AccountID` IS NOT NULL
+
+mappingId	Bank_Accounts_BankID_fk
+target		ex:Bank_Accounts/{_amb_rowid} p:hasBanks ex:Banks/{BankID} .
+source		SELECT `_amb_rowid`, `BankID` FROM `Bank_Accounts` WHERE `BankID` IS NOT NULL
+
+mappingId	Bank_Products_Risks_base
+target		ex:Bank_Products_Risks/{_amb_rowid} a :Bank_Products_Risks ; p:ProductID {ProductID} ; p:RiskID {RiskID} .
+source		SELECT `_amb_rowid`, `ProductID`, `RiskID` FROM `Bank_Products_Risks`
+
+mappingId	Bank_Products_Risks_RiskID_fk
+target		ex:Bank_Products_Risks/{_amb_rowid} p:hasRisks ex:Risks/{RiskID} .
+source		SELECT `_amb_rowid`, `RiskID` FROM `Bank_Products_Risks` WHERE `RiskID` IS NOT NULL
+
+mappingId	Bank_Products_Risks_ProductID_fk
+target		ex:Bank_Products_Risks/{_amb_rowid} p:hasBank_Products ex:Bank_Products/{ProductID} .
+source		SELECT `_amb_rowid`, `ProductID` FROM `Bank_Products_Risks` WHERE `ProductID` IS NOT NULL
+
+]]

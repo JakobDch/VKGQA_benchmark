@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_district_school_grades",
+  "schema": "amb_scope_district_school_grades",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the common school grade for all districts?",
+      "qtype": "unambig",
+      "sql": "SELECT School_Grades.grade  from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id   GROUP BY District_School_Grades.school_grade_id HAVING COUNT(DISTINCT District_School_Grades.district_id) = (SELECT COUNT(*) FROM  District)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?grade WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:grade ?grade .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "For every district, list the description of school grades.",
+      "qtype": "unambig",
+      "sql": "select district.name , school_grades.description from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 2,
+      "question": "For each district, what is the corresponding school grade?",
+      "qtype": "unambig",
+      "sql": "select district.name , school_grades.grade from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?grade WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:grade ?grade .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "List the common descriptions of school grades for all districts.",
+      "qtype": "unambig",
+      "sql": "SELECT School_Grades.description  from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id   GROUP BY District_School_Grades.school_grade_id HAVING COUNT(DISTINCT District_School_Grades.district_id) = (SELECT COUNT(*) FROM  District)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "List the school grades and their descriptions that we have in each district.",
+      "qtype": "ambig",
+      "sql": "SELECT School_Grades.grade, School_Grades.description  from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id   GROUP BY District_School_Grades.school_grade_id HAVING COUNT(DISTINCT District_School_Grades.district_id) = (SELECT COUNT(*) FROM  District)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?grade ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:grade ?grade .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "List the school grades and their descriptions that we have in each district.",
+      "qtype": "ambig",
+      "sql": "select district.name , school_grades.grade , school_grades.description from District_School_Grades join School_Grades on District_School_Grades.school_grade_id = School_Grades.id join District on District_School_Grades.district_id = District.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?grade ?description WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:grade ?grade .\n  ?school_grades p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the school grades for every district.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?grade WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:grade ?grade .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?grade WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:grade ?grade .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the description of school grades that every district has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the school grades and their descriptions that we have in each district.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?grade ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSchool_Grades ?child ; p:hasDistrict ?parent . } GROUP BY ?child }\n  ?child p:grade ?grade .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?grade ?description WHERE {\n  ?district_school_grades a :District_School_Grades .\n  ?school_grades a :School_Grades .\n  ?district_school_grades p:hasSchool_Grades ?school_grades .\n  ?district a :Districts .\n  ?district_school_grades p:hasDistrict ?district .\n  ?district p:name ?name .\n  ?school_grades p:grade ?grade .\n  ?school_grades p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

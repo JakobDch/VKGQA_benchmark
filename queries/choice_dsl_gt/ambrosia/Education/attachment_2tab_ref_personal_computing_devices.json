@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_ref_personal_computing_devices",
+  "schema": "amb_attachment_2tab_ref_personal_computing_devices",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show me which tablet and laptop models run on Windows 10?",
+      "qtype": "unambig",
+      "sql": "SELECT Tablets.model\nFROM Operating_System JOIN Tablets ON Operating_System.OS_ID = Tablets.OS_ID\nWHERE Operating_System.Name = \"Windows 10\"\nUNION\nSELECT Laptops.model\nFROM Operating_System JOIN Laptops ON Operating_System.OS_ID = Laptops.OS_ID\nWHERE Operating_System.Name = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?operating_system a :Operating_System .\n    ?tablets a :Tablets .\n    ?tablets p:hasOperating_System ?operating_system .\n    ?tablets p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?operating_system a :Operating_System .\n    ?laptops a :Laptops .\n    ?laptops p:hasOperating_System ?operating_system .\n    ?laptops p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Please display all tablets and laptops that run on Windows 10.",
+      "qtype": "ambig",
+      "sql": "SELECT Tablets.model\nFROM Operating_System JOIN Tablets ON Operating_System.OS_ID = Tablets.OS_ID\nUNION\nSELECT Laptops.model\nFROM Operating_System JOIN Laptops ON Operating_System.OS_ID = Laptops.OS_ID\nWHERE Operating_System.Name = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?operating_system a :Operating_System .\n    ?tablets a :Tablets .\n    ?tablets p:hasOperating_System ?operating_system .\n    ?tablets p:Model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?operating_system a :Operating_System .\n    ?laptops a :Laptops .\n    ?laptops p:hasOperating_System ?operating_system .\n    ?laptops p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Please display all tablets and laptops that run on Windows 10.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?operating_system a :Operating_System .\n    ?tablets a :Tablets .\n    ?tablets p:hasOperating_System ?operating_system .\n    ?tablets p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?operating_system a :Operating_System .\n    ?laptops a :Laptops .\n    ?laptops p:hasOperating_System ?operating_system .\n    ?laptops p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?operating_system a :Operating_System .\n    ?tablets a :Tablets .\n    ?tablets p:hasOperating_System ?operating_system .\n    ?tablets p:Model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?operating_system a :Operating_System .\n    ?laptops a :Laptops .\n    ?laptops p:hasOperating_System ?operating_system .\n    ?laptops p:Model ?model .\n    ?operating_system p:name ?name_f .\n    FILTER(STR(?name_f) = \"Windows 10\")\n    BIND(?model AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

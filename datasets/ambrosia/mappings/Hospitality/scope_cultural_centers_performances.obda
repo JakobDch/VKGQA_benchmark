@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cultural_Centers_base
+target		ex:Cultural_Centers/{centerID} a :Cultural_Centers ; p:centerID {centerID} ; p:name {name} ; p:location {location} .
+source		SELECT `centerID`, `name`, `location` FROM `Cultural_Centers`
+
+mappingId	Performances_base
+target		ex:Performances/{performanceID} a :Performances ; p:performanceID {performanceID} ; p:type {type} .
+source		SELECT `performanceID`, `type` FROM `Performances`
+
+mappingId	Cultural_Centers_Performances_base
+target		ex:Cultural_Centers_Performances/{_amb_rowid} a :Cultural_Centers_Performances ; p:culturalCenterID {culturalCenterID} ; p:performanceID {performanceID} .
+source		SELECT `_amb_rowid`, `culturalCenterID`, `performanceID` FROM `Cultural_Centers_Performances`
+
+mappingId	Cultural_Centers_Performances_performanceID_fk
+target		ex:Cultural_Centers_Performances/{_amb_rowid} p:hasPerformances ex:Performances/{performanceID} .
+source		SELECT `_amb_rowid`, `performanceID` FROM `Cultural_Centers_Performances` WHERE `performanceID` IS NOT NULL
+
+mappingId	Cultural_Centers_Performances_culturalCenterID_fk
+target		ex:Cultural_Centers_Performances/{_amb_rowid} p:hasCultural_Centers ex:Cultural_Centers/{culturalCenterID} .
+source		SELECT `_amb_rowid`, `culturalCenterID` FROM `Cultural_Centers_Performances` WHERE `culturalCenterID` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{employeeID} a :Employees ; p:employeeID {employeeID} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `employeeID`, `firstName`, `lastName` FROM `Employees`
+
+mappingId	Managers_base
+target		ex:Managers/{managerID} a :Managers ; p:managerID {managerID} ; p:employeeID {employeeID} .
+source		SELECT `managerID`, `employeeID` FROM `Managers`
+
+mappingId	Managers_employeeID_fk
+target		ex:Managers/{managerID} p:hasEmployees ex:Employees/{employeeID} .
+source		SELECT `managerID`, `employeeID` FROM `Managers` WHERE `employeeID` IS NOT NULL
+
+]]

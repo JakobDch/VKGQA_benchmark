@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_health_reporters_topics",
+  "schema": "amb_scope_health_reporters_topics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the topics that each health reporter covers.",
+      "qtype": "ambig",
+      "sql": "SELECT Topics.Name  from Health_Reporters_Topics join Topics on Health_Reporters_Topics.TopicID = Topics.TopicID join Health_Reporters on Health_Reporters_Topics.ReporterID = Health_Reporters.ReporterID   GROUP BY Health_Reporters_Topics.TopicID HAVING COUNT(DISTINCT Health_Reporters_Topics.ReporterID) = (SELECT COUNT(*) FROM  Health_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasHealth_Reporters ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the topics that each health reporter covers.",
+      "qtype": "ambig",
+      "sql": "select health_reporters.name , topics.name from Health_Reporters_Topics join Topics on Health_Reporters_Topics.TopicID = Topics.TopicID join Health_Reporters on Health_Reporters_Topics.ReporterID = Health_Reporters.ReporterID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?health_reporters_topics a :Health_Reporters_Topics .\n  ?topics a :topics .\n  ?health_reporters_topics p:hasTopics ?topics .\n  ?health_reporters a :Health_Reporters .\n  ?health_reporters_topics p:hasHealth_Reporters ?health_reporters .\n  ?health_reporters p:name ?name .\n  ?topics p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the topics that each health reporter covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?health_reporters_topics a :Health_Reporters_Topics .\n  ?topics a :topics .\n  ?health_reporters_topics p:hasTopics ?topics .\n  ?health_reporters a :Health_Reporters .\n  ?health_reporters_topics p:hasHealth_Reporters ?health_reporters .\n  ?health_reporters p:name ?name .\n  ?topics p:name ?name2 .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasHealth_Reporters ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_soundtrack",
+  "schema": "amb_attachment_1tab_ref_soundtrack",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide films listed with sound design and also show films where John Williams composed the music score.",
+      "qtype": "unambig",
+      "sql": "SELECT Movie_Elements.movie_title \nFROM Movie_Elements JOIN Composer ON Movie_Elements.composer_id = Composer.id\nWHERE Movie_Elements.element_type = \"Sound Design\" OR Movie_Elements.element_type = \"Music Score\" AND Composer.creator = \"John Williams\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?movie_title WHERE {\n  ?movie_elements a :Movie_Elements .\n  ?composer a :Composer .\n  ?movie_elements p:hasComposer ?composer .\n  ?movie_elements p:movie_title ?movie_title .\n  ?movie_elements p:element_type ?element_type_w .\n  ?movie_elements p:element_type ?element_type_w2 .\n  ?composer p:creator ?creator_w .\n  FILTER((STR(?element_type_w) = \"Sound Design\" || (STR(?element_type_w2) = \"Music Score\" && STR(?creator_w) = \"John Williams\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which films are listed with sound design and music score composed by John Williams?",
+      "qtype": "ambig",
+      "sql": "SELECT Movie_Elements.movie_title \nFROM Movie_Elements JOIN Composer ON Movie_Elements.composer_id = Composer.id\nWHERE (Movie_Elements.element_type = \"Sound Design\" OR Movie_Elements.element_type = \"Music Score\") AND Composer.creator = \"John Williams\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?movie_title WHERE {\n  ?movie_elements a :Movie_Elements .\n  ?composer a :Composer .\n  ?movie_elements p:hasComposer ?composer .\n  ?movie_elements p:movie_title ?movie_title .\n  ?movie_elements p:element_type ?element_type_w .\n  ?movie_elements p:element_type ?element_type_w2 .\n  ?composer p:creator ?creator_w .\n  FILTER((((STR(?element_type_w) = \"Sound Design\" || STR(?element_type_w2) = \"Music Score\")) && STR(?creator_w) = \"John Williams\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which films are listed with sound design and music score composed by John Williams?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?movie_title WHERE {\n  ?movie_elements a :Movie_Elements .\n  ?composer a :Composer .\n  ?movie_elements p:hasComposer ?composer .\n  ?movie_elements p:movie_title ?movie_title .\n  ?movie_elements p:element_type ?element_type_w .\n  ?movie_elements p:element_type ?element_type_w2 .\n  ?composer p:creator ?creator_w .\n  FILTER((STR(?element_type_w) = \"Sound Design\" || (STR(?element_type_w2) = \"Music Score\" && STR(?creator_w) = \"John Williams\")))\n} }\n  high: { SELECT ?movie_title WHERE {\n  ?movie_elements a :Movie_Elements .\n  ?composer a :Composer .\n  ?movie_elements p:hasComposer ?composer .\n  ?movie_elements p:movie_title ?movie_title .\n  ?movie_elements p:element_type ?element_type_w .\n  ?movie_elements p:element_type ?element_type_w2 .\n  ?composer p:creator ?creator_w .\n  FILTER((((STR(?element_type_w) = \"Sound Design\" || STR(?element_type_w2) = \"Music Score\")) && STR(?creator_w) = \"John Williams\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

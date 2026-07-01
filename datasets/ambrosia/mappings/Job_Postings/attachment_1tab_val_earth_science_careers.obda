@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Companies`
+
+mappingId	Departments_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Departments`
+
+mappingId	EarthSciencesJobs_base
+target		ex:EarthSciencesJobs/{id} a :EarthSciencesJobs ; p:id {id} ; p:jobTitle {jobTitle} ; p:departmentId {departmentId} ; p:companyId {companyId} .
+source		SELECT `id`, `jobTitle`, `departmentId`, `companyId` FROM `EarthSciencesJobs`
+
+mappingId	EarthSciencesJobs_companyId_fk
+target		ex:EarthSciencesJobs/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `EarthSciencesJobs` WHERE `companyId` IS NOT NULL
+
+mappingId	EarthSciencesJobs_departmentId_fk
+target		ex:EarthSciencesJobs/{id} p:hasDepartments ex:Departments/{departmentId} .
+source		SELECT `id`, `departmentId` FROM `EarthSciencesJobs` WHERE `departmentId` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:title {title} ; p:startDate {startDate} ; p:endDate {endDate} ; p:university {university} ; p:name {FullName} .
+source		SELECT `id`, `title`, `startDate`, `endDate`, `university`, `FullName` FROM `Employees`
+
+mappingId	Education_base
+target		ex:Education/{_amb_rowid} a :Education ; p:employeeId {employeeId} ; p:degree {degree} ; p:major {major} ; p:institution {institution} ; p:yearGraduated {yearGraduated} .
+source		SELECT `_amb_rowid`, `employeeId`, `degree`, `major`, `institution`, `yearGraduated` FROM `Education`
+
+mappingId	Education_employeeId_fk
+target		ex:Education/{_amb_rowid} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `_amb_rowid`, `employeeId` FROM `Education` WHERE `employeeId` IS NOT NULL
+
+]]

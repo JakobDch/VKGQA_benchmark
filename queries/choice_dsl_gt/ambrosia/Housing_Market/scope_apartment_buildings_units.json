@@ -1,0 +1,108 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_apartment_buildings_units",
+  "schema": "amb_scope_apartment_buildings_units",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What unit descriptions do we have for every apartment building?",
+      "qtype": "ambig",
+      "sql": "SELECT Units.description  from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id   GROUP BY Apartment_Buildings_Units.unit_id HAVING COUNT(DISTINCT Apartment_Buildings_Units.building_id) = (SELECT COUNT(*) FROM  Apartment_Buildings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What unit descriptions do we have for every apartment building?",
+      "qtype": "ambig",
+      "sql": "select apartment_buildings.name , units.description from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Which type of unit is common to all apartment buildings?",
+      "qtype": "unambig",
+      "sql": "SELECT Units.unit_type  from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id   GROUP BY Apartment_Buildings_Units.unit_id HAVING COUNT(DISTINCT Apartment_Buildings_Units.building_id) = (SELECT COUNT(*) FROM  Apartment_Buildings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?unit_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:unit_type ?unit_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each apartment building, list the unit type and descriptions they have.",
+      "qtype": "unambig",
+      "sql": "select apartment_buildings.name , units.unit_type , units.description from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?unit_type ?description WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:unit_type ?unit_type .\n  ?units p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the types and descriptions of units that are in each apartment building.",
+      "qtype": "ambig",
+      "sql": "SELECT Units.unit_type, Units.description  from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id   GROUP BY Apartment_Buildings_Units.unit_id HAVING COUNT(DISTINCT Apartment_Buildings_Units.building_id) = (SELECT COUNT(*) FROM  Apartment_Buildings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?unit_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:unit_type ?unit_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the type of unit for each apartment building.",
+      "qtype": "ambig",
+      "sql": "select apartment_buildings.name , units.unit_type from Apartment_Buildings_Units join Units on Apartment_Buildings_Units.unit_id = Units.id join Apartment_Buildings on Apartment_Buildings_Units.building_id = Apartment_Buildings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?unit_type WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:unit_type ?unit_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the type of unit for each apartment building.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?unit_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:unit_type ?unit_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?unit_type WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:unit_type ?unit_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the types and descriptions of units that are in each apartment building.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?unit_type ?description WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:unit_type ?unit_type .\n  ?units p:description ?description .\n} }\n  collective: { SELECT ?unit_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:unit_type ?unit_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What unit descriptions do we have for every apartment building?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUnits ?child ; p:hasApartment_Buildings ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Apartment_Buildings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?apartment_buildings_units a :Apartment_Buildings_Units .\n  ?units a :Units .\n  ?apartment_buildings_units p:hasUnits ?units .\n  ?apartment_buildings a :Apartment_Buildings .\n  ?apartment_buildings_units p:hasApartment_Buildings ?apartment_buildings .\n  ?apartment_buildings p:name ?name .\n  ?units p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

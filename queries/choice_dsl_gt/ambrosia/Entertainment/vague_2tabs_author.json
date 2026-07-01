@@ -1,0 +1,98 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_author",
+  "schema": "amb_vague_2tabs_author",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all filmmakers and screenwriters from youngest to oldest.",
+      "qtype": "unambig",
+      "sql": "SELECT name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nSELECT DISTINCT ?name WHERE { { ?f a :Filmmaker ; p:name ?name } UNION { ?s a :Screenwriter ; p:name ?name } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): no-FROM gold 'SELECT name'; NL intent = all authors = Filmmaker.name UNION Scree"
+    },
+    {
+      "qid": 1,
+      "question": "Show all filmmakers and screenwriters from youngest to oldest.",
+      "qtype": "unambig",
+      "sql": "SELECT name, birth_year FROM Filmmaker",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?birth_year WHERE {\n  ?filmmaker a :Filmmaker .\n  ?filmmaker p:name ?name .\n  ?filmmaker p:birth_year ?birth_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show all filmmakers and screenwriters from youngest to oldest.",
+      "qtype": "unambig",
+      "sql": "SELECT name, birth_year FROM Screenwriter",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?birth_year WHERE {\n  ?screenwriter a :Screenwriter .\n  ?screenwriter p:name ?name .\n  ?screenwriter p:birth_year ?birth_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "How many filmmakers and screenwriters were born before or in 1970?",
+      "qtype": "unambig",
+      "sql": "SELECT COUNT(*) FROM (SELECT name, birth_year FROM Filmmaker UNION SELECT name, birth_year FROM Screenwriter) WHERE birth_year <= 1970;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?n) WHERE { { SELECT DISTINCT ?nm ?by WHERE { { ?x a :Filmmaker ; p:name ?nm ; p:birth_year ?by } UNION { ?y a :Screenwriter ; p:name ?nm ; p:birth_year ?by } FILTER(xsd:integer(?by) <= 1970) } } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): COUNT(*) FROM (Filmmaker UNION Screenwriter) WHERE birth_year<=1970 -> COUNT ove"
+    },
+    {
+      "qid": 4,
+      "question": "How many authors were born before or in 1970?",
+      "qtype": "ambig",
+      "sql": "SELECT COUNT(*) FROM Filmmaker WHERE birth_year <= 1970;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?agg) WHERE {\n  ?filmmaker a :Filmmaker .\n  ?filmmaker p:birth_year ?birth_year_f .\n  FILTER(xsd:double(?birth_year_f) <= 1970)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "How many authors were born before or in 1970?",
+      "qtype": "ambig",
+      "sql": "SELECT COUNT(*) FROM Screenwriter WHERE birth_year <= 1970;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?agg) WHERE {\n  ?screenwriter a :Screenwriter .\n  ?screenwriter p:birth_year ?birth_year_f .\n  FILTER(xsd:double(?birth_year_f) <= 1970)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "Show all filmmakers from youngest to oldest.",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Filmmaker ORDER BY Filmmaker.birth_year DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?filmmaker a :Filmmaker .\n  ?filmmaker p:name ?name .\n  ?filmmaker p:birth_year ?birth_year_o .\n}\nORDER BY DESC(?birth_year_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 7,
+      "question": "Show all screenwriters from youngest to oldest.",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Screenwriter ORDER BY Screenwriter.birth_year DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?screenwriter a :Screenwriter .\n  ?screenwriter p:name ?name .\n  ?screenwriter p:birth_year ?birth_year_o .\n}\nORDER BY DESC(?birth_year_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "How many authors were born before or in 1970?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT (COUNT(*) AS ?n) WHERE { { SELECT DISTINCT ?nm ?by WHERE { { ?x a :Filmmaker ; p:name ?nm ; p:birth_year ?by } UNION { ?y a :Screenwriter ; p:name ?nm ; p:birth_year ?by } FILTER(xsd:integer(?by) <= 1970) } } } }\n  component: { SELECT (COUNT(*) AS ?agg) WHERE {\n  ?screenwriter a :Screenwriter .\n  ?screenwriter p:birth_year ?birth_year_f .\n  FILTER(xsd:double(?birth_year_f) <= 1970)\n} }\n  component_2: { SELECT (COUNT(*) AS ?agg) WHERE {\n  ?filmmaker a :Filmmaker .\n  ?filmmaker p:birth_year ?birth_year_f .\n  FILTER(xsd:double(?birth_year_f) <= 1970)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

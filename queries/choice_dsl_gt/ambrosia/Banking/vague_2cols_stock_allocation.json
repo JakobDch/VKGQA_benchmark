@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_stock_allocation",
+  "schema": "amb_vague_2cols_stock_allocation",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me accounts with balances above 700 and their stock percentages.",
+      "qtype": "unambig",
+      "sql": "SELECT Accounts.AccountNumber , PortfolioPerformance.Stock_Percentage FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber WHERE Balance > 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?stock_percentage WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show me accounts with balances above 700 and their stock allocation.",
+      "qtype": "ambig",
+      "sql": "SELECT Accounts.AccountNumber , PortfolioPerformance.Stock_Value FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber WHERE Balance > 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 2,
+      "question": "Show me accounts with balances above 700 and their stock allocation.",
+      "qtype": "ambig",
+      "sql": "SELECT Accounts.AccountNumber , PortfolioPerformance.Stock_Percentage, Stock_Value FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber WHERE Balance > 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?stock_percentage ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 3,
+      "question": "what percentage does jane smith have allocated to each stock in her portfolio?",
+      "qtype": "unambig",
+      "sql": "SELECT Stock_Percentage FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber JOIN Customers ON Accounts.CustomerID = Customers.CustomerID WHERE Customers.fullname = 'Jane Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stock_percentage WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "what value does jane smith have allocated to each stock in her portfolio?",
+      "qtype": "unambig",
+      "sql": "SELECT Stock_Value FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber JOIN Customers ON Accounts.CustomerID = Customers.CustomerID WHERE Customers.fullname = 'Jane Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "What is Jane Smith's stock allocation?",
+      "qtype": "ambig",
+      "sql": "SELECT Stock_Percentage, Stock_Value FROM PortfolioPerformance JOIN Investments ON Investments.InvestmentID = PortfolioPerformance.InvestmentID JOIN Accounts ON Investments.AccountNumber = Accounts.AccountNumber JOIN Customers ON Accounts.CustomerID = Customers.CustomerID WHERE Customers.fullname = 'Jane Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stock_percentage ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me accounts with balances above 700 and their stock allocation.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?accountnumber ?stock_percentage WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n} }\n  full: { SELECT ?accountnumber ?stock_percentage ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n} }\n  component_2: { SELECT ?accountnumber ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?accounts p:Balance ?balance_f .\n  FILTER(xsd:double(?balance_f) > 700)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is Jane Smith's stock allocation?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?stock_percentage WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n} }\n  component_2: { SELECT ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n} }\n  full: { SELECT ?stock_percentage ?stock_value WHERE {\n  ?portfolioperformance a :PortfolioPerformance .\n  ?investments a :Investments .\n  ?portfolioperformance p:hasInvestments ?investments .\n  ?accounts a :Accounts .\n  ?investments p:hasAccounts ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?portfolioperformance p:Stock_Percentage ?stock_percentage .\n  ?portfolioperformance p:Stock_Value ?stock_value .\n  ?customers p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Jane Smith\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

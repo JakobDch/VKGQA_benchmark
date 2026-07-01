@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:name {Name} ; p:DateOfBirth {DateOfBirth} ; p:Country {Country} .
+source		SELECT `AuthorID`, `Name`, `DateOfBirth`, `Country` FROM `Authors`
+
+mappingId	WrittenWorks_base
+target		ex:WrittenWorks/{WorkID} a :WrittenWorks ; p:WorkID {WorkID} ; p:Title {Title} ; p:Type {Type} ; p:PublicationDate {PublicationDate} ; p:WordCount {WordCount} ; p:AuthorID {AuthorID} .
+source		SELECT `WorkID`, `Title`, `Type`, `PublicationDate`, `WordCount`, `AuthorID` FROM `WrittenWorks`
+
+mappingId	WrittenWorks_AuthorID_fk
+target		ex:WrittenWorks/{WorkID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `WorkID`, `AuthorID` FROM `WrittenWorks` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Schools_base
+target		ex:Schools/{SchoolID} a :Schools ; p:SchoolID {SchoolID} ; p:name {Name} ; p:Address {Address} ; p:City {City} ; p:State {State} ; p:ZipCode {ZipCode} ; p:FoundedYear {FoundedYear} .
+source		SELECT `SchoolID`, `Name`, `Address`, `City`, `State`, `ZipCode`, `FoundedYear` FROM `Schools`
+
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Birthdate {Birthdate} ; p:EnrollmentDate {EnrollmentDate} ; p:SchoolID {SchoolID} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Birthdate`, `EnrollmentDate`, `SchoolID` FROM `Students`
+
+mappingId	Students_SchoolID_fk
+target		ex:Students/{StudentID} p:hasSchools ex:Schools/{SchoolID} .
+source		SELECT `StudentID`, `SchoolID` FROM `Students` WHERE `SchoolID` IS NOT NULL
+
+mappingId	Subjects_base
+target		ex:Subjects/{SubjectID} a :Subjects ; p:SubjectID {SubjectID} ; p:SubjectName {SubjectName} ; p:Description {Description} .
+source		SELECT `SubjectID`, `SubjectName`, `Description` FROM `Subjects`
+
+mappingId	CourseTeachings_base
+target		ex:CourseTeachings/{CourseTeachingID} a :CourseTeachings ; p:CourseTeachingID {CourseTeachingID} ; p:CourseSubjectID {CourseSubjectID} ; p:TeacherID {TeacherID} ; p:Semester {Semester} ; p:Year {Year} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `CourseTeachingID`, `CourseSubjectID`, `TeacherID`, `Semester`, `Year`, `StartDate`, `EndDate` FROM `CourseTeachings`
+
+mappingId	CourseTeachings_TeacherID_fk
+target		ex:CourseTeachings/{CourseTeachingID} p:hasStudents ex:Students/{TeacherID} .
+source		SELECT `CourseTeachingID`, `TeacherID` FROM `CourseTeachings` WHERE `TeacherID` IS NOT NULL
+
+mappingId	CourseTeachings_CourseSubjectID_fk
+target		ex:CourseTeachings/{CourseTeachingID} p:hasSubjects ex:Subjects/{CourseSubjectID} .
+source		SELECT `CourseTeachingID`, `CourseSubjectID` FROM `CourseTeachings` WHERE `CourseSubjectID` IS NOT NULL
+
+]]

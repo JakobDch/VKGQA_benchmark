@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_product_managers_metrics",
+  "schema": "amb_scope_product_managers_metrics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the metrics associated with each product manager.",
+      "qtype": "ambig",
+      "sql": "SELECT Metrics.metric_name  from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id   GROUP BY Product_Managers_Metrics.metrics_id HAVING COUNT(DISTINCT Product_Managers_Metrics.product_manager_id) = (SELECT COUNT(*) FROM  Product_Managers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?metric_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the metrics associated with each product manager.",
+      "qtype": "ambig",
+      "sql": "select product_managers.name , metrics.metric_name from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?metric_name WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 2,
+      "question": "For each product manager, what are the corresponding values of metrics?",
+      "qtype": "unambig",
+      "sql": "select product_managers.name , metrics.value from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?value WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "What values are associated with each product manager's metrics?",
+      "qtype": "ambig",
+      "sql": "SELECT Metrics.value  from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id   GROUP BY Product_Managers_Metrics.metrics_id HAVING COUNT(DISTINCT Product_Managers_Metrics.product_manager_id) = (SELECT COUNT(*) FROM  Product_Managers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For every product manager, show me the corresponding metric names and values.",
+      "qtype": "unambig",
+      "sql": "select product_managers.name , metrics.metric_name , metrics.value from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?metric_name ?value WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n  ?metrics p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 5,
+      "question": "Provide me with the metric name and value that is common for all product managers.",
+      "qtype": "unambig",
+      "sql": "SELECT Metrics.metric_name, Metrics.value  from Product_Managers_Metrics join Metrics on Product_Managers_Metrics.metrics_id = Metrics.id join Product_Managers on Product_Managers_Metrics.product_manager_id = Product_Managers.id   GROUP BY Product_Managers_Metrics.metrics_id HAVING COUNT(DISTINCT Product_Managers_Metrics.product_manager_id) = (SELECT COUNT(*) FROM  Product_Managers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?metric_name ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the metrics associated with each product manager.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?metric_name WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n} }\n  collective: { SELECT ?metric_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What values are associated with each product manager's metrics?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?value WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:value ?value .\n} }\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which metric names and values are associated with each product manager?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?metric_name ?value WHERE {\n  ?product_managers_metrics a :Product_Managers_Metrics .\n  ?metrics a :Metrics .\n  ?product_managers_metrics p:hasMetrics ?metrics .\n  ?product_managers a :Product_Managers .\n  ?product_managers_metrics p:hasProduct_Managers ?product_managers .\n  ?product_managers p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n  ?metrics p:value ?value .\n} }\n  collective: { SELECT ?metric_name ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metrics_id ?cg . ?child a :Metrics ; p:id ?cg . ?l p:product_manager_id ?pg . ?parent a :Product_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Product_Managers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

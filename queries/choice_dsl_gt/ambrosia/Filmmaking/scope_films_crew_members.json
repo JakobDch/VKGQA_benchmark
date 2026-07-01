@@ -1,0 +1,141 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_films_crew_members",
+  "schema": "amb_scope_films_crew_members",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the id and name of the crew members each film used.",
+      "qtype": "ambig",
+      "sql": "SELECT Crew_Members.member_id, Crew_Members.name  from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id   GROUP BY Films_Crew_Members.member_id HAVING COUNT(DISTINCT Films_Crew_Members.film_id) = (SELECT COUNT(*) FROM  Films)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?member_id ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the id and name of the crew members each film used.",
+      "qtype": "ambig",
+      "sql": "select films.title , crew_members.member_id , crew_members.name from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?member_id ?name WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n  ?crew_members p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Show the ids, roles and names of crew members that are common for all films.",
+      "qtype": "unambig",
+      "sql": "SELECT Crew_Members.member_id, Crew_Members.role, Crew_Members.name  from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id   GROUP BY Films_Crew_Members.member_id HAVING COUNT(DISTINCT Films_Crew_Members.film_id) = (SELECT COUNT(*) FROM  Films)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?member_id ?role ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  ?child p:role ?role .\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What crew member IDs are common for every film?",
+      "qtype": "unambig",
+      "sql": "SELECT Crew_Members.member_id  from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id   GROUP BY Films_Crew_Members.member_id HAVING COUNT(DISTINCT Films_Crew_Members.film_id) = (SELECT COUNT(*) FROM  Films)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?member_id WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For each film, what is the related role of each crew member?",
+      "qtype": "unambig",
+      "sql": "select films.title , crew_members.role from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?role WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:role ?role .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What are all the crew member IDs present for every film?",
+      "qtype": "ambig",
+      "sql": "select films.title , crew_members.member_id from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?member_id WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 6,
+      "question": "Provide the role of crew members that is most popular for all films.",
+      "qtype": "unambig",
+      "sql": "SELECT Crew_Members.role  from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id   GROUP BY Films_Crew_Members.member_id HAVING COUNT(DISTINCT Films_Crew_Members.film_id) = (SELECT COUNT(*) FROM  Films)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?role WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:role ?role .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "For each film, provide the corresponding id, role and name of crew members.",
+      "qtype": "unambig",
+      "sql": "select films.title , crew_members.member_id , crew_members.role , crew_members.name from Films_Crew_Members join Crew_Members on Films_Crew_Members.member_id = Crew_Members.member_id join Films on Films_Crew_Members.film_id = Films.film_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?member_id ?role ?name WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n  ?crew_members p:role ?role .\n  ?crew_members p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the ids, roles, and names of crew members that we have for each films?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        7
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?member_id ?role ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  ?child p:role ?role .\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?member_id ?role ?name WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n  ?crew_members p:role ?role .\n  ?crew_members p:name ?name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the id and name of the crew members each film used.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?member_id ?name WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n  ?crew_members p:name ?name .\n} }\n  collective: { SELECT ?member_id ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are all the crew member IDs present for every film?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?member_id WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:member_id ?member_id .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?member_id WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:member_id ?member_id .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What crew member do we have for each film?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        6
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?role WHERE {\n  ?films_crew_members a :Films_Crew_Members .\n  ?crew_members a :Crew_Members .\n  ?films_crew_members p:hasCrew_Members ?crew_members .\n  ?films a :Films .\n  ?films_crew_members p:hasFilms ?films .\n  ?films p:title ?title .\n  ?crew_members p:role ?role .\n} }\n  collective: { SELECT ?role WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrew_Members ?child ; p:hasFilms ?parent . } GROUP BY ?child }\n  ?child p:role ?role .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Films } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

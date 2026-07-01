@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_film_type",
+  "schema": "amb_attachment_1tab_val_film_type",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the documentary films, in addition show just those short films which had a 500K budget.",
+      "qtype": "unambig",
+      "sql": "SELECT Films.Title \nFROM Films\nWHERE Films.FilmType = \"Documentary\" OR Films.FilmType = \"Short Film\" AND Films.Budget = 500000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:FilmType ?filmtype_w .\n  ?films p:FilmType ?filmtype_w2 .\n  ?films p:Budget ?budget_w .\n  FILTER((STR(?filmtype_w) = \"Documentary\" || (STR(?filmtype_w2) = \"Short Film\" && (STR(?budget_w) = \"500000\" || STR(?budget_w) = \"500000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all documentaries and short films with a 500K budget.",
+      "qtype": "ambig",
+      "sql": "SELECT Films.Title \nFROM Films\nWHERE (Films.FilmType = \"Documentary\" OR Films.FilmType = \"Short Film\") AND Films.Budget = 500000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:FilmType ?filmtype_w .\n  ?films p:FilmType ?filmtype_w2 .\n  ?films p:Budget ?budget_w .\n  FILTER((((STR(?filmtype_w) = \"Documentary\" || STR(?filmtype_w2) = \"Short Film\")) && (STR(?budget_w) = \"500000\" || STR(?budget_w) = \"500000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all documentaries and short films with a 500K budget.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:FilmType ?filmtype_w .\n  ?films p:FilmType ?filmtype_w2 .\n  ?films p:Budget ?budget_w .\n  FILTER((STR(?filmtype_w) = \"Documentary\" || (STR(?filmtype_w2) = \"Short Film\" && (STR(?budget_w) = \"500000\" || STR(?budget_w) = \"500000.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:FilmType ?filmtype_w .\n  ?films p:FilmType ?filmtype_w2 .\n  ?films p:Budget ?budget_w .\n  FILTER((((STR(?filmtype_w) = \"Documentary\" || STR(?filmtype_w2) = \"Short Film\")) && (STR(?budget_w) = \"500000\" || STR(?budget_w) = \"500000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

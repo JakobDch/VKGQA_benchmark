@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_sports",
+  "schema": "amb_attachment_1tab_val_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all baseball teams and basketball teams playing for USA.",
+      "qtype": "ambig",
+      "sql": "SELECT sports_team.name \nFROM sports_team\nWHERE (sports_team.sport = \"Baseball Team\" OR sports_team.sport = \"Basketball Team\") AND sports_team.country = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sports_team a :sports_team .\n  ?sports_team p:name ?name .\n  ?sports_team p:sport ?sport_w .\n  ?sports_team p:sport ?sport_w2 .\n  ?sports_team p:country ?country_w .\n  FILTER((((STR(?sport_w) = \"Baseball Team\" || STR(?sport_w2) = \"Basketball Team\")) && STR(?country_w) = \"USA\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List all baseball teams and basketball teams playing for USA.",
+      "qtype": "ambig",
+      "sql": "SELECT sports_team.name \nFROM sports_team\nWHERE sports_team.sport = \"Baseball Team\" OR sports_team.sport = \"Basketball Team\" AND sports_team.country = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sports_team a :sports_team .\n  ?sports_team p:name ?name .\n  ?sports_team p:sport ?sport_w .\n  ?sports_team p:sport ?sport_w2 .\n  ?sports_team p:country ?country_w .\n  FILTER((STR(?sport_w) = \"Baseball Team\" || (STR(?sport_w2) = \"Basketball Team\" && STR(?country_w) = \"USA\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all baseball teams and basketball teams playing for USA.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?sports_team a :sports_team .\n  ?sports_team p:name ?name .\n  ?sports_team p:sport ?sport_w .\n  ?sports_team p:sport ?sport_w2 .\n  ?sports_team p:country ?country_w .\n  FILTER((((STR(?sport_w) = \"Baseball Team\" || STR(?sport_w2) = \"Basketball Team\")) && STR(?country_w) = \"USA\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?sports_team a :sports_team .\n  ?sports_team p:name ?name .\n  ?sports_team p:sport ?sport_w .\n  ?sports_team p:sport ?sport_w2 .\n  ?sports_team p:country ?country_w .\n  FILTER((STR(?sport_w) = \"Baseball Team\" || (STR(?sport_w2) = \"Basketball Team\" && STR(?country_w) = \"USA\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

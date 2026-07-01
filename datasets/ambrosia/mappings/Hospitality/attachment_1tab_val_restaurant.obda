@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Restaurants_base
+target		ex:Restaurants/{id} a :Restaurants ; p:id {id} ; p:name {Name} ; p:Type {Type} ; p:Year_of_Establishment {Year_of_Establishment} .
+source		SELECT `id`, `Name`, `Type`, `Year_of_Establishment` FROM `Restaurants`
+
+mappingId	Staff_base
+target		ex:Staff/{id} a :Staff ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Position {Position} ; p:RestaurantId {RestaurantId} .
+source		SELECT `id`, `FirstName`, `LastName`, `Position`, `RestaurantId` FROM `Staff`
+
+mappingId	Staff_RestaurantId_fk
+target		ex:Staff/{id} p:hasRestaurants ex:Restaurants/{RestaurantId} .
+source		SELECT `id`, `RestaurantId` FROM `Staff` WHERE `RestaurantId` IS NOT NULL
+
+mappingId	MenuItems_base
+target		ex:MenuItems/{id} a :MenuItems ; p:id {id} ; p:ItemName {ItemName} ; p:Description {Description} ; p:Price {Price} ; p:RestaurantId {RestaurantId} .
+source		SELECT `id`, `ItemName`, `Description`, `Price`, `RestaurantId` FROM `MenuItems`
+
+mappingId	MenuItems_RestaurantId_fk
+target		ex:MenuItems/{id} p:hasRestaurants ex:Restaurants/{RestaurantId} .
+source		SELECT `id`, `RestaurantId` FROM `MenuItems` WHERE `RestaurantId` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:CustomerName {CustomerName} ; p:ContactNumber {ContactNumber} ; p:NumInParty {NumInParty} ; p:Date {Date} ; p:Time {Time} ; p:RestaurantId {RestaurantId} .
+source		SELECT `id`, `CustomerName`, `ContactNumber`, `NumInParty`, `Date`, `Time`, `RestaurantId` FROM `Reservations`
+
+mappingId	Reservations_RestaurantId_fk
+target		ex:Reservations/{id} p:hasRestaurants ex:Restaurants/{RestaurantId} .
+source		SELECT `id`, `RestaurantId` FROM `Reservations` WHERE `RestaurantId` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_production_role",
+  "schema": "amb_attachment_2tab_ref_production_role",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide scriptwriters and editors both of whom worked on projects with a deadline of May 10th 2021.",
+      "qtype": "unambig",
+      "sql": "SELECT Scriptwriters.name\nFROM Projects JOIN Assignments ON Projects.ID = Assignments.ProjectID JOIN Scriptwriters ON Assignments.ScriptwriterID = Scriptwriters.ID\nWHERE Projects.Deadline = \"2021-05-10\"\nUNION\nSELECT Editors.name\nFROM Projects JOIN Assignments ON Projects.ID = Assignments.ProjectID JOIN Editors ON Assignments.EditorID = Editors.ID\nWHERE Projects.Deadline = \"2021-05-10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?scriptwriters a :Scriptwriters .\n    ?assignments p:hasScriptwriters ?scriptwriters .\n    ?scriptwriters p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?editors a :Editors .\n    ?assignments p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show scriptwriters and editors who worked on projects with a deadline of May 10th 2021.",
+      "qtype": "ambig",
+      "sql": "SELECT Scriptwriters.name\nFROM Projects JOIN Assignments ON Projects.ID = Assignments.ProjectID JOIN Scriptwriters ON Assignments.ScriptwriterID = Scriptwriters.ID\nUNION\nSELECT Editors.name\nFROM Projects JOIN Assignments ON Projects.ID = Assignments.ProjectID JOIN Editors ON Assignments.EditorID = Editors.ID\nWHERE Projects.Deadline = \"2021-05-10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?scriptwriters a :Scriptwriters .\n    ?assignments p:hasScriptwriters ?scriptwriters .\n    ?scriptwriters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?editors a :Editors .\n    ?assignments p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show scriptwriters and editors who worked on projects with a deadline of May 10th 2021.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?scriptwriters a :Scriptwriters .\n    ?assignments p:hasScriptwriters ?scriptwriters .\n    ?scriptwriters p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?editors a :Editors .\n    ?assignments p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?scriptwriters a :Scriptwriters .\n    ?assignments p:hasScriptwriters ?scriptwriters .\n    ?scriptwriters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?assignments a :Assignments .\n    ?assignments p:hasProjects ?projects .\n    ?editors a :Editors .\n    ?assignments p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?projects p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2021-05-10\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

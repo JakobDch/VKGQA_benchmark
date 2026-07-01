@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_written_journalism",
+  "schema": "amb_attachment_1tab_val_written_journalism",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the news articles and, in addition, only the featured articles that are 2000 words long.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.title \nFROM Articles\nWHERE Articles.Written_Journalism = \"News Article\" OR Articles.Written_Journalism = \"Feature Article\" AND Articles.Word_Count = \"2000 words\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:Written_Journalism ?written_journalism_w .\n  ?articles p:Written_Journalism ?written_journalism_w2 .\n  ?articles p:Word_Count ?word_count_w .\n  FILTER((STR(?written_journalism_w) = \"News Article\" || (STR(?written_journalism_w2) = \"Feature Article\" && STR(?word_count_w) = \"2000 words\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all news articles and featured articles that are 2000 words long.",
+      "qtype": "ambig",
+      "sql": "SELECT Articles.title \nFROM Articles\nWHERE (Articles.Written_Journalism = \"News Article\" OR Articles.Written_Journalism = \"Feature Article\") AND Articles.Word_Count = \"2000 words\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:Written_Journalism ?written_journalism_w .\n  ?articles p:Written_Journalism ?written_journalism_w2 .\n  ?articles p:Word_Count ?word_count_w .\n  FILTER((((STR(?written_journalism_w) = \"News Article\" || STR(?written_journalism_w2) = \"Feature Article\")) && STR(?word_count_w) = \"2000 words\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all news articles and featured articles that are 2000 words long.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:Written_Journalism ?written_journalism_w .\n  ?articles p:Written_Journalism ?written_journalism_w2 .\n  ?articles p:Word_Count ?word_count_w .\n  FILTER((STR(?written_journalism_w) = \"News Article\" || (STR(?written_journalism_w2) = \"Feature Article\" && STR(?word_count_w) = \"2000 words\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:Written_Journalism ?written_journalism_w .\n  ?articles p:Written_Journalism ?written_journalism_w2 .\n  ?articles p:Word_Count ?word_count_w .\n  FILTER((((STR(?written_journalism_w) = \"News Article\" || STR(?written_journalism_w2) = \"Feature Article\")) && STR(?word_count_w) = \"2000 words\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_resources2",
+  "schema": "amb_vague_2cols_resources2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which resource is the least expensive?",
+      "qtype": "ambig",
+      "sql": "select TextbookTitle from textbooks_and_software order by price asc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?textbooktitle WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:TextbookTitle ?textbooktitle .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which resource is the least expensive?",
+      "qtype": "ambig",
+      "sql": "select SoftwareName from textbooks_and_software order by price asc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?softwarename WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:SoftwareName ?softwarename .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which resource is the least expensive?",
+      "qtype": "ambig",
+      "sql": "select TextbookTitle, SoftwareName from textbooks_and_software order by price asc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?textbooktitle ?softwarename WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:TextbookTitle ?textbooktitle .\n  ?textbooks_and_software p:SoftwareName ?softwarename .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List the courses and their required softwares.",
+      "qtype": "unambig",
+      "sql": "Select title, SoftwareName from courses C join textbooks_and_software TAS on C.courseID = TAS.courseID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?softwarename WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  OPTIONAL { ?c p:Title ?title . }\n  OPTIONAL { ?tas p:SoftwareName ?softwarename . }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "List the courses and their required textbooks.",
+      "qtype": "unambig",
+      "sql": "Select title, TextbookTitle from courses C join textbooks_and_software TAS on C.courseID = TAS.courseID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?textbooktitle WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  ?c p:Title ?title .\n  ?tas p:TextbookTitle ?textbooktitle .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "List the courses and their required textbooks and softwares.",
+      "qtype": "unambig",
+      "sql": "Select title, TextbookTitle, SoftwareName from courses C join textbooks_and_software TAS on C.courseID = TAS.courseID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?textbooktitle ?softwarename WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  OPTIONAL { ?c p:Title ?title . }\n  OPTIONAL { ?tas p:TextbookTitle ?textbooktitle . }\n  OPTIONAL { ?tas p:SoftwareName ?softwarename . }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which resource is the least expensive?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?softwarename WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:SoftwareName ?softwarename .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  component_2: { SELECT ?textbooktitle WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:TextbookTitle ?textbooktitle .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  full: { SELECT ?textbooktitle ?softwarename WHERE {\n  ?textbooks_and_software a :Textbooks_and_Software .\n  ?textbooks_and_software p:TextbookTitle ?textbooktitle .\n  ?textbooks_and_software p:SoftwareName ?softwarename .\n  ?textbooks_and_software p:Price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me courses and resources for them.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?softwarename WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  OPTIONAL { ?c p:Title ?title . }\n  OPTIONAL { ?tas p:SoftwareName ?softwarename . }\n} }\n  component_2: { SELECT ?title ?textbooktitle WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  ?c p:Title ?title .\n  ?tas p:TextbookTitle ?textbooktitle .\n} }\n  full: { SELECT ?title ?textbooktitle ?softwarename WHERE {\n  ?c a :Courses .\n  ?tas a :Textbooks_and_Software .\n  ?tas p:hasCourses ?c .\n  OPTIONAL { ?c p:Title ?title . }\n  OPTIONAL { ?tas p:TextbookTitle ?textbooktitle . }\n  OPTIONAL { ?tas p:SoftwareName ?softwarename . }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

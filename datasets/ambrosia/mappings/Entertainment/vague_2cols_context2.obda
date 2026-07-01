@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Actor_base
+target		ex:Actor/{actor_id} a :Actor ; p:actor_id {actor_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birth_date {birth_date} ; p:nationality {nationality} .
+source		SELECT `actor_id`, `first_name`, `last_name`, `birth_date`, `nationality` FROM `Actor`
+
+mappingId	Movie_base
+target		ex:Movie/{movie_id} a :Movie ; p:movie_id {movie_id} ; p:title {title} ; p:release_year {release_year} ; p:genre {genre} ; p:box_office {box_office} .
+source		SELECT `movie_id`, `title`, `release_year`, `genre`, `box_office` FROM `Movie`
+
+mappingId	Director_base
+target		ex:Director/{director_id} a :Director ; p:director_id {director_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birth_date {birth_date} ; p:nationality {nationality} .
+source		SELECT `director_id`, `first_name`, `last_name`, `birth_date`, `nationality` FROM `Director`
+
+mappingId	Role_base
+target		ex:Role/{role_id} a :Role ; p:role_id {role_id} ; p:actor_id {actor_id} ; p:movie_id {movie_id} ; p:character_name {character_name} .
+source		SELECT `role_id`, `actor_id`, `movie_id`, `character_name` FROM `Role`
+
+mappingId	Role_movie_id_fk
+target		ex:Role/{role_id} p:hasMovie ex:Movie/{movie_id} .
+source		SELECT `role_id`, `movie_id` FROM `Role` WHERE `movie_id` IS NOT NULL
+
+mappingId	Role_actor_id_fk
+target		ex:Role/{role_id} p:hasActor ex:Actor/{actor_id} .
+source		SELECT `role_id`, `actor_id` FROM `Role` WHERE `actor_id` IS NOT NULL
+
+mappingId	Theatre_base
+target		ex:Theatre/{theatre_id} a :Theatre ; p:theatre_id {theatre_id} ; p:name {name} ; p:location {location} ; p:capacity {capacity} .
+source		SELECT `theatre_id`, `name`, `location`, `capacity` FROM `Theatre`
+
+mappingId	Performance_base
+target		ex:Performance/{performance_id} a :Performance ; p:performance_id {performance_id} ; p:play_id {play_id} ; p:theatre_id {theatre_id} ; p:date {date} ; p:time {time} ; p:ticket_price {ticket_price} .
+source		SELECT `performance_id`, `play_id`, `theatre_id`, `date`, `time`, `ticket_price` FROM `Performance`
+
+mappingId	Performance_theatre_id_fk
+target		ex:Performance/{performance_id} p:hasTheatre ex:Theatre/{theatre_id} .
+source		SELECT `performance_id`, `theatre_id` FROM `Performance` WHERE `theatre_id` IS NOT NULL
+
+mappingId	Performance_play_id_fk
+target		ex:Performance/{performance_id} p:hasPlay ex:Play/{play_id} .
+source		SELECT `performance_id`, `play_id` FROM `Performance` WHERE `play_id` IS NOT NULL
+
+mappingId	Play_base
+target		ex:Play/{play_id} a :Play ; p:play_id {play_id} ; p:epoch {epoch} ; p:society {society} ; p:title {title} ; p:author {author} ; p:genre {genre} ; p:length {length} .
+source		SELECT `play_id`, `epoch`, `society`, `title`, `author`, `genre`, `length` FROM `Play`
+
+]]

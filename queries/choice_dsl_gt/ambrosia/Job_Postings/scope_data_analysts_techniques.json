@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_data_analysts_techniques",
+  "schema": "amb_scope_data_analysts_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the technique names for every data analyst.",
+      "qtype": "ambig",
+      "sql": "SELECT Techniques.technique_name  from Data_Analysts_Techniques join Techniques on Data_Analysts_Techniques.technique_id = Techniques.id join Data_Analysts on Data_Analysts_Techniques.data_analyst_id = Data_Analysts.id   GROUP BY Data_Analysts_Techniques.technique_id HAVING COUNT(DISTINCT Data_Analysts_Techniques.data_analyst_id) = (SELECT COUNT(*) FROM  Data_Analysts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:technique_id ?cg . ?child a :Techniques ; p:id ?cg . ?l p:data_analyst_id ?pg . ?parent a :Data_Analysts ; p:id ?pg . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Data_Analysts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the technique names for every data analyst.",
+      "qtype": "ambig",
+      "sql": "select data_analysts.name , techniques.technique_name from Data_Analysts_Techniques join Techniques on Data_Analysts_Techniques.technique_id = Techniques.id join Data_Analysts on Data_Analysts_Techniques.data_analyst_id = Data_Analysts.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?technique_name WHERE {\n  ?data_analysts_techniques a :Data_Analysts_Techniques .\n  ?techniques a :Techniques .\n  ?data_analysts_techniques p:hasTechniques ?techniques .\n  ?data_analysts a :Data_Analysts .\n  ?data_analysts_techniques p:hasData_Analysts ?data_analysts .\n  ?data_analysts p:name ?name .\n  ?techniques p:technique_name ?technique_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the technique names for every data analyst.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?technique_name WHERE {\n  ?data_analysts_techniques a :Data_Analysts_Techniques .\n  ?techniques a :Techniques .\n  ?data_analysts_techniques p:hasTechniques ?techniques .\n  ?data_analysts a :Data_Analysts .\n  ?data_analysts_techniques p:hasData_Analysts ?data_analysts .\n  ?data_analysts p:name ?name .\n  ?techniques p:technique_name ?technique_name .\n} }\n  collective: { SELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:technique_id ?cg . ?child a :Techniques ; p:id ?cg . ?l p:data_analyst_id ?pg . ?parent a :Data_Analysts ; p:id ?pg . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Data_Analysts } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

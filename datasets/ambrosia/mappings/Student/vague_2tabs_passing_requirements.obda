@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:birthDate {birthDate} .
+source		SELECT `id`, `firstName`, `lastName`, `birthDate` FROM `Students`
+
+mappingId	Minimum_Scores_base
+target		ex:Passing_Requirements/{id} a :Passing_Requirements ; p:id {id} ; p:score {score} .
+source		SELECT `id`, `score` FROM `Minimum_Scores`
+
+mappingId	Percentage_Requirements_base
+target		ex:Percentage_Requirements/{id} a :Percentage_Requirements ; p:id {id} ; p:percentage {percentage} .
+source		SELECT `id`, `percentage` FROM `Percentage_Requirements`
+
+mappingId	Exams_base
+target		ex:Exams/{id} a :Exams ; p:id {id} ; p:studentId {studentId} ; p:examDate {examDate} ; p:minScoreId {minScoreId} ; p:percentReqId {percentReqId} .
+source		SELECT `id`, `studentId`, `examDate`, `minScoreId`, `percentReqId` FROM `Exams`
+
+mappingId	Exams_percentReqId_fk
+target		ex:Exams/{id} p:hasPercentage_Requirements ex:Percentage_Requirements/{percentReqId} .
+source		SELECT `id`, `percentReqId` FROM `Exams` WHERE `percentReqId` IS NOT NULL
+
+mappingId	Exams_minScoreId_fk
+target		ex:Exams/{id} p:hasPassing_Requirements ex:Passing_Requirements/{minScoreId} .
+source		SELECT `id`, `minScoreId` FROM `Exams` WHERE `minScoreId` IS NOT NULL
+
+mappingId	Exams_studentId_fk
+target		ex:Exams/{id} p:hasStudents ex:Students/{studentId} .
+source		SELECT `id`, `studentId` FROM `Exams` WHERE `studentId` IS NOT NULL
+
+]]

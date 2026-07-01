@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_awards_categories",
+  "schema": "amb_scope_awards_categories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each award, list the categories they have.",
+      "qtype": "unambig",
+      "sql": "select awards.awardname , categories.categoryname from Awards_Categories join Categories on Awards_Categories.categoriesID = Categories.categoryId join Awards on Awards_Categories.awardsID = Awards.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?awardname ?categoryname WHERE {\n  ?awards_categories a :Awards_Categories .\n  ?categories a :Categories .\n  ?awards_categories p:hasCategories ?categories .\n  ?awards a :Awards .\n  ?awards_categories p:hasAwards ?awards .\n  ?awards p:awardName ?awardname .\n  ?categories p:categoryName ?categoryname .\n}",
+      "status": "pass",
+      "note": "n=25"
+    },
+    {
+      "qid": 1,
+      "question": "What categories do all awards have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Categories.categoryName  from Awards_Categories join Categories on Awards_Categories.categoriesID = Categories.categoryId join Awards on Awards_Categories.awardsID = Awards.id   GROUP BY Awards_Categories.categoriesID HAVING COUNT(DISTINCT Awards_Categories.awardsID) = (SELECT COUNT(*) FROM  Awards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasAwards ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Awards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the categories that every award has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?awardname ?categoryname WHERE {\n  ?awards_categories a :Awards_Categories .\n  ?categories a :Categories .\n  ?awards_categories p:hasCategories ?categories .\n  ?awards a :Awards .\n  ?awards_categories p:hasAwards ?awards .\n  ?awards p:awardName ?awardname .\n  ?categories p:categoryName ?categoryname .\n} }\n  collective: { SELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasAwards ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Awards } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

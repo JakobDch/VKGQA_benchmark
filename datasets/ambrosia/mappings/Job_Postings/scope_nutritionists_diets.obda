@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Nutritionists_base
+target		ex:Nutritionists/{nutritionist_id} a :Nutritionists ; p:nutritionist_id {nutritionist_id} ; p:email {email} ; p:name {full_name} .
+source		SELECT `nutritionist_id`, `email`, `full_name` FROM `Nutritionists`
+
+mappingId	Diets_base
+target		ex:Diets/{diet_type_id} a :Diets ; p:diet_type_id {diet_type_id} ; p:diet_type_value {diet_type_value} .
+source		SELECT `diet_type_id`, `diet_type_value` FROM `Diets`
+
+mappingId	Nutritionists_Diets_base
+target		ex:Nutritionists_Diets/{nutritionist_id}/{diet_type_id} a :Nutritionists_Diets ; p:nutritionist_id {nutritionist_id} ; p:diet_type_id {diet_type_id} .
+source		SELECT `nutritionist_id`, `diet_type_id` FROM `Nutritionists_Diets`
+
+mappingId	Nutritionists_Diets_diet_type_id_fk
+target		ex:Nutritionists_Diets/{nutritionist_id}/{diet_type_id} p:hasDiets ex:Diets/{diet_type_id} .
+source		SELECT `nutritionist_id`, `diet_type_id` FROM `Nutritionists_Diets` WHERE `diet_type_id` IS NOT NULL
+
+mappingId	Nutritionists_Diets_nutritionist_id_fk
+target		ex:Nutritionists_Diets/{nutritionist_id}/{diet_type_id} p:hasNutritionists ex:Nutritionists/{nutritionist_id} .
+source		SELECT `nutritionist_id`, `diet_type_id` FROM `Nutritionists_Diets` WHERE `nutritionist_id` IS NOT NULL
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{job_posting_id} a :JobPostings ; p:job_posting_id {job_posting_id} ; p:title {title} ; p:description {description} ; p:location {location} ; p:salary {salary} .
+source		SELECT `job_posting_id`, `title`, `description`, `location`, `salary` FROM `JobPostings`
+
+mappingId	Applicants_base
+target		ex:Applicants/{applicant_id} a :Applicants ; p:applicant_id {applicant_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `applicant_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Applicants`
+
+mappingId	ApplicationStatus_base
+target		ex:ApplicationStatus/{application_id} a :ApplicationStatus ; p:application_id {application_id} ; p:job_posting_id {job_posting_id} ; p:applicant_id {applicant_id} ; p:status {status} ; p:applied_date {applied_date} .
+source		SELECT `application_id`, `job_posting_id`, `applicant_id`, `status`, `applied_date` FROM `ApplicationStatus`
+
+mappingId	ApplicationStatus_applicant_id_fk
+target		ex:ApplicationStatus/{application_id} p:hasApplicants ex:Applicants/{applicant_id} .
+source		SELECT `application_id`, `applicant_id` FROM `ApplicationStatus` WHERE `applicant_id` IS NOT NULL
+
+mappingId	ApplicationStatus_job_posting_id_fk
+target		ex:ApplicationStatus/{application_id} p:hasJobPostings ex:JobPostings/{job_posting_id} .
+source		SELECT `application_id`, `job_posting_id` FROM `ApplicationStatus` WHERE `job_posting_id` IS NOT NULL
+
+]]

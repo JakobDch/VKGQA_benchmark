@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_seating_area",
+  "schema": "amb_attachment_2tab_val_seating_area",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all patios and also display verandas with 50 seats.",
+      "qtype": "unambig",
+      "sql": "SELECT Patios.name\nFROM Patios\nUNION\nSELECT Verandas.name\nFROM Verandas\nWHERE Verandas.Number_of_Seats = 50",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?patios a :Patios .\n    ?patios p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?verandas a :Verandas .\n    ?verandas p:name ?name .\n    ?verandas p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display patios and verandas with 50 seats.",
+      "qtype": "ambig",
+      "sql": "SELECT Patios.name\nFROM Patios\nWHERE Patios.Number_of_Seats = 50\nUNION\nSELECT Verandas.name\nFROM Verandas\nWHERE Verandas.Number_of_Seats = 50",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?patios a :Patios .\n    ?patios p:name ?name .\n    ?patios p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?verandas a :Verandas .\n    ?verandas p:name ?name .\n    ?verandas p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display patios and verandas with 50 seats.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?patios a :Patios .\n    ?patios p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?verandas a :Verandas .\n    ?verandas p:name ?name .\n    ?verandas p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?patios a :Patios .\n    ?patios p:name ?name .\n    ?patios p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?verandas a :Verandas .\n    ?verandas p:name ?name .\n    ?verandas p:Number_of_Seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"50\" || STR(?number_of_seats_f) = \"50.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

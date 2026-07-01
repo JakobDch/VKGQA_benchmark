@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_research_methods",
+  "schema": "amb_attachment_1tab_val_research_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show projects with case studies and interviews about environmental science.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.title \nFROM Projects\nWHERE (Projects.researchMethod = \"Case Study\" OR Projects.researchMethod = \"Interview\") AND Projects.topic = \"Environmental Science\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?projects a :Projects .\n  ?projects p:title ?title .\n  ?projects p:researchMethod ?researchmethod_w .\n  ?projects p:researchMethod ?researchmethod_w2 .\n  ?projects p:topic ?topic_w .\n  FILTER((((STR(?researchmethod_w) = \"Case Study\" || STR(?researchmethod_w2) = \"Interview\")) && STR(?topic_w) = \"Environmental Science\"))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show projects with case studies and interviews about environmental science.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.title \nFROM Projects\nWHERE Projects.researchMethod = \"Case Study\" OR Projects.researchMethod = \"Interview\" AND Projects.topic = \"Environmental Science\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?projects a :Projects .\n  ?projects p:title ?title .\n  ?projects p:researchMethod ?researchmethod_w .\n  ?projects p:researchMethod ?researchmethod_w2 .\n  ?projects p:topic ?topic_w .\n  FILTER((STR(?researchmethod_w) = \"Case Study\" || (STR(?researchmethod_w2) = \"Interview\" && STR(?topic_w) = \"Environmental Science\")))\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show projects with case studies and interviews about environmental science.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?projects a :Projects .\n  ?projects p:title ?title .\n  ?projects p:researchMethod ?researchmethod_w .\n  ?projects p:researchMethod ?researchmethod_w2 .\n  ?projects p:topic ?topic_w .\n  FILTER((STR(?researchmethod_w) = \"Case Study\" || (STR(?researchmethod_w2) = \"Interview\" && STR(?topic_w) = \"Environmental Science\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?projects a :Projects .\n  ?projects p:title ?title .\n  ?projects p:researchMethod ?researchmethod_w .\n  ?projects p:researchMethod ?researchmethod_w2 .\n  ?projects p:topic ?topic_w .\n  FILTER((((STR(?researchmethod_w) = \"Case Study\" || STR(?researchmethod_w2) = \"Interview\")) && STR(?topic_w) = \"Environmental Science\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{TeacherID} a :Teachers ; p:TeacherID {TeacherID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:SubjectTaught {SubjectTaught} .
+source		SELECT `TeacherID`, `FirstName`, `LastName`, `SubjectTaught` FROM `Teachers`
+
+mappingId	Classes_base
+target		ex:Classes/{ClassID} a :Classes ; p:ClassID {ClassID} ; p:name {Name} ; p:GradeLevel {GradeLevel} ; p:TeacherID {TeacherID} .
+source		SELECT `ClassID`, `Name`, `GradeLevel`, `TeacherID` FROM `Classes`
+
+mappingId	Classes_TeacherID_fk
+target		ex:Classes/{ClassID} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `ClassID`, `TeacherID` FROM `Classes` WHERE `TeacherID` IS NOT NULL
+
+mappingId	LearningActivities_base
+target		ex:LearningActivities/{ActivityID} a :LearningActivities ; p:ActivityID {ActivityID} ; p:ActivityType {ActivityType} ; p:Purpose {Purpose} ; p:Date {Date} ; p:ClassID {ClassID} .
+source		SELECT `ActivityID`, `ActivityType`, `Purpose`, `Date`, `ClassID` FROM `LearningActivities`
+
+mappingId	LearningActivities_ClassID_fk
+target		ex:LearningActivities/{ActivityID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `ActivityID`, `ClassID` FROM `LearningActivities` WHERE `ClassID` IS NOT NULL
+
+]]

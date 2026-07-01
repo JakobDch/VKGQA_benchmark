@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flight_base
+target		ex:Flights/{flightID} a :Flights ; p:flightID {flightID} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:aircraftID {aircraftID} ; p:terminalID {terminalID} .
+source		SELECT `flightID`, `departureTime`, `arrivalTime`, `aircraftID`, `terminalID` FROM `Flight`
+
+mappingId	Flight_terminalID_fk
+target		ex:Flights/{flightID} p:hasTerminals ex:Terminals/{terminalID} .
+source		SELECT `flightID`, `terminalID` FROM `Flight` WHERE `terminalID` IS NOT NULL
+
+mappingId	Flight_aircraftID_fk
+target		ex:Flights/{flightID} p:hasAircraft ex:Aircraft/{aircraftID} .
+source		SELECT `flightID`, `aircraftID` FROM `Flight` WHERE `aircraftID` IS NOT NULL
+
+mappingId	Passenger_base
+target		ex:Passengers/{passengerID} a :Passengers ; p:passengerID {passengerID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:flightID {flightID} ; p:loungeID {loungeID} .
+source		SELECT `passengerID`, `firstName`, `lastName`, `flightID`, `loungeID` FROM `Passenger`
+
+mappingId	Passenger_loungeID_fk
+target		ex:Passengers/{passengerID} p:hasLounge ex:Lounge/{loungeID} .
+source		SELECT `passengerID`, `loungeID` FROM `Passenger` WHERE `loungeID` IS NOT NULL
+
+mappingId	Passenger_flightID_fk
+target		ex:Passengers/{passengerID} p:hasFlights ex:Flights/{flightID} .
+source		SELECT `passengerID`, `flightID` FROM `Passenger` WHERE `flightID` IS NOT NULL
+
+mappingId	Aircraft_base
+target		ex:Aircraft/{aircraftID} a :Aircraft ; p:aircraftID {aircraftID} ; p:model {model} ; p:capacity {capacity} .
+source		SELECT `aircraftID`, `model`, `capacity` FROM `Aircraft`
+
+mappingId	Terminal_base
+target		ex:Terminals/{terminalID} a :Terminals ; p:terminalID {terminalID} ; p:location {location} .
+source		SELECT `terminalID`, `location` FROM `Terminal`
+
+mappingId	Lounge_base
+target		ex:Lounge/{loungeID} a :Lounge ; p:loungeID {loungeID} ; p:name {name} ; p:exclusiveArea {exclusiveArea} ; p:amenities {amenities} ; p:capacity {capacity} ; p:terminalID {terminalID} .
+source		SELECT `loungeID`, `name`, `exclusiveArea`, `amenities`, `capacity`, `terminalID` FROM `Lounge`
+
+mappingId	Lounge_terminalID_fk
+target		ex:Lounge/{loungeID} p:hasTerminals ex:Terminals/{terminalID} .
+source		SELECT `loungeID`, `terminalID` FROM `Lounge` WHERE `terminalID` IS NOT NULL
+
+mappingId	Amenity_base
+target		ex:Amenity/{amenityID} a :Amenity ; p:amenityID {amenityID} ; p:description {description} .
+source		SELECT `amenityID`, `description` FROM `Amenity`
+
+]]

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genre_base
+target		ex:Genre/{GenreID} a :Genre ; p:GenreID {GenreID} ; p:name {Name} .
+source		SELECT `GenreID`, `Name` FROM `Genre`
+
+mappingId	Movie_base
+target		ex:Movie/{MovieID} a :Movie ; p:MovieID {MovieID} ; p:Title {Title} ; p:ReleaseDate {ReleaseDate} ; p:Rating {Rating} ; p:GenreID {GenreID} .
+source		SELECT `MovieID`, `Title`, `ReleaseDate`, `Rating`, `GenreID` FROM `Movie`
+
+mappingId	Movie_GenreID_fk
+target		ex:Movie/{MovieID} p:hasGenre ex:Genre/{GenreID} .
+source		SELECT `MovieID`, `GenreID` FROM `Movie` WHERE `GenreID` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actor/{ActorID} a :Actor ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `DateOfBirth`, `Nationality` FROM `Actor`
+
+mappingId	Cast_base
+target		ex:Cast/{CastID} a :Cast ; p:CastID {CastID} ; p:MovieID {MovieID} ; p:ActorID {ActorID} ; p:Role {Role} .
+source		SELECT `CastID`, `MovieID`, `ActorID`, `Role` FROM `Cast`
+
+mappingId	Cast_ActorID_fk
+target		ex:Cast/{CastID} p:hasActor ex:Actor/{ActorID} .
+source		SELECT `CastID`, `ActorID` FROM `Cast` WHERE `ActorID` IS NOT NULL
+
+mappingId	Cast_MovieID_fk
+target		ex:Cast/{CastID} p:hasMovie ex:Movie/{MovieID} .
+source		SELECT `CastID`, `MovieID` FROM `Cast` WHERE `MovieID` IS NOT NULL
+
+mappingId	Documentary_base
+target		ex:Documentary/{DocumentaryID} a :Documentary ; p:DocumentaryID {DocumentaryID} ; p:Title {Title} ; p:HistoricalEra {HistoricalEra} ; p:Event {Event} ; p:DirectorID {DirectorID} .
+source		SELECT `DocumentaryID`, `Title`, `HistoricalEra`, `Event`, `DirectorID` FROM `Documentary`
+
+mappingId	Documentary_DirectorID_fk
+target		ex:Documentary/{DocumentaryID} p:hasDirector ex:Director/{DirectorID} .
+source		SELECT `DocumentaryID`, `DirectorID` FROM `Documentary` WHERE `DirectorID` IS NOT NULL
+
+mappingId	Director_base
+target		ex:Director/{DirectorID} a :Director ; p:DirectorID {DirectorID} ; p:BirthYear {BirthYear} ; p:DeathYear {DeathYear} ; p:name {fullname} .
+source		SELECT `DirectorID`, `BirthYear`, `DeathYear`, `fullname` FROM `Director`
+
+]]

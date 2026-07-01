@@ -1,0 +1,75 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_experience_level",
+  "schema": "amb_vague_2cols_experience_level",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the name and phone number of the applicant with the least years of experience?",
+      "qtype": "unambig",
+      "sql": "Select name, phone FROM Applicants JOIN Experiences ON Applicants.id = Experiences.applicant_id ORDER BY years_of_experience  ASC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?phone WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:phone ?phone .\n  ?experiences p:years_of_experience ?years_of_experience_o .\n}\nORDER BY ASC(?years_of_experience_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who has completed the most projects and what is their email address?",
+      "qtype": "unambig",
+      "sql": "Select name, email FROM Applicants JOIN Experiences ON Applicants.id = Experiences.applicant_id ORDER BY number_of_completed_projects  DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?email WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:email ?email .\n  ?experiences p:number_of_completed_projects ?number_of_completed_projects_o .\n}\nORDER BY DESC(?number_of_completed_projects_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the name and phone number of least experienced applicant.",
+      "qtype": "ambig",
+      "sql": "Select name, phone FROM Applicants JOIN Experiences ON Applicants.id = Experiences.applicant_id ORDER BY number_of_completed_projects  ASC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?phone WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:phone ?phone .\n  ?experiences p:number_of_completed_projects ?number_of_completed_projects_o .\n}\nORDER BY ASC(?number_of_completed_projects_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the name and email of most experienced applicant.",
+      "qtype": "ambig",
+      "sql": "Select name, email FROM Applicants JOIN Experiences ON Applicants.id = Experiences.applicant_id ORDER BY years_of_experience  DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?email WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:email ?email .\n  ?experiences p:years_of_experience ?years_of_experience_o .\n}\nORDER BY DESC(?years_of_experience_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the name and phone number of least experienced applicant.",
+      "ambig_type": "vague",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?phone WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:phone ?phone .\n  ?experiences p:years_of_experience ?years_of_experience_o .\n}\nORDER BY ASC(?years_of_experience_o)\nLIMIT 1 }\n  component_2: { SELECT ?name ?phone WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:phone ?phone .\n  ?experiences p:number_of_completed_projects ?number_of_completed_projects_o .\n}\nORDER BY ASC(?number_of_completed_projects_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the name and email of most experienced applicant.",
+      "ambig_type": "vague",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?email WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:email ?email .\n  ?experiences p:number_of_completed_projects ?number_of_completed_projects_o .\n}\nORDER BY DESC(?number_of_completed_projects_o)\nLIMIT 1 }\n  component_2: { SELECT ?name ?email WHERE {\n  ?applicants a :Applicants .\n  ?experiences a :Experiences .\n  ?experiences p:hasApplicants ?applicants .\n  ?applicants p:name ?name .\n  ?applicants p:email ?email .\n  ?experiences p:years_of_experience ?years_of_experience_o .\n}\nORDER BY DESC(?years_of_experience_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

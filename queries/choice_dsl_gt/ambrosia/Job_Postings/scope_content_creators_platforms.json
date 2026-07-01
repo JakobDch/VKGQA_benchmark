@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_content_creators_platforms",
+  "schema": "amb_scope_content_creators_platforms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the platforms each content creator uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Platforms.platform_name  from Content_Creators_Platforms join Platforms on Content_Creators_Platforms.platform_id = Platforms.id join Content_Creators on Content_Creators_Platforms.content_creator_id = Content_Creators.id   GROUP BY Content_Creators_Platforms.platform_id HAVING COUNT(DISTINCT Content_Creators_Platforms.content_creator_id) = (SELECT COUNT(*) FROM  Content_Creators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?platform_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:platform_id ?cg . ?child a :Platforms ; p:id ?cg . ?l p:content_creator_id ?pg . ?parent a :Content_Creators ; p:id ?pg . } GROUP BY ?child }\n  ?child p:platform_name ?platform_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Content_Creators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the platforms each content creator uses.",
+      "qtype": "ambig",
+      "sql": "select content_creators.name , platforms.platform_name from Content_Creators_Platforms join Platforms on Content_Creators_Platforms.platform_id = Platforms.id join Content_Creators on Content_Creators_Platforms.content_creator_id = Content_Creators.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?platform_name WHERE {\n  ?content_creators_platforms a :Content_Creators_Platforms .\n  ?platforms a :Platforms .\n  ?content_creators_platforms p:hasPlatforms ?platforms .\n  ?content_creators a :Content_Creators .\n  ?content_creators_platforms p:hasContent_Creators ?content_creators .\n  ?content_creators p:name ?name .\n  ?platforms p:platform_name ?platform_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the platforms each content creator uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?platform_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:platform_id ?cg . ?child a :Platforms ; p:id ?cg . ?l p:content_creator_id ?pg . ?parent a :Content_Creators ; p:id ?pg . } GROUP BY ?child }\n  ?child p:platform_name ?platform_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Content_Creators } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?platform_name WHERE {\n  ?content_creators_platforms a :Content_Creators_Platforms .\n  ?platforms a :Platforms .\n  ?content_creators_platforms p:hasPlatforms ?platforms .\n  ?content_creators a :Content_Creators .\n  ?content_creators_platforms p:hasContent_Creators ?content_creators .\n  ?content_creators p:name ?name .\n  ?platforms p:platform_name ?platform_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:Origin {Origin} ; p:Destination {Destination} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} .
+source		SELECT `FlightID`, `Origin`, `Destination`, `DepartureTime`, `ArrivalTime` FROM `Flights`
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} ; p:name {FullName} .
+source		SELECT `PassengerID`, `DateOfBirth`, `Nationality`, `FullName` FROM `Passengers`
+
+mappingId	Luggage_base
+target		ex:Luggage/{ItemID} a :Luggage ; p:ItemID {ItemID} ; p:PassengerID {PassengerID} ; p:Description {Description} ; p:Fees {Fees} .
+source		SELECT `ItemID`, `PassengerID`, `Description`, `Fees` FROM `Luggage`
+
+mappingId	Luggage_PassengerID_fk
+target		ex:Luggage/{ItemID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `ItemID`, `PassengerID` FROM `Luggage` WHERE `PassengerID` IS NOT NULL
+
+mappingId	Aircrafts_base
+target		ex:Aircraft/{AircraftID} a :Aircraft ; p:AircraftID {AircraftID} ; p:Model {Model} ; p:Capacity {Capacity} ; p:RegistrationNumber {RegistrationNumber} .
+source		SELECT `AircraftID`, `Model`, `Capacity`, `RegistrationNumber` FROM `Aircrafts`
+
+mappingId	Assignments_base
+target		ex:Assignments/{AssignmentID} a :Assignments ; p:AssignmentID {AssignmentID} ; p:FlightID {FlightID} ; p:AircraftID {AircraftID} ; p:AssignedDate {AssignedDate} ; p:ReturnedDate {ReturnedDate} .
+source		SELECT `AssignmentID`, `FlightID`, `AircraftID`, `AssignedDate`, `ReturnedDate` FROM `Assignments`
+
+mappingId	Assignments_AircraftID_fk
+target		ex:Assignments/{AssignmentID} p:hasAircraft ex:Aircraft/{AircraftID} .
+source		SELECT `AssignmentID`, `AircraftID` FROM `Assignments` WHERE `AircraftID` IS NOT NULL
+
+mappingId	Assignments_FlightID_fk
+target		ex:Assignments/{AssignmentID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `AssignmentID`, `FlightID` FROM `Assignments` WHERE `FlightID` IS NOT NULL
+
+mappingId	CheckIns_base
+target		ex:CheckIns/{CheckInID} a :CheckIns ; p:CheckInID {CheckInID} ; p:FlightID {FlightID} ; p:PassengerID {PassengerID} ; p:CheckInDateTime {CheckInDateTime} ; p:BoardingGate {BoardingGate} ; p:Seat {Seat} .
+source		SELECT `CheckInID`, `FlightID`, `PassengerID`, `CheckInDateTime`, `BoardingGate`, `Seat` FROM `CheckIns`
+
+mappingId	CheckIns_PassengerID_fk
+target		ex:CheckIns/{CheckInID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `CheckInID`, `PassengerID` FROM `CheckIns` WHERE `PassengerID` IS NOT NULL
+
+mappingId	CheckIns_FlightID_fk
+target		ex:CheckIns/{CheckInID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `CheckInID`, `FlightID` FROM `CheckIns` WHERE `FlightID` IS NOT NULL
+
+]]

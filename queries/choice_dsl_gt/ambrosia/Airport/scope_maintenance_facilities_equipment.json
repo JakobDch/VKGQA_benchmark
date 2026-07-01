@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_maintenance_facilities_equipment",
+  "schema": "amb_scope_maintenance_facilities_equipment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What type of equipment do we have for each facility",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.type  from Maintenance_Facilities_Equipment join Equipment on Maintenance_Facilities_Equipment.equipmentTypeId = Equipment.equipmentId join Maintenance_Facilities on Maintenance_Facilities_Equipment.maintenanceId = Maintenance_Facilities.id   GROUP BY Maintenance_Facilities_Equipment.equipmentTypeId HAVING COUNT(DISTINCT Maintenance_Facilities_Equipment.maintenanceId) = (SELECT COUNT(*) FROM  Maintenance_Facilities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMaintenance_Facilities ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maintenance_Facilities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What type of equipment do we have for each facility",
+      "qtype": "ambig",
+      "sql": "select maintenance_facilities.name , equipment.type from Maintenance_Facilities_Equipment join Equipment on Maintenance_Facilities_Equipment.equipmentTypeId = Equipment.equipmentId join Maintenance_Facilities on Maintenance_Facilities_Equipment.maintenanceId = Maintenance_Facilities.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?maintenance_facilities_equipment a :Maintenance_Facilities_Equipment .\n  ?equipment a :Equipment .\n  ?maintenance_facilities_equipment p:hasEquipment ?equipment .\n  ?maintenance_facilities a :Maintenance_Facilities .\n  ?maintenance_facilities_equipment p:hasMaintenance_Facilities ?maintenance_facilities .\n  ?maintenance_facilities p:name ?name .\n  ?equipment p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=11"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of equipment do we have for each facility",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasMaintenance_Facilities ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maintenance_Facilities } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?maintenance_facilities_equipment a :Maintenance_Facilities_Equipment .\n  ?equipment a :Equipment .\n  ?maintenance_facilities_equipment p:hasEquipment ?equipment .\n  ?maintenance_facilities a :Maintenance_Facilities .\n  ?maintenance_facilities_equipment p:hasMaintenance_Facilities ?maintenance_facilities .\n  ?maintenance_facilities p:name ?name .\n  ?equipment p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Movies_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:release_year {release_year} .
+source		SELECT `id`, `title`, `release_year` FROM `Movies`
+
+mappingId	Directors_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `id`, `name`, `birthdate` FROM `Directors`
+
+mappingId	Genres_base
+target		ex:Genre/{id} a :Genre ; p:id {id} ; p:genre_name {genre_name} .
+source		SELECT `id`, `genre_name` FROM `Genres`
+
+mappingId	Actors_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `id`, `name`, `birthdate` FROM `Actors`
+
+mappingId	Ratings_base
+target		ex:Rating/{_amb_rowid} a :Rating ; p:movie_id {movie_id} ; p:rating {rating} .
+source		SELECT `_amb_rowid`, `movie_id`, `rating` FROM `Ratings`
+
+mappingId	Ratings_movie_id_fk
+target		ex:Rating/{_amb_rowid} p:hasMovie ex:Movie/{movie_id} .
+source		SELECT `_amb_rowid`, `movie_id` FROM `Ratings` WHERE `movie_id` IS NOT NULL
+
+mappingId	Theater_Plays_base
+target		ex:Theater_Play/{theater_play_id} a :Theater_Play ; p:theater_play_id {theater_play_id} ; p:play_title {play_title} ; p:total_length_id {total_length_id} ; p:number_of_acts_id {number_of_acts_id} .
+source		SELECT `theater_play_id`, `play_title`, `total_length_id`, `number_of_acts_id` FROM `Theater_Plays`
+
+mappingId	Theater_Plays_number_of_acts_id_fk
+target		ex:Theater_Play/{theater_play_id} p:hasNumber_Of_Acts ex:Number_Of_Acts/{number_of_acts_id} .
+source		SELECT `theater_play_id`, `number_of_acts_id` FROM `Theater_Plays` WHERE `number_of_acts_id` IS NOT NULL
+
+mappingId	Theater_Plays_total_length_id_fk
+target		ex:Theater_Play/{theater_play_id} p:hasTotal_Length ex:Total_Length/{total_length_id} .
+source		SELECT `theater_play_id`, `total_length_id` FROM `Theater_Plays` WHERE `total_length_id` IS NOT NULL
+
+mappingId	Number_Of_Acts_base
+target		ex:Number_Of_Acts/{_amb_rowid} a :Number_Of_Acts ; p:theater_play_id {theater_play_id} ; p:number_of_acts {number_of_acts} .
+source		SELECT `_amb_rowid`, `theater_play_id`, `number_of_acts` FROM `Number_Of_Acts`
+
+mappingId	Number_Of_Acts_theater_play_id_fk
+target		ex:Number_Of_Acts/{_amb_rowid} p:hasTheater_Play ex:Theater_Play/{theater_play_id} .
+source		SELECT `_amb_rowid`, `theater_play_id` FROM `Number_Of_Acts` WHERE `theater_play_id` IS NOT NULL
+
+mappingId	Total_Length_base
+target		ex:Total_Length/{_amb_rowid} a :Total_Length ; p:theater_play_id {theater_play_id} ; p:total_length {total_length} .
+source		SELECT `_amb_rowid`, `theater_play_id`, `total_length` FROM `Total_Length`
+
+mappingId	Total_Length_theater_play_id_fk
+target		ex:Total_Length/{_amb_rowid} p:hasTheater_Play ex:Theater_Play/{theater_play_id} .
+source		SELECT `_amb_rowid`, `theater_play_id` FROM `Total_Length` WHERE `theater_play_id` IS NOT NULL
+
+]]

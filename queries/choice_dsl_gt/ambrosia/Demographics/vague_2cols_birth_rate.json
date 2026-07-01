@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_birth_rate",
+  "schema": "amb_vague_2cols_birth_rate",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In cities with populations larger than 75,000, can you give me the number of births per year? Also show these cities and population.",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Number_Of_Births, BirthYears.City, AgeGroupPopulations.TotalPopulation FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName WHERE AgeGroupPopulations.TotalPopulation > 75000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?number_of_births ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "In cities with populations larger than 75,000, can you give me the crude birth rate? Also show these cities and population.",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Crude_Birth_Rate, BirthYears.City, AgeGroupPopulations.TotalPopulation FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName WHERE AgeGroupPopulations.TotalPopulation > 75000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?crude_birth_rate ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the crude birth rate for the most populous city, its population and name",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Crude_Birth_Rate, AgeGroupPopulations.TotalPopulation, AgeGroupPopulations.CityName FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName ORDER BY AgeGroupPopulations.TotalPopulation DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?crude_birth_rate ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the crude birth rate for the most populous city, the number of people born there, its population and name.",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Number_Of_Births, Crude_Birth_Rate, AgeGroupPopulations.TotalPopulation, AgeGroupPopulations.CityName FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName ORDER BY AgeGroupPopulations.TotalPopulation DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?number_of_births ?crude_birth_rate ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "In cities with populations larger than 75,000, can you give me the number of births per year and crude birth rate? Also show these cities and population.",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Number_Of_Births, Crude_Birth_Rate, BirthYears.City, AgeGroupPopulations.TotalPopulation FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName WHERE AgeGroupPopulations.TotalPopulation > 75000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?number_of_births ?crude_birth_rate ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the number of births for the most populous city, its population and name",
+      "qtype": "unambig",
+      "sql": "SELECT BirthYears.Number_Of_Births, AgeGroupPopulations.TotalPopulation, AgeGroupPopulations.CityName FROM BirthYears JOIN AgeGroupPopulations ON BirthYears.City = AgeGroupPopulations.CityName ORDER BY AgeGroupPopulations.TotalPopulation DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?number_of_births ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the birth rate, city and population for cities with a population greater than 75,000 people",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?number_of_births ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n} }\n  component_2: { SELECT ?crude_birth_rate ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n} }\n  full: { SELECT ?number_of_births ?crude_birth_rate ?city ?totalpopulation WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?birthyears p:City ?city .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_f .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n  FILTER(?totalpopulation_f > 75000)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the birth rate for the most populous city, its population and name",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?crude_birth_rate ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1 }\n  full: { SELECT ?number_of_births ?crude_birth_rate ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?birthyears p:Crude_Birth_Rate ?crude_birth_rate .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1 }\n  component_2: { SELECT ?number_of_births ?totalpopulation ?cityname WHERE {\n  ?birthyears a :BirthYears .\n  ?agegrouppopulations a :AgeGroupPopulations .\n  ?birthyears p:City ?city_l .\n  ?agegrouppopulations p:CityName ?cityname_r .\n  ?birthyears p:Number_Of_Births ?number_of_births .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation .\n  ?agegrouppopulations p:CityName ?cityname .\n  ?agegrouppopulations p:TotalPopulation ?totalpopulation_o .\n  FILTER(STR(?city_l) = STR(?cityname_r))\n}\nORDER BY DESC(?totalpopulation_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

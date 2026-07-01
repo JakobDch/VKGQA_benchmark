@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_epidemiological_study_methods",
+  "schema": "amb_scope_epidemiological_study_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each epidemiological study, list the corresponding methods.",
+      "qtype": "unambig",
+      "sql": "select epidemiological_study.name , methods.method_name from Epidemiological_Study_Methods join Methods on Epidemiological_Study_Methods.method_id = Methods.method_id join Epidemiological_Study on Epidemiological_Study_Methods.epidemiological_study_id = Epidemiological_Study.study_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?method_name WHERE {\n  ?epidemiological_study_methods a :Epidemiological_Study_Methods .\n  ?methods a :Methods .\n  ?epidemiological_study_methods p:hasMethods ?methods .\n  ?epidemiological_study a :Epidemiological_Study .\n  ?epidemiological_study_methods p:hasEpidemiological_Study ?epidemiological_study .\n  ?epidemiological_study p:name ?name .\n  ?methods p:method_name ?method_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What methods are associated with every epidemiological study?",
+      "qtype": "ambig",
+      "sql": "SELECT Methods.method_name  from Epidemiological_Study_Methods join Methods on Epidemiological_Study_Methods.method_id = Methods.method_id join Epidemiological_Study on Epidemiological_Study_Methods.epidemiological_study_id = Epidemiological_Study.study_id   GROUP BY Epidemiological_Study_Methods.method_id HAVING COUNT(DISTINCT Epidemiological_Study_Methods.epidemiological_study_id) = (SELECT COUNT(*) FROM  Epidemiological_Study)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMethods ?child ; p:hasEpidemiological_Study ?parent . } GROUP BY ?child }\n  ?child p:method_name ?method_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Epidemiological_Study } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What methods are associated with every epidemiological study?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?method_name WHERE {\n  ?epidemiological_study_methods a :Epidemiological_Study_Methods .\n  ?methods a :Methods .\n  ?epidemiological_study_methods p:hasMethods ?methods .\n  ?epidemiological_study a :Epidemiological_Study .\n  ?epidemiological_study_methods p:hasEpidemiological_Study ?epidemiological_study .\n  ?epidemiological_study p:name ?name .\n  ?methods p:method_name ?method_name .\n} }\n  collective: { SELECT ?method_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMethods ?child ; p:hasEpidemiological_Study ?parent . } GROUP BY ?child }\n  ?child p:method_name ?method_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Epidemiological_Study } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

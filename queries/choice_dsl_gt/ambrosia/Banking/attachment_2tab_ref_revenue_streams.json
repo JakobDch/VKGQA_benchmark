@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_ref_revenue_streams",
+  "schema": "amb_attachment_2tab_ref_revenue_streams",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the fee of accounts where the product is called checking and what is the interest rate of the accounts with the same product name.",
+      "qtype": "unambig",
+      "sql": "SELECT Fees.cardfee AS AMOUNT\nFROM Accounts JOIN Fees ON Accounts.AccountID = Fees.AccountID\nWHERE Accounts.Product = \"Checking\"\nUNION\nSELECT InterestRates.monthlyinterestrate\nFROM Accounts JOIN InterestRates ON Accounts.AccountID = InterestRates.AccountID\nWHERE Accounts.Product = \"Checking\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?accounts a :Accounts .\n    ?fees a :Fees .\n    ?fees p:hasAccounts ?accounts .\n    ?fees p:CardFee ?cardfee .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?cardfee AS ?o0)\n  }\n  UNION\n  {\n    ?accounts a :Accounts .\n    ?interestrates a :InterestRates .\n    ?interestrates p:hasAccounts ?accounts .\n    ?interestrates p:MonthlyInterestRate ?monthlyinterestrate .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?monthlyinterestrate AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all fees and interest rates for the account's product called checking.",
+      "qtype": "ambig",
+      "sql": "SELECT Fees.cardfee AS AMOUNT\nFROM Accounts JOIN Fees ON Accounts.AccountID = Fees.AccountID\nUNION\nSELECT InterestRates.monthlyinterestrate AS AMOUNT\nFROM Accounts JOIN InterestRates ON Accounts.AccountID = InterestRates.AccountID\nWHERE Accounts.Product = \"Checking\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?accounts a :Accounts .\n    ?fees a :Fees .\n    ?fees p:hasAccounts ?accounts .\n    ?fees p:CardFee ?cardfee .\n    BIND(?cardfee AS ?o0)\n  }\n  UNION\n  {\n    ?accounts a :Accounts .\n    ?interestrates a :InterestRates .\n    ?interestrates p:hasAccounts ?accounts .\n    ?interestrates p:MonthlyInterestRate ?monthlyinterestrate .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?monthlyinterestrate AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all fees and interest rates for the account's product called checking.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?accounts a :Accounts .\n    ?fees a :Fees .\n    ?fees p:hasAccounts ?accounts .\n    ?fees p:CardFee ?cardfee .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?cardfee AS ?o0)\n  }\n  UNION\n  {\n    ?accounts a :Accounts .\n    ?interestrates a :InterestRates .\n    ?interestrates p:hasAccounts ?accounts .\n    ?interestrates p:MonthlyInterestRate ?monthlyinterestrate .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?monthlyinterestrate AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?accounts a :Accounts .\n    ?fees a :Fees .\n    ?fees p:hasAccounts ?accounts .\n    ?fees p:CardFee ?cardfee .\n    BIND(?cardfee AS ?o0)\n  }\n  UNION\n  {\n    ?accounts a :Accounts .\n    ?interestrates a :InterestRates .\n    ?interestrates p:hasAccounts ?accounts .\n    ?interestrates p:MonthlyInterestRate ?monthlyinterestrate .\n    ?accounts p:Product ?product_f .\n    FILTER(STR(?product_f) = \"Checking\")\n    BIND(?monthlyinterestrate AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

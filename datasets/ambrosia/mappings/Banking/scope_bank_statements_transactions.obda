@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} .
+source		SELECT `CustomerID`, `FirstName`, `LastName` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountNumber`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountNumber {AccountNumber} ; p:TransactionType {TransactionType} ; p:Amount {Amount} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountNumber`, `TransactionType`, `Amount`, `Date` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Bank_Statements_base
+target		ex:Bank_Statements/{StatementID} a :Bank_Statements ; p:StatementID {StatementID} ; p:AccountNumber {AccountNumber} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:TotalAmount {TotalAmount} .
+source		SELECT `StatementID`, `AccountNumber`, `StartDate`, `EndDate`, `TotalAmount` FROM `Bank_Statements`
+
+mappingId	Bank_Statements_AccountNumber_fk
+target		ex:Bank_Statements/{StatementID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `StatementID`, `AccountNumber` FROM `Bank_Statements` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Bank_Statements_Transactions_base
+target		ex:Bank_Statements_Transactions/{StatementTransactionID} a :Bank_Statements_Transactions ; p:StatementTransactionID {StatementTransactionID} ; p:StatementID {StatementID} ; p:TransactionID {TransactionID} .
+source		SELECT `StatementTransactionID`, `StatementID`, `TransactionID` FROM `Bank_Statements_Transactions`
+
+mappingId	Bank_Statements_Transactions_TransactionID_fk
+target		ex:Bank_Statements_Transactions/{StatementTransactionID} p:hasTransactions ex:Transactions/{TransactionID} .
+source		SELECT `StatementTransactionID`, `TransactionID` FROM `Bank_Statements_Transactions` WHERE `TransactionID` IS NOT NULL
+
+mappingId	Bank_Statements_Transactions_StatementID_fk
+target		ex:Bank_Statements_Transactions/{StatementTransactionID} p:hasBank_Statements ex:Bank_Statements/{StatementID} .
+source		SELECT `StatementTransactionID`, `StatementID` FROM `Bank_Statements_Transactions` WHERE `StatementID` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_tuition_cost",
+  "schema": "amb_vague_2cols_tuition_cost",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the semester and annual cost of the computer science programme?",
+      "qtype": "unambig",
+      "sql": "SELECT Amount_Per_Semester, Annual_Cost FROM Programs WHERE Name = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount_per_semester ?annual_cost WHERE {\n  ?programs a :Programs .\n  ?programs p:Amount_Per_Semester ?amount_per_semester .\n  ?programs p:Annual_Cost ?annual_cost .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the cost of tuition for the Computer Science program?",
+      "qtype": "ambig",
+      "sql": "SELECT Amount_Per_Semester FROM Programs WHERE Name = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount_per_semester WHERE {\n  ?programs a :Programs .\n  ?programs p:Amount_Per_Semester ?amount_per_semester .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the cost of tuition for the Computer Science program?",
+      "qtype": "ambig",
+      "sql": "SELECT Annual_Cost FROM Programs WHERE Name = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?annual_cost WHERE {\n  ?programs a :Programs .\n  ?programs p:Annual_Cost ?annual_cost .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the cost of tuition for the Computer Science program?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?amount_per_semester ?annual_cost WHERE {\n  ?programs a :Programs .\n  ?programs p:Amount_Per_Semester ?amount_per_semester .\n  ?programs p:Annual_Cost ?annual_cost .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n} }\n  component: { SELECT ?annual_cost WHERE {\n  ?programs a :Programs .\n  ?programs p:Annual_Cost ?annual_cost .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n} }\n  component_2: { SELECT ?amount_per_semester WHERE {\n  ?programs a :Programs .\n  ?programs p:Amount_Per_Semester ?amount_per_semester .\n  ?programs p:name ?name_f .\n  FILTER(STR(?name_f) = \"Computer Science\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

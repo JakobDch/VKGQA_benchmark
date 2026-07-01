@@ -1,0 +1,97 @@
+{
+  "domain": "Housing Market",
+  "db_base": "vague_2cols_extras",
+  "schema": "amb_vague_2cols_extras",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "How many extras are in the most expensive property?",
+      "qtype": "ambig",
+      "sql": "SELECT House.Fees\nFROM House JOIN\nSaleRecord ON House.id = SaleRecord.house_id\nWHERE SaleRecord.purchase_price = (\n                               SELECT MAX(SaleRecord.purchase_price) FROM SaleRecord\n                               )",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fees WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Fees ?fees .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "How many extras are in the most expensive property?",
+      "qtype": "ambig",
+      "sql": "SELECT House.Taxes\nFROM House JOIN\nSaleRecord ON House.id = SaleRecord.house_id\nWHERE SaleRecord.purchase_price = (\n                               SELECT MAX(SaleRecord.purchase_price) FROM SaleRecord\n                               )",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?taxes WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Taxes ?taxes .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "How many extras are in the most expensive property?",
+      "qtype": "ambig",
+      "sql": "SELECT House.Fees, Taxes\nFROM House JOIN\nSaleRecord ON House.id = SaleRecord.house_id\nWHERE SaleRecord.purchase_price = (\n                               SELECT MAX(SaleRecord.purchase_price) FROM SaleRecord\n                               )",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fees ?taxes WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Fees ?fees .\n  ?house p:Taxes ?taxes .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are the taxes associated with the condo?",
+      "qtype": "unambig",
+      "sql": "SELECT House.Taxes\nFROM House \n    JOIN PropertyType ON PropertyType.id = House. property_type_id\nWHERE PropertyType.type = \"Condo\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?taxes WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Taxes ?taxes .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "How many fees are in the condo?",
+      "qtype": "unambig",
+      "sql": "SELECT House.Fees\nFROM House \n    JOIN PropertyType ON PropertyType.id = House. property_type_id\nWHERE PropertyType.type = \"Condo\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fees WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Fees ?fees .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What are the fees associated with the condo and the corresponding taxes?",
+      "qtype": "unambig",
+      "sql": "SELECT House.Fees, Taxes\nFROM House \n    JOIN PropertyType ON PropertyType.id = House. property_type_id\nWHERE PropertyType.type = \"Condo\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fees ?taxes WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Fees ?fees .\n  ?house p:Taxes ?taxes .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "How many extras are in the most expensive property?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?fees ?taxes WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Fees ?fees .\n  ?house p:Taxes ?taxes .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n} }\n  component: { SELECT ?fees WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Fees ?fees .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n} }\n  component_2: { SELECT ?taxes WHERE {\n  ?house a :House .\n  ?salerecord a :SaleRecord .\n  ?salerecord p:hasHouse ?house .\n  ?house p:Taxes ?taxes .\n  ?salerecord p:purchase_price ?purchase_price_x .\n  { SELECT (MAX(?m0) AS ?m) WHERE { ?s0 p:purchase_price ?m0 } }\n  FILTER(xsd:double(?purchase_price_x) = xsd:double(?m))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "How many extras are in the Condo?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?taxes WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Taxes ?taxes .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n} }\n  component_2: { SELECT ?fees WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Fees ?fees .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n} }\n  full: { SELECT ?fees ?taxes WHERE {\n  ?house a :House .\n  ?propertytype a :PropertyType .\n  ?house p:hasPropertyType ?propertytype .\n  ?house p:Fees ?fees .\n  ?house p:Taxes ?taxes .\n  ?propertytype p:type ?type_f .\n  FILTER(STR(?type_f) = STR(\"Condo\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_construction_jobs",
+  "schema": "amb_attachment_2tab_val_construction_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide all civil engineers and architects with expertise in AutoCAD.",
+      "qtype": "ambig",
+      "sql": "SELECT Civil_Engineers.name\nFROM Civil_Engineers\nWHERE Civil_Engineers.design_software_expertise = \"AutoCAD\"\nUNION\nSELECT Architects.name\nFROM Architects\nWHERE Architects.design_software_expertise = \"AutoCAD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?civil_engineers a :Civil_Engineers .\n    ?civil_engineers p:name ?name .\n    ?civil_engineers p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?architects a :Architects .\n    ?architects p:name ?name .\n    ?architects p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Provide all civil engineers and architects with expertise in AutoCAD.",
+      "qtype": "ambig",
+      "sql": "SELECT Civil_Engineers.name\nFROM Civil_Engineers\nUNION\nSELECT Architects.name\nFROM Architects\nWHERE Architects.design_software_expertise = \"AutoCAD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?civil_engineers a :Civil_Engineers .\n    ?civil_engineers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?architects a :Architects .\n    ?architects p:name ?name .\n    ?architects p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide all civil engineers and architects with expertise in AutoCAD.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?civil_engineers a :Civil_Engineers .\n    ?civil_engineers p:name ?name .\n    ?civil_engineers p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?architects a :Architects .\n    ?architects p:name ?name .\n    ?architects p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?civil_engineers a :Civil_Engineers .\n    ?civil_engineers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?architects a :Architects .\n    ?architects p:name ?name .\n    ?architects p:design_software_expertise ?design_software_expertise_f .\n    FILTER(STR(?design_software_expertise_f) = \"AutoCAD\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

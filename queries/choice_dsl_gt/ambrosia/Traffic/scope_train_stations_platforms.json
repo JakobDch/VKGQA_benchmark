@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_train_stations_platforms",
+  "schema": "amb_scope_train_stations_platforms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the platform names that are at each train station.",
+      "qtype": "ambig",
+      "sql": "SELECT Platforms.Name  from Train_Stations_Platforms join Platforms on Train_Stations_Platforms.PlatformID = Platforms.PlatformID join Train_Stations on Train_Stations_Platforms.StationID = Train_Stations.StationID   GROUP BY Train_Stations_Platforms.PlatformID HAVING COUNT(DISTINCT Train_Stations_Platforms.StationID) = (SELECT COUNT(*) FROM  Train_Stations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlatforms ?child ; p:hasTrain_Stations ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Train_Stations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the platform names that are at each train station.",
+      "qtype": "ambig",
+      "sql": "select train_stations.name , platforms.name from Train_Stations_Platforms join Platforms on Train_Stations_Platforms.PlatformID = Platforms.PlatformID join Train_Stations on Train_Stations_Platforms.StationID = Train_Stations.StationID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?train_stations_platforms a :Train_Stations_Platforms .\n  ?platforms a :Platforms .\n  ?train_stations_platforms p:hasPlatforms ?platforms .\n  ?train_stations a :Train_Stations .\n  ?train_stations_platforms p:hasTrain_Stations ?train_stations .\n  ?train_stations p:name ?name .\n  ?platforms p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=11"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the platform names that are at each train station.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlatforms ?child ; p:hasTrain_Stations ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Train_Stations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?train_stations_platforms a :Train_Stations_Platforms .\n  ?platforms a :Platforms .\n  ?train_stations_platforms p:hasPlatforms ?platforms .\n  ?train_stations a :Train_Stations .\n  ?train_stations_platforms p:hasTrain_Stations ?train_stations .\n  ?train_stations p:name ?name .\n  ?platforms p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_aircraft_manufacturers",
+  "schema": "amb_attachment_1tab_ref_aircraft_manufacturers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What Boeing planes have 180 seats and what Airbus planes have the same number of seats?",
+      "qtype": "unambig",
+      "sql": "SELECT planes.model\nFROM manufacturers JOIN plane_details ON manufacturers.id = plane_details.manufacturer_id JOIN planes ON plane_details.plane_id = planes.id\nWHERE (manufacturers.name = \"Boeing\" OR manufacturers.name = \"Airbus\") AND planes.number_of_seats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model WHERE {\n  ?manufacturers a :manufacturers .\n  ?plane_details a :plane_details .\n  ?plane_details p:hasmanufacturers ?manufacturers .\n  ?planes a :Planes .\n  ?plane_details p:hasplanes ?planes .\n  ?planes p:model ?model .\n  ?manufacturers p:name ?name_w .\n  ?manufacturers p:name ?name_w2 .\n  ?planes p:number_of_seats ?number_of_seats_w .\n  FILTER((((STR(?name_w) = \"Boeing\" || STR(?name_w2) = \"Airbus\")) && (STR(?number_of_seats_w) = \"180\" || STR(?number_of_seats_w) = \"180.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List Boeing models and Airbus models with 180 seats.",
+      "qtype": "ambig",
+      "sql": "SELECT planes.model\nFROM manufacturers JOIN plane_details ON manufacturers.id = plane_details.manufacturer_id JOIN planes ON plane_details.plane_id = planes.id\nWHERE manufacturers.name = \"Boeing\" OR manufacturers.name = \"Airbus\" AND planes.number_of_seats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model WHERE {\n  ?manufacturers a :manufacturers .\n  ?plane_details a :plane_details .\n  ?plane_details p:hasmanufacturers ?manufacturers .\n  ?planes a :Planes .\n  ?plane_details p:hasplanes ?planes .\n  ?planes p:model ?model .\n  ?manufacturers p:name ?name_w .\n  ?manufacturers p:name ?name_w2 .\n  ?planes p:number_of_seats ?number_of_seats_w .\n  FILTER((STR(?name_w) = \"Boeing\" || (STR(?name_w2) = \"Airbus\" && (STR(?number_of_seats_w) = \"180\" || STR(?number_of_seats_w) = \"180.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List Boeing models and Airbus models with 180 seats.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?model WHERE {\n  ?manufacturers a :manufacturers .\n  ?plane_details a :plane_details .\n  ?plane_details p:hasmanufacturers ?manufacturers .\n  ?planes a :Planes .\n  ?plane_details p:hasplanes ?planes .\n  ?planes p:model ?model .\n  ?manufacturers p:name ?name_w .\n  ?manufacturers p:name ?name_w2 .\n  ?planes p:number_of_seats ?number_of_seats_w .\n  FILTER((((STR(?name_w) = \"Boeing\" || STR(?name_w2) = \"Airbus\")) && (STR(?number_of_seats_w) = \"180\" || STR(?number_of_seats_w) = \"180.0\")))\n} }\n  low: { SELECT ?model WHERE {\n  ?manufacturers a :manufacturers .\n  ?plane_details a :plane_details .\n  ?plane_details p:hasmanufacturers ?manufacturers .\n  ?planes a :Planes .\n  ?plane_details p:hasplanes ?planes .\n  ?planes p:model ?model .\n  ?manufacturers p:name ?name_w .\n  ?manufacturers p:name ?name_w2 .\n  ?planes p:number_of_seats ?number_of_seats_w .\n  FILTER((STR(?name_w) = \"Boeing\" || (STR(?name_w2) = \"Airbus\" && (STR(?number_of_seats_w) = \"180\" || STR(?number_of_seats_w) = \"180.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

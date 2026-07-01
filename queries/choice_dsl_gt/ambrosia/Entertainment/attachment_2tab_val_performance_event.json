@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_performance_event",
+  "schema": "amb_attachment_2tab_val_performance_event",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me dance recitals and talent shows which are taking place in audition Room 101.",
+      "qtype": "ambig",
+      "sql": "SELECT Dance_Recitals.name\nFROM Dance_Recitals\nWHERE Dance_Recitals.Audition_Room = \"Room 101\"\nUNION\nSELECT Talent_Shows.name\nFROM Talent_Shows\nWHERE Talent_Shows.Audition_Room = \"Room 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?dance_recitals a :Dance_Recital .\n    ?dance_recitals p:name ?name .\n    ?dance_recitals p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?talent_shows a :Talent_Show .\n    ?talent_shows p:name ?name .\n    ?talent_shows p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me dance recitals and talent shows which are taking place in audition Room 101.",
+      "qtype": "ambig",
+      "sql": "SELECT Dance_Recitals.name\nFROM Dance_Recitals\nUNION\nSELECT Talent_Shows.name\nFROM Talent_Shows\nWHERE Talent_Shows.Audition_Room = \"Room 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?dance_recitals a :Dance_Recital .\n    ?dance_recitals p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?talent_shows a :Talent_Show .\n    ?talent_shows p:name ?name .\n    ?talent_shows p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me dance recitals and talent shows which are taking place in audition Room 101.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?dance_recitals a :Dance_Recital .\n    ?dance_recitals p:name ?name .\n    ?dance_recitals p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?talent_shows a :Talent_Show .\n    ?talent_shows p:name ?name .\n    ?talent_shows p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?dance_recitals a :Dance_Recital .\n    ?dance_recitals p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?talent_shows a :Talent_Show .\n    ?talent_shows p:name ?name .\n    ?talent_shows p:Audition_Room ?audition_room_f .\n    FILTER(STR(?audition_room_f) = \"Room 101\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

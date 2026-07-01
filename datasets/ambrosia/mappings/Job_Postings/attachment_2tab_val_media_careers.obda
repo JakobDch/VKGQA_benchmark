@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Journalists_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:name {name} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:languages {languages} .
+source		SELECT `id`, `name`, `email`, `phoneNumber`, `languages` FROM `Journalists`
+
+mappingId	Editors_base
+target		ex:Editors/{id} a :Editors ; p:id {id} ; p:name {name} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:languages {languages} .
+source		SELECT `id`, `name`, `email`, `phoneNumber`, `languages` FROM `Editors`
+
+mappingId	Publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:title {title} ; p:publicationDate {publicationDate} .
+source		SELECT `id`, `title`, `publicationDate` FROM `Publications`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publishDate {publishDate} ; p:editorId {editorId} .
+source		SELECT `id`, `title`, `content`, `publishDate`, `editorId` FROM `Articles`
+
+mappingId	Articles_editorId_fk
+target		ex:Articles/{id} p:hasEditors ex:Editors/{editorId} .
+source		SELECT `id`, `editorId` FROM `Articles` WHERE `editorId` IS NOT NULL
+
+mappingId	Articles_editorId_fk
+target		ex:Articles/{id} p:hasEditors ex:Editors/{editorId} .
+source		SELECT `id`, `editorId` FROM `Articles` WHERE `editorId` IS NOT NULL
+
+mappingId	ArticleAuthors_base
+target		ex:ArticleAuthors/{articleId}/{journalistId} a :ArticleAuthors ; p:articleId {articleId} ; p:journalistId {journalistId} .
+source		SELECT `articleId`, `journalistId` FROM `ArticleAuthors`
+
+mappingId	ArticleAuthors_journalistId_fk
+target		ex:ArticleAuthors/{articleId}/{journalistId} p:hasJournalists ex:Journalists/{journalistId} .
+source		SELECT `articleId`, `journalistId` FROM `ArticleAuthors` WHERE `journalistId` IS NOT NULL
+
+mappingId	ArticleAuthors_articleId_fk
+target		ex:ArticleAuthors/{articleId}/{journalistId} p:hasArticles ex:Articles/{articleId} .
+source		SELECT `articleId`, `journalistId` FROM `ArticleAuthors` WHERE `articleId` IS NOT NULL
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{id} a :Subscriptions ; p:id {id} ; p:subscriberEmail {subscriberEmail} ; p:subscriptionType {subscriptionType} .
+source		SELECT `id`, `subscriberEmail`, `subscriptionType` FROM `Subscriptions`
+
+]]

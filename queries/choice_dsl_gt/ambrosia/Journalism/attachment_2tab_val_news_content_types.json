@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_news_content_types",
+  "schema": "amb_attachment_2tab_val_news_content_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What opinion pieces are volume 01 and what feature articles are the same volume?",
+      "qtype": "unambig",
+      "sql": "SELECT Opinion_Pieces.title\nFROM Opinion_Pieces\nWHERE Opinion_Pieces.Volume = \"01\"\nUNION\nSELECT Feature_Articles.title\nFROM Feature_Articles\nWHERE Feature_Articles.Volume = \"01\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:Title ?title .\n    ?opinion_pieces p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show opinion pieces and feature articles with volume of 01.",
+      "qtype": "ambig",
+      "sql": "SELECT Opinion_Pieces.title\nFROM Opinion_Pieces\nUNION\nSELECT Feature_Articles.title\nFROM Feature_Articles\nWHERE Feature_Articles.Volume = \"01\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show opinion pieces and feature articles with volume of 01.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:Title ?title .\n    ?opinion_pieces p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?opinion_pieces a :Opinion_Pieces .\n    ?opinion_pieces p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Volume ?volume_f .\n    FILTER((STR(?volume_f) = \"01\" || STR(?volume_f) = \"1\" || STR(?volume_f) = \"1.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

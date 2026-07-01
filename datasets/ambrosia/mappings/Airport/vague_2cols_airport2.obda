@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cities_base
+target		ex:Cities/{Id} a :Cities ; p:Id {Id} ; p:name {Name} ; p:Country {Country} .
+source		SELECT `Id`, `Name`, `Country` FROM `Cities`
+
+mappingId	Airports_base
+target		ex:Airports/{Id} a :Airports ; p:Id {Id} ; p:CityId {CityId} ; p:Code {Code} ; p:RunwayCount {RunwayCount} .
+source		SELECT `Id`, `CityId`, `Code`, `RunwayCount` FROM `Airports`
+
+mappingId	Airports_CityId_fk
+target		ex:Airports/{Id} p:hasCities ex:Cities/{CityId} .
+source		SELECT `Id`, `CityId` FROM `Airports` WHERE `CityId` IS NOT NULL
+
+mappingId	Airports_CityId_fk
+target		ex:Airports/{Id} p:hasCities ex:Cities/{CityId} .
+source		SELECT `Id`, `CityId` FROM `Airports` WHERE `CityId` IS NOT NULL
+
+mappingId	Runways_base
+target		ex:Runways/{Id} a :Runways ; p:Id {Id} ; p:Length {Length} ; p:Width {Width} ; p:SurfaceType {SurfaceType} ; p:AirportId {AirportId} .
+source		SELECT `Id`, `Length`, `Width`, `SurfaceType`, `AirportId` FROM `Runways`
+
+mappingId	Runways_AirportId_fk
+target		ex:Runways/{Id} p:hasAirports ex:Airports/{AirportId} .
+source		SELECT `Id`, `AirportId` FROM `Runways` WHERE `AirportId` IS NOT NULL
+
+mappingId	Runways_AirportId_fk
+target		ex:Runways/{Id} p:hasAirports ex:Airports/{AirportId} .
+source		SELECT `Id`, `AirportId` FROM `Runways` WHERE `AirportId` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{FlightId} a :Flights ; p:FlightId {FlightId} ; p:DepartureAirportId {DepartureAirportId} ; p:ArrivalAirportId {ArrivalAirportId} ; p:ScheduledDeparture {ScheduledDeparture} ; p:ActualDeparture {ActualDeparture} ; p:EstimatedArrival {EstimatedArrival} ; p:Status {Status} ; p:AircraftModel {AircraftModel} .
+source		SELECT `FlightId`, `DepartureAirportId`, `ArrivalAirportId`, `ScheduledDeparture`, `ActualDeparture`, `EstimatedArrival`, `Status`, `AircraftModel` FROM `Flights`
+
+mappingId	Flights_ArrivalAirportId_fk
+target		ex:Flights/{FlightId} p:hasAirports_ArrivalAirportId ex:Airports/{ArrivalAirportId} .
+source		SELECT `FlightId`, `ArrivalAirportId` FROM `Flights` WHERE `ArrivalAirportId` IS NOT NULL
+
+mappingId	Flights_DepartureAirportId_fk
+target		ex:Flights/{FlightId} p:hasAirports_DepartureAirportId ex:Airports/{DepartureAirportId} .
+source		SELECT `FlightId`, `DepartureAirportId` FROM `Flights` WHERE `DepartureAirportId` IS NOT NULL
+
+]]

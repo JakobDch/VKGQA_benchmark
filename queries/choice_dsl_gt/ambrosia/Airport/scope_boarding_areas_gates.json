@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_boarding_areas_gates",
+  "schema": "amb_scope_boarding_areas_gates",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the name of the gates at each boarding area.",
+      "qtype": "ambig",
+      "sql": "SELECT Gates.gateName  from Boarding_Areas_Gates join Gates on Boarding_Areas_Gates.gateId = Gates.gateId join Boarding_Areas on Boarding_Areas_Gates.areaId = Boarding_Areas.areaId   GROUP BY Boarding_Areas_Gates.gateId HAVING COUNT(DISTINCT Boarding_Areas_Gates.areaId) = (SELECT COUNT(*) FROM  Boarding_Areas)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gatename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGates ?child ; p:hasBoarding_Areas ?parent . } GROUP BY ?child }\n  ?child p:gateName ?gatename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Boarding_Areas } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the name of the gates at each boarding area.",
+      "qtype": "ambig",
+      "sql": "select boarding_areas.areaid , gates.gatename from Boarding_Areas_Gates join Gates on Boarding_Areas_Gates.gateId = Gates.gateId join Boarding_Areas on Boarding_Areas_Gates.areaId = Boarding_Areas.areaId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?areaid ?gatename WHERE {\n  ?boarding_areas_gates a :Boarding_Areas_Gates .\n  ?gates a :Gates .\n  ?boarding_areas_gates p:hasGates ?gates .\n  ?boarding_areas a :Boarding_Areas .\n  ?boarding_areas_gates p:hasBoarding_Areas ?boarding_areas .\n  ?boarding_areas p:areaId ?areaid .\n  ?gates p:gateName ?gatename .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the name of the gates at each boarding area.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?areaid ?gatename WHERE {\n  ?boarding_areas_gates a :Boarding_Areas_Gates .\n  ?gates a :Gates .\n  ?boarding_areas_gates p:hasGates ?gates .\n  ?boarding_areas a :Boarding_Areas .\n  ?boarding_areas_gates p:hasBoarding_Areas ?boarding_areas .\n  ?boarding_areas p:areaId ?areaid .\n  ?gates p:gateName ?gatename .\n} }\n  collective: { SELECT ?gatename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGates ?child ; p:hasBoarding_Areas ?parent . } GROUP BY ?child }\n  ?child p:gateName ?gatename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Boarding_Areas } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

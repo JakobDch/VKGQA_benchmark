@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2tabs_overseeing_company",
+  "schema": "amb_vague_2tabs_overseeing_company",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the projects, including their names, milestones and their real estate developers.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    dp.project_name AS Project_Name,\n    pm.milestone_description AS Milestone,\n    oc.name AS Company_Name\nFROM \n    Development_Project dp\nJOIN \n    Project_Milestone pm ON dp.id = pm.development_project_id\nJOIN \n    Real_Estate_Developer oc ON dp.developer_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?milestone_description ?name WHERE {\n  ?dp a :Development_Project .\n  ?pm a :Project_Milestone .\n  ?pm p:hasDevelopment_Project ?dp .\n  ?oc a :Real_Estate_Developer .\n  ?dp p:hasReal_Estate_Developer ?oc .\n  ?dp p:project_name ?project_name .\n  ?pm p:milestone_description ?milestone_description .\n  ?oc p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all projects by contractor",
+      "qtype": "unambig",
+      "sql": "SELECT dp.project_name AS Project_Name, oc.name AS Company_Name\nFROM Development_Project dp\nJOIN Contractor oc ON dp.Contractor_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?name WHERE {\n  ?dp a :Development_Project .\n  ?oc a :Contractors .\n  ?dp p:hasContractor ?oc .\n  ?dp p:project_name ?project_name .\n  ?oc p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Show me all projects by developer",
+      "qtype": "unambig",
+      "sql": "SELECT dp.project_name AS Project_Name, oc.name AS Company_Name\nFROM Development_Project dp\nJOIN Real_Estate_Developer oc ON dp.developer_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?name WHERE {\n  ?dp a :Development_Project .\n  ?oc a :Real_Estate_Developer .\n  ?dp p:hasReal_Estate_Developer ?oc .\n  ?dp p:project_name ?project_name .\n  ?oc p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Show me all projects by developer and contractor",
+      "qtype": "unambig",
+      "sql": "SELECT dp.project_name AS Project_Name, oc.name, co.name\nFROM Development_Project dp\nJOIN Real_Estate_Developer oc ON dp.developer_id = oc.id JOIN Contractor co ON dp.Contractor_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?proj ?dev ?con WHERE { ?dp a :Development_Project ; p:project_name ?proj ; p:hasReal_Estate_Developer ?d ; p:hasContractor ?c . ?d p:name ?dev . ?c p:name ?con }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold typo: Contractor joined ON oc.id (developer); NL intent = project+own devel"
+    },
+    {
+      "qid": 4,
+      "question": "List the projects, including their names, milestones and their contractors.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    dp.project_name AS Project_Name,\n    pm.milestone_description AS Milestone,\n    oc.name AS Company_Name\nFROM \n    Development_Project dp\nJOIN \n    Project_Milestone pm ON dp.id = pm.development_project_id\nJOIN \n    Contractor oc ON dp.Contractor_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?milestone_description ?name WHERE {\n  ?dp a :Development_Project .\n  ?pm a :Project_Milestone .\n  ?pm p:hasDevelopment_Project ?dp .\n  ?oc a :Contractors .\n  ?dp p:hasContractor ?oc .\n  ?dp p:project_name ?project_name .\n  ?pm p:milestone_description ?milestone_description .\n  ?oc p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "List the projects, including their names, milestones, their contractors and their real estate developers.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    dp.project_name AS Project_Name,\n    pm.milestone_description AS Milestone,\n    oc.name, co.name\nFROM \n    Development_Project dp\nJOIN \n    Project_Milestone pm ON dp.id = pm.development_project_id\nJOIN \n    Real_Estate_Developer oc ON dp.developer_id = oc.id JOIN Contractor co ON dp.Contractor_id = oc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?proj ?ms ?dev ?con WHERE { ?dp a :Development_Project ; p:project_name ?proj ; p:hasReal_Estate_Developer ?d ; p:hasContractor ?c . ?pm a :Project_Milestone ; p:milestone_description ?ms ; p:hasDevelopment_Project ?dp . ?d p:name ?dev . ?c p:name ?con }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold typo (as q3) + milestone; NL intent = project+milestone+own developer+own c"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me all the projects including name, milestone and company name",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?project_name ?milestone_description ?name WHERE {\n  ?dp a :Development_Project .\n  ?pm a :Project_Milestone .\n  ?pm p:hasDevelopment_Project ?dp .\n  ?oc a :Real_Estate_Developer .\n  ?dp p:hasReal_Estate_Developer ?oc .\n  ?dp p:project_name ?project_name .\n  ?pm p:milestone_description ?milestone_description .\n  ?oc p:name ?name .\n} }\n  component_2: { SELECT ?project_name ?milestone_description ?name WHERE {\n  ?dp a :Development_Project .\n  ?pm a :Project_Milestone .\n  ?pm p:hasDevelopment_Project ?dp .\n  ?oc a :Contractors .\n  ?dp p:hasContractor ?oc .\n  ?dp p:project_name ?project_name .\n  ?pm p:milestone_description ?milestone_description .\n  ?oc p:name ?name .\n} }\n  full: { SELECT ?proj ?ms ?dev ?con WHERE { ?dp a :Development_Project ; p:project_name ?proj ; p:hasReal_Estate_Developer ?d ; p:hasContractor ?c . ?pm a :Project_Milestone ; p:milestone_description ?ms ; p:hasDevelopment_Project ?dp . ?d p:name ?dev . ?c p:name ?con } }\n}",
+      "verified": true
+    },
+    {
+      "question": "show me all projects by company",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?project_name ?name WHERE {\n  ?dp a :Development_Project .\n  ?oc a :Contractors .\n  ?dp p:hasContractor ?oc .\n  ?dp p:project_name ?project_name .\n  ?oc p:name ?name .\n} }\n  component_2: { SELECT ?project_name ?name WHERE {\n  ?dp a :Development_Project .\n  ?oc a :Real_Estate_Developer .\n  ?dp p:hasReal_Estate_Developer ?oc .\n  ?dp p:project_name ?project_name .\n  ?oc p:name ?name .\n} }\n  full: { SELECT ?proj ?dev ?con WHERE { ?dp a :Development_Project ; p:project_name ?proj ; p:hasReal_Estate_Developer ?d ; p:hasContractor ?c . ?d p:name ?dev . ?c p:name ?con } }\n}",
+      "verified": true
+    }
+  ]
+}

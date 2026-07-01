@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `name`, `city`, `country` FROM `Airports`
+
+mappingId	Flight_base
+target		ex:Flights/{flightNumber} a :Flights ; p:flightNumber {flightNumber} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:destinationId {destinationId} ; p:airlineId {airlineId} .
+source		SELECT `flightNumber`, `departureTime`, `arrivalTime`, `destinationId`, `airlineId` FROM `Flight`
+
+mappingId	Flight_airlineId_fk
+target		ex:Flights/{flightNumber} p:hasAirlines ex:Airlines/{airlineId} .
+source		SELECT `flightNumber`, `airlineId` FROM `Flight` WHERE `airlineId` IS NOT NULL
+
+mappingId	Flight_destinationId_fk
+target		ex:Flights/{flightNumber} p:hasAirports ex:Airports/{destinationId} .
+source		SELECT `flightNumber`, `destinationId` FROM `Flight` WHERE `destinationId` IS NOT NULL
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:name {name} ; p:headquarterCity {headquarterCity} ; p:website {website} .
+source		SELECT `id`, `name`, `headquarterCity`, `website` FROM `Airlines`
+
+mappingId	Staff_base
+target		ex:Staff/{staffID} a :Staff ; p:staffID {staffID} ; p:role {role} ; p:airportID {airportID} ; p:languageID {languageID} ; p:name {FullName} .
+source		SELECT `staffID`, `role`, `airportID`, `languageID`, `FullName` FROM `Staff`
+
+mappingId	Staff_languageID_fk
+target		ex:Staff/{staffID} p:hasLanguages ex:Languages/{languageID} .
+source		SELECT `staffID`, `languageID` FROM `Staff` WHERE `languageID` IS NOT NULL
+
+mappingId	Staff_airportID_fk
+target		ex:Staff/{staffID} p:hasAirports ex:Airports/{airportID} .
+source		SELECT `staffID`, `airportID` FROM `Staff` WHERE `airportID` IS NOT NULL
+
+mappingId	Languages_base
+target		ex:Languages/{id} a :Languages ; p:id {id} ; p:language {language} .
+source		SELECT `id`, `language` FROM `Languages`
+
+mappingId	GateAgents_base
+target		ex:GateAgents/{agentID} a :GateAgents ; p:agentID {agentID} ; p:staffID {staffID} .
+source		SELECT `agentID`, `staffID` FROM `GateAgents`
+
+mappingId	GateAgents_staffID_fk
+target		ex:GateAgents/{agentID} p:hasStaff ex:Staff/{staffID} .
+source		SELECT `agentID`, `staffID` FROM `GateAgents` WHERE `staffID` IS NOT NULL
+
+mappingId	Pilots_base
+target		ex:Pilots/{pilotID} a :Pilots ; p:pilotID {pilotID} ; p:staffID {staffID} .
+source		SELECT `pilotID`, `staffID` FROM `Pilots`
+
+mappingId	Pilots_staffID_fk
+target		ex:Pilots/{pilotID} p:hasStaff ex:Staff/{staffID} .
+source		SELECT `pilotID`, `staffID` FROM `Pilots` WHERE `staffID` IS NOT NULL
+
+]]

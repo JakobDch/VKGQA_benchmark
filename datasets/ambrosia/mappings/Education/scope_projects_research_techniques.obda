@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Projects_base
+target		ex:Projects/{id} a :Projects ; p:id {id} ; p:project_name {project_name} ; p:description {description} .
+source		SELECT `id`, `project_name`, `description` FROM `Projects`
+
+mappingId	Research_Techniques_base
+target		ex:Research_Techniques/{id} a :Research_Techniques ; p:id {id} ; p:technique_name {technique_name} ; p:description {description} .
+source		SELECT `id`, `technique_name`, `description` FROM `Research_Techniques`
+
+mappingId	Projects_Research_Techniques_base
+target		ex:Projects_Research_Techniques/{project_id}/{technique_id} a :Projects_Research_Techniques ; p:project_id {project_id} ; p:technique_id {technique_id} .
+source		SELECT `project_id`, `technique_id` FROM `Projects_Research_Techniques`
+
+mappingId	Projects_Research_Techniques_technique_id_fk
+target		ex:Projects_Research_Techniques/{project_id}/{technique_id} p:hasResearch_Techniques ex:Research_Techniques/{technique_id} .
+source		SELECT `project_id`, `technique_id` FROM `Projects_Research_Techniques` WHERE `technique_id` IS NOT NULL
+
+mappingId	Projects_Research_Techniques_project_id_fk
+target		ex:Projects_Research_Techniques/{project_id}/{technique_id} p:hasProjects ex:Projects/{project_id} .
+source		SELECT `project_id`, `technique_id` FROM `Projects_Research_Techniques` WHERE `project_id` IS NOT NULL
+
+]]

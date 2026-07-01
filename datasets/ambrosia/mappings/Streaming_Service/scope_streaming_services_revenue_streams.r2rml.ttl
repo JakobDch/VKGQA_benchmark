@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/streamingservice#> .
+@prefix p: <http://ambrosia.example.org/streamingservice/prop#> .
+@prefix ex: <http://ambrosia.example.org/streamingservice/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_streaming_services_revenue_streams_0_Revenue_Streams_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"description\" FROM \"Revenue_Streams\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Revenue_Streams/{id}" ; rr:class :Revenue_Streams ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_streaming_services_revenue_streams_1_Streaming_Services_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"launch_date\" FROM \"Streaming_Services\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Streaming_Services/{id}" ; rr:class :Streaming_Services ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:launch_date ; rr:objectMap [ rr:column "launch_date" ] ] .
+
+<#tm_scope_streaming_services_revenue_streams_2_Streaming_Service_Revenue_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"service_id\", \"stream_id\" FROM \"Streaming_Service_Revenue\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Streaming_Service_Revenue/{service_id}/{stream_id}" ; rr:class :Streaming_Service_Revenue ] ;
+  rr:predicateObjectMap [ rr:predicate p:service_id ; rr:objectMap [ rr:column "service_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:stream_id ; rr:objectMap [ rr:column "stream_id" ] ] .
+
+<#tm_scope_streaming_services_revenue_streams_3_Streaming_Service_Revenue_stream_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"service_id\", \"stream_id\" FROM \"Streaming_Service_Revenue\" WHERE \"stream_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Streaming_Service_Revenue/{service_id}/{stream_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRevenue_Streams ; rr:objectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Revenue_Streams/{stream_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_streaming_services_revenue_streams_4_Streaming_Service_Revenue_service_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"service_id\", \"stream_id\" FROM \"Streaming_Service_Revenue\" WHERE \"service_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Streaming_Service_Revenue/{service_id}/{stream_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStreaming_Services ; rr:objectMap [ rr:template "http://ambrosia.example.org/streamingservice/id/Streaming_Services/{service_id}" ; rr:termType rr:IRI ] ] .
+

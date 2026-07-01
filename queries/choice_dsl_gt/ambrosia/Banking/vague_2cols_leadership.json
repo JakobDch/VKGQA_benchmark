@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_leadership",
+  "schema": "amb_vague_2cols_leadership",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the full names of customers with the highest total balance in their accounts and who is the the CEO of the branches they use?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    c.fullName,\n    SUM(a.balance) AS Total_Balance,\n    b.Ceo\nFROM Customers c\nJOIN Accounts a\n    ON c.customerId = a.customerId\nJOIN Banks b\n    ON c.bankID = b.id\nGROUP BY c.customerId\nORDER BY Total_Balance DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname (SUM(?balance_a) AS ?agg) ?ceo WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Ceo ?ceo .\n}\nGROUP BY ?customerid_g ?fullname ?ceo\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What are the full names of customers with the highest total balance in their accounts and who runs the branches they use?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    c.fullName,\n    SUM(a.balance) AS Total_Balance,\n    b.Management_Team\nFROM Customers c\nJOIN Accounts a\n    ON c.customerId = a.customerId\nJOIN Banks b\n    ON c.bankID = b.id\nGROUP BY c.customerId\nORDER BY Total_Balance DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname (SUM(?balance_a) AS ?agg) ?management_team WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Management_Team ?management_team .\n}\nGROUP BY ?customerid_g ?fullname ?management_team\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "What are the full names of customers with the highest total balance in their accounts and who runs the branches they use?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    c.fullName,\n    SUM(a.balance) AS Total_Balance,\n    b.Ceo, Management_Team\nFROM Customers c\nJOIN Accounts a\n    ON c.customerId = a.customerId\nJOIN Banks b\n    ON c.bankID = b.id\nGROUP BY c.customerId\nORDER BY Total_Balance DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname (SUM(?balance_a) AS ?agg) ?ceo ?management_team WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Ceo ?ceo .\n  ?b p:Management_Team ?management_team .\n}\nGROUP BY ?customerid_g ?fullname ?ceo ?management_team\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List the management team members of the bank that receives the greatest monthly payment.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    b.Management_Team AS Bank_Leader\nFROM Banks b\nJOIN Customers c\n    ON b.id = c.bankID\nJOIN Loans l\n    ON c.customerId = l.customerId\nGROUP BY \n    b.Management_Team\nORDER BY \n    monthlyPayment DESC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mt WHERE { ?b a :Banks ; p:Management_Team ?mt . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?mt ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): ORDER BY non-grouped monthlyPayment after GROUP BY; NL = management team of bank"
+    },
+    {
+      "qid": 4,
+      "question": "List the CEO and management team members of the bank that receives the greatest monthly payment.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    b.Ceo, Management_Team AS Bank_Leader\nFROM Banks b\nJOIN Customers c\n    ON b.id = c.bankID\nJOIN Loans l\n    ON c.customerId = l.customerId\nGROUP BY \n    b.Ceo, Management_Team\nORDER BY \n    monthlyPayment DESC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ceo ?mt WHERE { ?b a :Banks ; p:Ceo ?ceo ; p:Management_Team ?mt . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?ceo ?mt ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): ORDER BY non-grouped monthlyPayment; NL = CEO+management team of bank with great"
+    },
+    {
+      "qid": 5,
+      "question": "Who runs the bank that receives the greatest monthly payments each month?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    b.Ceo AS Bank_Leader\nFROM Banks b\nJOIN Customers c\n    ON b.id = c.bankID\nJOIN Loans l\n    ON c.customerId = l.customerId\nGROUP BY \n    b.Ceo\nORDER BY \n    monthlyPayment DESC\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ceo WHERE { ?b a :Banks ; p:Ceo ?ceo . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?ceo ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): ORDER BY non-grouped monthlyPayment; NL = CEO of bank with greatest monthly paym"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the full names of customers with the highest total balance in their accounts and who runs the branches they use?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?fullname (SUM(?balance_a) AS ?agg) ?ceo WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Ceo ?ceo .\n}\nGROUP BY ?customerid_g ?fullname ?ceo\nORDER BY DESC(?agg) }\n  component_2: { SELECT ?fullname (SUM(?balance_a) AS ?agg) ?management_team WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Management_Team ?management_team .\n}\nGROUP BY ?customerid_g ?fullname ?management_team\nORDER BY DESC(?agg) }\n  full: { SELECT ?fullname (SUM(?balance_a) AS ?agg) ?ceo ?management_team WHERE {\n  ?c a :Customers .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?b a :Banks .\n  ?c p:hasBanks ?b .\n  ?c p:customerId ?customerid_g .\n  ?c p:name ?fullname .\n  ?a p:balance ?balance_a .\n  ?b p:Ceo ?ceo .\n  ?b p:Management_Team ?management_team .\n}\nGROUP BY ?customerid_g ?fullname ?ceo ?management_team\nORDER BY DESC(?agg) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who runs the bank that receives the greatest monthly payments each month?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?mt WHERE { ?b a :Banks ; p:Management_Team ?mt . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?mt ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1 }\n  full: { SELECT ?ceo ?mt WHERE { ?b a :Banks ; p:Ceo ?ceo ; p:Management_Team ?mt . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?ceo ?mt ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1 }\n  component_2: { SELECT ?ceo WHERE { ?b a :Banks ; p:Ceo ?ceo . ?c p:hasBanks ?b . ?l p:hasCustomers ?c ; p:monthlyPayment ?mp } GROUP BY ?ceo ORDER BY DESC(MAX(xsd:double(?mp))) LIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

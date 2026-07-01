@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Photojournalism_Pieces_base
+target		ex:Photojournalism_Pieces/{id} a :Photojournalism_Pieces ; p:id {id} ; p:title {title} ; p:date {date} .
+source		SELECT `id`, `title`, `date` FROM `Photojournalism_Pieces`
+
+mappingId	Images_base
+target		ex:Images/{id} a :Images ; p:id {id} ; p:image_name {image_name} ; p:description {description} .
+source		SELECT `id`, `image_name`, `description` FROM `Images`
+
+mappingId	Photojournalism_Pieces_Images_base
+target		ex:Photojournalism_Pieces_Images/{_amb_rowid} a :Photojournalism_Pieces_Images ; p:photojournalism_piece_id {photojournalism_piece_id} ; p:image_id {image_id} .
+source		SELECT `_amb_rowid`, `photojournalism_piece_id`, `image_id` FROM `Photojournalism_Pieces_Images`
+
+mappingId	Photojournalism_Pieces_Images_image_id_fk
+target		ex:Photojournalism_Pieces_Images/{_amb_rowid} p:hasImages ex:Images/{image_id} .
+source		SELECT `_amb_rowid`, `image_id` FROM `Photojournalism_Pieces_Images` WHERE `image_id` IS NOT NULL
+
+mappingId	Photojournalism_Pieces_Images_photojournalism_piece_id_fk
+target		ex:Photojournalism_Pieces_Images/{_amb_rowid} p:hasPhotojournalism_Pieces ex:Photojournalism_Pieces/{photojournalism_piece_id} .
+source		SELECT `_amb_rowid`, `photojournalism_piece_id` FROM `Photojournalism_Pieces_Images` WHERE `photojournalism_piece_id` IS NOT NULL
+
+mappingId	Photographers_base
+target		ex:Photographers/{id} a :Photographers ; p:id {id} ; p:name {name} ; p:birth_date {birth_date} .
+source		SELECT `id`, `name`, `birth_date` FROM `Photographers`
+
+mappingId	Photojournalism_Pieces_Photographer_base
+target		ex:Photojournalism_Pieces_Photographer/{_amb_rowid} a :Photojournalism_Pieces_Photographer ; p:photojournalism_piece_id {photojournalism_piece_id} ; p:photographer_id {photographer_id} .
+source		SELECT `_amb_rowid`, `photojournalism_piece_id`, `photographer_id` FROM `Photojournalism_Pieces_Photographer`
+
+mappingId	Photojournalism_Pieces_Photographer_photographer_id_fk
+target		ex:Photojournalism_Pieces_Photographer/{_amb_rowid} p:hasPhotographers ex:Photographers/{photographer_id} .
+source		SELECT `_amb_rowid`, `photographer_id` FROM `Photojournalism_Pieces_Photographer` WHERE `photographer_id` IS NOT NULL
+
+mappingId	Photojournalism_Pieces_Photographer_photojournalism_piece_id_fk
+target		ex:Photojournalism_Pieces_Photographer/{_amb_rowid} p:hasPhotojournalism_Pieces ex:Photojournalism_Pieces/{photojournalism_piece_id} .
+source		SELECT `_amb_rowid`, `photojournalism_piece_id` FROM `Photojournalism_Pieces_Photographer` WHERE `photojournalism_piece_id` IS NOT NULL
+
+]]

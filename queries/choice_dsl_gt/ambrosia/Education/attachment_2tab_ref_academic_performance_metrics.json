@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_ref_academic_performance_metrics",
+  "schema": "amb_attachment_2tab_ref_academic_performance_metrics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display attendance records and grades for White.",
+      "qtype": "ambig",
+      "sql": "SELECT Attendance.date_attended\nFROM Students JOIN Attendance ON Students.student_id = Attendance.student_id\nWHERE Students.last_name = \"White\"\nUNION\nSELECT Grades.grade\nFROM Students JOIN Grades ON Students.student_id = Grades.student_id\nWHERE Students.last_name = \"White\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?students a :Students .\n    ?attendance a :Attendance .\n    ?attendance p:hasStudents ?students .\n    ?attendance p:date_attended ?date_attended .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?date_attended AS ?o0)\n  }\n  UNION\n  {\n    ?students a :Students .\n    ?grades a :Grades .\n    ?grades p:hasStudents ?students .\n    ?grades p:grade ?grade .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?grade AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display attendance records and grades for White.",
+      "qtype": "ambig",
+      "sql": "SELECT Attendance.date_attended\nFROM Students JOIN Attendance ON Students.student_id = Attendance.student_id\nUNION\nSELECT Grades.grade\nFROM Students JOIN Grades ON Students.student_id = Grades.student_id\nWHERE Students.last_name = \"White\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?students a :Students .\n    ?attendance a :Attendance .\n    ?attendance p:hasStudents ?students .\n    ?attendance p:date_attended ?date_attended .\n    BIND(?date_attended AS ?o0)\n  }\n  UNION\n  {\n    ?students a :Students .\n    ?grades a :Grades .\n    ?grades p:hasStudents ?students .\n    ?grades p:grade ?grade .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?grade AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display attendance records and grades for White.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?students a :Students .\n    ?attendance a :Attendance .\n    ?attendance p:hasStudents ?students .\n    ?attendance p:date_attended ?date_attended .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?date_attended AS ?o0)\n  }\n  UNION\n  {\n    ?students a :Students .\n    ?grades a :Grades .\n    ?grades p:hasStudents ?students .\n    ?grades p:grade ?grade .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?grade AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?students a :Students .\n    ?attendance a :Attendance .\n    ?attendance p:hasStudents ?students .\n    ?attendance p:date_attended ?date_attended .\n    BIND(?date_attended AS ?o0)\n  }\n  UNION\n  {\n    ?students a :Students .\n    ?grades a :Grades .\n    ?grades p:hasStudents ?students .\n    ?grades p:grade ?grade .\n    ?students p:last_name ?last_name_f .\n    FILTER(STR(?last_name_f) = \"White\")\n    BIND(?grade AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

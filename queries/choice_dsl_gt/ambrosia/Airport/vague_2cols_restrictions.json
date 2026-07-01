@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_restrictions",
+  "schema": "amb_vague_2cols_restrictions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Are there any prohibited items for United Airlines?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    ProhibitedItem AS Restriction\nFROM \n    Security\nWHERE \n    Airlines = 'United';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?prohibiteditem WHERE {\n  ?security a :Security .\n  ?security p:ProhibitedItem ?prohibiteditem .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Is there a size limit restriction on this flight to New York?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    s.SizeLimit AS RestrictionAmount\nFROM \n    Flights f\n    INNER JOIN Security s \nON f.AirlineName = s.Airlines\nWHERE \n    f.DestinationCity = 'New York';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sizelimit WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:SizeLimit ?sizelimit .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What are the prohibited items on the flight to New York and size limit restrictions on that flight?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    s.SizeLimit, ProhibitedItem AS RestrictionAmount\nFROM \n    Flights f\n    INNER JOIN Security s \nON f.AirlineName = s.Airlines\nWHERE \n    f.DestinationCity = 'New York';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sizelimit ?prohibiteditem WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:SizeLimit ?sizelimit .\n  ?s p:ProhibitedItem ?prohibiteditem .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the restriction for the New York flight?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    s.ProhibitedItem AS RestrictionAmount\nFROM \n    Flights f\n    INNER JOIN Security s \nON f.AirlineName = s.Airlines\nWHERE \n    f.DestinationCity = 'New York';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?prohibiteditem WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:ProhibitedItem ?prohibiteditem .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Are there any size limits for liquids on United Airlines? Are there any prohibited items on that airline?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    SizeLimit, ProhibitedItem AS Restriction\nFROM \n    Security\nWHERE \n    Airlines = 'United';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sizelimit ?prohibiteditem WHERE {\n  ?security a :Security .\n  ?security p:SizeLimit ?sizelimit .\n  ?security p:ProhibitedItem ?prohibiteditem .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the limit for liquids on United Airlines?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    SizeLimit AS Restriction\nFROM \n    Security\nWHERE \n    Airlines = 'United';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sizelimit WHERE {\n  ?security a :Security .\n  ?security p:SizeLimit ?sizelimit .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the limit for liquids on United Airlines?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?prohibiteditem WHERE {\n  ?security a :Security .\n  ?security p:ProhibitedItem ?prohibiteditem .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n} }\n  full: { SELECT ?sizelimit ?prohibiteditem WHERE {\n  ?security a :Security .\n  ?security p:SizeLimit ?sizelimit .\n  ?security p:ProhibitedItem ?prohibiteditem .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n} }\n  component_2: { SELECT ?sizelimit WHERE {\n  ?security a :Security .\n  ?security p:SizeLimit ?sizelimit .\n  ?security p:Airlines ?airlines_f .\n  FILTER(STR(?airlines_f) = \"United\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the restriction for the New York flight?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?sizelimit WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:SizeLimit ?sizelimit .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n} }\n  full: { SELECT ?sizelimit ?prohibiteditem WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:SizeLimit ?sizelimit .\n  ?s p:ProhibitedItem ?prohibiteditem .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n} }\n  component_2: { SELECT ?prohibiteditem WHERE {\n  ?f a :Flights .\n  ?s a :Security .\n  ?f p:AirlineName ?airlinename_l .\n  ?s p:Airlines ?airlines_r .\n  ?s p:ProhibitedItem ?prohibiteditem .\n  ?f p:DestinationCity ?destinationcity_f .\n  FILTER(STR(?airlinename_l) = STR(?airlines_r))\n  FILTER(STR(?destinationcity_f) = \"New York\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

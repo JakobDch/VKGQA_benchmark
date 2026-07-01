@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Marketing_Campaigns_base
+target		ex:Marketing_Campaigns/{id} a :Marketing_Campaigns ; p:id {id} ; p:campaign_name {campaign_name} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `id`, `campaign_name`, `start_date`, `end_date` FROM `Marketing_Campaigns`
+
+mappingId	Approaches_base
+target		ex:Approaches/{id} a :Approaches ; p:id {id} ; p:approach_value {approach_value} .
+source		SELECT `id`, `approach_value` FROM `Approaches`
+
+mappingId	Marketing_Campaigns_Approaches_base
+target		ex:Marketing_Campaigns_Approaches/{marketing_campaign_id}/{approach_id} a :Marketing_Campaigns_Approaches ; p:marketing_campaign_id {marketing_campaign_id} ; p:approach_id {approach_id} .
+source		SELECT `marketing_campaign_id`, `approach_id` FROM `Marketing_Campaigns_Approaches`
+
+mappingId	Marketing_Campaigns_Approaches_approach_id_fk
+target		ex:Marketing_Campaigns_Approaches/{marketing_campaign_id}/{approach_id} p:hasApproaches ex:Approaches/{approach_id} .
+source		SELECT `marketing_campaign_id`, `approach_id` FROM `Marketing_Campaigns_Approaches` WHERE `approach_id` IS NOT NULL
+
+mappingId	Marketing_Campaigns_Approaches_marketing_campaign_id_fk
+target		ex:Marketing_Campaigns_Approaches/{marketing_campaign_id}/{approach_id} p:hasMarketing_Campaigns ex:Marketing_Campaigns/{marketing_campaign_id} .
+source		SELECT `marketing_campaign_id`, `approach_id` FROM `Marketing_Campaigns_Approaches` WHERE `marketing_campaign_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email` FROM `Customers`
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:amount {amount} ; p:date {date} ; p:customer_id {customer_id} .
+source		SELECT `transaction_id`, `amount`, `date`, `customer_id` FROM `Transactions`
+
+mappingId	Transactions_customer_id_fk
+target		ex:Transactions/{transaction_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `transaction_id`, `customer_id` FROM `Transactions` WHERE `customer_id` IS NOT NULL
+
+]]

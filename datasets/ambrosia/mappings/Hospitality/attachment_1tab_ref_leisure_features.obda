@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `City`
+
+mappingId	Hotel_base
+target		ex:Hotels/{id} a :Hotels ; p:id {id} ; p:name {name} ; p:address {address} ; p:city_id {city_id} .
+source		SELECT `id`, `name`, `address`, `city_id` FROM `Hotel`
+
+mappingId	Hotel_city_id_fk
+target		ex:Hotels/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Hotel` WHERE `city_id` IS NOT NULL
+
+mappingId	RoomType_base
+target		ex:RoomTypes/{id} a :RoomTypes ; p:id {id} ; p:hotel_id {hotel_id} ; p:type {type} ; p:price {price} .
+source		SELECT `id`, `hotel_id`, `type`, `price` FROM `RoomType`
+
+mappingId	RoomType_hotel_id_fk
+target		ex:RoomTypes/{id} p:hasHotels ex:Hotels/{hotel_id} .
+source		SELECT `id`, `hotel_id` FROM `RoomType` WHERE `hotel_id` IS NOT NULL
+
+mappingId	LeisureFeature_base
+target		ex:LeisureFeature/{id} a :LeisureFeature ; p:id {id} ; p:feature {feature} .
+source		SELECT `id`, `feature` FROM `LeisureFeature`
+
+mappingId	FeatureInRoom_base
+target		ex:FeatureInRoom/{id} a :FeatureInRoom ; p:id {id} ; p:roomtype_id {roomtype_id} ; p:leisurefeature_id {leisurefeature_id} .
+source		SELECT `id`, `roomtype_id`, `leisurefeature_id` FROM `FeatureInRoom`
+
+mappingId	FeatureInRoom_leisurefeature_id_fk
+target		ex:FeatureInRoom/{id} p:hasLeisureFeature ex:LeisureFeature/{leisurefeature_id} .
+source		SELECT `id`, `leisurefeature_id` FROM `FeatureInRoom` WHERE `leisurefeature_id` IS NOT NULL
+
+mappingId	FeatureInRoom_roomtype_id_fk
+target		ex:FeatureInRoom/{id} p:hasRoomTypes ex:RoomTypes/{roomtype_id} .
+source		SELECT `id`, `roomtype_id` FROM `FeatureInRoom` WHERE `roomtype_id` IS NOT NULL
+
+mappingId	Reservation_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:checkin_date {checkin_date} ; p:checkout_date {checkout_date} ; p:roomtype_id {roomtype_id} ; p:customer_name {customer_name} ; p:guest_count {guest_count} .
+source		SELECT `id`, `checkin_date`, `checkout_date`, `roomtype_id`, `customer_name`, `guest_count` FROM `Reservation`
+
+mappingId	Reservation_roomtype_id_fk
+target		ex:Reservations/{id} p:hasRoomTypes ex:RoomTypes/{roomtype_id} .
+source		SELECT `id`, `roomtype_id` FROM `Reservation` WHERE `roomtype_id` IS NOT NULL
+
+]]

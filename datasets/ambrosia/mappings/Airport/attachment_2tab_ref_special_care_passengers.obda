@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flight_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:Origin {Origin} ; p:Destination {Destination} ; p:DepartureTime {DepartureTime} .
+source		SELECT `FlightID`, `Origin`, `Destination`, `DepartureTime` FROM `Flight`
+
+mappingId	Passenger_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:name {FullName} .
+source		SELECT `PassengerID`, `Email`, `PhoneNumber`, `FullName` FROM `Passenger`
+
+mappingId	Assistant_base
+target		ex:Assistant/{AssistantID} a :Assistant ; p:AssistantID {AssistantID} ; p:name {Name} ; p:ContactInfo {ContactInfo} .
+source		SELECT `AssistantID`, `Name`, `ContactInfo` FROM `Assistant`
+
+mappingId	UnaccompaniedMinor_base
+target		ex:UnaccompaniedMinor/{UMID} a :UnaccompaniedMinor ; p:UMID {UMID} ; p:PassengerID {PassengerID} ; p:AssistantID {AssistantID} .
+source		SELECT `UMID`, `PassengerID`, `AssistantID` FROM `UnaccompaniedMinor`
+
+mappingId	UnaccompaniedMinor_AssistantID_fk
+target		ex:UnaccompaniedMinor/{UMID} p:hasAssistant ex:Assistant/{AssistantID} .
+source		SELECT `UMID`, `AssistantID` FROM `UnaccompaniedMinor` WHERE `AssistantID` IS NOT NULL
+
+mappingId	UnaccompaniedMinor_PassengerID_fk
+target		ex:UnaccompaniedMinor/{UMID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `UMID`, `PassengerID` FROM `UnaccompaniedMinor` WHERE `PassengerID` IS NOT NULL
+
+mappingId	DisabledPassenger_base
+target		ex:DisabledPassenger/{SNPID} a :DisabledPassenger ; p:SNPID {SNPID} ; p:PassengerID {PassengerID} ; p:AssistantID {AssistantID} .
+source		SELECT `SNPID`, `PassengerID`, `AssistantID` FROM `DisabledPassenger`
+
+mappingId	DisabledPassenger_AssistantID_fk
+target		ex:DisabledPassenger/{SNPID} p:hasAssistant ex:Assistant/{AssistantID} .
+source		SELECT `SNPID`, `AssistantID` FROM `DisabledPassenger` WHERE `AssistantID` IS NOT NULL
+
+mappingId	DisabledPassenger_PassengerID_fk
+target		ex:DisabledPassenger/{SNPID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `SNPID`, `PassengerID` FROM `DisabledPassenger` WHERE `PassengerID` IS NOT NULL
+
+mappingId	Booking_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:FlightID {FlightID} ; p:PassengerID {PassengerID} ; p:UMID {UMID} ; p:SNPID {SNPID} .
+source		SELECT `BookingID`, `FlightID`, `PassengerID`, `UMID`, `SNPID` FROM `Booking`
+
+mappingId	Booking_SNPID_fk
+target		ex:Bookings/{BookingID} p:hasDisabledPassenger ex:DisabledPassenger/{SNPID} .
+source		SELECT `BookingID`, `SNPID` FROM `Booking` WHERE `SNPID` IS NOT NULL
+
+mappingId	Booking_UMID_fk
+target		ex:Bookings/{BookingID} p:hasUnaccompaniedMinor ex:UnaccompaniedMinor/{UMID} .
+source		SELECT `BookingID`, `UMID` FROM `Booking` WHERE `UMID` IS NOT NULL
+
+mappingId	Booking_PassengerID_fk
+target		ex:Bookings/{BookingID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `BookingID`, `PassengerID` FROM `Booking` WHERE `PassengerID` IS NOT NULL
+
+mappingId	Booking_FlightID_fk
+target		ex:Bookings/{BookingID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `BookingID`, `FlightID` FROM `Booking` WHERE `FlightID` IS NOT NULL
+
+]]

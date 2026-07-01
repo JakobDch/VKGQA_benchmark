@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_role",
+  "schema": "amb_attachment_2tab_val_role",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which script supervisors are 45 years old and which costume designers are at the same age?",
+      "qtype": "unambig",
+      "sql": "SELECT Script_Supervisors.name\nFROM Script_Supervisors\nWHERE Script_Supervisors.Age = 45\nUNION\nSELECT Costume_Designers.name\nFROM Costume_Designers\nWHERE Costume_Designers.Age = 45",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?script_supervisors a :Script_Supervisors .\n    ?script_supervisors p:name ?name .\n    ?script_supervisors p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?costume_designers a :Costume_Designers .\n    ?costume_designers p:name ?name .\n    ?costume_designers p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide the list of all script supervisors and also provide a list of costume designers that are 45 years old.",
+      "qtype": "unambig",
+      "sql": "SELECT Script_Supervisors.name\nFROM Script_Supervisors\nUNION\nSELECT Costume_Designers.name\nFROM Costume_Designers\nWHERE Costume_Designers.Age = 45",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?script_supervisors a :Script_Supervisors .\n    ?script_supervisors p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?costume_designers a :Costume_Designers .\n    ?costume_designers p:name ?name .\n    ?costume_designers p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List script supervisors and costume designers that are 45 years old.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?script_supervisors a :Script_Supervisors .\n    ?script_supervisors p:name ?name .\n    ?script_supervisors p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?costume_designers a :Costume_Designers .\n    ?costume_designers p:name ?name .\n    ?costume_designers p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?script_supervisors a :Script_Supervisors .\n    ?script_supervisors p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?costume_designers a :Costume_Designers .\n    ?costume_designers p:name ?name .\n    ?costume_designers p:Age ?age_f .\n    FILTER((STR(?age_f) = \"45\" || STR(?age_f) = \"45.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_user_interface",
+  "schema": "amb_scope_streaming_service_user_interface",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What user interface types are there for every streaming service?",
+      "qtype": "ambig",
+      "sql": "SELECT User_Interface.interface_type  from Streaming_Service_User_Interface join User_Interface on Streaming_Service_User_Interface.user_interface_id = User_Interface.id join Streaming_Service on Streaming_Service_User_Interface.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_User_Interface.user_interface_id HAVING COUNT(DISTINCT Streaming_Service_User_Interface.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?interface_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUser_Interface ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:interface_type ?interface_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What user interface types are there for every streaming service?",
+      "qtype": "ambig",
+      "sql": "select streaming_service.name , user_interface.interface_type from Streaming_Service_User_Interface join User_Interface on Streaming_Service_User_Interface.user_interface_id = User_Interface.id join Streaming_Service on Streaming_Service_User_Interface.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?interface_type WHERE {\n  ?streaming_service_user_interface a :Streaming_Service_User_Interface .\n  ?user_interface a :User_Interface .\n  ?streaming_service_user_interface p:hasUser_Interface ?user_interface .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_user_interface p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?user_interface p:interface_type ?interface_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What user interface types are there for every streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?interface_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasUser_Interface ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:interface_type ?interface_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?interface_type WHERE {\n  ?streaming_service_user_interface a :Streaming_Service_User_Interface .\n  ?user_interface a :User_Interface .\n  ?streaming_service_user_interface p:hasUser_Interface ?user_interface .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_user_interface p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?user_interface p:interface_type ?interface_type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

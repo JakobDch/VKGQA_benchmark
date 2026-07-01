@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_writers_genres",
+  "schema": "amb_scope_writers_genres",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which genres are common to all writers?",
+      "qtype": "unambig",
+      "sql": "SELECT Genres.name  from Writers_Genres join Genres on Writers_Genres.genreID = Genres.genreID join Writers on Writers_Genres.writerID = Writers.writerID   GROUP BY Writers_Genres.genreID HAVING COUNT(DISTINCT Writers_Genres.writerID) = (SELECT COUNT(*) FROM  Writers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:genreID ?cg . ?child a :Genres ; p:genreID ?cg . ?l p:writerID ?pg . ?parent a :Writers ; p:writerID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Writers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every writer, show the genres that they write about.",
+      "qtype": "unambig",
+      "sql": "select writers.fullname , genres.name from Writers_Genres join Genres on Writers_Genres.genreID = Genres.genreID join Writers on Writers_Genres.writerID = Writers.writerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?writers_genres a :Writers_Genres .\n  ?genres a :Genres .\n  ?writers_genres p:hasGenres ?genres .\n  ?writers a :Writers .\n  ?writers_genres p:hasWriters ?writers .\n  ?writers p:name ?fullname .\n  ?genres p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the genres that each writer writes about.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:genreID ?cg . ?child a :Genres ; p:genreID ?cg . ?l p:writerID ?pg . ?parent a :Writers ; p:writerID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Writers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?fullname ?name WHERE {\n  ?writers_genres a :Writers_Genres .\n  ?genres a :Genres .\n  ?writers_genres p:hasGenres ?genres .\n  ?writers a :Writers .\n  ?writers_genres p:hasWriters ?writers .\n  ?writers p:name ?fullname .\n  ?genres p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

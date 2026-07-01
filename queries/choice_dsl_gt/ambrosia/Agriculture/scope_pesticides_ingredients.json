@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_pesticides_ingredients",
+  "schema": "amb_scope_pesticides_ingredients",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each pesticide, give me the name of the ingredients of that pesticide",
+      "qtype": "unambig",
+      "sql": "select pesticides.name , ingredients.ingredient_name from Pesticides_Ingredients join Ingredients on Pesticides_Ingredients.ingredient_id = Ingredients.id join Pesticides on Pesticides_Ingredients.pesticide_id = Pesticides.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?ingredient_name WHERE {\n  ?pesticides_ingredients a :Pesticides_Ingredients .\n  ?ingredients a :Ingredients .\n  ?pesticides_ingredients p:hasIngredients ?ingredients .\n  ?pesticides a :Pesticides .\n  ?pesticides_ingredients p:hasPesticides ?pesticides .\n  ?pesticides p:name ?name .\n  ?ingredients p:name ?ingredient_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the names of the ingredients in all pesticides",
+      "qtype": "ambig",
+      "sql": "SELECT Ingredients.ingredient_name  from Pesticides_Ingredients join Ingredients on Pesticides_Ingredients.ingredient_id = Ingredients.id join Pesticides on Pesticides_Ingredients.pesticide_id = Pesticides.id   GROUP BY Pesticides_Ingredients.ingredient_id HAVING COUNT(DISTINCT Pesticides_Ingredients.pesticide_id) = (SELECT COUNT(*) FROM  Pesticides)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ingredient_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasIngredients ?child ; p:hasPesticides ?parent . } GROUP BY ?child }\n  ?child p:name ?ingredient_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pesticides } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the names of the ingredients in all pesticides",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?ingredient_name WHERE {\n  ?pesticides_ingredients a :Pesticides_Ingredients .\n  ?ingredients a :Ingredients .\n  ?pesticides_ingredients p:hasIngredients ?ingredients .\n  ?pesticides a :Pesticides .\n  ?pesticides_ingredients p:hasPesticides ?pesticides .\n  ?pesticides p:name ?name .\n  ?ingredients p:name ?ingredient_name .\n} }\n  collective: { SELECT ?ingredient_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasIngredients ?child ; p:hasPesticides ?parent . } GROUP BY ?child }\n  ?child p:name ?ingredient_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pesticides } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

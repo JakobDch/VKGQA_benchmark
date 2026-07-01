@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cruise_Ships_base
+target		ex:Cruise_Ships/{id} a :Cruise_Ships ; p:id {id} ; p:name {name} ; p:capacity {capacity} .
+source		SELECT `id`, `name`, `capacity` FROM `Cruise_Ships`
+
+mappingId	Facilities_base
+target		ex:Facilities/{id} a :Facilities ; p:id {id} ; p:facilityName {facilityName} ; p:isAvailable {isAvailable} .
+source		SELECT `id`, `facilityName`, `isAvailable` FROM `Facilities`
+
+mappingId	Cruise_Ships_Facilities_base
+target		ex:Cruise_Ships_Facilities/{cruiseShipId}/{facilityId} a :Cruise_Ships_Facilities ; p:cruiseShipId {cruiseShipId} ; p:facilityId {facilityId} .
+source		SELECT `cruiseShipId`, `facilityId` FROM `Cruise_Ships_Facilities`
+
+mappingId	Cruise_Ships_Facilities_facilityId_fk
+target		ex:Cruise_Ships_Facilities/{cruiseShipId}/{facilityId} p:hasFacilities ex:Facilities/{facilityId} .
+source		SELECT `cruiseShipId`, `facilityId` FROM `Cruise_Ships_Facilities` WHERE `facilityId` IS NOT NULL
+
+mappingId	Cruise_Ships_Facilities_cruiseShipId_fk
+target		ex:Cruise_Ships_Facilities/{cruiseShipId}/{facilityId} p:hasCruise_Ships ex:Cruise_Ships/{cruiseShipId} .
+source		SELECT `cruiseShipId`, `facilityId` FROM `Cruise_Ships_Facilities` WHERE `cruiseShipId` IS NOT NULL
+
+]]

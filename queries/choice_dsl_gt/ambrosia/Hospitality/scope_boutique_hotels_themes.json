@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_boutique_hotels_themes",
+  "schema": "amb_scope_boutique_hotels_themes",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the themes each hotel uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Themes.theme_name  from Boutique_Hotels_Themes join Themes on Boutique_Hotels_Themes.theme_id = Themes.theme_id join Boutique_Hotels on Boutique_Hotels_Themes.boutique_hotel_id = Boutique_Hotels.hotel_id   GROUP BY Boutique_Hotels_Themes.theme_id HAVING COUNT(DISTINCT Boutique_Hotels_Themes.boutique_hotel_id) = (SELECT COUNT(*) FROM  Boutique_Hotels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?theme_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasThemes ?child ; p:hasBoutique_Hotels ?parent . } GROUP BY ?child }\n  ?child p:theme_name ?theme_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Boutique_Hotels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the themes each hotel uses.",
+      "qtype": "ambig",
+      "sql": "select boutique_hotels.name , themes.theme_name from Boutique_Hotels_Themes join Themes on Boutique_Hotels_Themes.theme_id = Themes.theme_id join Boutique_Hotels on Boutique_Hotels_Themes.boutique_hotel_id = Boutique_Hotels.hotel_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?theme_name WHERE {\n  ?boutique_hotels_themes a :Boutique_Hotels_Themes .\n  ?themes a :Themes .\n  ?boutique_hotels_themes p:hasThemes ?themes .\n  ?boutique_hotels a :Boutique_Hotels .\n  ?boutique_hotels_themes p:hasBoutique_Hotels ?boutique_hotels .\n  ?boutique_hotels p:name ?name .\n  ?themes p:theme_name ?theme_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the themes each hotel uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?theme_name WHERE {\n  ?boutique_hotels_themes a :Boutique_Hotels_Themes .\n  ?themes a :Themes .\n  ?boutique_hotels_themes p:hasThemes ?themes .\n  ?boutique_hotels a :Boutique_Hotels .\n  ?boutique_hotels_themes p:hasBoutique_Hotels ?boutique_hotels .\n  ?boutique_hotels p:name ?name .\n  ?themes p:theme_name ?theme_name .\n} }\n  collective: { SELECT ?theme_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasThemes ?child ; p:hasBoutique_Hotels ?parent . } GROUP BY ?child }\n  ?child p:theme_name ?theme_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Boutique_Hotels } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

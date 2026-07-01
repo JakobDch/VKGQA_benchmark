@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `EmailAddress` FROM `Authors`
+
+mappingId	Publishers_base
+target		ex:Publishers/{PublisherID} a :Publishers ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `PublisherID`, `Name`, `Address` FROM `Publishers`
+
+mappingId	Magazines_base
+target		ex:Magazines/{MagazineID} a :Magazines ; p:MagazineID {MagazineID} ; p:Title {Title} ; p:YearEstablished {YearEstablished} ; p:PublisherId {PublisherId} .
+source		SELECT `MagazineID`, `Title`, `YearEstablished`, `PublisherId` FROM `Magazines`
+
+mappingId	Magazines_PublisherId_fk
+target		ex:Magazines/{MagazineID} p:hasPublishers ex:Publishers/{PublisherId} .
+source		SELECT `MagazineID`, `PublisherId` FROM `Magazines` WHERE `PublisherId` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:PublicationDate {PublicationDate} ; p:WordCount {WordCount} ; p:MagazineId {MagazineId} ; p:AuthorId {AuthorId} .
+source		SELECT `ArticleID`, `Title`, `PublicationDate`, `WordCount`, `MagazineId`, `AuthorId` FROM `Articles`
+
+mappingId	Articles_AuthorId_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorId} .
+source		SELECT `ArticleID`, `AuthorId` FROM `Articles` WHERE `AuthorId` IS NOT NULL
+
+mappingId	Articles_MagazineId_fk
+target		ex:Articles/{ArticleID} p:hasMagazines ex:Magazines/{MagazineId} .
+source		SELECT `ArticleID`, `MagazineId` FROM `Articles` WHERE `MagazineId` IS NOT NULL
+
+mappingId	Documentaries_base
+target		ex:Documentary/{DocumentaryId} a :Documentary ; p:DocumentaryId {DocumentaryId} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Producer {Producer} ; p:Director {Director} ; p:LengthInMinutes {LengthInMinutes} ; p:MagazineId {MagazineId} .
+source		SELECT `DocumentaryId`, `Title`, `ReleaseYear`, `Producer`, `Director`, `LengthInMinutes`, `MagazineId` FROM `Documentaries`
+
+mappingId	Documentaries_MagazineId_fk
+target		ex:Documentary/{DocumentaryId} p:hasMagazines ex:Magazines/{MagazineId} .
+source		SELECT `DocumentaryId`, `MagazineId` FROM `Documentaries` WHERE `MagazineId` IS NOT NULL
+
+]]

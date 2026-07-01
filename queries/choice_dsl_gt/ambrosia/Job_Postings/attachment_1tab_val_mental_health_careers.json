@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_mental_health_careers",
+  "schema": "amb_attachment_1tab_val_mental_health_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all psychologists and also provide a list of psychiatrists from Harmony Wellness Center.",
+      "qtype": "unambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE Employees.Mental_Health_Career = \"Psychologist\" OR Employees.Mental_Health_Career = \"Psychiatrist\" AND Employees.Clinic = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Mental_Health_Career ?mental_health_career_w .\n  ?employees p:Mental_Health_Career ?mental_health_career_w2 .\n  ?employees p:Clinic ?clinic_w .\n  FILTER((STR(?mental_health_career_w) = \"Psychologist\" || (STR(?mental_health_career_w2) = \"Psychiatrist\" && STR(?clinic_w) = \"Harmony Wellness Center\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show me psychologists and psychiatrists from Harmony Wellness Center.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE (Employees.Mental_Health_Career = \"Psychologist\" OR Employees.Mental_Health_Career = \"Psychiatrist\") AND Employees.Clinic = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Mental_Health_Career ?mental_health_career_w .\n  ?employees p:Mental_Health_Career ?mental_health_career_w2 .\n  ?employees p:Clinic ?clinic_w .\n  FILTER((((STR(?mental_health_career_w) = \"Psychologist\" || STR(?mental_health_career_w2) = \"Psychiatrist\")) && STR(?clinic_w) = \"Harmony Wellness Center\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me psychologists and psychiatrists from Harmony Wellness Center.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Mental_Health_Career ?mental_health_career_w .\n  ?employees p:Mental_Health_Career ?mental_health_career_w2 .\n  ?employees p:Clinic ?clinic_w .\n  FILTER((STR(?mental_health_career_w) = \"Psychologist\" || (STR(?mental_health_career_w2) = \"Psychiatrist\" && STR(?clinic_w) = \"Harmony Wellness Center\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Mental_Health_Career ?mental_health_career_w .\n  ?employees p:Mental_Health_Career ?mental_health_career_w2 .\n  ?employees p:Clinic ?clinic_w .\n  FILTER((((STR(?mental_health_career_w) = \"Psychologist\" || STR(?mental_health_career_w2) = \"Psychiatrist\")) && STR(?clinic_w) = \"Harmony Wellness Center\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

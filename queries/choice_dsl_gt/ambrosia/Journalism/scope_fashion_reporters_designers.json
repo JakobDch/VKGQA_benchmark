@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_fashion_reporters_designers",
+  "schema": "amb_scope_fashion_reporters_designers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which fashion designer brings all the reporters together?",
+      "qtype": "unambig",
+      "sql": "SELECT Designers.Name  from Fashion_Reporters_Designers join Designers on Fashion_Reporters_Designers.DesignerID = Designers.DesignerID join Fashion_Reporters on Fashion_Reporters_Designers.ReporterID = Fashion_Reporters.ReporterID   GROUP BY Fashion_Reporters_Designers.DesignerID HAVING COUNT(DISTINCT Fashion_Reporters_Designers.ReporterID) = (SELECT COUNT(*) FROM  Fashion_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDesigners ?child ; p:hasFashion_Reporters ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Fashion_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the fashion designers that each reporter has written about.",
+      "qtype": "ambig",
+      "sql": "select fashion_reporters.fullname , designers.name from Fashion_Reporters_Designers join Designers on Fashion_Reporters_Designers.DesignerID = Designers.DesignerID join Fashion_Reporters on Fashion_Reporters_Designers.ReporterID = Fashion_Reporters.ReporterID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?fashion_reporters_designers a :Fashion_Reporters_Designers .\n  ?designers a :Designers .\n  ?fashion_reporters_designers p:hasDesigners ?designers .\n  ?fashion_reporters a :Fashion_Reporters .\n  ?fashion_reporters_designers p:hasFashion_Reporters ?fashion_reporters .\n  ?fashion_reporters p:name ?fullname .\n  ?designers p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the fashion designers that each reporter has written about.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDesigners ?child ; p:hasFashion_Reporters ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Fashion_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?fullname ?name WHERE {\n  ?fashion_reporters_designers a :Fashion_Reporters_Designers .\n  ?designers a :Designers .\n  ?fashion_reporters_designers p:hasDesigners ?designers .\n  ?fashion_reporters a :Fashion_Reporters .\n  ?fashion_reporters_designers p:hasFashion_Reporters ?fashion_reporters .\n  ?fashion_reporters p:name ?fullname .\n  ?designers p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

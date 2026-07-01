@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Seating_Areas_base
+target		ex:Seating_Areas/{AreaID} a :Seating_Areas ; p:AreaID {AreaID} ; p:name {Name} ; p:Number_Of_Seats {Number_Of_Seats} ; p:Type_of_Food {Type_of_Food} .
+source		SELECT `AreaID`, `Name`, `Number_Of_Seats`, `Type_of_Food` FROM `Seating_Areas`
+
+mappingId	Restaurant_base
+target		ex:Restaurants/{RestID} a :Restaurants ; p:RestID {RestID} ; p:name {Name} ; p:Address {Address} ; p:Contact_No {Contact_No} ; p:Seating_Area_ID {Seating_Area_ID} .
+source		SELECT `RestID`, `Name`, `Address`, `Contact_No`, `Seating_Area_ID` FROM `Restaurant`
+
+mappingId	Restaurant_Seating_Area_ID_fk
+target		ex:Restaurants/{RestID} p:hasSeating_Areas ex:Seating_Areas/{Seating_Area_ID} .
+source		SELECT `RestID`, `Seating_Area_ID` FROM `Restaurant` WHERE `Seating_Area_ID` IS NOT NULL
+
+mappingId	MenuItems_base
+target		ex:MenuItems/{ItemID} a :MenuItems ; p:ItemID {ItemID} ; p:name {Name} ; p:Category {Category} ; p:Price {Price} ; p:Description {Description} ; p:Restaurant_ID {Restaurant_ID} .
+source		SELECT `ItemID`, `Name`, `Category`, `Price`, `Description`, `Restaurant_ID` FROM `MenuItems`
+
+mappingId	MenuItems_Restaurant_ID_fk
+target		ex:MenuItems/{ItemID} p:hasRestaurants ex:Restaurants/{Restaurant_ID} .
+source		SELECT `ItemID`, `Restaurant_ID` FROM `MenuItems` WHERE `Restaurant_ID` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{ReservationID} a :Reservations ; p:ReservationID {ReservationID} ; p:Date {Date} ; p:Time {Time} ; p:No_Of_Guests {No_Of_Guests} ; p:Customer_Name {Customer_Name} ; p:TableID {TableID} .
+source		SELECT `ReservationID`, `Date`, `Time`, `No_Of_Guests`, `Customer_Name`, `TableID` FROM `Reservations`
+
+mappingId	Reservations_TableID_fk
+target		ex:Reservations/{ReservationID} p:hasSeating_Areas ex:Seating_Areas/{TableID} .
+source		SELECT `ReservationID`, `TableID` FROM `Reservations` WHERE `TableID` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Reviews/{ReviewID} a :Reviews ; p:ReviewID {ReviewID} ; p:Rating {Rating} ; p:Comment {Comment} ; p:Reservation_ID {Reservation_ID} .
+source		SELECT `ReviewID`, `Rating`, `Comment`, `Reservation_ID` FROM `Reviews`
+
+mappingId	Reviews_Reservation_ID_fk
+target		ex:Reviews/{ReviewID} p:hasReservations ex:Reservations/{Reservation_ID} .
+source		SELECT `ReviewID`, `Reservation_ID` FROM `Reviews` WHERE `Reservation_ID` IS NOT NULL
+
+]]

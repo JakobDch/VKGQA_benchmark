@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Advertisements_base
+target		ex:Advertisements/{id} a :Advertisements ; p:id {id} ; p:title {title} ; p:description {description} .
+source		SELECT `id`, `title`, `description` FROM `Advertisements`
+
+mappingId	Formats_base
+target		ex:Formats/{id} a :Formats ; p:id {id} ; p:format_name {format_name} .
+source		SELECT `id`, `format_name` FROM `Formats`
+
+mappingId	Advertisements_Formats_base
+target		ex:Advertisements_Formats/{advertisement_id}/{format_id} a :Advertisements_Formats ; p:advertisement_id {advertisement_id} ; p:format_id {format_id} .
+source		SELECT `advertisement_id`, `format_id` FROM `Advertisements_Formats`
+
+mappingId	Advertisements_Formats_format_id_fk
+target		ex:Advertisements_Formats/{advertisement_id}/{format_id} p:hasFormats ex:Formats/{format_id} .
+source		SELECT `advertisement_id`, `format_id` FROM `Advertisements_Formats` WHERE `format_id` IS NOT NULL
+
+mappingId	Advertisements_Formats_advertisement_id_fk
+target		ex:Advertisements_Formats/{advertisement_id}/{format_id} p:hasAdvertisements ex:Advertisements/{advertisement_id} .
+source		SELECT `advertisement_id`, `format_id` FROM `Advertisements_Formats` WHERE `advertisement_id` IS NOT NULL
+
+]]

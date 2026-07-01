@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_facilities",
+  "schema": "amb_attachment_2tab_val_airport_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who are the staff working at the baggage claims and security checks at terminal 2?",
+      "qtype": "ambig",
+      "sql": "SELECT BaggageClaims.HandlerName as name\nFROM BaggageClaims\nWHERE BaggageClaims.Location = \"Terminal 2\"\nUNION\nSELECT SecurityChecks.OfficerName as name\nFROM SecurityChecks\nWHERE SecurityChecks.Location = \"Terminal 2\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?baggageclaims a :BaggageClaims .\n    ?baggageclaims p:HandlerName ?handlername .\n    ?baggageclaims p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?handlername AS ?o0)\n  }\n  UNION\n  {\n    ?securitychecks a :SecurityChecks .\n    ?securitychecks p:OfficerName ?officername .\n    ?securitychecks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?officername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Who are the staff working at the baggage claims and security checks at terminal 2?",
+      "qtype": "ambig",
+      "sql": "SELECT BaggageClaims.HandlerName as name\nFROM BaggageClaims\nUNION\nSELECT SecurityChecks.OfficerName as name\nFROM SecurityChecks\nWHERE SecurityChecks.Location = \"Terminal 2\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?baggageclaims a :BaggageClaims .\n    ?baggageclaims p:HandlerName ?handlername .\n    BIND(?handlername AS ?o0)\n  }\n  UNION\n  {\n    ?securitychecks a :SecurityChecks .\n    ?securitychecks p:OfficerName ?officername .\n    ?securitychecks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?officername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who are the staff working at the baggage claims and security checks at terminal 2?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?baggageclaims a :BaggageClaims .\n    ?baggageclaims p:HandlerName ?handlername .\n    ?baggageclaims p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?handlername AS ?o0)\n  }\n  UNION\n  {\n    ?securitychecks a :SecurityChecks .\n    ?securitychecks p:OfficerName ?officername .\n    ?securitychecks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?officername AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?baggageclaims a :BaggageClaims .\n    ?baggageclaims p:HandlerName ?handlername .\n    BIND(?handlername AS ?o0)\n  }\n  UNION\n  {\n    ?securitychecks a :SecurityChecks .\n    ?securitychecks p:OfficerName ?officername .\n    ?securitychecks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Terminal 2\")\n    BIND(?officername AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

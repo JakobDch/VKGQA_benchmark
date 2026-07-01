@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_zoo_animals",
+  "schema": "amb_scope_zoo_animals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the animals we have in each zoo.",
+      "qtype": "ambig",
+      "sql": "SELECT Animals.animalName  from Zoo_Animals join Animals on Zoo_Animals.animalID = Animals.animalID join Zoo on Zoo_Animals.zooID = Zoo.zooID   GROUP BY Zoo_Animals.animalID HAVING COUNT(DISTINCT Zoo_Animals.zooID) = (SELECT COUNT(*) FROM  Zoo)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?animalname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:animalID ?cg . ?child a :Animals ; p:animalID ?cg . ?l p:zooID ?pg . ?parent a :Zoo ; p:zooID ?pg . } GROUP BY ?child }\n  ?child p:animalName ?animalname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Zoo } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the animals we have in each zoo.",
+      "qtype": "ambig",
+      "sql": "select zoo.zooname , animals.animalname from Zoo_Animals join Animals on Zoo_Animals.animalID = Animals.animalID join Zoo on Zoo_Animals.zooID = Zoo.zooID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?zooname ?animalname WHERE {\n  ?zoo_animals a :Zoo_Animals .\n  ?animals a :Animals .\n  ?zoo_animals p:hasAnimals ?animals .\n  ?zoo a :Zoo .\n  ?zoo_animals p:hasZoo ?zoo .\n  ?zoo p:zooName ?zooname .\n  ?animals p:animalName ?animalname .\n}",
+      "status": "pass",
+      "note": "n=14"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the animals we have in each zoo.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?zooname ?animalname WHERE {\n  ?zoo_animals a :Zoo_Animals .\n  ?animals a :Animals .\n  ?zoo_animals p:hasAnimals ?animals .\n  ?zoo a :Zoo .\n  ?zoo_animals p:hasZoo ?zoo .\n  ?zoo p:zooName ?zooname .\n  ?animals p:animalName ?animalname .\n} }\n  collective: { SELECT ?animalname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:animalID ?cg . ?child a :Animals ; p:animalID ?cg . ?l p:zooID ?pg . ?parent a :Zoo ; p:zooID ?pg . } GROUP BY ?child }\n  ?child p:animalName ?animalname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Zoo } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

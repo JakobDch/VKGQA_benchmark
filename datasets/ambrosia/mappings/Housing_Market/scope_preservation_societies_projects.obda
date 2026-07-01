@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Preservation_Societies_base
+target		ex:Preservation_Societies/{ID} a :Preservation_Societies ; p:ID {ID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `ID`, `Name`, `Address` FROM `Preservation_Societies`
+
+mappingId	Projects_base
+target		ex:Projects/{ID} a :Projects ; p:ID {ID} ; p:Type {Type} ; p:Description {Description} ; p:Cost {Cost} .
+source		SELECT `ID`, `Type`, `Description`, `Cost` FROM `Projects`
+
+mappingId	Preservation_Societies_Projects_base
+target		ex:Preservation_Societies_Projects/{Societies_ID}/{Projects_ID} a :Preservation_Societies_Projects ; p:Societies_ID {Societies_ID} ; p:Projects_ID {Projects_ID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `Societies_ID`, `Projects_ID`, `StartDate`, `EndDate` FROM `Preservation_Societies_Projects`
+
+mappingId	Preservation_Societies_Projects_Projects_ID_fk
+target		ex:Preservation_Societies_Projects/{Societies_ID}/{Projects_ID} p:hasProjects ex:Projects/{Projects_ID} .
+source		SELECT `Societies_ID`, `Projects_ID` FROM `Preservation_Societies_Projects` WHERE `Projects_ID` IS NOT NULL
+
+mappingId	Preservation_Societies_Projects_Societies_ID_fk
+target		ex:Preservation_Societies_Projects/{Societies_ID}/{Projects_ID} p:hasPreservation_Societies ex:Preservation_Societies/{Societies_ID} .
+source		SELECT `Societies_ID`, `Projects_ID` FROM `Preservation_Societies_Projects` WHERE `Societies_ID` IS NOT NULL
+
+]]

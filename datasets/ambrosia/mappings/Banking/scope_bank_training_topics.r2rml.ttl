@@ -1,0 +1,84 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_bank_training_topics_0_Banks_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Banks\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Banks/{id}" ; rr:class :Banks ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_bank_training_topics_1_Employees_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"first_name\", \"last_name\", \"bank_id\" FROM \"Employees\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{id}" ; rr:class :Employees ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:first_name ; rr:objectMap [ rr:column "first_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:last_name ; rr:objectMap [ rr:column "last_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:bank_id ; rr:objectMap [ rr:column "bank_id" ] ] .
+
+<#tm_scope_bank_training_topics_2_Employees_bank_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"bank_id\" FROM \"Employees\" WHERE \"bank_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBanks ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Banks/{bank_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_3_TrainingSessions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"session_id\", \"date\", \"trainer_id\", \"topic_id\" FROM \"TrainingSessions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/TrainingSessions/{session_id}" ; rr:class :TrainingSessions ] ;
+  rr:predicateObjectMap [ rr:predicate p:session_id ; rr:objectMap [ rr:column "session_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:trainer_id ; rr:objectMap [ rr:column "trainer_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:topic_id ; rr:objectMap [ rr:column "topic_id" ] ] .
+
+<#tm_scope_bank_training_topics_4_TrainingSessions_topic_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"session_id\", \"topic_id\" FROM \"TrainingSessions\" WHERE \"topic_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/TrainingSessions/{session_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTopics ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Topics/{topic_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_5_TrainingSessions_trainer_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"session_id\", \"trainer_id\" FROM \"TrainingSessions\" WHERE \"trainer_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/TrainingSessions/{session_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEmployees ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{trainer_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_6_Topics_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"value\" FROM \"Topics\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Topics/{id}" ; rr:class :Topics ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:value ; rr:objectMap [ rr:column "value" ] ] .
+
+<#tm_scope_bank_training_topics_7_Bank_Training_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"training_id\", \"bank_id\", \"employee_id\" FROM \"Bank_Training\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training/{training_id}" ; rr:class :Bank_Training ] ;
+  rr:predicateObjectMap [ rr:predicate p:training_id ; rr:objectMap [ rr:column "training_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:bank_id ; rr:objectMap [ rr:column "bank_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:employee_id ; rr:objectMap [ rr:column "employee_id" ] ] .
+
+<#tm_scope_bank_training_topics_8_Bank_Training_employee_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"training_id\", \"employee_id\" FROM \"Bank_Training\" WHERE \"employee_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training/{training_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEmployees ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{employee_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_9_Bank_Training_bank_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"training_id\", \"bank_id\" FROM \"Bank_Training\" WHERE \"bank_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training/{training_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBanks ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Banks/{bank_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_10_Bank_Training_Topics_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"bank_training_id\", \"topic_id\" FROM \"Bank_Training_Topics\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training_Topics/{bank_training_id}/{topic_id}" ; rr:class :Bank_Training_Topics ] ;
+  rr:predicateObjectMap [ rr:predicate p:bank_training_id ; rr:objectMap [ rr:column "bank_training_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:topic_id ; rr:objectMap [ rr:column "topic_id" ] ] .
+
+<#tm_scope_bank_training_topics_11_Bank_Training_Topics_topic_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"bank_training_id\", \"topic_id\" FROM \"Bank_Training_Topics\" WHERE \"topic_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training_Topics/{bank_training_id}/{topic_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTopics ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Topics/{topic_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_training_topics_12_Bank_Training_Topics_bank_training_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"bank_training_id\", \"topic_id\" FROM \"Bank_Training_Topics\" WHERE \"bank_training_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training_Topics/{bank_training_id}/{topic_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBank_Training ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Training/{bank_training_id}" ; rr:termType rr:IRI ] ] .
+

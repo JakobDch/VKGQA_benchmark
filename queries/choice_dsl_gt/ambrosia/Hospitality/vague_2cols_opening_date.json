@@ -1,0 +1,97 @@
+{
+  "domain": "Hospitality",
+  "db_base": "vague_2cols_opening_date",
+  "schema": "amb_vague_2cols_opening_date",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In what year did the hotel with the highest rate open?",
+      "qtype": "unambig",
+      "sql": "select Opening_Year from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID order by Rooms.Rate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_year WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the year and month of the opening of the hotel with a sea view.",
+      "qtype": "unambig",
+      "sql": "select Opening_Year, Opening_Month from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID where Rooms.Type = 'Sea View'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_year ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "In what year and month did the hotel with the highest rate open?",
+      "qtype": "unambig",
+      "sql": "select Opening_Year, Opening_Month from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID order by Rooms.Rate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_year ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "In what month did the hotel with the highest rate open?",
+      "qtype": "unambig",
+      "sql": "select Opening_Month from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID order by Rooms.Rate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "When did the hotel with a sea view open?",
+      "qtype": "ambig",
+      "sql": "select Opening_Year from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID where Rooms.Type = 'Sea View'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_year WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "When did the hotel with a sea view open?",
+      "qtype": "ambig",
+      "sql": "select Opening_Month from Hotels Join Rooms on Rooms.HotelID = Hotels.HotelID where Rooms.Type = 'Sea View'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When did the hotel with the highest rate open?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?opening_year WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1 }\n  full: { SELECT ?opening_year ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1 }\n  component_2: { SELECT ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Rate ?rate_o .\n}\nORDER BY DESC(?rate_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "When did the hotel with a sea view open?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?opening_year ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n} }\n  component: { SELECT ?opening_month WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Month ?opening_month .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n} }\n  component_2: { SELECT ?opening_year WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hasHotels ?hotels .\n  ?hotels p:Opening_Year ?opening_year .\n  ?rooms p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Sea View\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

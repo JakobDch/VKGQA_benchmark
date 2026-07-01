@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:name {name} ; p:age {age} .
+source		SELECT `id`, `name`, `age` FROM `Students`
+
+mappingId	Exams_base
+target		ex:Exams/{id} a :Exams ; p:id {id} ; p:student_id {student_id} ; p:marks {marks} .
+source		SELECT `id`, `student_id`, `marks` FROM `Exams`
+
+mappingId	Exams_student_id_fk
+target		ex:Exams/{id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `id`, `student_id` FROM `Exams` WHERE `student_id` IS NOT NULL
+
+mappingId	Quizzes_base
+target		ex:Quizzes/{id} a :Quizzes ; p:id {id} ; p:student_id {student_id} ; p:points {points} .
+source		SELECT `id`, `student_id`, `points` FROM `Quizzes`
+
+mappingId	Quizzes_student_id_fk
+target		ex:Quizzes/{id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `id`, `student_id` FROM `Quizzes` WHERE `student_id` IS NOT NULL
+
+mappingId	Assessors_base
+target		ex:Assessors/{id} a :Assessors ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Assessors`
+
+mappingId	Subjects_base
+target		ex:Subjects/{id} a :Subjects ; p:id {id} ; p:subject_name {subject_name} ; p:assessor_id {assessor_id} .
+source		SELECT `id`, `subject_name`, `assessor_id` FROM `Subjects`
+
+mappingId	Subjects_assessor_id_fk
+target		ex:Subjects/{id} p:hasAssessors ex:Assessors/{assessor_id} .
+source		SELECT `id`, `assessor_id` FROM `Subjects` WHERE `assessor_id` IS NOT NULL
+
+mappingId	StudentSubjects_base
+target		ex:StudentSubjects/{student_id}/{subject_id} a :StudentSubjects ; p:student_id {student_id} ; p:subject_id {subject_id} .
+source		SELECT `student_id`, `subject_id` FROM `StudentSubjects`
+
+mappingId	StudentSubjects_subject_id_fk
+target		ex:StudentSubjects/{student_id}/{subject_id} p:hasSubjects ex:Subjects/{subject_id} .
+source		SELECT `student_id`, `subject_id` FROM `StudentSubjects` WHERE `subject_id` IS NOT NULL
+
+mappingId	StudentSubjects_student_id_fk
+target		ex:StudentSubjects/{student_id}/{subject_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `student_id`, `subject_id` FROM `StudentSubjects` WHERE `student_id` IS NOT NULL
+
+]]

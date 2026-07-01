@@ -1,0 +1,84 @@
+@prefix : <http://ambrosia.example.org/agriculture#> .
+@prefix p: <http://ambrosia.example.org/agriculture/prop#> .
+@prefix ex: <http://ambrosia.example.org/agriculture/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_farms_crops_0_Farms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FarmID\", \"Name\", \"Location\" FROM \"Farms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Farm/{FarmID}" ; rr:class :Farm ] ;
+  rr:predicateObjectMap [ rr:predicate p:FarmID ; rr:objectMap [ rr:column "FarmID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_farms_crops_1_Crops_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CropID\", \"CropName\", \"YieldPerAcre\" FROM \"Crops\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Crop/{CropID}" ; rr:class :Crop ] ;
+  rr:predicateObjectMap [ rr:predicate p:CropID ; rr:objectMap [ rr:column "CropID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "CropName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:yieldPerAcre ; rr:objectMap [ rr:column "YieldPerAcre" ] ] .
+
+<#tm_scope_farms_crops_2_SoilTypes_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TypeID\", \"TypeName\" FROM \"SoilTypes\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/SoilTypes/{TypeID}" ; rr:class :SoilTypes ] ;
+  rr:predicateObjectMap [ rr:predicate p:TypeID ; rr:objectMap [ rr:column "TypeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "TypeName" ] ] .
+
+<#tm_scope_farms_crops_3_WeatherConditions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ConditionID\", \"Description\" FROM \"WeatherConditions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/WeatherConditions/{ConditionID}" ; rr:class :WeatherConditions ] ;
+  rr:predicateObjectMap [ rr:predicate p:ConditionID ; rr:objectMap [ rr:column "ConditionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "Description" ] ] .
+
+<#tm_scope_farms_crops_4_FarmsSoil_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FarmID\", \"SoilTypeID\" FROM \"FarmsSoil\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsSoil/{_amb_rowid}" ; rr:class :FarmsSoil ] ;
+  rr:predicateObjectMap [ rr:predicate p:FarmID ; rr:objectMap [ rr:column "FarmID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:SoilTypeID ; rr:objectMap [ rr:column "SoilTypeID" ] ] .
+
+<#tm_scope_farms_crops_5_FarmsSoil_SoilTypeID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"SoilTypeID\" FROM \"FarmsSoil\" WHERE \"SoilTypeID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsSoil/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSoilTypes ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/SoilTypes/{SoilTypeID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farms_crops_6_FarmsSoil_FarmID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FarmID\" FROM \"FarmsSoil\" WHERE \"FarmID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsSoil/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFarm ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Farm/{FarmID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farms_crops_7_CropsWeather_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"CropID\", \"ConditionID\" FROM \"CropsWeather\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/CropsWeather/{_amb_rowid}" ; rr:class :CropsWeather ] ;
+  rr:predicateObjectMap [ rr:predicate p:CropID ; rr:objectMap [ rr:column "CropID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ConditionID ; rr:objectMap [ rr:column "ConditionID" ] ] .
+
+<#tm_scope_farms_crops_8_CropsWeather_ConditionID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"ConditionID\" FROM \"CropsWeather\" WHERE \"ConditionID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/CropsWeather/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasWeatherConditions ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/WeatherConditions/{ConditionID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farms_crops_9_CropsWeather_CropID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"CropID\" FROM \"CropsWeather\" WHERE \"CropID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/CropsWeather/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCrop ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Crop/{CropID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farms_crops_10_FarmsCrops_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FarmID\", \"CropID\", \"Quantity\", \"PlantingDate\", \"HarvestDate\" FROM \"FarmsCrops\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsCrops/{_amb_rowid}" ; rr:class :FarmsCrops ] ;
+  rr:predicateObjectMap [ rr:predicate p:FarmID ; rr:objectMap [ rr:column "FarmID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CropID ; rr:objectMap [ rr:column "CropID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:quantity ; rr:objectMap [ rr:column "Quantity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:plantingDate ; rr:objectMap [ rr:column "PlantingDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:harvestDate ; rr:objectMap [ rr:column "HarvestDate" ] ] .
+
+<#tm_scope_farms_crops_11_FarmsCrops_CropID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"CropID\" FROM \"FarmsCrops\" WHERE \"CropID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsCrops/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCrop ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Crop/{CropID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farms_crops_12_FarmsCrops_FarmID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FarmID\" FROM \"FarmsCrops\" WHERE \"FarmID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/FarmsCrops/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFarm ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Farm/{FarmID}" ; rr:termType rr:IRI ] ] .
+

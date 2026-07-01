@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:service_name {service_name} ; p:subscription_fee {subscription_fee} .
+source		SELECT `id`, `service_name`, `subscription_fee` FROM `Streaming_Services`
+
+mappingId	Social_Media_Integrations_base
+target		ex:Social_Media_Integrations/{id} a :Social_Media_Integrations ; p:id {id} ; p:integration_type {integration_type} ; p:description {description} .
+source		SELECT `id`, `integration_type`, `description` FROM `Social_Media_Integrations`
+
+mappingId	Streaming_Services_Social_Media_Integrations_base
+target		ex:Streaming_Services_Social_Media_Integrations/{_amb_rowid} a :Streaming_Services_Social_Media_Integrations ; p:streaming_service_id {streaming_service_id} ; p:social_media_integration_id {social_media_integration_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id`, `social_media_integration_id` FROM `Streaming_Services_Social_Media_Integrations`
+
+mappingId	Streaming_Services_Social_Media_Integrations_social_media_integration_id_fk
+target		ex:Streaming_Services_Social_Media_Integrations/{_amb_rowid} p:hasSocial_Media_Integrations ex:Social_Media_Integrations/{social_media_integration_id} .
+source		SELECT `_amb_rowid`, `social_media_integration_id` FROM `Streaming_Services_Social_Media_Integrations` WHERE `social_media_integration_id` IS NOT NULL
+
+mappingId	Streaming_Services_Social_Media_Integrations_streaming_service_id_fk
+target		ex:Streaming_Services_Social_Media_Integrations/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id` FROM `Streaming_Services_Social_Media_Integrations` WHERE `streaming_service_id` IS NOT NULL
+
+mappingId	Arbitrary_Table1_base
+target		ex:Arbitrary_Table1/{id} a :Arbitrary_Table1 ; p:id {id} ; p:column1 {column1} ; p:column2 {column2} .
+source		SELECT `id`, `column1`, `column2` FROM `Arbitrary_Table1`
+
+mappingId	Arbitrary_Table2_base
+target		ex:Arbitrary_Table1/{id} a :Arbitrary_Table1 ; p:id {id} ; p:column1 {column1} ; p:column2 {column2} .
+source		SELECT `id`, `column1`, `column2` FROM `Arbitrary_Table2`
+
+]]

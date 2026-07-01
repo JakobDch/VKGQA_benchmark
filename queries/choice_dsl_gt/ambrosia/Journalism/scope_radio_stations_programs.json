@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_radio_stations_programs",
+  "schema": "amb_scope_radio_stations_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the program types that are common to all radio stations.",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.programType  from Radio_Stations_Programs join Programs on Radio_Stations_Programs.programId = Programs.id join Radio_Stations on Radio_Stations_Programs.radioStationId = Radio_Stations.id   GROUP BY Radio_Stations_Programs.programId HAVING COUNT(DISTINCT Radio_Stations_Programs.radioStationId) = (SELECT COUNT(*) FROM  Radio_Stations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?programtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasRadio_Stations ?parent . } GROUP BY ?child }\n  ?child p:programType ?programtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Radio_Stations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the radio stations and their program types.",
+      "qtype": "unambig",
+      "sql": "select radio_stations.stationname , programs.programtype from Radio_Stations_Programs join Programs on Radio_Stations_Programs.programId = Programs.id join Radio_Stations on Radio_Stations_Programs.radioStationId = Radio_Stations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stationname ?programtype WHERE {\n  ?radio_stations_programs a :Radio_Stations_Programs .\n  ?programs a :Programs .\n  ?radio_stations_programs p:hasPrograms ?programs .\n  ?radio_stations a :Radio_Stations .\n  ?radio_stations_programs p:hasRadio_Stations ?radio_stations .\n  ?radio_stations p:stationName ?stationname .\n  ?programs p:programType ?programtype .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the program types aired on each radio station.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?programtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasRadio_Stations ?parent . } GROUP BY ?child }\n  ?child p:programType ?programtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Radio_Stations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?stationname ?programtype WHERE {\n  ?radio_stations_programs a :Radio_Stations_Programs .\n  ?programs a :Programs .\n  ?radio_stations_programs p:hasPrograms ?programs .\n  ?radio_stations a :Radio_Stations .\n  ?radio_stations_programs p:hasRadio_Stations ?radio_stations .\n  ?radio_stations p:stationName ?stationname .\n  ?programs p:programType ?programtype .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_home_inspections_issues",
+  "schema": "amb_scope_home_inspections_issues",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the issues each home inspection revealed.",
+      "qtype": "ambig",
+      "sql": "SELECT Issues.issue_type  from Home_Inspection_Issues join Issues on Home_Inspection_Issues.issue_id = Issues.id join Home_Inspections on Home_Inspection_Issues.home_inspection_id = Home_Inspections.id   GROUP BY Home_Inspection_Issues.issue_id HAVING COUNT(DISTINCT Home_Inspection_Issues.home_inspection_id) = (SELECT COUNT(*) FROM  Home_Inspections)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?issue_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasIssues ?child ; p:hasHome_Inspections ?parent . } GROUP BY ?child }\n  ?child p:issue_type ?issue_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Home_Inspections } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the issues each home inspection revealed.",
+      "qtype": "ambig",
+      "sql": "select home_inspections.address , issues.issue_type from Home_Inspection_Issues join Issues on Home_Inspection_Issues.issue_id = Issues.id join Home_Inspections on Home_Inspection_Issues.home_inspection_id = Home_Inspections.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?address ?issue_type WHERE {\n  ?home_inspection_issues a :Home_Inspection_Issues .\n  ?issues a :Issues .\n  ?home_inspection_issues p:hasIssues ?issues .\n  ?home_inspections a :Home_Inspections .\n  ?home_inspection_issues p:hasHome_Inspections ?home_inspections .\n  ?home_inspections p:address ?address .\n  ?issues p:issue_type ?issue_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the issues each home inspection revealed.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?address ?issue_type WHERE {\n  ?home_inspection_issues a :Home_Inspection_Issues .\n  ?issues a :Issues .\n  ?home_inspection_issues p:hasIssues ?issues .\n  ?home_inspections a :Home_Inspections .\n  ?home_inspection_issues p:hasHome_Inspections ?home_inspections .\n  ?home_inspections p:address ?address .\n  ?issues p:issue_type ?issue_type .\n} }\n  collective: { SELECT ?issue_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasIssues ?child ; p:hasHome_Inspections ?parent . } GROUP BY ?child }\n  ?child p:issue_type ?issue_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Home_Inspections } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

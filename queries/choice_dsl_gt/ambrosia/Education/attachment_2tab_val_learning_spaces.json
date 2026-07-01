@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_learning_spaces",
+  "schema": "amb_attachment_2tab_val_learning_spaces",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show science labs and art studios with computers.",
+      "qtype": "ambig",
+      "sql": "SELECT Science_Lab.name\nFROM Science_Lab\nWHERE Science_Lab.Available_Resources = \"Computers\"\nUNION\nSELECT Art_Studio.name\nFROM Art_Studio\nWHERE Art_Studio.Available_Resources = \"Computers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_lab a :Science_Lab .\n    ?science_lab p:name ?name .\n    ?science_lab p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?art_studio a :Art_Studio .\n    ?art_studio p:name ?name .\n    ?art_studio p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show science labs and art studios with computers.",
+      "qtype": "ambig",
+      "sql": "SELECT Science_Lab.name\nFROM Science_Lab\nUNION\nSELECT Art_Studio.name\nFROM Art_Studio\nWHERE Art_Studio.Available_Resources = \"Computers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_lab a :Science_Lab .\n    ?science_lab p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?art_studio a :Art_Studio .\n    ?art_studio p:name ?name .\n    ?art_studio p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show science labs and art studios with computers.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_lab a :Science_Lab .\n    ?science_lab p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?art_studio a :Art_Studio .\n    ?art_studio p:name ?name .\n    ?art_studio p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_lab a :Science_Lab .\n    ?science_lab p:name ?name .\n    ?science_lab p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?art_studio a :Art_Studio .\n    ?art_studio p:name ?name .\n    ?art_studio p:Available_Resources ?available_resources_f .\n    FILTER(STR(?available_resources_f) = \"Computers\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

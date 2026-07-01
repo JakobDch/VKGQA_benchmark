@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_production2",
+  "schema": "amb_vague_2cols_production2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which companies produced drama films and who acted as producer?",
+      "qtype": "unambig",
+      "sql": "SELECT ProducerName, Company FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId WHERE Genre LIKE '%Drama%' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producername ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:ProducerName ?producername .\n  ?producers p:Company ?company .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What is the name of the producer and company that made the films with a G rating?",
+      "qtype": "unambig",
+      "sql": "SELECT ProducerName, Company FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId JOIN MovieRatings ON MovieRatings.MovieId = Movies.id JOIN FilmRatings ON MovieRatings.RatingId = FilmRatings.id WHERE Rating = 'G' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producername ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:ProducerName ?producername .\n  ?producers p:Company ?company .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "What is the name of the producer that made the films with a G rating?",
+      "qtype": "unambig",
+      "sql": "SELECT ProducerName FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId JOIN MovieRatings ON MovieRatings.MovieId = Movies.id JOIN FilmRatings ON MovieRatings.RatingId = FilmRatings.id WHERE Rating = 'G' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producername WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:ProducerName ?producername .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "Which producers worked on drama films?",
+      "qtype": "unambig",
+      "sql": "SELECT ProducerName FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId WHERE Genre LIKE '%Drama%' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producername WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:ProducerName ?producername .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Who produced the films with a general rating?",
+      "qtype": "ambig",
+      "sql": "SELECT Company FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId JOIN MovieRatings ON MovieRatings.MovieId = Movies.id JOIN FilmRatings ON MovieRatings.RatingId = FilmRatings.id WHERE Rating = 'G' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:Company ?company .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "Which companies have produced drama films?",
+      "qtype": "unambig",
+      "sql": "SELECT Company FROM Producers JOIN Movies ON Producers.id = Movies.ProducerId WHERE Genre LIKE '%Drama%' ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:Company ?company .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who produced drama films?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?producername ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:ProducerName ?producername .\n  ?producers p:Company ?company .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n} }\n  component: { SELECT ?producername WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:ProducerName ?producername .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n} }\n  component_2: { SELECT ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?producers p:Company ?company .\n  ?movies p:Genre ?genre_lk .\n  FILTER(REGEX(STR(?genre_lk), \"^.*Drama.*$\", \"i\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who produced the films with a general rating?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?producername ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:ProducerName ?producername .\n  ?producers p:Company ?company .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n} }\n  component: { SELECT ?producername WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:ProducerName ?producername .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n} }\n  component_2: { SELECT ?company WHERE {\n  ?producers a :Producer .\n  ?movies a :Movie .\n  ?movies p:hasProducers ?producers .\n  ?movieratings a :MovieRatings .\n  ?movieratings p:hasMovies ?movies .\n  ?filmratings a :FilmRatings .\n  ?movieratings p:hasFilmRatings ?filmratings .\n  ?producers p:Company ?company .\n  ?filmratings p:Rating ?rating_f .\n  FILTER(STR(?rating_f) = \"G\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

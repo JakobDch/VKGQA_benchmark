@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	suburbs_base
+target		ex:suburbs/{id} a :suburbs ; p:id {id} ; p:name {name} ; p:population {population} .
+source		SELECT `id`, `name`, `population` FROM `suburbs`
+
+mappingId	schools_base
+target		ex:schools/{id} a :schools ; p:id {id} ; p:school_type {school_type} .
+source		SELECT `id`, `school_type` FROM `schools`
+
+mappingId	suburbs_schools_base
+target		ex:suburbs_schools/{_amb_rowid} a :suburbs_schools ; p:suburb_id {suburb_id} ; p:school_id {school_id} .
+source		SELECT `_amb_rowid`, `suburb_id`, `school_id` FROM `suburbs_schools`
+
+mappingId	suburbs_schools_school_id_fk
+target		ex:suburbs_schools/{_amb_rowid} p:hasschools ex:schools/{school_id} .
+source		SELECT `_amb_rowid`, `school_id` FROM `suburbs_schools` WHERE `school_id` IS NOT NULL
+
+mappingId	suburbs_schools_suburb_id_fk
+target		ex:suburbs_schools/{_amb_rowid} p:hassuburbs ex:suburbs/{suburb_id} .
+source		SELECT `_amb_rowid`, `suburb_id` FROM `suburbs_schools` WHERE `suburb_id` IS NOT NULL
+
+mappingId	houses_base
+target		ex:Houses/{id} a :Houses ; p:id {id} ; p:address {address} ; p:price {price} ; p:size {size} ; p:bedrooms {bedrooms} ; p:bathrooms {bathrooms} ; p:suburb_id {suburb_id} .
+source		SELECT `id`, `address`, `price`, `size`, `bedrooms`, `bathrooms`, `suburb_id` FROM `houses`
+
+mappingId	houses_suburb_id_fk
+target		ex:Houses/{id} p:hassuburbs ex:suburbs/{suburb_id} .
+source		SELECT `id`, `suburb_id` FROM `houses` WHERE `suburb_id` IS NOT NULL
+
+mappingId	neighborhoods_base
+target		ex:neighborhoods/{id} a :neighborhoods ; p:id {id} ; p:name {name} ; p:crime_rate {crime_rate} .
+source		SELECT `id`, `name`, `crime_rate` FROM `neighborhoods`
+
+mappingId	suburbs_neighborhoods_base
+target		ex:suburbs_neighborhoods/{suburb_id}/{neighborhood_id} a :suburbs_neighborhoods ; p:suburb_id {suburb_id} ; p:neighborhood_id {neighborhood_id} .
+source		SELECT `suburb_id`, `neighborhood_id` FROM `suburbs_neighborhoods`
+
+mappingId	suburbs_neighborhoods_neighborhood_id_fk
+target		ex:suburbs_neighborhoods/{suburb_id}/{neighborhood_id} p:hasneighborhoods ex:neighborhoods/{neighborhood_id} .
+source		SELECT `suburb_id`, `neighborhood_id` FROM `suburbs_neighborhoods` WHERE `neighborhood_id` IS NOT NULL
+
+mappingId	suburbs_neighborhoods_suburb_id_fk
+target		ex:suburbs_neighborhoods/{suburb_id}/{neighborhood_id} p:hassuburbs ex:suburbs/{suburb_id} .
+source		SELECT `suburb_id`, `neighborhood_id` FROM `suburbs_neighborhoods` WHERE `suburb_id` IS NOT NULL
+
+]]

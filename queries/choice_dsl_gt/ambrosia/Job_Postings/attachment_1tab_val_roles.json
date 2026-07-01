@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_roles",
+  "schema": "amb_attachment_1tab_val_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What jobs are available for economists and what jobs are available for statisticians working with demographic data?",
+      "qtype": "unambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings\nWHERE JobPostings.Roles = \"Economist\" OR JobPostings.Roles = \"Statistician\" AND JobPostings.Data = \"Demographics\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:Title ?title .\n  ?jobpostings p:Roles ?roles_w .\n  ?jobpostings p:Roles ?roles_w2 .\n  ?jobpostings p:Data ?data_w .\n  FILTER((STR(?roles_w) = \"Economist\" || (STR(?roles_w2) = \"Statistician\" && STR(?data_w) = \"Demographics\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What jobs are available for economists and statisticians working with demographic data?",
+      "qtype": "ambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings\nWHERE (JobPostings.Roles = \"Economist\" OR JobPostings.Roles = \"Statistician\") AND JobPostings.Data = \"Demographics\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:Title ?title .\n  ?jobpostings p:Roles ?roles_w .\n  ?jobpostings p:Roles ?roles_w2 .\n  ?jobpostings p:Data ?data_w .\n  FILTER((((STR(?roles_w) = \"Economist\" || STR(?roles_w2) = \"Statistician\")) && STR(?data_w) = \"Demographics\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What jobs are available for economists and statisticians working with demographic data?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:Title ?title .\n  ?jobpostings p:Roles ?roles_w .\n  ?jobpostings p:Roles ?roles_w2 .\n  ?jobpostings p:Data ?data_w .\n  FILTER((STR(?roles_w) = \"Economist\" || (STR(?roles_w2) = \"Statistician\" && STR(?data_w) = \"Demographics\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:Title ?title .\n  ?jobpostings p:Roles ?roles_w .\n  ?jobpostings p:Roles ?roles_w2 .\n  ?jobpostings p:Data ?data_w .\n  FILTER((((STR(?roles_w) = \"Economist\" || STR(?roles_w2) = \"Statistician\")) && STR(?data_w) = \"Demographics\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

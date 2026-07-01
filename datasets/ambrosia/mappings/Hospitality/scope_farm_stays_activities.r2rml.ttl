@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_farm_stays_activities_0_Farm_Stays_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Farm_Stays\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Farm_Stays/{id}" ; rr:class :Farm_Stays ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_farm_stays_activities_1_Activities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"activity_id\", \"description\" FROM \"Activities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Activities/{activity_id}" ; rr:class :Activities ] ;
+  rr:predicateObjectMap [ rr:predicate p:activity_id ; rr:objectMap [ rr:column "activity_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_farm_stays_activities_2_Farm_Stays_Activities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"farm_stay_id\", \"activity_id\" FROM \"Farm_Stays_Activities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Farm_Stays_Activities/{farm_stay_id}/{activity_id}" ; rr:class :Farm_Stays_Activities ] ;
+  rr:predicateObjectMap [ rr:predicate p:farm_stay_id ; rr:objectMap [ rr:column "farm_stay_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:activity_id ; rr:objectMap [ rr:column "activity_id" ] ] .
+
+<#tm_scope_farm_stays_activities_3_Farm_Stays_Activities_activity_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"farm_stay_id\", \"activity_id\" FROM \"Farm_Stays_Activities\" WHERE \"activity_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Farm_Stays_Activities/{farm_stay_id}/{activity_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasActivities ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Activities/{activity_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_farm_stays_activities_4_Farm_Stays_Activities_farm_stay_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"farm_stay_id\", \"activity_id\" FROM \"Farm_Stays_Activities\" WHERE \"farm_stay_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Farm_Stays_Activities/{farm_stay_id}/{activity_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFarm_Stays ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Farm_Stays/{farm_stay_id}" ; rr:termType rr:IRI ] ] .
+

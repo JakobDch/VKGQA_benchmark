@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:dateOfBirth {dateOfBirth} ; p:gender {gender} ; p:contactNumber {contactNumber} ; p:address {address} ; p:name {fullname} .
+source		SELECT `id`, `dateOfBirth`, `gender`, `contactNumber`, `address`, `fullname` FROM `Patients`
+
+mappingId	Doctors_base
+target		ex:Doctors/{doctorID} a :Doctors ; p:doctorID {doctorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:specialty {specialty} ; p:yearsExperience {yearsExperience} .
+source		SELECT `doctorID`, `firstName`, `lastName`, `specialty`, `yearsExperience` FROM `Doctors`
+
+mappingId	Illnesses_base
+target		ex:Illnesses/{illnessID} a :Illnesses ; p:illnessID {illnessID} ; p:name {name} ; p:description {description} ; p:fiveYearSurvivalRate {fiveYearSurvivalRate} ; p:tenYearSurvivalRate {tenYearSurvivalRate} ; p:treatmentOption {treatmentOption} .
+source		SELECT `illnessID`, `name`, `description`, `fiveYearSurvivalRate`, `tenYearSurvivalRate`, `treatmentOption` FROM `Illnesses`
+
+mappingId	Diagnoses_base
+target		ex:Diagnoses/{diagnosisID} a :Diagnoses ; p:diagnosisID {diagnosisID} ; p:patientId {patientId} ; p:illnessId {illnessId} ; p:diagnosedDate {diagnosedDate} .
+source		SELECT `diagnosisID`, `patientId`, `illnessId`, `diagnosedDate` FROM `Diagnoses`
+
+mappingId	Diagnoses_illnessId_fk
+target		ex:Diagnoses/{diagnosisID} p:hasIllnesses ex:Illnesses/{illnessId} .
+source		SELECT `diagnosisID`, `illnessId` FROM `Diagnoses` WHERE `illnessId` IS NOT NULL
+
+mappingId	Diagnoses_patientId_fk
+target		ex:Diagnoses/{diagnosisID} p:hasPatients ex:Patients/{patientId} .
+source		SELECT `diagnosisID`, `patientId` FROM `Diagnoses` WHERE `patientId` IS NOT NULL
+
+mappingId	Prescriptions_base
+target		ex:Prescriptions/{prescriptionId} a :Prescriptions ; p:prescriptionId {prescriptionId} ; p:diagnosisId {diagnosisId} ; p:medication {medication} ; p:dosage {dosage} ; p:frequency {frequency} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `prescriptionId`, `diagnosisId`, `medication`, `dosage`, `frequency`, `startDate`, `endDate` FROM `Prescriptions`
+
+mappingId	Prescriptions_diagnosisId_fk
+target		ex:Prescriptions/{prescriptionId} p:hasDiagnoses ex:Diagnoses/{diagnosisId} .
+source		SELECT `prescriptionId`, `diagnosisId` FROM `Prescriptions` WHERE `diagnosisId` IS NOT NULL
+
+mappingId	Appointments_base
+target		ex:Appointments/{appointmentId} a :Appointments ; p:appointmentId {appointmentId} ; p:patientId {patientId} ; p:doctorId {doctorId} ; p:appointmentDate {appointmentDate} ; p:reasonForAppointment {reasonForAppointment} ; p:outcome {outcome} .
+source		SELECT `appointmentId`, `patientId`, `doctorId`, `appointmentDate`, `reasonForAppointment`, `outcome` FROM `Appointments`
+
+mappingId	Appointments_doctorId_fk
+target		ex:Appointments/{appointmentId} p:hasDoctors ex:Doctors/{doctorId} .
+source		SELECT `appointmentId`, `doctorId` FROM `Appointments` WHERE `doctorId` IS NOT NULL
+
+mappingId	Appointments_patientId_fk
+target		ex:Appointments/{appointmentId} p:hasPatients ex:Patients/{patientId} .
+source		SELECT `appointmentId`, `patientId` FROM `Appointments` WHERE `patientId` IS NOT NULL
+
+]]

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Company`
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:company_id {company_id} ; p:employee_name {employee_name} .
+source		SELECT `id`, `company_id`, `employee_name` FROM `Employee`
+
+mappingId	Employee_company_id_fk
+target		ex:Employees/{id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `id`, `company_id` FROM `Employee` WHERE `company_id` IS NOT NULL
+
+mappingId	Position_base
+target		ex:Position/{id} a :Position ; p:id {id} ; p:position_title {position_title} ; p:trades_jobs {trades_jobs} ; p:company_id {company_id} .
+source		SELECT `id`, `position_title`, `trades_jobs`, `company_id` FROM `Position`
+
+mappingId	Position_company_id_fk
+target		ex:Position/{id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `id`, `company_id` FROM `Position` WHERE `company_id` IS NOT NULL
+
+mappingId	Skill_base
+target		ex:Skill/{id} a :Skill ; p:id {id} ; p:skill_type {skill_type} ; p:position_id {position_id} .
+source		SELECT `id`, `skill_type`, `position_id` FROM `Skill`
+
+mappingId	Skill_position_id_fk
+target		ex:Skill/{id} p:hasPosition ex:Position/{position_id} .
+source		SELECT `id`, `position_id` FROM `Skill` WHERE `position_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_immigrants",
+  "schema": "amb_vague_2cols_immigrants",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which country in North America had the most immigrants?",
+      "qtype": "ambig",
+      "sql": "select C.countryName from country C inner join ImmigrationStats on C.id = ImmigrationStats.countryId where C.continent = 'North America' order by ImmigrationStats.numberOfImmigrants desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?countryname WHERE {\n  ?c a :Countries .\n  ?immigrationstats a :ImmigrationStats .\n  ?immigrationstats p:hasCountry ?c .\n  ?c p:countryName ?countryname .\n  ?c p:continent ?continent_f .\n  ?immigrationstats p:numberOfImmigrants ?numberofimmigrants_o .\n  FILTER(?continent_f = \"North America\")\n}\nORDER BY DESC(?numberofimmigrants_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which country in North America had the most immigrants?",
+      "qtype": "ambig",
+      "sql": "select C.countryName from country C inner join ImmigrationStats on C.id = ImmigrationStats.countryId where C.continent = 'North America' order by ImmigrationStats.immigrantPercentage desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?countryname WHERE {\n  ?c a :Countries .\n  ?immigrationstats a :ImmigrationStats .\n  ?immigrationstats p:hasCountry ?c .\n  ?c p:countryName ?countryname .\n  ?c p:continent ?continent_f .\n  ?immigrationstats p:immigrantPercentage ?immigrantpercentage_o .\n  FILTER(?continent_f = \"North America\")\n}\nORDER BY DESC(?immigrantpercentage_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which country in North America had the most immigrants?",
+      "ambig_type": "vague",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?countryname WHERE {\n  ?c a :Countries .\n  ?immigrationstats a :ImmigrationStats .\n  ?immigrationstats p:hasCountry ?c .\n  ?c p:countryName ?countryname .\n  ?c p:continent ?continent_f .\n  ?immigrationstats p:numberOfImmigrants ?numberofimmigrants_o .\n  FILTER(?continent_f = \"North America\")\n}\nORDER BY DESC(?numberofimmigrants_o)\nLIMIT 1 }\n  component_2: { SELECT ?countryname WHERE {\n  ?c a :Countries .\n  ?immigrationstats a :ImmigrationStats .\n  ?immigrationstats p:hasCountry ?c .\n  ?c p:countryName ?countryname .\n  ?c p:continent ?continent_f .\n  ?immigrationstats p:immigrantPercentage ?immigrantpercentage_o .\n  FILTER(?continent_f = \"North America\")\n}\nORDER BY DESC(?immigrantpercentage_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_periodicals",
+  "schema": "amb_attachment_1tab_ref_periodicals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show newspapers and magazines that circulate 20,000 copies.",
+      "qtype": "ambig",
+      "sql": "SELECT Publications.name \nFROM PublicationsPeriodicals JOIN Publications ON PublicationsPeriodicals.publication_id = Publications.id\nWHERE (PublicationsPeriodicals.periodical_type = \"Newspaper\" OR PublicationsPeriodicals.periodical_type = \"Magazine\") AND Publications.circulation_numbers = 20000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?publicationsperiodicals a :PublicationsPeriodicals .\n  ?publications a :Publications .\n  ?publicationsperiodicals p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w2 .\n  ?publications p:circulation_numbers ?circulation_numbers_w .\n  FILTER((((STR(?periodical_type_w) = \"Newspaper\" || STR(?periodical_type_w2) = \"Magazine\")) && (STR(?circulation_numbers_w) = \"20000\" || STR(?circulation_numbers_w) = \"20000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show newspapers and magazines that circulate 20,000 copies.",
+      "qtype": "ambig",
+      "sql": "SELECT Publications.name \nFROM PublicationsPeriodicals JOIN Publications ON PublicationsPeriodicals.publication_id = Publications.id\nWHERE PublicationsPeriodicals.periodical_type = \"Newspaper\" OR PublicationsPeriodicals.periodical_type = \"Magazine\" AND Publications.circulation_numbers = 20000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?publicationsperiodicals a :PublicationsPeriodicals .\n  ?publications a :Publications .\n  ?publicationsperiodicals p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w2 .\n  ?publications p:circulation_numbers ?circulation_numbers_w .\n  FILTER((STR(?periodical_type_w) = \"Newspaper\" || (STR(?periodical_type_w2) = \"Magazine\" && (STR(?circulation_numbers_w) = \"20000\" || STR(?circulation_numbers_w) = \"20000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show newspapers and magazines that circulate 20,000 copies.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?publicationsperiodicals a :PublicationsPeriodicals .\n  ?publications a :Publications .\n  ?publicationsperiodicals p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w2 .\n  ?publications p:circulation_numbers ?circulation_numbers_w .\n  FILTER((STR(?periodical_type_w) = \"Newspaper\" || (STR(?periodical_type_w2) = \"Magazine\" && (STR(?circulation_numbers_w) = \"20000\" || STR(?circulation_numbers_w) = \"20000.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?publicationsperiodicals a :PublicationsPeriodicals .\n  ?publications a :Publications .\n  ?publicationsperiodicals p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w .\n  ?publicationsperiodicals p:periodical_type ?periodical_type_w2 .\n  ?publications p:circulation_numbers ?circulation_numbers_w .\n  FILTER((((STR(?periodical_type_w) = \"Newspaper\" || STR(?periodical_type_w2) = \"Magazine\")) && (STR(?circulation_numbers_w) = \"20000\" || STR(?circulation_numbers_w) = \"20000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

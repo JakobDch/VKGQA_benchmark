@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_val_capital_market_participants",
+  "schema": "amb_attachment_2tab_val_capital_market_participants",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all stockbrokers and mutual funds with 1% fees.",
+      "qtype": "ambig",
+      "sql": "SELECT Stockbrokers.name\nFROM Stockbrokers\nWHERE Stockbrokers.fees = \"1%\"\nUNION\nSELECT Mutual_funds.fund_name as name\nFROM Mutual_funds\nWHERE Mutual_funds.fees = \"1%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stockbrokers a :Stockbrokers .\n    ?stockbrokers p:name ?name .\n    ?stockbrokers p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mutual_funds a :Mutual_funds .\n    ?mutual_funds p:fund_name ?fund_name .\n    ?mutual_funds p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?fund_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all stockbrokers and mutual funds with 1% fees.",
+      "qtype": "ambig",
+      "sql": "SELECT Stockbrokers.name\nFROM Stockbrokers\nUNION\nSELECT Mutual_funds.fund_name as name\nFROM Mutual_funds\nWHERE Mutual_funds.fees = \"1%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stockbrokers a :Stockbrokers .\n    ?stockbrokers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mutual_funds a :Mutual_funds .\n    ?mutual_funds p:fund_name ?fund_name .\n    ?mutual_funds p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?fund_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all stockbrokers and mutual funds with 1% fees.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stockbrokers a :Stockbrokers .\n    ?stockbrokers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mutual_funds a :Mutual_funds .\n    ?mutual_funds p:fund_name ?fund_name .\n    ?mutual_funds p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?fund_name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stockbrokers a :Stockbrokers .\n    ?stockbrokers p:name ?name .\n    ?stockbrokers p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mutual_funds a :Mutual_funds .\n    ?mutual_funds p:fund_name ?fund_name .\n    ?mutual_funds p:fees ?fees_f .\n    FILTER(STR(?fees_f) = \"1%\")\n    BIND(?fund_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

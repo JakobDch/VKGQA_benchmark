@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_music_band",
+  "schema": "amb_attachment_1tab_val_music_band",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What jazz bands were founded in 1985 and what rock bands were founded in the same year?",
+      "qtype": "unambig",
+      "sql": "SELECT Music_Bands.Name \nFROM Music_Bands\nWHERE (Music_Bands.Genre = \"Jazz\" OR Music_Bands.Genre = \"Rock\") AND Music_Bands.Founding_Year = 1985",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?music_bands a :Music_Bands .\n  ?music_bands p:name ?name .\n  ?music_bands p:Genre ?genre_w .\n  ?music_bands p:Genre ?genre_w2 .\n  ?music_bands p:Founding_Year ?founding_year_w .\n  FILTER((((STR(?genre_w) = \"Jazz\" || STR(?genre_w2) = \"Rock\")) && (STR(?founding_year_w) = \"1985\" || STR(?founding_year_w) = \"1985.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all jazz bands and also list rock bands that were founded in 1985.",
+      "qtype": "unambig",
+      "sql": "SELECT Music_Bands.Name \nFROM Music_Bands\nWHERE Music_Bands.Genre = \"Jazz\" OR Music_Bands.Genre = \"Rock\" AND Music_Bands.Founding_Year = 1985",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?music_bands a :Music_Bands .\n  ?music_bands p:name ?name .\n  ?music_bands p:Genre ?genre_w .\n  ?music_bands p:Genre ?genre_w2 .\n  ?music_bands p:Founding_Year ?founding_year_w .\n  FILTER((STR(?genre_w) = \"Jazz\" || (STR(?genre_w2) = \"Rock\" && (STR(?founding_year_w) = \"1985\" || STR(?founding_year_w) = \"1985.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show jazz bands and rock bands founded in 1985.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?music_bands a :Music_Bands .\n  ?music_bands p:name ?name .\n  ?music_bands p:Genre ?genre_w .\n  ?music_bands p:Genre ?genre_w2 .\n  ?music_bands p:Founding_Year ?founding_year_w .\n  FILTER((((STR(?genre_w) = \"Jazz\" || STR(?genre_w2) = \"Rock\")) && (STR(?founding_year_w) = \"1985\" || STR(?founding_year_w) = \"1985.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?music_bands a :Music_Bands .\n  ?music_bands p:name ?name .\n  ?music_bands p:Genre ?genre_w .\n  ?music_bands p:Genre ?genre_w2 .\n  ?music_bands p:Founding_Year ?founding_year_w .\n  FILTER((STR(?genre_w) = \"Jazz\" || (STR(?genre_w2) = \"Rock\" && (STR(?founding_year_w) = \"1985\" || STR(?founding_year_w) = \"1985.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

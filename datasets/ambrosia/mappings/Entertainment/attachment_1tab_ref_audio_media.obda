@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Audio_Media_base
+target		ex:Audio_Media/{MediaID} a :Audio_Media ; p:MediaID {MediaID} ; p:Title {Title} ; p:Category {Category} ; p:ReleaseDate {ReleaseDate} ; p:Creator {Creator} .
+source		SELECT `MediaID`, `Title`, `Category`, `ReleaseDate`, `Creator` FROM `Audio_Media`
+
+mappingId	Episode_Details_base
+target		ex:Episode_Details/{EpisodeID} a :Episode_Details ; p:EpisodeID {EpisodeID} ; p:AudioMediaID {AudioMediaID} ; p:Title {Title} ; p:Length {Length} .
+source		SELECT `EpisodeID`, `AudioMediaID`, `Title`, `Length` FROM `Episode_Details`
+
+mappingId	Episode_Details_AudioMediaID_fk
+target		ex:Episode_Details/{EpisodeID} p:hasAudio_Media ex:Audio_Media/{AudioMediaID} .
+source		SELECT `EpisodeID`, `AudioMediaID` FROM `Episode_Details` WHERE `AudioMediaID` IS NOT NULL
+
+mappingId	Podcast_Category_base
+target		ex:Podcast_Category/{CategoryID} a :Podcast_Category ; p:CategoryID {CategoryID} ; p:name {Name} .
+source		SELECT `CategoryID`, `Name` FROM `Podcast_Category`
+
+mappingId	RadioShow_Category_base
+target		ex:RadioShow_Category/{CategoryID} a :RadioShow_Category ; p:CategoryID {CategoryID} ; p:name {Name} .
+source		SELECT `CategoryID`, `Name` FROM `RadioShow_Category`
+
+mappingId	Other_Category_base
+target		ex:Other_Category/{CategoryID} a :Other_Category ; p:CategoryID {CategoryID} ; p:name {Name} .
+source		SELECT `CategoryID`, `Name` FROM `Other_Category`
+
+]]

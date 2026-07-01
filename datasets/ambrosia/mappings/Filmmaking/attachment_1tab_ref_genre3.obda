@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:genre {genre} .
+source		SELECT `id`, `genre` FROM `Genres`
+
+mappingId	Films_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:director {director} ; p:budget {budget} .
+source		SELECT `id`, `title`, `release_date`, `director`, `budget` FROM `Films`
+
+mappingId	Directors_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:name {name} ; p:birth_year {birth_year} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birth_year`, `nationality` FROM `Directors`
+
+mappingId	Film_Director_base
+target		ex:Film_Director/{film_id}/{director_id} a :Film_Director ; p:film_id {film_id} ; p:director_id {director_id} .
+source		SELECT `film_id`, `director_id` FROM `Film_Director`
+
+mappingId	Film_Director_director_id_fk
+target		ex:Film_Director/{film_id}/{director_id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `film_id`, `director_id` FROM `Film_Director` WHERE `director_id` IS NOT NULL
+
+mappingId	Film_Director_film_id_fk
+target		ex:Film_Director/{film_id}/{director_id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `film_id`, `director_id` FROM `Film_Director` WHERE `film_id` IS NOT NULL
+
+mappingId	Film_Genre_base
+target		ex:Film_Genre/{film_id}/{genre_id} a :Film_Genre ; p:film_id {film_id} ; p:genre_id {genre_id} .
+source		SELECT `film_id`, `genre_id` FROM `Film_Genre`
+
+mappingId	Film_Genre_genre_id_fk
+target		ex:Film_Genre/{film_id}/{genre_id} p:hasGenres ex:Genres/{genre_id} .
+source		SELECT `film_id`, `genre_id` FROM `Film_Genre` WHERE `genre_id` IS NOT NULL
+
+mappingId	Film_Genre_film_id_fk
+target		ex:Film_Genre/{film_id}/{genre_id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `film_id`, `genre_id` FROM `Film_Genre` WHERE `film_id` IS NOT NULL
+
+]]

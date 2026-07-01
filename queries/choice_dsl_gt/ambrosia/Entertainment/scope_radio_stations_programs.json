@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_radio_stations_programs",
+  "schema": "amb_scope_radio_stations_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each radio station, list the programs they broadcast.",
+      "qtype": "unambig",
+      "sql": "select radio_stations.station_name , programs.program_type_name from Radio_Stations_Programs join Programs on Radio_Stations_Programs.program_type_id = Programs.program_type_id join Radio_Stations on Radio_Stations_Programs.radio_station_id = Radio_Stations.station_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?station_name ?program_type_name WHERE {\n  ?radio_stations_programs a :Radio_Stations_Programs .\n  ?programs a :Programs .\n  ?radio_stations_programs p:hasPrograms ?programs .\n  ?radio_stations a :Radio_Stations .\n  ?radio_stations_programs p:hasRadio_Stations ?radio_stations .\n  ?radio_stations p:station_name ?station_name .\n  ?programs p:program_type_name ?program_type_name .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the programs every radio station broadcasts.",
+      "qtype": "ambig",
+      "sql": "SELECT Programs.program_type_name  from Radio_Stations_Programs join Programs on Radio_Stations_Programs.program_type_id = Programs.program_type_id join Radio_Stations on Radio_Stations_Programs.radio_station_id = Radio_Stations.station_id   GROUP BY Radio_Stations_Programs.program_type_id HAVING COUNT(DISTINCT Radio_Stations_Programs.radio_station_id) = (SELECT COUNT(*) FROM  Radio_Stations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_type_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:program_type_id ?cg . ?child a :Programs ; p:program_type_id ?cg . ?l p:radio_station_id ?pg . ?parent a :Radio_Stations ; p:station_id ?pg . } GROUP BY ?child }\n  ?child p:program_type_name ?program_type_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Radio_Stations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the programs every radio station broadcasts.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?station_name ?program_type_name WHERE {\n  ?radio_stations_programs a :Radio_Stations_Programs .\n  ?programs a :Programs .\n  ?radio_stations_programs p:hasPrograms ?programs .\n  ?radio_stations a :Radio_Stations .\n  ?radio_stations_programs p:hasRadio_Stations ?radio_stations .\n  ?radio_stations p:station_name ?station_name .\n  ?programs p:program_type_name ?program_type_name .\n} }\n  collective: { SELECT ?program_type_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:program_type_id ?cg . ?child a :Programs ; p:program_type_id ?cg . ?l p:radio_station_id ?pg . ?parent a :Radio_Stations ; p:station_id ?pg . } GROUP BY ?child }\n  ?child p:program_type_name ?program_type_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Radio_Stations } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

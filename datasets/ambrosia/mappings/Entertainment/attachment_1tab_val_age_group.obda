@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Author_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Author`
+
+mappingId	Publisher_base
+target		ex:Publisher/{id} a :Publisher ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Publisher`
+
+mappingId	Genre_base
+target		ex:Genre/{id} a :Genre ; p:id {id} ; p:genre_name {genre_name} .
+source		SELECT `id`, `genre_name` FROM `Genre`
+
+mappingId	Character_base
+target		ex:Character/{id} a :Character ; p:id {id} ; p:character_name {character_name} .
+source		SELECT `id`, `character_name` FROM `Character`
+
+mappingId	Book_base
+target		ex:Book/{id} a :Book ; p:id {id} ; p:title {title} ; p:age_group {age_group} ; p:illustrator {illustrator} ; p:author_id {author_id} ; p:publisher_id {publisher_id} ; p:genre_id {genre_id} ; p:main_character_id {main_character_id} .
+source		SELECT `id`, `title`, `age_group`, `illustrator`, `author_id`, `publisher_id`, `genre_id`, `main_character_id` FROM `Book`
+
+mappingId	Book_main_character_id_fk
+target		ex:Book/{id} p:hasCharacter ex:Character/{main_character_id} .
+source		SELECT `id`, `main_character_id` FROM `Book` WHERE `main_character_id` IS NOT NULL
+
+mappingId	Book_genre_id_fk
+target		ex:Book/{id} p:hasGenre ex:Genre/{genre_id} .
+source		SELECT `id`, `genre_id` FROM `Book` WHERE `genre_id` IS NOT NULL
+
+mappingId	Book_publisher_id_fk
+target		ex:Book/{id} p:hasPublisher ex:Publisher/{publisher_id} .
+source		SELECT `id`, `publisher_id` FROM `Book` WHERE `publisher_id` IS NOT NULL
+
+mappingId	Book_author_id_fk
+target		ex:Book/{id} p:hasAuthor ex:Author/{author_id} .
+source		SELECT `id`, `author_id` FROM `Book` WHERE `author_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_entertainment_hub",
+  "schema": "amb_attachment_2tab_val_entertainment_hub",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide cocktail lounges and sports bars that are open from 5pm to 2am.",
+      "qtype": "ambig",
+      "sql": "SELECT cocktail_lounges.name\nFROM cocktail_lounges\nWHERE cocktail_lounges.hours = \"Open from 5 PM to 2 AM\"\nUNION\nSELECT sports_bars.name\nFROM sports_bars\nWHERE sports_bars.hours = \"Open from 5 PM to 2 AM\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cocktail_lounges a :cocktail_lounges .\n    ?cocktail_lounges p:name ?name .\n    ?cocktail_lounges p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?sports_bars a :sports_bars .\n    ?sports_bars p:name ?name .\n    ?sports_bars p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide cocktail lounges and sports bars that are open from 5pm to 2am.",
+      "qtype": "ambig",
+      "sql": "SELECT cocktail_lounges.name\nFROM cocktail_lounges\nUNION\nSELECT sports_bars.name\nFROM sports_bars\nWHERE sports_bars.hours = \"Open from 5 PM to 2 AM\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cocktail_lounges a :cocktail_lounges .\n    ?cocktail_lounges p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?sports_bars a :sports_bars .\n    ?sports_bars p:name ?name .\n    ?sports_bars p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide cocktail lounges and sports bars that are open from 5pm to 2am.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cocktail_lounges a :cocktail_lounges .\n    ?cocktail_lounges p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?sports_bars a :sports_bars .\n    ?sports_bars p:name ?name .\n    ?sports_bars p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cocktail_lounges a :cocktail_lounges .\n    ?cocktail_lounges p:name ?name .\n    ?cocktail_lounges p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?sports_bars a :sports_bars .\n    ?sports_bars p:name ?name .\n    ?sports_bars p:hours ?hours_f .\n    FILTER(STR(?hours_f) = \"Open from 5 PM to 2 AM\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

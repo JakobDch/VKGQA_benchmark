@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_racquet_sports",
+  "schema": "amb_attachment_1tab_val_racquet_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all the competitions sponsored by Nike in both tennis and golf.",
+      "qtype": "unambig",
+      "sql": "SELECT RacquetsAndTournaments.EventName \nFROM RacquetsAndTournaments \nWHERE (RacquetsAndTournaments.EventType = 'Tennis Tournament' OR RacquetsAndTournaments.EventType = 'Golf Tournament') AND RacquetsAndTournaments.sponsor = 'Nike'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?eventname WHERE {\n  ?racquetsandtournaments a :RacquetsAndTournaments .\n  ?racquetsandtournaments p:EventName ?eventname .\n  ?racquetsandtournaments p:EventType ?eventtype_w .\n  ?racquetsandtournaments p:EventType ?eventtype_w2 .\n  ?racquetsandtournaments p:Sponsor ?sponsor_w .\n  FILTER((((STR(?eventtype_w) = \"Tennis Tournament\" || STR(?eventtype_w2) = \"Golf Tournament\")) && STR(?sponsor_w) = \"Nike\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all tennis tournaments and golf tournaments sponsored by Nike.",
+      "qtype": "ambig",
+      "sql": "SELECT RacquetsAndTournaments.EventName \nFROM RacquetsAndTournaments \nWHERE RacquetsAndTournaments.EventType = 'Tennis Tournament' OR RacquetsAndTournaments.EventType = 'Golf Tournament' AND RacquetsAndTournaments.sponsor = 'Nike'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?eventname WHERE {\n  ?racquetsandtournaments a :RacquetsAndTournaments .\n  ?racquetsandtournaments p:EventName ?eventname .\n  ?racquetsandtournaments p:EventType ?eventtype_w .\n  ?racquetsandtournaments p:EventType ?eventtype_w2 .\n  ?racquetsandtournaments p:Sponsor ?sponsor_w .\n  FILTER((STR(?eventtype_w) = \"Tennis Tournament\" || (STR(?eventtype_w2) = \"Golf Tournament\" && STR(?sponsor_w) = \"Nike\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all tennis tournaments and golf tournaments sponsored by Nike.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?eventname WHERE {\n  ?racquetsandtournaments a :RacquetsAndTournaments .\n  ?racquetsandtournaments p:EventName ?eventname .\n  ?racquetsandtournaments p:EventType ?eventtype_w .\n  ?racquetsandtournaments p:EventType ?eventtype_w2 .\n  ?racquetsandtournaments p:Sponsor ?sponsor_w .\n  FILTER((((STR(?eventtype_w) = \"Tennis Tournament\" || STR(?eventtype_w2) = \"Golf Tournament\")) && STR(?sponsor_w) = \"Nike\"))\n} }\n  low: { SELECT ?eventname WHERE {\n  ?racquetsandtournaments a :RacquetsAndTournaments .\n  ?racquetsandtournaments p:EventName ?eventname .\n  ?racquetsandtournaments p:EventType ?eventtype_w .\n  ?racquetsandtournaments p:EventType ?eventtype_w2 .\n  ?racquetsandtournaments p:Sponsor ?sponsor_w .\n  FILTER((STR(?eventtype_w) = \"Tennis Tournament\" || (STR(?eventtype_w2) = \"Golf Tournament\" && STR(?sponsor_w) = \"Nike\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employers_base
+target		ex:Employers/{id} a :Employers ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Employers`
+
+mappingId	Benefits_base
+target		ex:Benefits/{id} a :Benefits ; p:id {id} ; p:benefit_name {benefit_name} ; p:description {description} .
+source		SELECT `id`, `benefit_name`, `description` FROM `Benefits`
+
+mappingId	Employers_Benefits_base
+target		ex:Employers_Benefits/{employer_id}/{benefit_id} a :Employers_Benefits ; p:employer_id {employer_id} ; p:benefit_id {benefit_id} .
+source		SELECT `employer_id`, `benefit_id` FROM `Employers_Benefits`
+
+mappingId	Employers_Benefits_benefit_id_fk
+target		ex:Employers_Benefits/{employer_id}/{benefit_id} p:hasBenefits ex:Benefits/{benefit_id} .
+source		SELECT `employer_id`, `benefit_id` FROM `Employers_Benefits` WHERE `benefit_id` IS NOT NULL
+
+mappingId	Employers_Benefits_employer_id_fk
+target		ex:Employers_Benefits/{employer_id}/{benefit_id} p:hasEmployers ex:Employers/{employer_id} .
+source		SELECT `employer_id`, `benefit_id` FROM `Employers_Benefits` WHERE `employer_id` IS NOT NULL
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:location {location} ; p:salary {salary} ; p:posting_date {posting_date} .
+source		SELECT `id`, `title`, `description`, `location`, `salary`, `posting_date` FROM `JobPostings`
+
+mappingId	Applicants_base
+target		ex:Applicants/{id} a :Applicants ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} ; p:resume {resume} .
+source		SELECT `id`, `first_name`, `last_name`, `email`, `phone_number`, `resume` FROM `Applicants`
+
+mappingId	ApplicationStatuses_base
+target		ex:ApplicationStatuses/{_amb_rowid} a :ApplicationStatuses ; p:application_id {application_id} ; p:status {status} ; p:interview_date {interview_date} ; p:feedback {feedback} .
+source		SELECT `_amb_rowid`, `application_id`, `status`, `interview_date`, `feedback` FROM `ApplicationStatuses`
+
+mappingId	ApplicationStatuses_application_id_fk
+target		ex:ApplicationStatuses/{_amb_rowid} p:hasApplicants ex:Applicants/{application_id} .
+source		SELECT `_amb_rowid`, `application_id` FROM `ApplicationStatuses` WHERE `application_id` IS NOT NULL
+
+]]

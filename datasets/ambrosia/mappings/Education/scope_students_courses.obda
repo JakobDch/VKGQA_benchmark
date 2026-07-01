@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:name {FullName} .
+source		SELECT `StudentID`, `FullName` FROM `Students`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:CourseName {CourseName} ; p:TeacherName {TeacherName} .
+source		SELECT `CourseID`, `CourseName`, `TeacherName` FROM `Courses`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Grade {Grade} .
+source		SELECT `_amb_rowid`, `StudentID`, `CourseID`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `_amb_rowid`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+]]

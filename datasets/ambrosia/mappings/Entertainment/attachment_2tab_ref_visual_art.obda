@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Artist_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:name {Name} .
+source		SELECT `ArtistID`, `Name` FROM `Artist`
+
+mappingId	Painting_base
+target		ex:Painting/{PaintingID} a :Painting ; p:PaintingID {PaintingID} ; p:Title {Title} ; p:Year {Year} ; p:Description {Description} ; p:GalleryId {GalleryId} .
+source		SELECT `PaintingID`, `Title`, `Year`, `Description`, `GalleryId` FROM `Painting`
+
+mappingId	Painting_GalleryId_fk
+target		ex:Painting/{PaintingID} p:hasGallery ex:Gallery/{GalleryId} .
+source		SELECT `PaintingID`, `GalleryId` FROM `Painting` WHERE `GalleryId` IS NOT NULL
+
+mappingId	Photography_base
+target		ex:Photography/{PhotoId} a :Photography ; p:PhotoId {PhotoId} ; p:Title {Title} ; p:Year {Year} ; p:Description {Description} ; p:GalleryId {GalleryId} .
+source		SELECT `PhotoId`, `Title`, `Year`, `Description`, `GalleryId` FROM `Photography`
+
+mappingId	Photography_GalleryId_fk
+target		ex:Photography/{PhotoId} p:hasGallery ex:Gallery/{GalleryId} .
+source		SELECT `PhotoId`, `GalleryId` FROM `Photography` WHERE `GalleryId` IS NOT NULL
+
+mappingId	Exhibition_base
+target		ex:Exhibition/{ExhibitionId} a :Exhibition ; p:ExhibitionId {ExhibitionId} ; p:name {Name} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `ExhibitionId`, `Name`, `StartDate`, `EndDate` FROM `Exhibition`
+
+mappingId	PainterOfPaintings_base
+target		ex:PainterOfPaintings/{_amb_rowid} a :PainterOfPaintings ; p:ArtistId {ArtistId} ; p:PaintingId {PaintingId} .
+source		SELECT `_amb_rowid`, `ArtistId`, `PaintingId` FROM `PainterOfPaintings`
+
+mappingId	PainterOfPaintings_PaintingId_fk
+target		ex:PainterOfPaintings/{_amb_rowid} p:hasPainting ex:Painting/{PaintingId} .
+source		SELECT `_amb_rowid`, `PaintingId` FROM `PainterOfPaintings` WHERE `PaintingId` IS NOT NULL
+
+mappingId	PainterOfPaintings_ArtistId_fk
+target		ex:PainterOfPaintings/{_amb_rowid} p:hasArtist ex:Artist/{ArtistId} .
+source		SELECT `_amb_rowid`, `ArtistId` FROM `PainterOfPaintings` WHERE `ArtistId` IS NOT NULL
+
+mappingId	PhotographerOfPhotos_base
+target		ex:PhotographerOfPhotos/{_amb_rowid} a :PhotographerOfPhotos ; p:ArtistId {ArtistId} ; p:PhotoId {PhotoId} .
+source		SELECT `_amb_rowid`, `ArtistId`, `PhotoId` FROM `PhotographerOfPhotos`
+
+mappingId	PhotographerOfPhotos_PhotoId_fk
+target		ex:PhotographerOfPhotos/{_amb_rowid} p:hasPhotography ex:Photography/{PhotoId} .
+source		SELECT `_amb_rowid`, `PhotoId` FROM `PhotographerOfPhotos` WHERE `PhotoId` IS NOT NULL
+
+mappingId	PhotographerOfPhotos_ArtistId_fk
+target		ex:PhotographerOfPhotos/{_amb_rowid} p:hasArtist ex:Artist/{ArtistId} .
+source		SELECT `_amb_rowid`, `ArtistId` FROM `PhotographerOfPhotos` WHERE `ArtistId` IS NOT NULL
+
+mappingId	Gallery_base
+target		ex:Gallery/{GalleryId} a :Gallery ; p:GalleryId {GalleryId} ; p:name {Name} .
+source		SELECT `GalleryId`, `Name` FROM `Gallery`
+
+]]

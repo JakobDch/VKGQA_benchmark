@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_ref_board_member",
+  "schema": "amb_attachment_1tab_ref_board_member",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For Global Corp, show both the independent director and executive manager personnel.",
+      "qtype": "unambig",
+      "sql": "SELECT Board_Members.MemberName \nFROM Board_Members JOIN Organizations ON Board_Members.OrganizationID = Organizations.ID\nWHERE (Board_Members.Role = \"Independent Director\" OR Board_Members.Role = \"Executive Manager\") AND Organizations.Name = \"Global Corp\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?membername WHERE {\n  ?board_members a :Board_Members .\n  ?organizations a :Organizations .\n  ?board_members p:hasOrganizations ?organizations .\n  ?board_members p:MemberName ?membername .\n  ?board_members p:Role ?role_w .\n  ?board_members p:Role ?role_w2 .\n  ?organizations p:name ?name_w .\n  FILTER((((STR(?role_w) = \"Independent Director\" || STR(?role_w2) = \"Executive Manager\")) && STR(?name_w) = \"Global Corp\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the people in independent director roles, also show the executive manager(s) of Global Corp.",
+      "qtype": "unambig",
+      "sql": "SELECT Board_Members.MemberName \nFROM Board_Members JOIN Organizations ON Board_Members.OrganizationID = Organizations.ID\nWHERE Board_Members.Role = \"Independent Director\" OR Board_Members.Role = \"Executive Manager\" AND Organizations.Name = \"Global Corp\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?membername WHERE {\n  ?board_members a :Board_Members .\n  ?organizations a :Organizations .\n  ?board_members p:hasOrganizations ?organizations .\n  ?board_members p:MemberName ?membername .\n  ?board_members p:Role ?role_w .\n  ?board_members p:Role ?role_w2 .\n  ?organizations p:name ?name_w .\n  FILTER((STR(?role_w) = \"Independent Director\" || (STR(?role_w2) = \"Executive Manager\" && STR(?name_w) = \"Global Corp\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide the independent directors and executive managers of Global Corp.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?membername WHERE {\n  ?board_members a :Board_Members .\n  ?organizations a :Organizations .\n  ?board_members p:hasOrganizations ?organizations .\n  ?board_members p:MemberName ?membername .\n  ?board_members p:Role ?role_w .\n  ?board_members p:Role ?role_w2 .\n  ?organizations p:name ?name_w .\n  FILTER((((STR(?role_w) = \"Independent Director\" || STR(?role_w2) = \"Executive Manager\")) && STR(?name_w) = \"Global Corp\"))\n} }\n  low: { SELECT ?membername WHERE {\n  ?board_members a :Board_Members .\n  ?organizations a :Organizations .\n  ?board_members p:hasOrganizations ?organizations .\n  ?board_members p:MemberName ?membername .\n  ?board_members p:Role ?role_w .\n  ?board_members p:Role ?role_w2 .\n  ?organizations p:name ?name_w .\n  FILTER((STR(?role_w) = \"Independent Director\" || (STR(?role_w2) = \"Executive Manager\" && STR(?name_w) = \"Global Corp\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_grades_0_Students_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StudentID\", \"fullname\" FROM \"Students\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{StudentID}" ; rr:class :Students ] ;
+  rr:predicateObjectMap [ rr:predicate p:StudentID ; rr:objectMap [ rr:column "StudentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "fullname" ] ] .
+
+<#tm_vague_2cols_grades_1_Programs_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProgramID\", \"Name\" FROM \"Programs\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Programs/{ProgramID}" ; rr:class :Programs ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProgramID ; rr:objectMap [ rr:column "ProgramID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_vague_2cols_grades_2_Enrollments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"StudentID\", \"ProgramID\" FROM \"Enrollments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ; rr:class :Enrollments ] ;
+  rr:predicateObjectMap [ rr:predicate p:EnrollmentID ; rr:objectMap [ rr:column "EnrollmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StudentID ; rr:objectMap [ rr:column "StudentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProgramID ; rr:objectMap [ rr:column "ProgramID" ] ] .
+
+<#tm_vague_2cols_grades_3_Enrollments_ProgramID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"ProgramID\" FROM \"Enrollments\" WHERE \"ProgramID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPrograms ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Programs/{ProgramID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_grades_4_Enrollments_StudentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"StudentID\" FROM \"Enrollments\" WHERE \"StudentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStudents ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{StudentID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_grades_5_Grades_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"GradeID\", \"EnrollmentID\", \"Gpa\", \"Standardized_Test_Score\", \"CourseName\" FROM \"Grades\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Grades/{GradeID}" ; rr:class :Grades ] ;
+  rr:predicateObjectMap [ rr:predicate p:GradeID ; rr:objectMap [ rr:column "GradeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EnrollmentID ; rr:objectMap [ rr:column "EnrollmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Gpa ; rr:objectMap [ rr:column "Gpa" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Standardized_Test_Score ; rr:objectMap [ rr:column "Standardized_Test_Score" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CourseName ; rr:objectMap [ rr:column "CourseName" ] ] .
+
+<#tm_vague_2cols_grades_6_Grades_EnrollmentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"GradeID\", \"EnrollmentID\" FROM \"Grades\" WHERE \"EnrollmentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Grades/{GradeID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEnrollments ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ; rr:termType rr:IRI ] ] .
+

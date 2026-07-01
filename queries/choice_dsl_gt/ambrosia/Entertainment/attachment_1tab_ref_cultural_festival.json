@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_cultural_festival",
+  "schema": "amb_attachment_1tab_ref_cultural_festival",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show music festivals and film festivals with 60000 attendees.",
+      "qtype": "ambig",
+      "sql": "SELECT Festivals.Name \nFROM Festivals JOIN Events ON Festivals.id = Events.FestivalID\nWHERE (Festivals.Cultural_Festival = \"Music Festival\" OR Festivals.Cultural_Festival = \"Film Festival\") AND Events.Attendance = 60000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?festivals a :Festivals .\n  ?events a :Events .\n  ?events p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?festivals p:Cultural_Festival ?cultural_festival_w .\n  ?festivals p:Cultural_Festival ?cultural_festival_w2 .\n  ?events p:Attendance ?attendance_w .\n  FILTER((((STR(?cultural_festival_w) = \"Music Festival\" || STR(?cultural_festival_w2) = \"Film Festival\")) && (STR(?attendance_w) = \"60000\" || STR(?attendance_w) = \"60000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show music festivals and film festivals with 60000 attendees.",
+      "qtype": "ambig",
+      "sql": "SELECT Festivals.Name \nFROM Festivals JOIN Events ON Festivals.id = Events.FestivalID\nWHERE Festivals.Cultural_Festival = \"Music Festival\" OR Festivals.Cultural_Festival = \"Film Festival\" AND Events.Attendance = 60000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?festivals a :Festivals .\n  ?events a :Events .\n  ?events p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?festivals p:Cultural_Festival ?cultural_festival_w .\n  ?festivals p:Cultural_Festival ?cultural_festival_w2 .\n  ?events p:Attendance ?attendance_w .\n  FILTER((STR(?cultural_festival_w) = \"Music Festival\" || (STR(?cultural_festival_w2) = \"Film Festival\" && (STR(?attendance_w) = \"60000\" || STR(?attendance_w) = \"60000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show music festivals and film festivals with 60000 attendees.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?festivals a :Festivals .\n  ?events a :Events .\n  ?events p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?festivals p:Cultural_Festival ?cultural_festival_w .\n  ?festivals p:Cultural_Festival ?cultural_festival_w2 .\n  ?events p:Attendance ?attendance_w .\n  FILTER((STR(?cultural_festival_w) = \"Music Festival\" || (STR(?cultural_festival_w2) = \"Film Festival\" && (STR(?attendance_w) = \"60000\" || STR(?attendance_w) = \"60000.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?festivals a :Festivals .\n  ?events a :Events .\n  ?events p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?festivals p:Cultural_Festival ?cultural_festival_w .\n  ?festivals p:Cultural_Festival ?cultural_festival_w2 .\n  ?events p:Attendance ?attendance_w .\n  FILTER((((STR(?cultural_festival_w) = \"Music Festival\" || STR(?cultural_festival_w2) = \"Film Festival\")) && (STR(?attendance_w) = \"60000\" || STR(?attendance_w) = \"60000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

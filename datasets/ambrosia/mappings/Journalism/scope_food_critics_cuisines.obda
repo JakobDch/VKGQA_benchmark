@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cuisines_base
+target		ex:Cuisines/{id} a :Cuisines ; p:id {id} ; p:cuisine_name {cuisine_name} .
+source		SELECT `id`, `cuisine_name` FROM `Cuisines`
+
+mappingId	Food_Critics_base
+target		ex:Food_Critics/{id} a :Food_Critics ; p:id {id} ; p:critic_name {critic_name} ; p:contact_email {contact_email} .
+source		SELECT `id`, `critic_name`, `contact_email` FROM `Food_Critics`
+
+mappingId	Food_Critics_Cuisines_base
+target		ex:Food_Critics_Cuisines/{_amb_rowid} a :Food_Critics_Cuisines ; p:food_critic_id {food_critic_id} ; p:cuisine_id {cuisine_id} .
+source		SELECT `_amb_rowid`, `food_critic_id`, `cuisine_id` FROM `Food_Critics_Cuisines`
+
+mappingId	Food_Critics_Cuisines_cuisine_id_fk
+target		ex:Food_Critics_Cuisines/{_amb_rowid} p:hasCuisines ex:Cuisines/{cuisine_id} .
+source		SELECT `_amb_rowid`, `cuisine_id` FROM `Food_Critics_Cuisines` WHERE `cuisine_id` IS NOT NULL
+
+mappingId	Food_Critics_Cuisines_food_critic_id_fk
+target		ex:Food_Critics_Cuisines/{_amb_rowid} p:hasFood_Critics ex:Food_Critics/{food_critic_id} .
+source		SELECT `_amb_rowid`, `food_critic_id` FROM `Food_Critics_Cuisines` WHERE `food_critic_id` IS NOT NULL
+
+]]

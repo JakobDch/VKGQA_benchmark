@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_insurance_product",
+  "schema": "amb_attachment_1tab_val_insurance_product",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the start dates of life insurance products that have a payout of 50,000 and what are the start dates of annuity products that have the same payout?",
+      "qtype": "unambig",
+      "sql": "SELECT Insurance_Products.StartDate \nFROM Insurance_Products\nWHERE (Insurance_Products.ProductType = \"Life Insurance\" OR Insurance_Products.ProductType = \"Annuity\") AND Insurance_Products.Payout = 50000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?startdate WHERE {\n  ?insurance_products a :Insurance_Products .\n  ?insurance_products p:StartDate ?startdate .\n  ?insurance_products p:ProductType ?producttype_w .\n  ?insurance_products p:ProductType ?producttype_w2 .\n  ?insurance_products p:Payout ?payout_w .\n  FILTER((((STR(?producttype_w) = \"Life Insurance\" || STR(?producttype_w2) = \"Annuity\")) && (STR(?payout_w) = \"50000\" || STR(?payout_w) = \"50000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all start dates of life insurance products combined with the start dates of annuity products with a payout of 50,000.",
+      "qtype": "unambig",
+      "sql": "SELECT Insurance_Products.StartDate \nFROM Insurance_Products\nWHERE Insurance_Products.ProductType = \"Life Insurance\" OR Insurance_Products.ProductType = \"Annuity\" AND Insurance_Products.Payout = 50000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?startdate WHERE {\n  ?insurance_products a :Insurance_Products .\n  ?insurance_products p:StartDate ?startdate .\n  ?insurance_products p:ProductType ?producttype_w .\n  ?insurance_products p:ProductType ?producttype_w2 .\n  ?insurance_products p:Payout ?payout_w .\n  FILTER((STR(?producttype_w) = \"Life Insurance\" || (STR(?producttype_w2) = \"Annuity\" && (STR(?payout_w) = \"50000\" || STR(?payout_w) = \"50000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me start dates of life insurances and annuities products with a payout of 50,000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?startdate WHERE {\n  ?insurance_products a :Insurance_Products .\n  ?insurance_products p:StartDate ?startdate .\n  ?insurance_products p:ProductType ?producttype_w .\n  ?insurance_products p:ProductType ?producttype_w2 .\n  ?insurance_products p:Payout ?payout_w .\n  FILTER((((STR(?producttype_w) = \"Life Insurance\" || STR(?producttype_w2) = \"Annuity\")) && (STR(?payout_w) = \"50000\" || STR(?payout_w) = \"50000.0\")))\n} }\n  low: { SELECT ?startdate WHERE {\n  ?insurance_products a :Insurance_Products .\n  ?insurance_products p:StartDate ?startdate .\n  ?insurance_products p:ProductType ?producttype_w .\n  ?insurance_products p:ProductType ?producttype_w2 .\n  ?insurance_products p:Payout ?payout_w .\n  FILTER((STR(?producttype_w) = \"Life Insurance\" || (STR(?producttype_w2) = \"Annuity\" && (STR(?payout_w) = \"50000\" || STR(?payout_w) = \"50000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

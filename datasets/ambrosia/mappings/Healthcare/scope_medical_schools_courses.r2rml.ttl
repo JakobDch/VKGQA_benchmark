@@ -1,0 +1,38 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_medical_schools_courses_0_Medical_Schools_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Medical_Schools\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medical_Schools/{id}" ; rr:class :Medical_Schools ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_medical_schools_courses_1_Courses_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"courseName\", \"duration\" FROM \"Courses\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Courses/{id}" ; rr:class :Courses ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseName ; rr:objectMap [ rr:column "courseName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:duration ; rr:objectMap [ rr:column "duration" ] ] .
+
+<#tm_scope_medical_schools_courses_2_Medical_School_Courses_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"schoolId\", \"courseId\" FROM \"Medical_School_Courses\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medical_School_Courses/{id}" ; rr:class :Medical_School_Courses ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:schoolId ; rr:objectMap [ rr:column "schoolId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseId ; rr:objectMap [ rr:column "courseId" ] ] .
+
+<#tm_scope_medical_schools_courses_3_Medical_School_Courses_courseId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"courseId\" FROM \"Medical_School_Courses\" WHERE \"courseId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medical_School_Courses/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Courses/{courseId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_medical_schools_courses_4_Medical_School_Courses_schoolId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"schoolId\" FROM \"Medical_School_Courses\" WHERE \"schoolId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medical_School_Courses/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedical_Schools ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medical_Schools/{schoolId}" ; rr:termType rr:IRI ] ] .
+

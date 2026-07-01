@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Producer_base
+target		ex:Producer/{id} a :Producer ; p:id {id} ; p:name {name} ; p:birth_date {birth_date} .
+source		SELECT `id`, `name`, `birth_date` FROM `Producer`
+
+mappingId	Company_base
+target		ex:Company/{id} a :Company ; p:id {id} ; p:name {name} ; p:founded_year {founded_year} .
+source		SELECT `id`, `name`, `founded_year` FROM `Company`
+
+mappingId	Documentary_base
+target		ex:Documentary/{id} a :Documentary ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:producer_id {producer_id} ; p:company_id {company_id} .
+source		SELECT `id`, `title`, `release_date`, `producer_id`, `company_id` FROM `Documentary`
+
+mappingId	Documentary_company_id_fk
+target		ex:Documentary/{id} p:hasCompany ex:Company/{company_id} .
+source		SELECT `id`, `company_id` FROM `Documentary` WHERE `company_id` IS NOT NULL
+
+mappingId	Documentary_producer_id_fk
+target		ex:Documentary/{id} p:hasProducer ex:Producer/{producer_id} .
+source		SELECT `id`, `producer_id` FROM `Documentary` WHERE `producer_id` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:name {name} ; p:date_of_birth {date_of_birth} .
+source		SELECT `id`, `name`, `date_of_birth` FROM `Actor`
+
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:budget {budget} ; p:box_office {box_office} ; p:foreign_key {foreign_key} .
+source		SELECT `id`, `title`, `release_date`, `budget`, `box_office`, `foreign_key` FROM `Movie`
+
+mappingId	Movie_foreign_key_fk
+target		ex:Movie/{id} p:hasDocumentary ex:Documentary/{foreign_key} .
+source		SELECT `id`, `foreign_key` FROM `Movie` WHERE `foreign_key` IS NOT NULL
+
+mappingId	Review_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:rating {rating} ; p:reviewer_name {reviewer_name} ; p:comment {comment} ; p:movie_id {movie_id} ; p:documentary_id {documentary_id} .
+source		SELECT `id`, `rating`, `reviewer_name`, `comment`, `movie_id`, `documentary_id` FROM `Review`
+
+mappingId	Review_documentary_id_fk
+target		ex:Review/{id} p:hasDocumentary ex:Documentary/{documentary_id} .
+source		SELECT `id`, `documentary_id` FROM `Review` WHERE `documentary_id` IS NOT NULL
+
+mappingId	Review_movie_id_fk
+target		ex:Review/{id} p:hasMovie ex:Movie/{movie_id} .
+source		SELECT `id`, `movie_id` FROM `Review` WHERE `movie_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_literary_works",
+  "schema": "amb_attachment_2tab_val_literary_works",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What novels have John Smith and what short stories have the same character?",
+      "qtype": "unambig",
+      "sql": "SELECT Novels.title\nFROM Novels\nWHERE Novels.Character = \"John Smith\"\nUNION\nSELECT ShortStories.title\nFROM ShortStories\nWHERE ShortStories.Character = \"John Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novels .\n    ?novels p:Title ?title .\n    ?novels p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?shortstories a :ShortStories .\n    ?shortstories p:Title ?title .\n    ?shortstories p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show novels and short stories about John Smith.",
+      "qtype": "ambig",
+      "sql": "SELECT Novels.title\nFROM Novels\nUNION\nSELECT ShortStories.title\nFROM ShortStories\nWHERE ShortStories.Character = \"John Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novels .\n    ?novels p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?shortstories a :ShortStories .\n    ?shortstories p:Title ?title .\n    ?shortstories p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show novels and short stories about John Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novels .\n    ?novels p:Title ?title .\n    ?novels p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?shortstories a :ShortStories .\n    ?shortstories p:Title ?title .\n    ?shortstories p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novels .\n    ?novels p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?shortstories a :ShortStories .\n    ?shortstories p:Title ?title .\n    ?shortstories p:Character ?character_f .\n    FILTER(STR(?character_f) = \"John Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

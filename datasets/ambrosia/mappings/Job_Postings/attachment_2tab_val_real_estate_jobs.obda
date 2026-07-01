@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Real_Estate_Agents_base
+target		ex:Real_Estate_Agents/{agent_id} a :Real_Estate_Agents ; p:agent_id {agent_id} ; p:name {name} ; p:phone_number {phone_number} ; p:email {email} ; p:commission {commission} .
+source		SELECT `agent_id`, `name`, `phone_number`, `email`, `commission` FROM `Real_Estate_Agents`
+
+mappingId	Property_Managers_base
+target		ex:Property_Managers/{manager_id} a :Property_Managers ; p:manager_id {manager_id} ; p:name {name} ; p:phone_number {phone_number} ; p:email {email} ; p:commission {commission} .
+source		SELECT `manager_id`, `name`, `phone_number`, `email`, `commission` FROM `Property_Managers`
+
+mappingId	Listed_Properties_base
+target		ex:Listed_Properties/{property_id} a :Listed_Properties ; p:property_id {property_id} ; p:address {address} ; p:price {price} ; p:listing_date {listing_date} ; p:status {status} .
+source		SELECT `property_id`, `address`, `price`, `listing_date`, `status` FROM `Listed_Properties`
+
+mappingId	Agent_Listings_base
+target		ex:Agent_Listings/{agent_listing_id} a :Agent_Listings ; p:agent_listing_id {agent_listing_id} ; p:real_estate_agent_id {real_estate_agent_id} ; p:property_id {property_id} .
+source		SELECT `agent_listing_id`, `real_estate_agent_id`, `property_id` FROM `Agent_Listings`
+
+mappingId	Agent_Listings_property_id_fk
+target		ex:Agent_Listings/{agent_listing_id} p:hasListed_Properties ex:Listed_Properties/{property_id} .
+source		SELECT `agent_listing_id`, `property_id` FROM `Agent_Listings` WHERE `property_id` IS NOT NULL
+
+mappingId	Agent_Listings_real_estate_agent_id_fk
+target		ex:Agent_Listings/{agent_listing_id} p:hasReal_Estate_Agents ex:Real_Estate_Agents/{real_estate_agent_id} .
+source		SELECT `agent_listing_id`, `real_estate_agent_id` FROM `Agent_Listings` WHERE `real_estate_agent_id` IS NOT NULL
+
+mappingId	Manager_Listings_base
+target		ex:Manager_Listings/{manager_listing_id} a :Manager_Listings ; p:manager_listing_id {manager_listing_id} ; p:property_manager_id {property_manager_id} ; p:property_id {property_id} .
+source		SELECT `manager_listing_id`, `property_manager_id`, `property_id` FROM `Manager_Listings`
+
+mappingId	Manager_Listings_property_id_fk
+target		ex:Manager_Listings/{manager_listing_id} p:hasListed_Properties ex:Listed_Properties/{property_id} .
+source		SELECT `manager_listing_id`, `property_id` FROM `Manager_Listings` WHERE `property_id` IS NOT NULL
+
+mappingId	Manager_Listings_property_manager_id_fk
+target		ex:Manager_Listings/{manager_listing_id} p:hasProperty_Managers ex:Property_Managers/{property_manager_id} .
+source		SELECT `manager_listing_id`, `property_manager_id` FROM `Manager_Listings` WHERE `property_manager_id` IS NOT NULL
+
+mappingId	Clients_base
+target		ex:Clients/{client_id} a :Clients ; p:client_id {client_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:phone_number {phone_number} ; p:email {email} .
+source		SELECT `client_id`, `first_name`, `last_name`, `phone_number`, `email` FROM `Clients`
+
+]]

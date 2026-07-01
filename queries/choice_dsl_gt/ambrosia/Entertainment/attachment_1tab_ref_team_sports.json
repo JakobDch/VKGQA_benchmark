@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_team_sports",
+  "schema": "amb_attachment_1tab_ref_team_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the football players as well as the intermediate-level rugby players.",
+      "qtype": "unambig",
+      "sql": "SELECT Players.Name \nFROM Sports JOIN Players ON Sports.id = Players.SportId JOIN PlayerStats ON Players.id = PlayerStats.PlayerId JOIN FitnessLevels ON PlayerStats.FitnessLevelId = FitnessLevels.id\nWHERE Sports.SportName = \"Football\" OR Sports.SportName = \"Rugby\" AND FitnessLevels.LevelName = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sports a :Sports .\n  ?players a :Players .\n  ?players p:hasSports ?sports .\n  ?playerstats a :PlayerStats .\n  ?playerstats p:hasPlayers ?players .\n  ?fitnesslevels a :Fitness_Level .\n  ?playerstats p:hasFitnessLevels ?fitnesslevels .\n  ?players p:name ?name .\n  ?sports p:SportName ?sportname_w .\n  ?sports p:SportName ?sportname_w2 .\n  ?fitnesslevels p:LevelName ?levelname_w .\n  FILTER((STR(?sportname_w) = \"Football\" || (STR(?sportname_w2) = \"Rugby\" && STR(?levelname_w) = \"Intermediate\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all the players, for both rugby and football, who play at an intermediate level.",
+      "qtype": "unambig",
+      "sql": "SELECT Players.Name \nFROM Sports JOIN Players ON Sports.id = Players.SportId JOIN PlayerStats ON Players.id = PlayerStats.PlayerId JOIN FitnessLevels ON PlayerStats.FitnessLevelId = FitnessLevels.id\nWHERE (Sports.SportName = \"Football\" OR Sports.SportName = \"Rugby\") AND FitnessLevels.LevelName = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sports a :Sports .\n  ?players a :Players .\n  ?players p:hasSports ?sports .\n  ?playerstats a :PlayerStats .\n  ?playerstats p:hasPlayers ?players .\n  ?fitnesslevels a :Fitness_Level .\n  ?playerstats p:hasFitnessLevels ?fitnesslevels .\n  ?players p:name ?name .\n  ?sports p:SportName ?sportname_w .\n  ?sports p:SportName ?sportname_w2 .\n  ?fitnesslevels p:LevelName ?levelname_w .\n  FILTER((((STR(?sportname_w) = \"Football\" || STR(?sportname_w2) = \"Rugby\")) && STR(?levelname_w) = \"Intermediate\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all the football players and rugby players who play at the intermediate level.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?sports a :Sports .\n  ?players a :Players .\n  ?players p:hasSports ?sports .\n  ?playerstats a :PlayerStats .\n  ?playerstats p:hasPlayers ?players .\n  ?fitnesslevels a :Fitness_Level .\n  ?playerstats p:hasFitnessLevels ?fitnesslevels .\n  ?players p:name ?name .\n  ?sports p:SportName ?sportname_w .\n  ?sports p:SportName ?sportname_w2 .\n  ?fitnesslevels p:LevelName ?levelname_w .\n  FILTER((STR(?sportname_w) = \"Football\" || (STR(?sportname_w2) = \"Rugby\" && STR(?levelname_w) = \"Intermediate\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?sports a :Sports .\n  ?players a :Players .\n  ?players p:hasSports ?sports .\n  ?playerstats a :PlayerStats .\n  ?playerstats p:hasPlayers ?players .\n  ?fitnesslevels a :Fitness_Level .\n  ?playerstats p:hasFitnessLevels ?fitnesslevels .\n  ?players p:name ?name .\n  ?sports p:SportName ?sportname_w .\n  ?sports p:SportName ?sportname_w2 .\n  ?fitnesslevels p:LevelName ?levelname_w .\n  FILTER((((STR(?sportname_w) = \"Football\" || STR(?sportname_w2) = \"Rugby\")) && STR(?levelname_w) = \"Intermediate\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

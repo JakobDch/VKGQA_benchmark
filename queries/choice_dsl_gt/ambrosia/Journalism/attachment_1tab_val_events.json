@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_events",
+  "schema": "amb_attachment_1tab_val_events",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show press conferences and media scrums from Jack Layton.",
+      "qtype": "ambig",
+      "sql": "SELECT Sources.name \nFROM Sources\nWHERE (Sources.event = \"Press Conference\" OR Sources.event = \"Media Scrum\") AND Sources.person = \"Jack Layton\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sources a :Sources .\n  ?sources p:name ?name .\n  ?sources p:event ?event_w .\n  ?sources p:event ?event_w2 .\n  ?sources p:person ?person_w .\n  FILTER((((STR(?event_w) = \"Press Conference\" || STR(?event_w2) = \"Media Scrum\")) && STR(?person_w) = \"Jack Layton\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show press conferences and media scrums from Jack Layton.",
+      "qtype": "ambig",
+      "sql": "SELECT Sources.name \nFROM Sources\nWHERE Sources.event = \"Press Conference\" OR Sources.event = \"Media Scrum\" AND Sources.person = \"Jack Layton\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?sources a :Sources .\n  ?sources p:name ?name .\n  ?sources p:event ?event_w .\n  ?sources p:event ?event_w2 .\n  ?sources p:person ?person_w .\n  FILTER((STR(?event_w) = \"Press Conference\" || (STR(?event_w2) = \"Media Scrum\" && STR(?person_w) = \"Jack Layton\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show press conferences and media scrums from Jack Layton.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?sources a :Sources .\n  ?sources p:name ?name .\n  ?sources p:event ?event_w .\n  ?sources p:event ?event_w2 .\n  ?sources p:person ?person_w .\n  FILTER((STR(?event_w) = \"Press Conference\" || (STR(?event_w2) = \"Media Scrum\" && STR(?person_w) = \"Jack Layton\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?sources a :Sources .\n  ?sources p:name ?name .\n  ?sources p:event ?event_w .\n  ?sources p:event ?event_w2 .\n  ?sources p:person ?person_w .\n  FILTER((((STR(?event_w) = \"Press Conference\" || STR(?event_w2) = \"Media Scrum\")) && STR(?person_w) = \"Jack Layton\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

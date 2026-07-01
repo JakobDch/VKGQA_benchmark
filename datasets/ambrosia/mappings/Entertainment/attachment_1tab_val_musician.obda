@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Musician_base
+target		ex:Musician/{id} a :Musician ; p:id {id} ; p:name {Name} ; p:Genre {Genre} ; p:Instrument {Instrument} ; p:YearOfBirth {YearOfBirth} .
+source		SELECT `id`, `Name`, `Genre`, `Instrument`, `YearOfBirth` FROM `Musician`
+
+mappingId	Album_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:ArtistId {ArtistId} .
+source		SELECT `id`, `Title`, `ReleaseYear`, `ArtistId` FROM `Album`
+
+mappingId	Album_ArtistId_fk
+target		ex:Album/{id} p:hasMusician ex:Musician/{ArtistId} .
+source		SELECT `id`, `ArtistId` FROM `Album` WHERE `ArtistId` IS NOT NULL
+
+mappingId	Song_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:Title {Title} ; p:Duration {Duration} ; p:AlbumId {AlbumId} .
+source		SELECT `id`, `Title`, `Duration`, `AlbumId` FROM `Song`
+
+mappingId	Song_AlbumId_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{AlbumId} .
+source		SELECT `id`, `AlbumId` FROM `Song` WHERE `AlbumId` IS NOT NULL
+
+mappingId	Concert_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:Date {Date} ; p:Venue {Venue} ; p:HeadlinerId {HeadlinerId} .
+source		SELECT `id`, `Date`, `Venue`, `HeadlinerId` FROM `Concert`
+
+mappingId	Concert_HeadlinerId_fk
+target		ex:Concert/{id} p:hasMusician ex:Musician/{HeadlinerId} .
+source		SELECT `id`, `HeadlinerId` FROM `Concert` WHERE `HeadlinerId` IS NOT NULL
+
+mappingId	Fan_base
+target		ex:Fans/{id} a :Fans ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `id`, `FirstName`, `LastName`, `Email` FROM `Fan`
+
+mappingId	Purchase_base
+target		ex:Purchase/{id} a :Purchase ; p:id {id} ; p:AmountMoney {AmountMoney} ; p:ConcertId {ConcertId} ; p:FanId {FanId} .
+source		SELECT `id`, `AmountMoney`, `ConcertId`, `FanId` FROM `Purchase`
+
+mappingId	Purchase_FanId_fk
+target		ex:Purchase/{id} p:hasFans ex:Fans/{FanId} .
+source		SELECT `id`, `FanId` FROM `Purchase` WHERE `FanId` IS NOT NULL
+
+mappingId	Purchase_ConcertId_fk
+target		ex:Purchase/{id} p:hasConcert ex:Concert/{ConcertId} .
+source		SELECT `id`, `ConcertId` FROM `Purchase` WHERE `ConcertId` IS NOT NULL
+
+]]

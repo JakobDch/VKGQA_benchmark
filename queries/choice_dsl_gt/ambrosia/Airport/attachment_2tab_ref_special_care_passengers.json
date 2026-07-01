@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_ref_special_care_passengers",
+  "schema": "amb_attachment_2tab_ref_special_care_passengers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide unaccompanied minors and disabled passengers whose assistant is Clare Allen.",
+      "qtype": "ambig",
+      "sql": "SELECT  Passenger.FullName\nFROM Assistant JOIN UnaccompaniedMinor ON Assistant.AssistantID = UnaccompaniedMinor.AssistantID JOIN Passenger ON Passenger.PassengerID = UnaccompaniedMinor.PassengerID\nWHERE Assistant.Name = \"Clare Allen\"\nUNION\nSELECT Passenger.FullName\nFROM Assistant JOIN DisabledPassenger ON Assistant.AssistantID = DisabledPassenger.AssistantID JOIN Passenger ON Passenger.PassengerID = DisabledPassenger.PassengerID\nWHERE Assistant.Name = \"Clare Allen\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?assistant a :Assistant .\n    ?unaccompaniedminor a :UnaccompaniedMinor .\n    ?unaccompaniedminor p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?unaccompaniedminor p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?assistant a :Assistant .\n    ?disabledpassenger a :DisabledPassenger .\n    ?disabledpassenger p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?disabledpassenger p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide unaccompanied minors and disabled passengers whose assistant is Clare Allen.",
+      "qtype": "ambig",
+      "sql": "SELECT Passenger.FullName \nFROM Assistant JOIN UnaccompaniedMinor ON Assistant.AssistantID = UnaccompaniedMinor.AssistantID JOIN Passenger ON Passenger.PassengerID = UnaccompaniedMinor.PassengerID\nUNION\nSELECT  Passenger.FullName\nFROM Assistant JOIN DisabledPassenger ON Assistant.AssistantID = DisabledPassenger.AssistantID JOIN Passenger ON Passenger.PassengerID = DisabledPassenger.PassengerID\nWHERE Assistant.Name = \"Clare Allen\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?assistant a :Assistant .\n    ?unaccompaniedminor a :UnaccompaniedMinor .\n    ?unaccompaniedminor p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?unaccompaniedminor p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?assistant a :Assistant .\n    ?disabledpassenger a :DisabledPassenger .\n    ?disabledpassenger p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?disabledpassenger p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide unaccompanied minors and disabled passengers whose assistant is Clare Allen.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?assistant a :Assistant .\n    ?unaccompaniedminor a :UnaccompaniedMinor .\n    ?unaccompaniedminor p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?unaccompaniedminor p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?assistant a :Assistant .\n    ?disabledpassenger a :DisabledPassenger .\n    ?disabledpassenger p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?disabledpassenger p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?assistant a :Assistant .\n    ?unaccompaniedminor a :UnaccompaniedMinor .\n    ?unaccompaniedminor p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?unaccompaniedminor p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?assistant a :Assistant .\n    ?disabledpassenger a :DisabledPassenger .\n    ?disabledpassenger p:hasAssistant ?assistant .\n    ?passenger a :Passengers .\n    ?disabledpassenger p:hasPassenger ?passenger .\n    ?passenger p:name ?fullname .\n    ?assistant p:name ?name_f .\n    FILTER(STR(?name_f) = \"Clare Allen\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

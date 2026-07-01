@@ -1,0 +1,40 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_accommodation1_0_hotels_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\", \"accommodation_type\" FROM \"hotels\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{id}" ; rr:class :Hotels ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:accommodation_type ; rr:objectMap [ rr:column "accommodation_type" ] ] .
+
+<#tm_attachment_1tab_ref_accommodation1_1_rooms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"hotel_id\", \"room_number\", \"price\" FROM \"rooms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Rooms/{_amb_rowid}" ; rr:class :Rooms ] ;
+  rr:predicateObjectMap [ rr:predicate p:hotel_id ; rr:objectMap [ rr:column "hotel_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:room_number ; rr:objectMap [ rr:column "room_number" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:price ; rr:objectMap [ rr:column "price" ] ] .
+
+<#tm_attachment_1tab_ref_accommodation1_2_rooms_hotel_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"hotel_id\" FROM \"rooms\" WHERE \"hotel_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Rooms/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHotels ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{hotel_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_accommodation1_3_reviews_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"user_name\", \"review_text\", \"rating\", \"room_number\" FROM \"reviews\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reviews/{_amb_rowid}" ; rr:class :Reviews ] ;
+  rr:predicateObjectMap [ rr:predicate p:user_name ; rr:objectMap [ rr:column "user_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:review_text ; rr:objectMap [ rr:column "review_text" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:rating ; rr:objectMap [ rr:column "rating" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:room_number ; rr:objectMap [ rr:column "room_number" ] ] .
+
+<#tm_attachment_1tab_ref_accommodation1_4_reviews_room_number_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"room_number\" FROM \"reviews\" WHERE \"room_number\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reviews/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRooms ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Rooms/{room_number}" ; rr:termType rr:IRI ] ] .
+

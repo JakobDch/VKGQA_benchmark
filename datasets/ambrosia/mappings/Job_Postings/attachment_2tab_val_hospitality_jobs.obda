@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Agency_base
+target		ex:Agency/{id} a :Agency ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Agency`
+
+mappingId	Tour_Guide_base
+target		ex:Tour_Guide/{id} a :Tour_Guide ; p:id {id} ; p:guideName {guideName} ; p:agencyId {agencyId} .
+source		SELECT `id`, `guideName`, `agencyId` FROM `Tour_Guide`
+
+mappingId	Tour_Guide_agencyId_fk
+target		ex:Tour_Guide/{id} p:hasAgency ex:Agency/{agencyId} .
+source		SELECT `id`, `agencyId` FROM `Tour_Guide` WHERE `agencyId` IS NOT NULL
+
+mappingId	Travel_Agent_base
+target		ex:TravelAgents/{id} a :TravelAgents ; p:id {id} ; p:agentName {agentName} ; p:agencyId {agencyId} .
+source		SELECT `id`, `agentName`, `agencyId` FROM `Travel_Agent`
+
+mappingId	Travel_Agent_agencyId_fk
+target		ex:TravelAgents/{id} p:hasAgency ex:Agency/{agencyId} .
+source		SELECT `id`, `agencyId` FROM `Travel_Agent` WHERE `agencyId` IS NOT NULL
+
+mappingId	Jobs_base
+target		ex:Jobs/{id} a :Jobs ; p:id {id} ; p:title {title} ; p:description {description} .
+source		SELECT `id`, `title`, `description` FROM `Jobs`
+
+mappingId	Applications_base
+target		ex:Application/{_amb_rowid} a :Application ; p:tourGuideId {tourGuideId} ; p:travelAgentId {travelAgentId} ; p:jobId {jobId} ; p:applicationDate {applicationDate} .
+source		SELECT `_amb_rowid`, `tourGuideId`, `travelAgentId`, `jobId`, `applicationDate` FROM `Applications`
+
+mappingId	Applications_jobId_fk
+target		ex:Application/{_amb_rowid} p:hasJobs ex:Jobs/{jobId} .
+source		SELECT `_amb_rowid`, `jobId` FROM `Applications` WHERE `jobId` IS NOT NULL
+
+mappingId	Applications_travelAgentId_fk
+target		ex:Application/{_amb_rowid} p:hasTravelAgents ex:TravelAgents/{travelAgentId} .
+source		SELECT `_amb_rowid`, `travelAgentId` FROM `Applications` WHERE `travelAgentId` IS NOT NULL
+
+mappingId	Applications_tourGuideId_fk
+target		ex:Application/{_amb_rowid} p:hasTour_Guide ex:Tour_Guide/{tourGuideId} .
+source		SELECT `_amb_rowid`, `tourGuideId` FROM `Applications` WHERE `tourGuideId` IS NOT NULL
+
+mappingId	Skills_base
+target		ex:Skill/{skillId} a :Skill ; p:skillId {skillId} ; p:skillName {skillName} .
+source		SELECT `skillId`, `skillName` FROM `Skills`
+
+]]

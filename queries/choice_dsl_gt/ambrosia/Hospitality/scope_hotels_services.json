@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_hotels_services",
+  "schema": "amb_scope_hotels_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the common services for all hotels.",
+      "qtype": "unambig",
+      "sql": "SELECT Services.ServiceName  from Hotels_Services join Services on Hotels_Services.Service_ID = Services.ServiceID join Hotels on Hotels_Services.Hotels_ID = Hotels.HotelID   GROUP BY Hotels_Services.Service_ID HAVING COUNT(DISTINCT Hotels_Services.Hotels_ID) = (SELECT COUNT(*) FROM  Hotels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasHotels ?parent . } GROUP BY ?child }\n  ?child p:ServiceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hotels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "At each hotel, list the corresponding services.",
+      "qtype": "unambig",
+      "sql": "select hotels.name , services.servicename from Hotels_Services join Services on Hotels_Services.Service_ID = Services.ServiceID join Hotels on Hotels_Services.Hotels_ID = Hotels.HotelID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?servicename WHERE {\n  ?hotels_services a :Hotels_Services .\n  ?services a :Services .\n  ?hotels_services p:hasServices ?services .\n  ?hotels a :Hotels .\n  ?hotels_services p:hasHotels ?hotels .\n  ?hotels p:name ?name .\n  ?services p:ServiceName ?servicename .\n}",
+      "status": "pass",
+      "note": "n=25"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the services provided by every hotel.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasHotels ?parent . } GROUP BY ?child }\n  ?child p:ServiceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hotels } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?servicename WHERE {\n  ?hotels_services a :Hotels_Services .\n  ?services a :Services .\n  ?hotels_services p:hasServices ?services .\n  ?hotels a :Hotels .\n  ?hotels_services p:hasHotels ?hotels .\n  ?hotels p:name ?name .\n  ?services p:ServiceName ?servicename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

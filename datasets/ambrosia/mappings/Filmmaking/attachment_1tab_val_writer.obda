@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Writer_base
+target		ex:Writer/{id} a :Writer ; p:id {id} ; p:name {Name} ; p:Type {Type} ; p:Education {Education} .
+source		SELECT `id`, `Name`, `Type`, `Education` FROM `Writer`
+
+mappingId	Film_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Genre {Genre} .
+source		SELECT `id`, `Title`, `ReleaseYear`, `Genre` FROM `Film`
+
+mappingId	Director_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:name {Name} ; p:BirthDate {BirthDate} .
+source		SELECT `id`, `Name`, `BirthDate` FROM `Director`
+
+mappingId	Director_Film_base
+target		ex:DirectorFilms/{directorId}/{filmId} a :DirectorFilms ; p:directorId {directorId} ; p:filmId {filmId} .
+source		SELECT `directorId`, `filmId` FROM `Director_Film`
+
+mappingId	Director_Film_filmId_fk
+target		ex:DirectorFilms/{directorId}/{filmId} p:hasFilms ex:Films/{filmId} .
+source		SELECT `directorId`, `filmId` FROM `Director_Film` WHERE `filmId` IS NOT NULL
+
+mappingId	Director_Film_directorId_fk
+target		ex:DirectorFilms/{directorId}/{filmId} p:hasDirectors ex:Directors/{directorId} .
+source		SELECT `directorId`, `filmId` FROM `Director_Film` WHERE `directorId` IS NOT NULL
+
+mappingId	Screenplay_base
+target		ex:Screenplay/{id} a :Screenplay ; p:id {id} ; p:Title {Title} ; p:Year {Year} .
+source		SELECT `id`, `Title`, `Year` FROM `Screenplay`
+
+mappingId	Film_Screenplay_base
+target		ex:Film_Screenplay/{filmId}/{scriptId} a :Film_Screenplay ; p:filmId {filmId} ; p:scriptId {scriptId} .
+source		SELECT `filmId`, `scriptId` FROM `Film_Screenplay`
+
+mappingId	Film_Screenplay_filmId_fk
+target		ex:Film_Screenplay/{filmId}/{scriptId} p:hasFilms ex:Films/{filmId} .
+source		SELECT `filmId`, `scriptId` FROM `Film_Screenplay` WHERE `filmId` IS NOT NULL
+
+]]

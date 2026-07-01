@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Newspapers_base
+target		ex:Newspapers/{id} a :Newspapers ; p:id {id} ; p:name {Name} ; p:Format {Format} ; p:Distributor {Distributor} ; p:FoundedDate {FoundedDate} .
+source		SELECT `id`, `Name`, `Format`, `Distributor`, `FoundedDate` FROM `Newspapers`
+
+mappingId	Newspapers_Distributor_fk
+target		ex:Newspapers/{id} p:hasDistributors ex:Distributors/{Distributor} .
+source		SELECT `id`, `Distributor` FROM `Newspapers` WHERE `Distributor` IS NOT NULL
+
+mappingId	Distributors_base
+target		ex:Distributors/{id} a :Distributors ; p:id {id} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:email {EmailAddress} .
+source		SELECT `id`, `Name`, `Address`, `PhoneNumber`, `EmailAddress` FROM `Distributors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:Title {Title} ; p:Content {Content} ; p:PublicationDate {PublicationDate} ; p:NewspaperId {NewspaperId} ; p:AuthorId {AuthorId} ; p:CategoryId {CategoryId} .
+source		SELECT `id`, `Title`, `Content`, `PublicationDate`, `NewspaperId`, `AuthorId`, `CategoryId` FROM `Articles`
+
+mappingId	Articles_CategoryId_fk
+target		ex:Articles/{id} p:hasArticleCategories ex:ArticleCategories/{CategoryId} .
+source		SELECT `id`, `CategoryId` FROM `Articles` WHERE `CategoryId` IS NOT NULL
+
+mappingId	Articles_AuthorId_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{AuthorId} .
+source		SELECT `id`, `AuthorId` FROM `Articles` WHERE `AuthorId` IS NOT NULL
+
+mappingId	Articles_NewspaperId_fk
+target		ex:Articles/{id} p:hasNewspapers ex:Newspapers/{NewspaperId} .
+source		SELECT `id`, `NewspaperId` FROM `Articles` WHERE `NewspaperId` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Birthdate {Birthdate} .
+source		SELECT `id`, `FirstName`, `LastName`, `Birthdate` FROM `Authors`
+
+mappingId	ArticleCategories_base
+target		ex:ArticleCategories/{id} a :ArticleCategories ; p:id {id} ; p:CategoryName {CategoryName} ; p:Description {Description} .
+source		SELECT `id`, `CategoryName`, `Description` FROM `ArticleCategories`
+
+mappingId	Readers_base
+target		ex:Readers/{id} a :Readers ; p:id {id} ; p:name {FullName} ; p:Age {Age} ; p:email {Email} ; p:FavouriteNewspaperId {FavouriteNewspaperId} .
+source		SELECT `id`, `FullName`, `Age`, `Email`, `FavouriteNewspaperId` FROM `Readers`
+
+mappingId	Readers_FavouriteNewspaperId_fk
+target		ex:Readers/{id} p:hasNewspapers ex:Newspapers/{FavouriteNewspaperId} .
+source		SELECT `id`, `FavouriteNewspaperId` FROM `Readers` WHERE `FavouriteNewspaperId` IS NOT NULL
+
+]]

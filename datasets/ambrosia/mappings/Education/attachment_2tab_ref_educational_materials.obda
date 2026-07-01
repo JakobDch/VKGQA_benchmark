@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Publisher_base
+target		ex:Publishers/{id} a :Publishers ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Publisher`
+
+mappingId	Textbooks_base
+target		ex:Textbooks/{id} a :Textbooks ; p:id {id} ; p:title {title} ; p:publisherId {publisherId} ; p:author {author} ; p:price {price} .
+source		SELECT `id`, `title`, `publisherId`, `author`, `price` FROM `Textbooks`
+
+mappingId	Textbooks_publisherId_fk
+target		ex:Textbooks/{id} p:hasPublishers ex:Publishers/{publisherId} .
+source		SELECT `id`, `publisherId` FROM `Textbooks` WHERE `publisherId` IS NOT NULL
+
+mappingId	EBooks_base
+target		ex:EBooks/{id} a :EBooks ; p:id {id} ; p:title {title} ; p:publisherId {publisherId} ; p:format {format} ; p:price {price} .
+source		SELECT `id`, `title`, `publisherId`, `format`, `price` FROM `EBooks`
+
+mappingId	EBooks_publisherId_fk
+target		ex:EBooks/{id} p:hasPublishers ex:Publishers/{publisherId} .
+source		SELECT `id`, `publisherId` FROM `EBooks` WHERE `publisherId` IS NOT NULL
+
+mappingId	Subjects_base
+target		ex:Subjects/{id} a :Subjects ; p:id {id} ; p:subjectName {subjectName} .
+source		SELECT `id`, `subjectName` FROM `Subjects`
+
+mappingId	BooksInSubject_base
+target		ex:BooksInSubject/{bookId}/{subjectId} a :BooksInSubject ; p:bookId {bookId} ; p:subjectId {subjectId} .
+source		SELECT `bookId`, `subjectId` FROM `BooksInSubject`
+
+mappingId	BooksInSubject_subjectId_fk
+target		ex:BooksInSubject/{bookId}/{subjectId} p:hasSubjects ex:Subjects/{subjectId} .
+source		SELECT `bookId`, `subjectId` FROM `BooksInSubject` WHERE `subjectId` IS NOT NULL
+
+mappingId	BooksInSubject_bookId_fk
+target		ex:BooksInSubject/{bookId}/{subjectId} p:hasTextbooks ex:Textbooks/{bookId} .
+source		SELECT `bookId`, `subjectId` FROM `BooksInSubject` WHERE `bookId` IS NOT NULL
+
+mappingId	Teachers_base
+target		ex:Teachers/{id} a :Teachers ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:subjectId {subjectId} .
+source		SELECT `id`, `firstName`, `lastName`, `subjectId` FROM `Teachers`
+
+mappingId	Teachers_subjectId_fk
+target		ex:Teachers/{id} p:hasSubjects ex:Subjects/{subjectId} .
+source		SELECT `id`, `subjectId` FROM `Teachers` WHERE `subjectId` IS NOT NULL
+
+]]

@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_sales_positions_goals_0_Sales_Positions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"position_name\", \"salary_range\" FROM \"Sales_Positions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sales_Positions/{id}" ; rr:class :Sales_Positions ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:position_name ; rr:objectMap [ rr:column "position_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:salary_range ; rr:objectMap [ rr:column "salary_range" ] ] .
+
+<#tm_scope_sales_positions_goals_1_Goals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"goal_type\" FROM \"Goals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Goals/{id}" ; rr:class :Goals ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:goal_type ; rr:objectMap [ rr:column "goal_type" ] ] .
+
+<#tm_scope_sales_positions_goals_2_Sales_Positions_Goals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"sales_position_id\", \"goal_id\" FROM \"Sales_Positions_Goals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sales_Positions_Goals/{sales_position_id}/{goal_id}" ; rr:class :Sales_Positions_Goals ] ;
+  rr:predicateObjectMap [ rr:predicate p:sales_position_id ; rr:objectMap [ rr:column "sales_position_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:goal_id ; rr:objectMap [ rr:column "goal_id" ] ] .
+
+<#tm_scope_sales_positions_goals_3_Sales_Positions_Goals_goal_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"sales_position_id\", \"goal_id\" FROM \"Sales_Positions_Goals\" WHERE \"goal_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sales_Positions_Goals/{sales_position_id}/{goal_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasGoals ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Goals/{goal_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_sales_positions_goals_4_Sales_Positions_Goals_sales_position_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"sales_position_id\", \"goal_id\" FROM \"Sales_Positions_Goals\" WHERE \"sales_position_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sales_Positions_Goals/{sales_position_id}/{goal_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSales_Positions ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sales_Positions/{sales_position_id}" ; rr:termType rr:IRI ] ] .
+

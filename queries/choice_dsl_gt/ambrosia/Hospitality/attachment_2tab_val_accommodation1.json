@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_accommodation1",
+  "schema": "amb_attachment_2tab_val_accommodation1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all family suites and also provide a list of single rooms that cost 150.",
+      "qtype": "unambig",
+      "sql": "SELECT FamilySuites.Room\nFROM FamilySuites\nUNION\nSELECT SingleRooms.Room\nFROM SingleRooms\nWHERE SingleRooms.Price_per_night = 150.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?familysuites a :FamilySuites .\n    ?familysuites p:Room ?room .\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?singlerooms a :SingleRooms .\n    ?singlerooms p:Room ?room .\n    ?singlerooms p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What family suites are priced at 150 and what single rooms cost the same?",
+      "qtype": "unambig",
+      "sql": "SELECT FamilySuites.Room\nFROM FamilySuites\nWHERE FamilySuites.Price_per_night = 150.0\nUNION\nSELECT SingleRooms.Room\nFROM SingleRooms\nWHERE SingleRooms.Price_per_night = 150.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?familysuites a :FamilySuites .\n    ?familysuites p:Room ?room .\n    ?familysuites p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?singlerooms a :SingleRooms .\n    ?singlerooms p:Room ?room .\n    ?singlerooms p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show family rooms and single rooms that cost 150.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?familysuites a :FamilySuites .\n    ?familysuites p:Room ?room .\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?singlerooms a :SingleRooms .\n    ?singlerooms p:Room ?room .\n    ?singlerooms p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?familysuites a :FamilySuites .\n    ?familysuites p:Room ?room .\n    ?familysuites p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n  UNION\n  {\n    ?singlerooms a :SingleRooms .\n    ?singlerooms p:Room ?room .\n    ?singlerooms p:Price_per_night ?price_per_night_f .\n    FILTER((STR(?price_per_night_f) = \"150\" || STR(?price_per_night_f) = \"150.0\"))\n    BIND(?room AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

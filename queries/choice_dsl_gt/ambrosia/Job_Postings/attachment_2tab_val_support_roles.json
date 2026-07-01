@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_support_roles",
+  "schema": "amb_attachment_2tab_val_support_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display proactive call center agents and customer service representatives.",
+      "qtype": "ambig",
+      "sql": "SELECT Customer_Service_Representatives.FullName\nFROM Customer_Service_Representatives\nWHERE Customer_Service_Representatives.skills = \"Proactivity\"\nUNION\nSELECT Call_Center_Agents.FullName\nFROM Call_Center_Agents\nWHERE Call_Center_Agents.skills = \"Proactivity\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?customer_service_representatives a :Customer_Service_Representatives .\n    ?customer_service_representatives p:name ?fullname .\n    ?customer_service_representatives p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?call_center_agents a :Call_Center_Agents .\n    ?call_center_agents p:name ?fullname .\n    ?call_center_agents p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display proactive call center agents and customer service representatives.",
+      "qtype": "ambig",
+      "sql": "SELECT Customer_Service_Representatives.FullName\nFROM Customer_Service_Representatives\nUNION\nSELECT Call_Center_Agents.FullName\nFROM Call_Center_Agents\nWHERE Call_Center_Agents.skills = \"Proactivity\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?customer_service_representatives a :Customer_Service_Representatives .\n    ?customer_service_representatives p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?call_center_agents a :Call_Center_Agents .\n    ?call_center_agents p:name ?fullname .\n    ?call_center_agents p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display proactive call center agents and customer service representatives.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?customer_service_representatives a :Customer_Service_Representatives .\n    ?customer_service_representatives p:name ?fullname .\n    ?customer_service_representatives p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?call_center_agents a :Call_Center_Agents .\n    ?call_center_agents p:name ?fullname .\n    ?call_center_agents p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?customer_service_representatives a :Customer_Service_Representatives .\n    ?customer_service_representatives p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?call_center_agents a :Call_Center_Agents .\n    ?call_center_agents p:name ?fullname .\n    ?call_center_agents p:skills ?skills_f .\n    FILTER(STR(?skills_f) = \"Proactivity\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

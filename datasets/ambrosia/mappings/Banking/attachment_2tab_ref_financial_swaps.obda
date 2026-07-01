@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Banks`
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:bank_name {bank_name} ; p:balance {balance} .
+source		SELECT `account_id`, `bank_name`, `balance` FROM `Accounts`
+
+mappingId	Accounts_bank_name_fk
+target		ex:Accounts/{account_id} p:hasBanks ex:Banks/{bank_name} .
+source		SELECT `account_id`, `bank_name` FROM `Accounts` WHERE `bank_name` IS NOT NULL
+
+mappingId	Currency_Swaps_base
+target		ex:Currency_Swaps/{swap_id} a :Currency_Swaps ; p:swap_id {swap_id} ; p:bank_name {bank_name} ; p:amount {amount} ; p:maturity_date {maturity_date} ; p:foreign_currency {foreign_currency} .
+source		SELECT `swap_id`, `bank_name`, `amount`, `maturity_date`, `foreign_currency` FROM `Currency_Swaps`
+
+mappingId	Currency_Swaps_bank_name_fk
+target		ex:Currency_Swaps/{swap_id} p:hasBanks ex:Banks/{bank_name} .
+source		SELECT `swap_id`, `bank_name` FROM `Currency_Swaps` WHERE `bank_name` IS NOT NULL
+
+mappingId	Interest_Rate_Swaps_base
+target		ex:Interest_Rate_Swaps/{swap_id} a :Interest_Rate_Swaps ; p:swap_id {swap_id} ; p:bank_name {bank_name} ; p:start_date {start_date} ; p:end_date {end_date} ; p:fixed_rate {fixed_rate} ; p:floating_rate {floating_rate} .
+source		SELECT `swap_id`, `bank_name`, `start_date`, `end_date`, `fixed_rate`, `floating_rate` FROM `Interest_Rate_Swaps`
+
+mappingId	Interest_Rate_Swaps_bank_name_fk
+target		ex:Interest_Rate_Swaps/{swap_id} p:hasBanks ex:Banks/{bank_name} .
+source		SELECT `swap_id`, `bank_name` FROM `Interest_Rate_Swaps` WHERE `bank_name` IS NOT NULL
+
+]]

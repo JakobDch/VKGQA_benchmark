@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_vacation_option",
+  "schema": "amb_attachment_1tab_val_vacation_option",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What cruise ship customers went to a dance class and what resort customers also went to one?",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.Name \nFROM Customers\nWHERE (Customers.Vacation_Option = \"Cruise Ship\" OR Customers.Vacation_Option = \"All-Inclusive Resort\") AND Customers.Activities = \"Dance Class\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?name .\n  ?customers p:Vacation_Option ?vacation_option_w .\n  ?customers p:Vacation_Option ?vacation_option_w2 .\n  ?customers p:Activities ?activities_w .\n  FILTER((((STR(?vacation_option_w) = \"Cruise Ship\" || STR(?vacation_option_w2) = \"All-Inclusive Resort\")) && STR(?activities_w) = \"Dance Class\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all cruise ship customers and also list resort customers that went to a dance class.",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.Name \nFROM Customers\nWHERE Customers.Vacation_Option = \"Cruise Ship\" OR Customers.Vacation_Option = \"All-Inclusive Resort\" AND Customers.Activities = \"Dance Class\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?name .\n  ?customers p:Vacation_Option ?vacation_option_w .\n  ?customers p:Vacation_Option ?vacation_option_w2 .\n  ?customers p:Activities ?activities_w .\n  FILTER((STR(?vacation_option_w) = \"Cruise Ship\" || (STR(?vacation_option_w2) = \"All-Inclusive Resort\" && STR(?activities_w) = \"Dance Class\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show cruise ship customers and resort customers that went to a dance class.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?name .\n  ?customers p:Vacation_Option ?vacation_option_w .\n  ?customers p:Vacation_Option ?vacation_option_w2 .\n  ?customers p:Activities ?activities_w .\n  FILTER((((STR(?vacation_option_w) = \"Cruise Ship\" || STR(?vacation_option_w2) = \"All-Inclusive Resort\")) && STR(?activities_w) = \"Dance Class\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?name .\n  ?customers p:Vacation_Option ?vacation_option_w .\n  ?customers p:Vacation_Option ?vacation_option_w2 .\n  ?customers p:Activities ?activities_w .\n  FILTER((STR(?vacation_option_w) = \"Cruise Ship\" || (STR(?vacation_option_w2) = \"All-Inclusive Resort\" && STR(?activities_w) = \"Dance Class\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

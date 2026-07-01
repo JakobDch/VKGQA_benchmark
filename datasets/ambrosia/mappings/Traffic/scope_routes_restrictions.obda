@@ -1,0 +1,25 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Routes_base
+target		ex:Routes/{id} a :Routes ; p:id {id} ; p:name {routeName} ; p:distance {distance} .
+source		SELECT `id`, `routeName`, `distance` FROM `Routes`
+
+mappingId	Restrictions_base
+target		ex:Restrictions/{restrictionType}/{value} a :Restrictions ; p:type {restrictionType} ; p:value {value} .
+source		SELECT `restrictionType`, `value` FROM `Restrictions`
+
+mappingId	Routes_Restrictions_base
+target		ex:Routes_Restrictions/{routesId}/{restrictionsType} a :Routes_Restrictions ; p:restrictionsType {restrictionsType} .
+source		SELECT `routesId`, `restrictionsType` FROM `Routes_Restrictions`
+
+mappingId	Routes_Restrictions_routesId_fk
+target		ex:Routes_Restrictions/{routesId}/{restrictionsType} p:hasRoutes ex:Routes/{routesId} .
+source		SELECT `routesId`, `restrictionsType` FROM `Routes_Restrictions` WHERE `routesId` IS NOT NULL
+
+]]

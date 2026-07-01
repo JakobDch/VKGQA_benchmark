@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{CompanyID} a :Companies ; p:CompanyID {CompanyID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `CompanyID`, `Name`, `Location` FROM `Companies`
+
+mappingId	Roles_base
+target		ex:Roles/{RoleID} a :Roles ; p:RoleID {RoleID} ; p:RoleName {RoleName} .
+source		SELECT `RoleID`, `RoleName` FROM `Roles`
+
+mappingId	DataTypes_base
+target		ex:DataTypes/{DataTypeID} a :DataTypes ; p:DataTypeID {DataTypeID} ; p:DataTypeName {DataTypeName} .
+source		SELECT `DataTypeID`, `DataTypeName` FROM `DataTypes`
+
+mappingId	Jobs_base
+target		ex:Jobs/{JobID} a :Jobs ; p:JobID {JobID} ; p:Title {Title} ; p:Description {Description} ; p:PostedDate {PostedDate} ; p:CompanyID {CompanyID} ; p:ROLEID {ROLEID} ; p:DATAID {DATAID} .
+source		SELECT `JobID`, `Title`, `Description`, `PostedDate`, `CompanyID`, `ROLEID`, `DATAID` FROM `Jobs`
+
+mappingId	Jobs_DATAID_fk
+target		ex:Jobs/{JobID} p:hasDataTypes ex:DataTypes/{DATAID} .
+source		SELECT `JobID`, `DATAID` FROM `Jobs` WHERE `DATAID` IS NOT NULL
+
+mappingId	Jobs_ROLEID_fk
+target		ex:Jobs/{JobID} p:hasRoles ex:Roles/{ROLEID} .
+source		SELECT `JobID`, `ROLEID` FROM `Jobs` WHERE `ROLEID` IS NOT NULL
+
+mappingId	Jobs_CompanyID_fk
+target		ex:Jobs/{JobID} p:hasCompanies ex:Companies/{CompanyID} .
+source		SELECT `JobID`, `CompanyID` FROM `Jobs` WHERE `CompanyID` IS NOT NULL
+
+mappingId	Applicants_base
+target		ex:Applicants/{ApplicantID} a :Applicants ; p:ApplicantID {ApplicantID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `ApplicantID`, `FirstName`, `LastName`, `Email` FROM `Applicants`
+
+mappingId	ApplicationJobs_base
+target		ex:ApplicationJobs/{ApplicationID} a :ApplicationJobs ; p:ApplicationID {ApplicationID} ; p:ApplicantID {ApplicantID} ; p:JobID {JobID} ; p:SubmissionDate {SubmissionDate} ; p:Status {Status} .
+source		SELECT `ApplicationID`, `ApplicantID`, `JobID`, `SubmissionDate`, `Status` FROM `ApplicationJobs`
+
+mappingId	ApplicationJobs_JobID_fk
+target		ex:ApplicationJobs/{ApplicationID} p:hasJobs ex:Jobs/{JobID} .
+source		SELECT `ApplicationID`, `JobID` FROM `ApplicationJobs` WHERE `JobID` IS NOT NULL
+
+mappingId	ApplicationJobs_ApplicantID_fk
+target		ex:ApplicationJobs/{ApplicationID} p:hasApplicants ex:Applicants/{ApplicantID} .
+source		SELECT `ApplicationID`, `ApplicantID` FROM `ApplicationJobs` WHERE `ApplicantID` IS NOT NULL
+
+]]

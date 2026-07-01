@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_crew",
+  "schema": "amb_attachment_1tab_ref_crew",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all directors and editors of shows with hour-long episodes.",
+      "qtype": "ambig",
+      "sql": "SELECT Crew.Name \nFROM Crew JOIN Episodes ON Crew.Episode_ID = Episodes.Episode_ID\nWHERE (Crew.Position = \"Director\" OR Crew.Position = \"Editor\") AND Episodes.EpisodeLength = \"01:00:00\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?crew a :Crew .\n  ?episodes a :Episodes .\n  ?crew p:hasEpisodes ?episodes .\n  ?crew p:name ?name .\n  ?crew p:Position ?position_w .\n  ?crew p:Position ?position_w2 .\n  ?episodes p:EpisodeLength ?episodelength_w .\n  FILTER((((STR(?position_w) = \"Director\" || STR(?position_w2) = \"Editor\")) && STR(?episodelength_w) = \"01:00:00\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all directors and editors of shows with hour-long episodes.",
+      "qtype": "ambig",
+      "sql": "SELECT Crew.Name \nFROM Crew JOIN Episodes ON Crew.Episode_ID = Episodes.Episode_ID\nWHERE Crew.Position = \"Director\" OR Crew.Position = \"Editor\" AND Episodes.EpisodeLength = \"01:00:00\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?crew a :Crew .\n  ?episodes a :Episodes .\n  ?crew p:hasEpisodes ?episodes .\n  ?crew p:name ?name .\n  ?crew p:Position ?position_w .\n  ?crew p:Position ?position_w2 .\n  ?episodes p:EpisodeLength ?episodelength_w .\n  FILTER((STR(?position_w) = \"Director\" || (STR(?position_w2) = \"Editor\" && STR(?episodelength_w) = \"01:00:00\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all directors and editors of shows with hour-long episodes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?crew a :Crew .\n  ?episodes a :Episodes .\n  ?crew p:hasEpisodes ?episodes .\n  ?crew p:name ?name .\n  ?crew p:Position ?position_w .\n  ?crew p:Position ?position_w2 .\n  ?episodes p:EpisodeLength ?episodelength_w .\n  FILTER((((STR(?position_w) = \"Director\" || STR(?position_w2) = \"Editor\")) && STR(?episodelength_w) = \"01:00:00\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?crew a :Crew .\n  ?episodes a :Episodes .\n  ?crew p:hasEpisodes ?episodes .\n  ?crew p:name ?name .\n  ?crew p:Position ?position_w .\n  ?crew p:Position ?position_w2 .\n  ?episodes p:EpisodeLength ?episodelength_w .\n  FILTER((STR(?position_w) = \"Director\" || (STR(?position_w2) = \"Editor\" && STR(?episodelength_w) = \"01:00:00\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

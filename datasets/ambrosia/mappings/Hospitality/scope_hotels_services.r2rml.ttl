@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_hotels_services_0_Hotels_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HotelID\", \"Name\", \"Location\" FROM \"Hotels\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{HotelID}" ; rr:class :Hotels ] ;
+  rr:predicateObjectMap [ rr:predicate p:HotelID ; rr:objectMap [ rr:column "HotelID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_hotels_services_1_Services_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ServiceID\", \"ServiceName\" FROM \"Services\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Services/{ServiceID}" ; rr:class :Services ] ;
+  rr:predicateObjectMap [ rr:predicate p:ServiceID ; rr:objectMap [ rr:column "ServiceID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ServiceName ; rr:objectMap [ rr:column "ServiceName" ] ] .
+
+<#tm_scope_hotels_services_2_Hotels_Services_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Hotels_ID\", \"Service_ID\" FROM \"Hotels_Services\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels_Services/{Hotels_ID}/{Service_ID}" ; rr:class :Hotels_Services ] ;
+  rr:predicateObjectMap [ rr:predicate p:Hotels_ID ; rr:objectMap [ rr:column "Hotels_ID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Service_ID ; rr:objectMap [ rr:column "Service_ID" ] ] .
+
+<#tm_scope_hotels_services_3_Hotels_Services_Service_ID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Hotels_ID\", \"Service_ID\" FROM \"Hotels_Services\" WHERE \"Service_ID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels_Services/{Hotels_ID}/{Service_ID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasServices ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Services/{Service_ID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_hotels_services_4_Hotels_Services_Hotels_ID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Hotels_ID\", \"Service_ID\" FROM \"Hotels_Services\" WHERE \"Hotels_ID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels_Services/{Hotels_ID}/{Service_ID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHotels ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{Hotels_ID}" ; rr:termType rr:IRI ] ] .
+

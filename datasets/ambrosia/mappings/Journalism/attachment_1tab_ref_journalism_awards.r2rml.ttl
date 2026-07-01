@@ -1,0 +1,65 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_journalism_awards_0_Authors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AuthorID\", \"FirstName\", \"LastName\" FROM \"Authors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Authors/{AuthorID}" ; rr:class :Authors ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_1_Publications_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublisherID\", \"Name\", \"YearOfEstablishment\" FROM \"Publications\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publications/{PublisherID}" ; rr:class :Publications ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublisherID ; rr:objectMap [ rr:column "PublisherID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:YearOfEstablishment ; rr:objectMap [ rr:column "YearOfEstablishment" ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_2_Articles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ArticleID\", \"Title\", \"Content\", \"DatePublished\", \"AuthorID\", \"PublisherID\" FROM \"Articles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ; rr:class :Articles ] ;
+  rr:predicateObjectMap [ rr:predicate p:ArticleID ; rr:objectMap [ rr:column "ArticleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Content ; rr:objectMap [ rr:column "Content" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DatePublished ; rr:objectMap [ rr:column "DatePublished" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublisherID ; rr:objectMap [ rr:column "PublisherID" ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_3_Articles_PublisherID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ArticleID\", \"PublisherID\" FROM \"Articles\" WHERE \"PublisherID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPublications ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publications/{PublisherID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_4_Articles_AuthorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ArticleID\", \"AuthorID\" FROM \"Articles\" WHERE \"AuthorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAuthors ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Authors/{AuthorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_5_Awards_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AwardID\", \"AwardType\" FROM \"Awards\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Awards/{AwardID}" ; rr:class :Awards ] ;
+  rr:predicateObjectMap [ rr:predicate p:AwardID ; rr:objectMap [ rr:column "AwardID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AwardType ; rr:objectMap [ rr:column "AwardType" ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_6_Winners_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"WinningArticleID\", \"Year\", \"AwardID\" FROM \"Winners\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Winners/{id}" ; rr:class :Winners ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:WinningArticleID ; rr:objectMap [ rr:column "WinningArticleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Year ; rr:objectMap [ rr:column "Year" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AwardID ; rr:objectMap [ rr:column "AwardID" ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_7_Winners_AwardID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"AwardID\" FROM \"Winners\" WHERE \"AwardID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Winners/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAwards ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Awards/{AwardID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_journalism_awards_8_Winners_WinningArticleID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"WinningArticleID\" FROM \"Winners\" WHERE \"WinningArticleID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Winners/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasArticles ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{WinningArticleID}" ; rr:termType rr:IRI ] ] .
+

@@ -1,0 +1,97 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "vague_2cols_production",
+  "schema": "amb_vague_2cols_production",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which studio made each production? Split by movie",
+      "qtype": "unambig",
+      "sql": "SELECT a.title, b.name FROM Movie a JOIN Studio b ON a.studio_id = b.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?a a :Movies .\n  ?b a :Studio .\n  ?a p:hasStudio ?b .\n  ?a p:title ?title .\n  ?b p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What were the comments split by movies and their productions?",
+      "qtype": "ambig",
+      "sql": "SELECT a.title, b.comments, c.name FROM Movie a JOIN Review b ON a.id = b.movie_id JOIN Studio c ON c.id = a.studio_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?comments ?name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What were the comments split by movies and their productions?",
+      "qtype": "ambig",
+      "sql": "SELECT a.title, b.comments, c.Full_name FROM Movie a JOIN Review b ON a.id = b.movie_id JOIN Producer c ON c.id = a.producer_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?comments ?full_name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Producers .\n  ?a p:hasProducer ?c .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "What were the comments split by movies and their productions?",
+      "qtype": "ambig",
+      "sql": "SELECT a.title, b.comments, c.name, p.full_name FROM Movie a JOIN Review b ON a.id = b.movie_id JOIN Studio c ON c.id = a.studio_id JOIN Producer p ON p.id = a.producer_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?comments ?name ?full_name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?p a :Producers .\n  ?a p:hasProducer ?p .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?name .\n  ?p p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Which studio and producer made each production? Split by movie",
+      "qtype": "unambig",
+      "sql": "SELECT a.title, c.name, p.full_name FROM Movie a JOIN Studio c ON a.studio_id = c.id JOIN Producer p ON p.id = a.producer_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?full_name WHERE {\n  ?a a :Movies .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?p a :Producers .\n  ?a p:hasProducer ?p .\n  ?a p:title ?title .\n  ?c p:name ?name .\n  ?p p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Which producer made each production? Split by movie",
+      "qtype": "unambig",
+      "sql": "SELECT a.title, c.Full_name FROM Movie a JOIN Producer c ON a.producer_id = c.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?full_name WHERE {\n  ?a a :Movies .\n  ?c a :Producers .\n  ?a p:hasProducer ?c .\n  ?a p:title ?title .\n  ?c p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who made each production? Split by movie",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?name WHERE {\n  ?a a :Movies .\n  ?b a :Studio .\n  ?a p:hasStudio ?b .\n  ?a p:title ?title .\n  ?b p:name ?name .\n} }\n  full: { SELECT ?title ?name ?full_name WHERE {\n  ?a a :Movies .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?p a :Producers .\n  ?a p:hasProducer ?p .\n  ?a p:title ?title .\n  ?c p:name ?name .\n  ?p p:name ?full_name .\n} }\n  component_2: { SELECT ?title ?full_name WHERE {\n  ?a a :Movies .\n  ?c a :Producers .\n  ?a p:hasProducer ?c .\n  ?a p:title ?title .\n  ?c p:name ?full_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What were the comments split by movies and their productions?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?comments ?name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?name .\n} }\n  full: { SELECT ?title ?comments ?name ?full_name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Studio .\n  ?a p:hasStudio ?c .\n  ?p a :Producers .\n  ?a p:hasProducer ?p .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?name .\n  ?p p:name ?full_name .\n} }\n  component_2: { SELECT ?title ?comments ?full_name WHERE {\n  ?a a :Movies .\n  ?b a :Review .\n  ?b p:hasMovie ?a .\n  ?c a :Producers .\n  ?a p:hasProducer ?c .\n  ?a p:title ?title .\n  ?b p:comments ?comments .\n  ?c p:name ?full_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

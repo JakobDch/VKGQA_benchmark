@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_debit_cards_fees_0_Debit_Cards_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CardID\", \"CustomerName\", \"AccountBalance\" FROM \"Debit_Cards\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Debit_Cards/{CardID}" ; rr:class :Debit_Cards ] ;
+  rr:predicateObjectMap [ rr:predicate p:CardID ; rr:objectMap [ rr:column "CardID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerName ; rr:objectMap [ rr:column "CustomerName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountBalance ; rr:objectMap [ rr:column "AccountBalance" ] ] .
+
+<#tm_scope_debit_cards_fees_1_Fees_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FeeType\", \"FeeValue\" FROM \"Fees\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Fees/{FeeType}" ; rr:class :Fees ] ;
+  rr:predicateObjectMap [ rr:predicate p:FeeType ; rr:objectMap [ rr:column "FeeType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FeeValue ; rr:objectMap [ rr:column "FeeValue" ] ] .
+
+<#tm_scope_debit_cards_fees_2_Debit_Card_Fees_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"CardID\", \"FeeType\", \"AmountPaid\" FROM \"Debit_Card_Fees\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Debit_Card_Fees/{_amb_rowid}" ; rr:class :Debit_Card_Fees ] ;
+  rr:predicateObjectMap [ rr:predicate p:CardID ; rr:objectMap [ rr:column "CardID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FeeType ; rr:objectMap [ rr:column "FeeType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AmountPaid ; rr:objectMap [ rr:column "AmountPaid" ] ] .
+
+<#tm_scope_debit_cards_fees_3_Debit_Card_Fees_FeeType_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FeeType\" FROM \"Debit_Card_Fees\" WHERE \"FeeType\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Debit_Card_Fees/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFees ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Fees/{FeeType}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_debit_cards_fees_4_Debit_Card_Fees_CardID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"CardID\" FROM \"Debit_Card_Fees\" WHERE \"CardID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Debit_Card_Fees/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDebit_Cards ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Debit_Cards/{CardID}" ; rr:termType rr:IRI ] ] .
+

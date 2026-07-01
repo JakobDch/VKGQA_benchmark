@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:Cities/{id} a :Cities ; p:id {id} ; p:name {name} ; p:country {country} .
+source		SELECT `id`, `name`, `country` FROM `City`
+
+mappingId	Flight_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:flight_number {flight_number} ; p:departure_time {departure_time} ; p:arrival_time {arrival_time} ; p:terminal_id {terminal_id} ; p:origin_city_id {origin_city_id} ; p:destination_city_id {destination_city_id} .
+source		SELECT `id`, `flight_number`, `departure_time`, `arrival_time`, `terminal_id`, `origin_city_id`, `destination_city_id` FROM `Flight`
+
+mappingId	Flight_destination_city_id_fk
+target		ex:Flights/{id} p:hasCities_destination_city_id ex:Cities/{destination_city_id} .
+source		SELECT `id`, `destination_city_id` FROM `Flight` WHERE `destination_city_id` IS NOT NULL
+
+mappingId	Flight_origin_city_id_fk
+target		ex:Flights/{id} p:hasCities_origin_city_id ex:Cities/{origin_city_id} .
+source		SELECT `id`, `origin_city_id` FROM `Flight` WHERE `origin_city_id` IS NOT NULL
+
+mappingId	Flight_terminal_id_fk
+target		ex:Flights/{id} p:hasTerminals ex:Terminals/{terminal_id} .
+source		SELECT `id`, `terminal_id` FROM `Flight` WHERE `terminal_id` IS NOT NULL
+
+mappingId	Airline_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:airline_name {airline_name} ; p:headquarter_city_id {headquarter_city_id} .
+source		SELECT `id`, `airline_name`, `headquarter_city_id` FROM `Airline`
+
+mappingId	Airline_headquarter_city_id_fk
+target		ex:Airlines/{id} p:hasCities ex:Cities/{headquarter_city_id} .
+source		SELECT `id`, `headquarter_city_id` FROM `Airline` WHERE `headquarter_city_id` IS NOT NULL
+
+mappingId	Pilot_base
+target		ex:Pilots/{id} a :Pilots ; p:id {id} ; p:pilot_license_number {pilot_license_number} ; p:home_airport_code {home_airport_code} .
+source		SELECT `id`, `pilot_license_number`, `home_airport_code` FROM `Pilot`
+
+mappingId	Pilot_home_airport_code_fk
+target		ex:Pilots/{id} p:hasCities ex:Cities/{home_airport_code} .
+source		SELECT `id`, `home_airport_code` FROM `Pilot` WHERE `home_airport_code` IS NOT NULL
+
+mappingId	Plane_base
+target		ex:Planes/{id} a :Planes ; p:id {id} ; p:plane_type {plane_type} ; p:capacity {capacity} ; p:registered_to_airline_id {registered_to_airline_id} ; p:current_pilot_id {current_pilot_id} .
+source		SELECT `id`, `plane_type`, `capacity`, `registered_to_airline_id`, `current_pilot_id` FROM `Plane`
+
+mappingId	Plane_current_pilot_id_fk
+target		ex:Planes/{id} p:hasPilots ex:Pilots/{current_pilot_id} .
+source		SELECT `id`, `current_pilot_id` FROM `Plane` WHERE `current_pilot_id` IS NOT NULL
+
+mappingId	Plane_registered_to_airline_id_fk
+target		ex:Planes/{id} p:hasAirlines ex:Airlines/{registered_to_airline_id} .
+source		SELECT `id`, `registered_to_airline_id` FROM `Plane` WHERE `registered_to_airline_id` IS NOT NULL
+
+mappingId	Terminal_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:terminal_name {terminal_name} .
+source		SELECT `id`, `terminal_name` FROM `Terminal`
+
+]]

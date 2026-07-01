@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_spa_treatments",
+  "schema": "amb_scope_spa_treatments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which treatments are common to all spas and what are their descriptions?",
+      "qtype": "unambig",
+      "sql": "SELECT Treatments.name, Treatments.description  from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id   GROUP BY Spa_Treatments.treatment_id HAVING COUNT(DISTINCT Spa_Treatments.spa_id) = (SELECT COUNT(*) FROM  Spa)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me descriptions of treatments available for every spa.",
+      "qtype": "ambig",
+      "sql": "SELECT Treatments.description  from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id   GROUP BY Spa_Treatments.treatment_id HAVING COUNT(DISTINCT Spa_Treatments.spa_id) = (SELECT COUNT(*) FROM  Spa)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me descriptions of treatments available for every spa.",
+      "qtype": "ambig",
+      "sql": "select spa.name , treatments.description from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "What treatment options do we have for each spa?",
+      "qtype": "ambig",
+      "sql": "SELECT Treatments.name  from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id   GROUP BY Spa_Treatments.treatment_id HAVING COUNT(DISTINCT Spa_Treatments.spa_id) = (SELECT COUNT(*) FROM  Spa)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What treatment options do we have for each spa?",
+      "qtype": "ambig",
+      "sql": "select spa.name , treatments.name from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the treatments that every spa has and their descriptions.",
+      "qtype": "ambig",
+      "sql": "select spa.name , treatments.name , treatments.description from Spa_Treatments join Treatments on Spa_Treatments.treatment_id = Treatments.treatment_id join Spa on Spa_Treatments.spa_id = Spa.spa_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?description WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:name ?name2 .\n  ?treatments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the treatments that every spa has and their descriptions.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 ?description WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:name ?name2 .\n  ?treatments p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me descriptions of treatments available for every spa.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What treatment options do we have for each spa?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?spa_treatments a :Spa_Treatments .\n  ?treatments a :Treatments .\n  ?spa_treatments p:hasTreatments ?treatments .\n  ?spa a :Spa .\n  ?spa_treatments p:hasSpa ?spa .\n  ?spa p:name ?name .\n  ?treatments p:name ?name2 .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTreatments ?child ; p:hasSpa ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Spa } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

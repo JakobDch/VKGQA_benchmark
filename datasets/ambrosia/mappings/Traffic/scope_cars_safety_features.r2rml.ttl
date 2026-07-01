@@ -1,0 +1,34 @@
+@prefix : <http://ambrosia.example.org/traffic#> .
+@prefix p: <http://ambrosia.example.org/traffic/prop#> .
+@prefix ex: <http://ambrosia.example.org/traffic/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_cars_safety_features_0_Cars_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"make\", \"model\" FROM \"Cars\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Cars/{id}" ; rr:class :Cars ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:make ; rr:objectMap [ rr:column "make" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:model ; rr:objectMap [ rr:column "model" ] ] .
+
+<#tm_scope_cars_safety_features_1_Safety_Features_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"featureId\", \"name\" FROM \"Safety_Features\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Safety_Features/{featureId}" ; rr:class :Safety_Features ] ;
+  rr:predicateObjectMap [ rr:predicate p:featureId ; rr:objectMap [ rr:column "featureId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] .
+
+<#tm_scope_cars_safety_features_2_Cars_Safety_Features_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"carId\", \"featureId\" FROM \"Cars_Safety_Features\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Cars_Safety_Features/{featureId}/{carId}" ; rr:class :Cars_Safety_Features ] .
+
+<#tm_scope_cars_safety_features_3_Cars_Safety_Features_featureId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"featureId\", \"carId\" FROM \"Cars_Safety_Features\" WHERE \"featureId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Cars_Safety_Features/{featureId}/{carId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSafety_Features ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Safety_Features/{featureId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_cars_safety_features_4_Cars_Safety_Features_carId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"featureId\", \"carId\" FROM \"Cars_Safety_Features\" WHERE \"carId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Cars_Safety_Features/{featureId}/{carId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCars ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Cars/{carId}" ; rr:termType rr:IRI ] ] .
+

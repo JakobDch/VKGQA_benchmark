@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{authorID} a :Authors ; p:authorID {authorID} ; p:name {name} ; p:email {email} .
+source		SELECT `authorID`, `name`, `email` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:title {title} ; p:content {content} ; p:publicationDate {publicationDate} ; p:authorID {authorID} .
+source		SELECT `articleID`, `title`, `content`, `publicationDate`, `authorID` FROM `Articles`
+
+mappingId	Articles_authorID_fk
+target		ex:Articles/{articleID} p:hasAuthors ex:Authors/{authorID} .
+source		SELECT `articleID`, `authorID` FROM `Articles` WHERE `authorID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{sourceID} a :Sources ; p:sourceID {sourceID} ; p:name {name} ; p:url {url} .
+source		SELECT `sourceID`, `name`, `url` FROM `Sources`
+
+mappingId	ArticleSources_base
+target		ex:Article_Source/{articleSourceID} a :Article_Source ; p:articleSourceID {articleSourceID} ; p:articleID {articleID} ; p:sourceID {sourceID} ; p:referenceDate {referenceDate} .
+source		SELECT `articleSourceID`, `articleID`, `sourceID`, `referenceDate` FROM `ArticleSources`
+
+mappingId	ArticleSources_sourceID_fk
+target		ex:Article_Source/{articleSourceID} p:hasSources ex:Sources/{sourceID} .
+source		SELECT `articleSourceID`, `sourceID` FROM `ArticleSources` WHERE `sourceID` IS NOT NULL
+
+mappingId	ArticleSources_articleID_fk
+target		ex:Article_Source/{articleSourceID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `articleSourceID`, `articleID` FROM `ArticleSources` WHERE `articleID` IS NOT NULL
+
+mappingId	ContentManagementSystems_base
+target		ex:ContentManagementSystems/{cmsId} a :ContentManagementSystems ; p:cmsId {cmsId} ; p:Content_Management_System {Content_Management_System} ; p:Web_Framework {Web_Framework} ; p:Online_News_Platform {Online_News_Platform} .
+source		SELECT `cmsId`, `Content_Management_System`, `Web_Framework`, `Online_News_Platform` FROM `ContentManagementSystems`
+
+mappingId	ContentManagementSystems_cmsId_fk
+target		ex:ContentManagementSystems/{cmsId} p:hasArticles ex:Articles/{cmsId} .
+source		SELECT `cmsId` FROM `ContentManagementSystems` WHERE `cmsId` IS NOT NULL
+
+mappingId	EditorialTeamMembers_base
+target		ex:EditorialTeamMembers/{memberID} a :EditorialTeamMembers ; p:memberID {memberID} ; p:role {role} ; p:editorName {editorName} .
+source		SELECT `memberID`, `role`, `editorName` FROM `EditorialTeamMembers`
+
+]]

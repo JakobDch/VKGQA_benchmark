@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_magazines_categories",
+  "schema": "amb_scope_magazines_categories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the categories that every magazine has.",
+      "qtype": "ambig",
+      "sql": "SELECT Categories.categoryName  from Magazines_Categories join Categories on Magazines_Categories.categoryId = Categories.id join Magazines on Magazines_Categories.magazineId = Magazines.magazineId   GROUP BY Magazines_Categories.categoryId HAVING COUNT(DISTINCT Magazines_Categories.magazineId) = (SELECT COUNT(*) FROM  Magazines)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasMagazines ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Magazines } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the categories that every magazine has.",
+      "qtype": "ambig",
+      "sql": "select magazines.magazinetitle , categories.categoryname from Magazines_Categories join Categories on Magazines_Categories.categoryId = Categories.id join Magazines on Magazines_Categories.magazineId = Magazines.magazineId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?magazinetitle ?categoryname WHERE {\n  ?magazines_categories a :Magazines_Categories .\n  ?categories a :Category .\n  ?magazines_categories p:hasCategories ?categories .\n  ?magazines a :Magazines .\n  ?magazines_categories p:hasMagazines ?magazines .\n  ?magazines p:magazineTitle ?magazinetitle .\n  ?categories p:categoryName ?categoryname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the categories that every magazine has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasMagazines ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Magazines } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?magazinetitle ?categoryname WHERE {\n  ?magazines_categories a :Magazines_Categories .\n  ?categories a :Category .\n  ?magazines_categories p:hasCategories ?categories .\n  ?magazines a :Magazines .\n  ?magazines_categories p:hasMagazines ?magazines .\n  ?magazines p:magazineTitle ?magazinetitle .\n  ?categories p:categoryName ?categoryname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_books_formats",
+  "schema": "amb_scope_books_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which format is shared among all books?",
+      "qtype": "unambig",
+      "sql": "SELECT Formats.name  from Book_Formats join Formats on Book_Formats.format_id = Formats.id join Books on Book_Formats.book_id = Books.id   GROUP BY Book_Formats.format_id HAVING COUNT(DISTINCT Book_Formats.book_id) = (SELECT COUNT(*) FROM  Books)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:format_id ?cg . ?child a :Formats ; p:id ?cg . ?l p:book_id ?pg . ?parent a :Book ; p:id ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Book } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each book, could you provide the corresponding format?",
+      "qtype": "unambig",
+      "sql": "select books.title , formats.name from Book_Formats join Formats on Book_Formats.format_id = Formats.id join Books on Book_Formats.book_id = Books.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?book_formats a :Book_Formats .\n  ?formats a :Formats .\n  ?book_formats p:hasFormats ?formats .\n  ?books a :Book .\n  ?book_formats p:hasBooks ?books .\n  ?books p:title ?title .\n  ?formats p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which formats are associated with each book?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:format_id ?cg . ?child a :Formats ; p:id ?cg . ?l p:book_id ?pg . ?parent a :Book ; p:id ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Book } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?name WHERE {\n  ?book_formats a :Book_Formats .\n  ?formats a :Formats .\n  ?book_formats p:hasFormats ?formats .\n  ?books a :Book .\n  ?book_formats p:hasBooks ?books .\n  ?books p:title ?title .\n  ?formats p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

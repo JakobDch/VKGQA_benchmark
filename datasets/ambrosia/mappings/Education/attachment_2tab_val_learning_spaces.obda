@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Science_Lab_base
+target		ex:Science_Lab/{ID} a :Science_Lab ; p:ID {ID} ; p:name {Name} ; p:Capacity {Capacity} ; p:Available_Resources {Available_Resources} .
+source		SELECT `ID`, `Name`, `Capacity`, `Available_Resources` FROM `Science_Lab`
+
+mappingId	Art_Studio_base
+target		ex:Art_Studio/{ID} a :Art_Studio ; p:ID {ID} ; p:name {Name} ; p:Capacity {Capacity} ; p:Available_Resources {Available_Resources} .
+source		SELECT `ID`, `Name`, `Capacity`, `Available_Resources` FROM `Art_Studio`
+
+mappingId	Teacher_base
+target		ex:Teachers/{ID} a :Teachers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Subject {Subject} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Subject` FROM `Teacher`
+
+mappingId	Student_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Age` FROM `Student`
+
+mappingId	Class_base
+target		ex:Classes/{ID} a :Classes ; p:ID {ID} ; p:Classroom {Classroom} ; p:Time {Time} ; p:Day {Day} .
+source		SELECT `ID`, `Classroom`, `Time`, `Day` FROM `Class`
+
+mappingId	Assigns_base
+target		ex:Assigns/{_amb_rowid} a :Assigns ; p:TeacherID {TeacherID} ; p:StudentID {StudentID} ; p:ClassID {ClassID} .
+source		SELECT `_amb_rowid`, `TeacherID`, `StudentID`, `ClassID` FROM `Assigns`
+
+mappingId	Assigns_ClassID_fk
+target		ex:Assigns/{_amb_rowid} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `_amb_rowid`, `ClassID` FROM `Assigns` WHERE `ClassID` IS NOT NULL
+
+mappingId	Assigns_StudentID_fk
+target		ex:Assigns/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `Assigns` WHERE `StudentID` IS NOT NULL
+
+mappingId	Assigns_TeacherID_fk
+target		ex:Assigns/{_amb_rowid} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `_amb_rowid`, `TeacherID` FROM `Assigns` WHERE `TeacherID` IS NOT NULL
+
+]]

@@ -1,0 +1,30 @@
+@prefix : <http://ambrosia.example.org/traffic#> .
+@prefix p: <http://ambrosia.example.org/traffic/prop#> .
+@prefix ex: <http://ambrosia.example.org/traffic/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_routes_restrictions_0_Routes_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"routeName\", \"distance\" FROM \"Routes\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Routes/{id}" ; rr:class :Routes ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "routeName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:distance ; rr:objectMap [ rr:column "distance" ] ] .
+
+<#tm_scope_routes_restrictions_1_Restrictions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"restrictionType\", \"value\" FROM \"Restrictions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Restrictions/{restrictionType}/{value}" ; rr:class :Restrictions ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "restrictionType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:value ; rr:objectMap [ rr:column "value" ] ] .
+
+<#tm_scope_routes_restrictions_2_Routes_Restrictions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"routesId\", \"restrictionsType\" FROM \"Routes_Restrictions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Routes_Restrictions/{routesId}/{restrictionsType}" ; rr:class :Routes_Restrictions ] ;
+  rr:predicateObjectMap [ rr:predicate p:restrictionsType ; rr:objectMap [ rr:column "restrictionsType" ] ] .
+
+<#tm_scope_routes_restrictions_3_Routes_Restrictions_routesId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"routesId\", \"restrictionsType\" FROM \"Routes_Restrictions\" WHERE \"routesId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Routes_Restrictions/{routesId}/{restrictionsType}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRoutes ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Routes/{routesId}" ; rr:termType rr:IRI ] ] .
+

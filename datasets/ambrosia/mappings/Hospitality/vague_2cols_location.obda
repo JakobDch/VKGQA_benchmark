@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Rooms_base
+target		ex:Rooms/{RoomID} a :Rooms ; p:RoomID {RoomID} ; p:Building {Building} ; p:Area {Area} ; p:Spa {Spa} ; p:Occupied {Occupied} ; p:Rate {Rate} .
+source		SELECT `RoomID`, `Building`, `Area`, `Spa`, `Occupied`, `Rate` FROM `Rooms`
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Customers`
+
+mappingId	Reservations_base
+target		ex:Reservations/{ReservationID} a :Reservations ; p:ReservationID {ReservationID} ; p:CustomerID {CustomerID} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} ; p:TotalAmount {TotalAmount} .
+source		SELECT `ReservationID`, `CustomerID`, `CheckInDate`, `CheckOutDate`, `TotalAmount` FROM `Reservations`
+
+mappingId	Reservations_CustomerID_fk
+target		ex:Reservations/{ReservationID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `ReservationID`, `CustomerID` FROM `Reservations` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Services_base
+target		ex:Services/{ServiceID} a :Services ; p:ServiceID {ServiceID} ; p:Description {Description} ; p:Price {Price} .
+source		SELECT `ServiceID`, `Description`, `Price` FROM `Services`
+
+mappingId	BookedServices_base
+target		ex:BookedServices/{BookingID} a :BookedServices ; p:BookingID {BookingID} ; p:ReservationID {ReservationID} ; p:ServiceID {ServiceID} ; p:Quantity {Quantity} ; p:TotalAmount {TotalAmount} .
+source		SELECT `BookingID`, `ReservationID`, `ServiceID`, `Quantity`, `TotalAmount` FROM `BookedServices`
+
+mappingId	BookedServices_ServiceID_fk
+target		ex:BookedServices/{BookingID} p:hasServices ex:Services/{ServiceID} .
+source		SELECT `BookingID`, `ServiceID` FROM `BookedServices` WHERE `ServiceID` IS NOT NULL
+
+mappingId	BookedServices_ReservationID_fk
+target		ex:BookedServices/{BookingID} p:hasReservations ex:Reservations/{ReservationID} .
+source		SELECT `BookingID`, `ReservationID` FROM `BookedServices` WHERE `ReservationID` IS NOT NULL
+
+]]

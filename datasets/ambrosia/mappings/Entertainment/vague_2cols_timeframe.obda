@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Artists_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:ArtistName {ArtistName} .
+source		SELECT `ArtistID`, `ArtistName` FROM `Artists`
+
+mappingId	Albums_base
+target		ex:Album/{AlbumID} a :Album ; p:AlbumID {AlbumID} ; p:Year {Year} ; p:Month {Month} ; p:AlbumName {AlbumName} ; p:Genre {Genre} ; p:ArtistID {ArtistID} .
+source		SELECT `AlbumID`, `Year`, `Month`, `AlbumName`, `Genre`, `ArtistID` FROM `Albums`
+
+mappingId	Albums_ArtistID_fk
+target		ex:Album/{AlbumID} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `AlbumID`, `ArtistID` FROM `Albums` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Songs_base
+target		ex:Song/{SongID} a :Song ; p:SongID {SongID} ; p:SongTitle {SongTitle} ; p:Duration {Duration} ; p:AlbumID {AlbumID} .
+source		SELECT `SongID`, `SongTitle`, `Duration`, `AlbumID` FROM `Songs`
+
+mappingId	Songs_AlbumID_fk
+target		ex:Song/{SongID} p:hasAlbum ex:Album/{AlbumID} .
+source		SELECT `SongID`, `AlbumID` FROM `Songs` WHERE `AlbumID` IS NOT NULL
+
+mappingId	MusicLabels_base
+target		ex:Music_Labels/{LabelID} a :Music_Labels ; p:LabelID {LabelID} ; p:LabelName {LabelName} ; p:ArtistID {ArtistID} .
+source		SELECT `LabelID`, `LabelName`, `ArtistID` FROM `MusicLabels`
+
+mappingId	MusicLabels_ArtistID_fk
+target		ex:Music_Labels/{LabelID} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `LabelID`, `ArtistID` FROM `MusicLabels` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Concerts_base
+target		ex:Concert/{ConcertID} a :Concert ; p:ConcertID {ConcertID} ; p:Date {Date} ; p:Venue {Venue} ; p:City {City} ; p:Country {Country} ; p:HeadlinerID {HeadlinerID} ; p:OpeningActID {OpeningActID} .
+source		SELECT `ConcertID`, `Date`, `Venue`, `City`, `Country`, `HeadlinerID`, `OpeningActID` FROM `Concerts`
+
+mappingId	Concerts_OpeningActID_fk
+target		ex:Concert/{ConcertID} p:hasArtist_OpeningActID ex:Artist/{OpeningActID} .
+source		SELECT `ConcertID`, `OpeningActID` FROM `Concerts` WHERE `OpeningActID` IS NOT NULL
+
+mappingId	Concerts_HeadlinerID_fk
+target		ex:Concert/{ConcertID} p:hasArtist_HeadlinerID ex:Artist/{HeadlinerID} .
+source		SELECT `ConcertID`, `HeadlinerID` FROM `Concerts` WHERE `HeadlinerID` IS NOT NULL
+
+mappingId	Tickets_base
+target		ex:Tickets/{TicketID} a :Tickets ; p:TicketID {TicketID} ; p:Quantity {Quantity} ; p:Price {Price} ; p:ConcertID {ConcertID} .
+source		SELECT `TicketID`, `Quantity`, `Price`, `ConcertID` FROM `Tickets`
+
+mappingId	Tickets_ConcertID_fk
+target		ex:Tickets/{TicketID} p:hasConcert ex:Concert/{ConcertID} .
+source		SELECT `TicketID`, `ConcertID` FROM `Tickets` WHERE `ConcertID` IS NOT NULL
+
+]]

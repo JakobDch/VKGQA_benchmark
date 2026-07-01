@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_frequent_flyer_program_benefits",
+  "schema": "amb_scope_frequent_flyer_program_benefits",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each frequent flyer program, could you provide the corresponding benefit descriptions?",
+      "qtype": "unambig",
+      "sql": "select frequent_flyer_program.programid , benefits.description from Frequent_Flyer_Program_Benefits join Benefits on Frequent_Flyer_Program_Benefits.BenefitId = Benefits.BenefitId join Frequent_Flyer_Program on Frequent_Flyer_Program_Benefits.ProgramId = Frequent_Flyer_Program.ProgramId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?programid ?description WHERE {\n  ?frequent_flyer_program_benefits a :Frequent_Flyer_Program_Benefits .\n  ?benefits a :Benefits .\n  ?frequent_flyer_program_benefits p:hasBenefits ?benefits .\n  ?frequent_flyer_program a :Frequent_Flyer_Program .\n  ?frequent_flyer_program_benefits p:hasFrequent_Flyer_Program ?frequent_flyer_program .\n  ?frequent_flyer_program p:ProgramId ?programid .\n  ?benefits p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "What benefits descriptions are associated with each frequent flyer program?",
+      "qtype": "ambig",
+      "sql": "SELECT Benefits.Description  from Frequent_Flyer_Program_Benefits join Benefits on Frequent_Flyer_Program_Benefits.BenefitId = Benefits.BenefitId join Frequent_Flyer_Program on Frequent_Flyer_Program_Benefits.ProgramId = Frequent_Flyer_Program.ProgramId   GROUP BY Frequent_Flyer_Program_Benefits.BenefitId HAVING COUNT(DISTINCT Frequent_Flyer_Program_Benefits.ProgramId) = (SELECT COUNT(*) FROM  Frequent_Flyer_Program)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBenefits ?child ; p:hasFrequent_Flyer_Program ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Frequent_Flyer_Program } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What benefits descriptions are associated with each frequent flyer program?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?programid ?description WHERE {\n  ?frequent_flyer_program_benefits a :Frequent_Flyer_Program_Benefits .\n  ?benefits a :Benefits .\n  ?frequent_flyer_program_benefits p:hasBenefits ?benefits .\n  ?frequent_flyer_program a :Frequent_Flyer_Program .\n  ?frequent_flyer_program_benefits p:hasFrequent_Flyer_Program ?frequent_flyer_program .\n  ?frequent_flyer_program p:ProgramId ?programid .\n  ?benefits p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBenefits ?child ; p:hasFrequent_Flyer_Program ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Frequent_Flyer_Program } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

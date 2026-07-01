@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_audio_formats",
+  "schema": "amb_scope_streaming_services_audio_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the audio format that is the same for all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Audio_Formats.format_name  from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Audio_Formats.audio_format_id HAVING COUNT(DISTINCT Streaming_Services_Audio_Formats.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What audio formats do all streaming services have in common and what are their descriptions?",
+      "qtype": "unambig",
+      "sql": "SELECT Audio_Formats.format_name, Audio_Formats.description  from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Audio_Formats.audio_format_id HAVING COUNT(DISTINCT Streaming_Services_Audio_Formats.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?format_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show a list of every description per streaming service",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , audio_formats.description from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?description WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Show me audio formats each streaming service uses and their descriptions.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.service_name , audio_formats.format_name , audio_formats.description from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?format_name ?description WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:format_name ?format_name .\n  ?audio_formats p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Give me a list of explanations of what our audio formats do within our streaming platforms",
+      "qtype": "ambig",
+      "sql": "SELECT Audio_Formats.description  from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Audio_Formats.audio_format_id HAVING COUNT(DISTINCT Streaming_Services_Audio_Formats.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "List the audio formats available on each streaming service.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.service_name , audio_formats.format_name from Streaming_Services_Audio_Formats join Audio_Formats on Streaming_Services_Audio_Formats.audio_format_id = Audio_Formats.id join Streaming_Services on Streaming_Services_Audio_Formats.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?format_name WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:format_name ?format_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the audio formats available on each streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?format_name WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:format_name ?format_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me audio formats each streaming service uses and their descriptions.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?format_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?format_name ?description WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:format_name ?format_name .\n  ?audio_formats p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me a list of explanations of what our audio formats do within our streaming platforms",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?description WHERE {\n  ?streaming_services_audio_formats a :Streaming_Services_Audio_Formats .\n  ?audio_formats a :Audio_Formats .\n  ?streaming_services_audio_formats p:hasAudio_Formats ?audio_formats .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_audio_formats p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?audio_formats p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAudio_Formats ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

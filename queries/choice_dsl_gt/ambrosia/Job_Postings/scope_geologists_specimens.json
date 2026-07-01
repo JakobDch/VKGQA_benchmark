@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_geologists_specimens",
+  "schema": "amb_scope_geologists_specimens",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each geologist, give me the types of specimens that they have",
+      "qtype": "unambig",
+      "sql": "select geologists.name , specimens.type from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:type ?type .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 1,
+      "question": "What type of specimens does each geologist have?",
+      "qtype": "ambig",
+      "sql": "SELECT Specimens.type  from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id   GROUP BY Geologists_Specimens.specimenType HAVING COUNT(DISTINCT Geologists_Specimens.geologistId) = (SELECT COUNT(*) FROM  Geologists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "For every geologist, list the type and description of specimens.",
+      "qtype": "unambig",
+      "sql": "select geologists.name , specimens.type , specimens.description from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:type ?type .\n  ?specimens p:description ?description .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "List the types and descriptions of specimens that every geologist has.",
+      "qtype": "ambig",
+      "sql": "SELECT Specimens.type, Specimens.description  from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id   GROUP BY Geologists_Specimens.specimenType HAVING COUNT(DISTINCT Geologists_Specimens.geologistId) = (SELECT COUNT(*) FROM  Geologists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What description of specimens is common for geologists?",
+      "qtype": "unambig",
+      "sql": "SELECT Specimens.description  from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id   GROUP BY Geologists_Specimens.specimenType HAVING COUNT(DISTINCT Geologists_Specimens.geologistId) = (SELECT COUNT(*) FROM  Geologists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "For each geologist, what is the corresponding description of specimen?",
+      "qtype": "unambig",
+      "sql": "select geologists.name , specimens.description from Geologists_Specimens join Specimens on Geologists_Specimens.specimenType = Specimens.type join Geologists on Geologists_Specimens.geologistId = Geologists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:description ?description .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of specimens does each geologist have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:type ?type .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the types and descriptions of specimens that every geologist has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:type ?type .\n  ?specimens p:description ?description .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What description of specimens do we have for each geologist?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:specimenType ?cg . ?child a :Specimens ; p:type ?cg . ?l p:geologistId ?pg . ?parent a :Geologists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Geologists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?geologists_specimens a :Geologists_Specimens .\n  ?specimens a :Specimens .\n  ?geologists_specimens p:specimenType ?specimentype_l .\n  ?specimens p:type ?type_r .\n  ?geologists a :Geologists .\n  ?geologists_specimens p:hasGeologists ?geologists .\n  ?geologists p:name ?name .\n  ?specimens p:description ?description .\n  FILTER(STR(?specimentype_l) = STR(?type_r))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

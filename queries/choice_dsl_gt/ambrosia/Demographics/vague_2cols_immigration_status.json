@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_immigration_status",
+  "schema": "amb_vague_2cols_immigration_status",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me cities where more than 60,000 people live and foreign born population of that places.",
+      "qtype": "unambig",
+      "sql": "select municipality, Foreign_born_Population from population where Total_Population > 60000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?municipality ?foreign_born_population WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "show me immigrants in each city",
+      "qtype": "ambig",
+      "sql": "select Foreign_born_Population, municipality from population",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?foreign_born_population ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Municipality ?municipality .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "show me immigrants in each city",
+      "qtype": "ambig",
+      "sql": "select Naturalized_Citizens, municipality from population",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?naturalized_citizens ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Municipality ?municipality .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "show me immigrants in each city",
+      "qtype": "ambig",
+      "sql": "select Foreign_born_Population, Naturalized_Citizens, municipality from population",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?foreign_born_population ?naturalized_citizens ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Municipality ?municipality .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "show me cities and immigrants where more than 60,000 people live",
+      "qtype": "ambig",
+      "sql": "select municipality, Naturalized_Citizens from population where Total_Population > 60000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?municipality ?naturalized_citizens WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "show me cities and immigrants where more than 60,000 people live",
+      "qtype": "ambig",
+      "sql": "select municipality, Foreign_born_Population, Naturalized_Citizens from population where Total_Population > 60000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?municipality ?foreign_born_population ?naturalized_citizens WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me cities and immigrants where more than 60,000 people live",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?municipality ?foreign_born_population WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n} }\n  full: { SELECT ?municipality ?foreign_born_population ?naturalized_citizens WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n} }\n  component_2: { SELECT ?municipality ?naturalized_citizens WHERE {\n  ?population a :Population .\n  ?population p:Municipality ?municipality .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Total_Population ?total_population_f .\n  FILTER(?total_population_f > 60000)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "show me immigrants in each city",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?naturalized_citizens ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Municipality ?municipality .\n} }\n  component_2: { SELECT ?foreign_born_population ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Municipality ?municipality .\n} }\n  full: { SELECT ?foreign_born_population ?naturalized_citizens ?municipality WHERE {\n  ?population a :Population .\n  ?population p:Foreign_born_Population ?foreign_born_population .\n  ?population p:Naturalized_Citizens ?naturalized_citizens .\n  ?population p:Municipality ?municipality .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

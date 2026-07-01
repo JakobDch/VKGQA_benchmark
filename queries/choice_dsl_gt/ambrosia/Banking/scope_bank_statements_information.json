@@ -1,0 +1,108 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_bank_statements_information",
+  "schema": "amb_scope_bank_statements_information",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What value and description do we have for each bank statement?",
+      "qtype": "ambig",
+      "sql": "SELECT Information.description, Information.value  from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id   GROUP BY Bank_Statement_Information.information_id HAVING COUNT(DISTINCT Bank_Statement_Information.bank_statements_id) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "What value and description do we have for each bank statement?",
+      "qtype": "ambig",
+      "sql": "select bank_statements.statement_id , information.description , information.value from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?statement_id ?description ?value WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:description ?description .\n  ?information p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 2,
+      "question": "What description of information do we have for every bank statement?",
+      "qtype": "ambig",
+      "sql": "SELECT Information.description  from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id   GROUP BY Bank_Statement_Information.information_id HAVING COUNT(DISTINCT Bank_Statement_Information.bank_statements_id) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 3,
+      "question": "What description of information do we have for every bank statement?",
+      "qtype": "ambig",
+      "sql": "select bank_statements.statement_id , information.description from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?statement_id ?description WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 4,
+      "question": "For each bank statement, show me all of the value information they have",
+      "qtype": "unambig",
+      "sql": "select bank_statements.statement_id , information.value from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?statement_id ?value WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 5,
+      "question": "List the value information that is common for all bank statements",
+      "qtype": "unambig",
+      "sql": "SELECT Information.value  from Bank_Statement_Information join Information on Bank_Statement_Information.information_id = Information.info_id join Bank_Statements on Bank_Statement_Information.bank_statements_id = Bank_Statements.statement_id   GROUP BY Bank_Statement_Information.information_id HAVING COUNT(DISTINCT Bank_Statement_Information.bank_statements_id) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What description of information do we have for every bank statement?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?statement_id ?description WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What value and description do we have for each bank statement?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?statement_id ?description ?value WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:description ?description .\n  ?information p:value ?value .\n} }\n  collective: { SELECT ?description ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the value information we have for each bank statement",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?statement_id ?value WHERE {\n  ?bank_statement_information a :Bank_Statement_Information .\n  ?information a :Information .\n  ?bank_statement_information p:hasInformation ?information .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statement_information p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:statement_id ?statement_id .\n  ?information p:value ?value .\n} }\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInformation ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

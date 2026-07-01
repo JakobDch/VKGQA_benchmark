@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_quality_assurance_testers_test_cases",
+  "schema": "amb_scope_quality_assurance_testers_test_cases",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every tester, list information about test cases they use (their types and descriptions).",
+      "qtype": "unambig",
+      "sql": "select quality_assurance_testers.fullname , test_cases.casetype , test_cases.description from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?casetype ?description WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:caseType ?casetype .\n  ?test_cases p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "For every quality assurance tester, list descriptions of test cases they use.",
+      "qtype": "unambig",
+      "sql": "select quality_assurance_testers.fullname , test_cases.description from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?description WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "Can you list the quality assurance testers and the corresponding test case types.",
+      "qtype": "unambig",
+      "sql": "select quality_assurance_testers.fullname , test_cases.casetype from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?casetype WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:caseType ?casetype .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "Tell me about the different types of test cases, including their descriptions, that each tester uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Test_Cases.caseType, Test_Cases.description  from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID   GROUP BY Qualified_Tests.testCaseID HAVING COUNT(DISTINCT Qualified_Tests.testerID) = (SELECT COUNT(*) FROM  Quality_Assurance_Testers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?casetype ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:caseType ?casetype .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Can you list the test case types each quality assurance tester is qualified for?",
+      "qtype": "ambig",
+      "sql": "SELECT Test_Cases.caseType  from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID   GROUP BY Qualified_Tests.testCaseID HAVING COUNT(DISTINCT Qualified_Tests.testerID) = (SELECT COUNT(*) FROM  Quality_Assurance_Testers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?casetype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:caseType ?casetype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What are the descriptions of test cases that are common to all quality assurance testers?",
+      "qtype": "unambig",
+      "sql": "SELECT Test_Cases.description  from Qualified_Tests join Test_Cases on Qualified_Tests.testCaseID = Test_Cases.testCaseID join Quality_Assurance_Testers on Qualified_Tests.testerID = Quality_Assurance_Testers.testerID   GROUP BY Qualified_Tests.testCaseID HAVING COUNT(DISTINCT Qualified_Tests.testerID) = (SELECT COUNT(*) FROM  Quality_Assurance_Testers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me about the different types of test cases, including their descriptions, that each tester uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?casetype ?description WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:caseType ?casetype .\n  ?test_cases p:description ?description .\n} }\n  collective: { SELECT ?casetype ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:caseType ?casetype .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Describe the test cases each quality assurance tester uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?description WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Can you list the test case types each quality assurance tester is qualified for?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?casetype WHERE {\n  ?qualified_tests a :Qualified_Tests .\n  ?test_cases a :Test_Cases .\n  ?qualified_tests p:hasTest_Cases ?test_cases .\n  ?quality_assurance_testers a :Quality_Assurance_Testers .\n  ?qualified_tests p:hasQuality_Assurance_Testers ?quality_assurance_testers .\n  ?quality_assurance_testers p:name ?fullname .\n  ?test_cases p:caseType ?casetype .\n} }\n  collective: { SELECT ?casetype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:testCaseID ?cg . ?child a :Test_Cases ; p:testCaseID ?cg . ?l p:testerID ?pg . ?parent a :Quality_Assurance_Testers ; p:testerID ?pg . } GROUP BY ?child }\n  ?child p:caseType ?casetype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Quality_Assurance_Testers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

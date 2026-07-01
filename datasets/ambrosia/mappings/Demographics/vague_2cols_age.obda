@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Countries_base
+target		ex:Countries/{CountryName} a :Countries ; p:CountryName {CountryName} .
+source		SELECT `CountryName` FROM `Countries`
+
+mappingId	Regions_base
+target		ex:Regions/{RegionName} a :Regions ; p:RegionName {RegionName} ; p:CountryId {CountryId} .
+source		SELECT `RegionName`, `CountryId` FROM `Regions`
+
+mappingId	Regions_CountryId_fk
+target		ex:Regions/{RegionName} p:hasCountries ex:Countries/{CountryId} .
+source		SELECT `RegionName`, `CountryId` FROM `Regions` WHERE `CountryId` IS NOT NULL
+
+mappingId	Populations_base
+target		ex:Populations/{Year} a :Populations ; p:CityId {CityId} ; p:Year {Year} ; p:TotalPopulation {TotalPopulation} .
+source		SELECT `CityId`, `Year`, `TotalPopulation` FROM `Populations`
+
+mappingId	Populations_CityId_fk
+target		ex:Populations/{Year} p:hasCities ex:Cities/{CityId} .
+source		SELECT `Year`, `CityId` FROM `Populations` WHERE `CityId` IS NOT NULL
+
+mappingId	AgeDemographics_base
+target		ex:AgeDemographics/{Year} a :AgeDemographics ; p:CityId {CityId} ; p:Year {Year} ; p:MedianAge {MedianAge} ; p:AgeRange {AgeRange} ; p:PopulationGroup {PopulationGroup} .
+source		SELECT `CityId`, `Year`, `MedianAge`, `AgeRange`, `PopulationGroup` FROM `AgeDemographics`
+
+mappingId	AgeDemographics_CityId_fk
+target		ex:AgeDemographics/{Year} p:hasCities ex:Cities/{CityId} .
+source		SELECT `Year`, `CityId` FROM `AgeDemographics` WHERE `CityId` IS NOT NULL
+
+mappingId	Ethnicity_base
+target		ex:Ethnicity/{Year} a :Ethnicity ; p:CityId {CityId} ; p:Year {Year} ; p:WhitePercentage {WhitePercentage} ; p:BlackOrAfricanAmericanPercentage {BlackOrAfricanAmericanPercentage} ; p:AsianPercentage {AsianPercentage} ; p:HispanicOrLatinoPercentage {HispanicOrLatinoPercentage} .
+source		SELECT `CityId`, `Year`, `WhitePercentage`, `BlackOrAfricanAmericanPercentage`, `AsianPercentage`, `HispanicOrLatinoPercentage` FROM `Ethnicity`
+
+mappingId	Ethnicity_CityId_fk
+target		ex:Ethnicity/{Year} p:hasCities ex:Cities/{CityId} .
+source		SELECT `Year`, `CityId` FROM `Ethnicity` WHERE `CityId` IS NOT NULL
+
+mappingId	Cities_base
+target		ex:Cities/{id} a :Cities ; p:id {id} ; p:CityName {CityName} ; p:RegionId {RegionId} .
+source		SELECT `id`, `CityName`, `RegionId` FROM `Cities`
+
+mappingId	Cities_RegionId_fk
+target		ex:Cities/{id} p:hasRegions ex:Regions/{RegionId} .
+source		SELECT `id`, `RegionId` FROM `Cities` WHERE `RegionId` IS NOT NULL
+
+]]

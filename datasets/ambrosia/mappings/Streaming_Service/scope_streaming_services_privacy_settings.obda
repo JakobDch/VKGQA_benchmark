@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:service_name {service_name} ; p:subscription_price {subscription_price} .
+source		SELECT `id`, `service_name`, `subscription_price` FROM `Streaming_Services`
+
+mappingId	Privacy_Settings_base
+target		ex:Privacy_Settings/{setting_id} a :Privacy_Settings ; p:setting_id {setting_id} ; p:setting_value {setting_value} .
+source		SELECT `setting_id`, `setting_value` FROM `Privacy_Settings`
+
+mappingId	Streaming_Services_Privacy_Settings_base
+target		ex:Streaming_Services_Privacy_Settings/{_amb_rowid} a :Streaming_Services_Privacy_Settings ; p:streaming_service_id {streaming_service_id} ; p:privacy_settings_id {privacy_settings_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id`, `privacy_settings_id` FROM `Streaming_Services_Privacy_Settings`
+
+mappingId	Streaming_Services_Privacy_Settings_privacy_settings_id_fk
+target		ex:Streaming_Services_Privacy_Settings/{_amb_rowid} p:hasPrivacy_Settings ex:Privacy_Settings/{privacy_settings_id} .
+source		SELECT `_amb_rowid`, `privacy_settings_id` FROM `Streaming_Services_Privacy_Settings` WHERE `privacy_settings_id` IS NOT NULL
+
+mappingId	Streaming_Services_Privacy_Settings_streaming_service_id_fk
+target		ex:Streaming_Services_Privacy_Settings/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id` FROM `Streaming_Services_Privacy_Settings` WHERE `streaming_service_id` IS NOT NULL
+
+]]

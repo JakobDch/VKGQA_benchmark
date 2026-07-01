@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Architects_base
+target		ex:Architects/{id} a :Architects ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Architects`
+
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Airports`
+
+mappingId	Terminals_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:airport_id {airport_id} ; p:terminal_name {terminal_name} ; p:capacity {capacity} .
+source		SELECT `id`, `airport_id`, `terminal_name`, `capacity` FROM `Terminals`
+
+mappingId	Terminals_airport_id_fk
+target		ex:Terminals/{id} p:hasAirports ex:Airports/{airport_id} .
+source		SELECT `id`, `airport_id` FROM `Terminals` WHERE `airport_id` IS NOT NULL
+
+mappingId	Buildings_base
+target		ex:Buildings/{id} a :Buildings ; p:id {id} ; p:architecture_firm {architecture_firm} ; p:architect {architect} ; p:airport_terminal {airport_terminal} .
+source		SELECT `id`, `architecture_firm`, `architect`, `airport_terminal` FROM `Buildings`
+
+mappingId	Buildings_airport_terminal_fk
+target		ex:Buildings/{id} p:hasTerminals ex:Terminals/{airport_terminal} .
+source		SELECT `id`, `airport_terminal` FROM `Buildings` WHERE `airport_terminal` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:flight_number {flight_number} ; p:departure_airport {departure_airport} ; p:arrival_airport {arrival_airport} .
+source		SELECT `id`, `flight_number`, `departure_airport`, `arrival_airport` FROM `Flights`
+
+mappingId	Flights_arrival_airport_fk
+target		ex:Flights/{id} p:hasAirports_arrival_airport ex:Airports/{arrival_airport} .
+source		SELECT `id`, `arrival_airport` FROM `Flights` WHERE `arrival_airport` IS NOT NULL
+
+mappingId	Flights_departure_airport_fk
+target		ex:Flights/{id} p:hasAirports_departure_airport ex:Airports/{departure_airport} .
+source		SELECT `id`, `departure_airport` FROM `Flights` WHERE `departure_airport` IS NOT NULL
+
+]]

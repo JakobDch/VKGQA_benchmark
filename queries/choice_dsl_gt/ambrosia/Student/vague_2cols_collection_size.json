@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_collection_size",
+  "schema": "amb_vague_2cols_collection_size",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all the accessible libraries and include the total shelf space.",
+      "qtype": "unambig",
+      "sql": "SELECT Library, Shelving_Space FROM Library WHERE Accessible = 'Yes'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?shelving_space WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each library, give me its opening hours and number of volumes.",
+      "qtype": "unambig",
+      "sql": "SELECT Library, Number_Of_Volumes, OpeningHours FROM Library",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?number_of_volumes ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:OpeningHours ?openinghours .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Display a list of the libraries with their collection size that are accessible.",
+      "qtype": "ambig",
+      "sql": "SELECT Library, Number_Of_Volumes FROM Library WHERE Accessible = 'Yes'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?number_of_volumes WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Display a list of the libraries with their collection size that are accessible.",
+      "qtype": "ambig",
+      "sql": "SELECT Library, Number_Of_Volumes, Shelving_Space FROM Library WHERE Accessible = 'Yes'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?number_of_volumes ?shelving_space WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For each library, give me its opening hours and shelving space.",
+      "qtype": "unambig",
+      "sql": "SELECT Library, Shelving_Space, OpeningHours FROM Library",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?shelving_space ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:OpeningHours ?openinghours .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Show the opening hours along with their collection sizes for all libraries.",
+      "qtype": "ambig",
+      "sql": "SELECT Library, Number_Of_Volumes, Shelving_Space, OpeningHours FROM Library",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?library2 ?number_of_volumes ?shelving_space ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:OpeningHours ?openinghours .\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display a list of the libraries with their collection size that are accessible.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?library2 ?shelving_space WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n} }\n  full: { SELECT ?library2 ?number_of_volumes ?shelving_space WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n} }\n  component_2: { SELECT ?library2 ?number_of_volumes WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Accessible ?accessible_f .\n  FILTER(STR(?accessible_f) = STR(\"Yes\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show the opening hours along with their collection sizes for all libraries.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?library2 ?number_of_volumes ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:OpeningHours ?openinghours .\n} }\n  component_2: { SELECT ?library2 ?shelving_space ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:OpeningHours ?openinghours .\n} }\n  full: { SELECT ?library2 ?number_of_volumes ?shelving_space ?openinghours WHERE {\n  ?library a :Libraries .\n  ?library p:Library ?library2 .\n  ?library p:Number_Of_Volumes ?number_of_volumes .\n  ?library p:Shelving_Space ?shelving_space .\n  ?library p:OpeningHours ?openinghours .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

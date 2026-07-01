@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Species_base
+target		ex:Species/{id} a :Species ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Species`
+
+mappingId	Agroforestry_Systems_base
+target		ex:Agroforestry_Systems/{id} a :Agroforestry_Systems ; p:id {id} ; p:name {system_name} ; p:description {description} .
+source		SELECT `id`, `system_name`, `description` FROM `Agroforestry_Systems`
+
+mappingId	Farms_base
+target		ex:Farm/{id} a :Farm ; p:id {id} ; p:name {farm_name} ; p:location {location} .
+source		SELECT `id`, `farm_name`, `location` FROM `Farms`
+
+mappingId	Farmers_base
+target		ex:Farmer/{id} a :Farmer ; p:id {id} ; p:firstName {first_name} ; p:lastName {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Farmers`
+
+mappingId	Works_On_base
+target		ex:Works_On/{farmer_id}/{farm_id} a :Works_On ; p:farmer_id {farmer_id} ; p:farm_id {farm_id} .
+source		SELECT `farmer_id`, `farm_id` FROM `Works_On`
+
+mappingId	Works_On_farm_id_fk
+target		ex:Works_On/{farmer_id}/{farm_id} p:hasFarm ex:Farm/{farm_id} .
+source		SELECT `farmer_id`, `farm_id` FROM `Works_On` WHERE `farm_id` IS NOT NULL
+
+mappingId	Works_On_farmer_id_fk
+target		ex:Works_On/{farmer_id}/{farm_id} p:hasFarmer ex:Farmer/{farmer_id} .
+source		SELECT `farmer_id`, `farm_id` FROM `Works_On` WHERE `farmer_id` IS NOT NULL
+
+mappingId	System_Farms_base
+target		ex:System_Farms/{agroforestry_system_id}/{farm_id} a :System_Farms ; p:agroforestry_system_id {agroforestry_system_id} ; p:farm_id {farm_id} .
+source		SELECT `agroforestry_system_id`, `farm_id` FROM `System_Farms`
+
+mappingId	System_Farms_farm_id_fk
+target		ex:System_Farms/{agroforestry_system_id}/{farm_id} p:hasFarm ex:Farm/{farm_id} .
+source		SELECT `agroforestry_system_id`, `farm_id` FROM `System_Farms` WHERE `farm_id` IS NOT NULL
+
+mappingId	System_Farms_agroforestry_system_id_fk
+target		ex:System_Farms/{agroforestry_system_id}/{farm_id} p:hasAgroforestry_Systems ex:Agroforestry_Systems/{agroforestry_system_id} .
+source		SELECT `agroforestry_system_id`, `farm_id` FROM `System_Farms` WHERE `agroforestry_system_id` IS NOT NULL
+
+mappingId	System_Species_base
+target		ex:System_Species/{agroforestry_system_id}/{species_id} a :System_Species ; p:agroforestry_system_id {agroforestry_system_id} ; p:species_id {species_id} .
+source		SELECT `agroforestry_system_id`, `species_id` FROM `System_Species`
+
+mappingId	System_Species_species_id_fk
+target		ex:System_Species/{agroforestry_system_id}/{species_id} p:hasSpecies ex:Species/{species_id} .
+source		SELECT `agroforestry_system_id`, `species_id` FROM `System_Species` WHERE `species_id` IS NOT NULL
+
+mappingId	System_Species_agroforestry_system_id_fk
+target		ex:System_Species/{agroforestry_system_id}/{species_id} p:hasAgroforestry_Systems ex:Agroforestry_Systems/{agroforestry_system_id} .
+source		SELECT `agroforestry_system_id`, `species_id` FROM `System_Species` WHERE `agroforestry_system_id` IS NOT NULL
+
+]]

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	courses_base
+target		ex:Courses/{courseID} a :Courses ; p:courseID {courseID} ; p:courseName {courseName} ; p:department {department} ; p:semester {semester} ; p:year {year} .
+source		SELECT `courseID`, `courseName`, `department`, `semester`, `year` FROM `courses`
+
+mappingId	students_base
+target		ex:Students/{studentID} a :Students ; p:studentID {studentID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:major {major} ; p:enrollmentYear {enrollmentYear} .
+source		SELECT `studentID`, `firstName`, `lastName`, `email`, `major`, `enrollmentYear` FROM `students`
+
+mappingId	instructors_base
+target		ex:Instructors/{instructorID} a :Instructors ; p:instructorID {instructorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:department {department} .
+source		SELECT `instructorID`, `firstName`, `lastName`, `email`, `department` FROM `instructors`
+
+mappingId	peer_tutoring_base
+target		ex:peer_tutoring/{sessionID} a :peer_tutoring ; p:sessionID {sessionID} ; p:courseID {courseID} ; p:startDateTime {startDateTime} ; p:endDateTime {endDateTime} ; p:participants {participants} .
+source		SELECT `sessionID`, `courseID`, `startDateTime`, `endDateTime`, `participants` FROM `peer_tutoring`
+
+mappingId	peer_tutoring_courseID_fk
+target		ex:peer_tutoring/{sessionID} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `sessionID`, `courseID` FROM `peer_tutoring` WHERE `courseID` IS NOT NULL
+
+mappingId	group_work_base
+target		ex:group_work/{assignmentID} a :group_work ; p:assignmentID {assignmentID} ; p:courseID {courseID} ; p:dueDate {dueDate} ; p:maxScore {maxScore} ; p:participants {participants} .
+source		SELECT `assignmentID`, `courseID`, `dueDate`, `maxScore`, `participants` FROM `group_work`
+
+mappingId	group_work_courseID_fk
+target		ex:group_work/{assignmentID} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `assignmentID`, `courseID` FROM `group_work` WHERE `courseID` IS NOT NULL
+
+]]

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Chalets_base
+target		ex:Chalets/{id} a :Chalets ; p:id {id} ; p:chaletName {chaletName} ; p:pricePerNight {pricePerNight} ; p:location {location} ; p:capacity {capacity} .
+source		SELECT `id`, `chaletName`, `pricePerNight`, `location`, `capacity` FROM `Chalets`
+
+mappingId	Cabins_base
+target		ex:Cabins/{id} a :Cabins ; p:id {id} ; p:cabinName {cabinName} ; p:pricePerNight {pricePerNight} ; p:location {location} ; p:capacity {capacity} .
+source		SELECT `id`, `cabinName`, `pricePerNight`, `location`, `capacity` FROM `Cabins`
+
+mappingId	Guests_base
+target		ex:Guests/{id} a :Guests ; p:id {id} ; p:firstname {firstname} ; p:lastname {lastname} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:checkIn {checkIn} ; p:checkOut {checkOut} .
+source		SELECT `id`, `firstname`, `lastname`, `email`, `phoneNumber`, `checkIn`, `checkOut` FROM `Guests`
+
+mappingId	Bookings_base
+target		ex:Bookings/{id} a :Bookings ; p:id {id} ; p:guestId {guestId} ; p:chaletId {chaletId} ; p:bookingDate {bookingDate} ; p:totalCost {totalCost} .
+source		SELECT `id`, `guestId`, `chaletId`, `bookingDate`, `totalCost` FROM `Bookings`
+
+mappingId	Bookings_chaletId_fk
+target		ex:Bookings/{id} p:hasChalets ex:Chalets/{chaletId} .
+source		SELECT `id`, `chaletId` FROM `Bookings` WHERE `chaletId` IS NOT NULL
+
+mappingId	Bookings_guestId_fk
+target		ex:Bookings/{id} p:hasGuests ex:Guests/{guestId} .
+source		SELECT `id`, `guestId` FROM `Bookings` WHERE `guestId` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Reviews/{id} a :Reviews ; p:id {id} ; p:guestId {guestId} ; p:chaletId {chaletId} ; p:rating {rating} ; p:comment {comment} ; p:reviewDate {reviewDate} .
+source		SELECT `id`, `guestId`, `chaletId`, `rating`, `comment`, `reviewDate` FROM `Reviews`
+
+mappingId	Reviews_chaletId_fk
+target		ex:Reviews/{id} p:hasChalets ex:Chalets/{chaletId} .
+source		SELECT `id`, `chaletId` FROM `Reviews` WHERE `chaletId` IS NOT NULL
+
+mappingId	Reviews_guestId_fk
+target		ex:Reviews/{id} p:hasGuests ex:Guests/{guestId} .
+source		SELECT `id`, `guestId` FROM `Reviews` WHERE `guestId` IS NOT NULL
+
+]]

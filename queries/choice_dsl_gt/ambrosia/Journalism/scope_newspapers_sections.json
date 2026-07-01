@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_newspapers_sections",
+  "schema": "amb_scope_newspapers_sections",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each newspaper, give me the corresponding sections.",
+      "qtype": "unambig",
+      "sql": "select newspapers.newspaper_name , sections.section_name from Newspapers_Sections join Sections on Newspapers_Sections.section_id = Sections.id join Newspapers on Newspapers_Sections.newspaper_id = Newspapers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?newspaper_name ?section_name WHERE {\n  ?newspapers_sections a :Newspapers_Sections .\n  ?sections a :Sections .\n  ?newspapers_sections p:hasSections ?sections .\n  ?newspapers a :Newspapers .\n  ?newspapers_sections p:hasNewspapers ?newspapers .\n  ?newspapers p:newspaper_name ?newspaper_name .\n  ?sections p:section_name ?section_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What sections are there in each newspaper?",
+      "qtype": "ambig",
+      "sql": "SELECT Sections.section_name  from Newspapers_Sections join Sections on Newspapers_Sections.section_id = Sections.id join Newspapers on Newspapers_Sections.newspaper_id = Newspapers.id   GROUP BY Newspapers_Sections.section_id HAVING COUNT(DISTINCT Newspapers_Sections.newspaper_id) = (SELECT COUNT(*) FROM  Newspapers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?section_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSections ?child ; p:hasNewspapers ?parent . } GROUP BY ?child }\n  ?child p:section_name ?section_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Newspapers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What sections are there in each newspaper?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?newspaper_name ?section_name WHERE {\n  ?newspapers_sections a :Newspapers_Sections .\n  ?sections a :Sections .\n  ?newspapers_sections p:hasSections ?sections .\n  ?newspapers a :Newspapers .\n  ?newspapers_sections p:hasNewspapers ?newspapers .\n  ?newspapers p:newspaper_name ?newspaper_name .\n  ?sections p:section_name ?section_name .\n} }\n  collective: { SELECT ?section_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSections ?child ; p:hasNewspapers ?parent . } GROUP BY ?child }\n  ?child p:section_name ?section_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Newspapers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

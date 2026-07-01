@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_location1",
+  "schema": "amb_vague_2cols_location1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what is the neighbourhood and street name of the branch that has most employees?",
+      "qtype": "unambig",
+      "sql": "SELECT b.street_name, neighborhood, COUNT(e.employee_id) AS num_employees\nFROM employees e\nJOIN branches b ON e.branch_id = b.branch_id\nGROUP BY b.branch_id\nORDER BY num_employees DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name ?neighborhood (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:street_name ?street_name .\n  ?b p:neighborhood ?neighborhood .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?street_name ?neighborhood\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "what is the street name of the branch that has most employees?",
+      "qtype": "unambig",
+      "sql": "SELECT b.street_name, COUNT(e.employee_id) AS num_employees\nFROM employees e\nJOIN branches b ON e.branch_id = b.branch_id\nGROUP BY b.branch_id\nORDER BY num_employees DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:street_name ?street_name .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?street_name\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 2,
+      "question": "what is the neighbourhood of the branch managed by David Black",
+      "qtype": "unambig",
+      "sql": "SELECT neighborhood FROM branches WHERE branch_manager = 'David Black'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?neighborhood WHERE {\n  ?branches a :Branches .\n  ?branches p:neighborhood ?neighborhood .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "what is the neighbourhood of the branch that has most employees?",
+      "qtype": "unambig",
+      "sql": "SELECT b.neighborhood, COUNT(e.employee_id) AS num_employees\nFROM employees e\nJOIN branches b ON e.branch_id = b.branch_id\nGROUP BY b.branch_id\nORDER BY num_employees DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?neighborhood (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:neighborhood ?neighborhood .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?neighborhood\nORDER BY DESC(?agg)",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 4,
+      "question": "Where is the branch run by David Black located?",
+      "qtype": "ambig",
+      "sql": "SELECT street_name FROM branches WHERE branch_manager = 'David Black'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name WHERE {\n  ?branches a :Branches .\n  ?branches p:street_name ?street_name .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Where is the branch run by David Black located?",
+      "qtype": "ambig",
+      "sql": "SELECT street_name, neighborhood FROM branches WHERE branch_manager = 'David Black'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name ?neighborhood WHERE {\n  ?branches a :Branches .\n  ?branches p:street_name ?street_name .\n  ?branches p:neighborhood ?neighborhood .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where is the branch where most people work?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?street_name ?neighborhood (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:street_name ?street_name .\n  ?b p:neighborhood ?neighborhood .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?street_name ?neighborhood\nORDER BY DESC(?agg) }\n  component: { SELECT ?street_name (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:street_name ?street_name .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?street_name\nORDER BY DESC(?agg) }\n  component_2: { SELECT ?neighborhood (COUNT(?employee_id_a) AS ?agg) WHERE {\n  ?e a :Employees .\n  ?b a :Branches .\n  ?e p:hasbranches ?b .\n  ?b p:branch_id ?branch_id_g .\n  ?b p:neighborhood ?neighborhood .\n  ?e p:employee_id ?employee_id_a .\n}\nGROUP BY ?branch_id_g ?neighborhood\nORDER BY DESC(?agg) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where is the branch run by David Black located?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?neighborhood WHERE {\n  ?branches a :Branches .\n  ?branches p:neighborhood ?neighborhood .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n} }\n  component_2: { SELECT ?street_name WHERE {\n  ?branches a :Branches .\n  ?branches p:street_name ?street_name .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n} }\n  full: { SELECT ?street_name ?neighborhood WHERE {\n  ?branches a :Branches .\n  ?branches p:street_name ?street_name .\n  ?branches p:neighborhood ?neighborhood .\n  ?branches p:branch_manager ?branch_manager_f .\n  FILTER(STR(?branch_manager_f) = \"David Black\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

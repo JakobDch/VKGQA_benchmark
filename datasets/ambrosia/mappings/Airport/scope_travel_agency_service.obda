@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Travel_Agency_base
+target		ex:Travel_Agency/{AgencyID} a :Travel_Agency ; p:AgencyID {AgencyID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `AgencyID`, `Name`, `Location` FROM `Travel_Agency`
+
+mappingId	Service_base
+target		ex:Service/{ServiceID} a :Service ; p:ServiceID {ServiceID} ; p:Description {Description} ; p:Price {Price} .
+source		SELECT `ServiceID`, `Description`, `Price` FROM `Service`
+
+mappingId	Travel_Agency_Service_base
+target		ex:Travel_Agency_Service/{_amb_rowid} a :Travel_Agency_Service ; p:AgencyID {AgencyID} ; p:ServiceID {ServiceID} .
+source		SELECT `_amb_rowid`, `AgencyID`, `ServiceID` FROM `Travel_Agency_Service`
+
+mappingId	Travel_Agency_Service_ServiceID_fk
+target		ex:Travel_Agency_Service/{_amb_rowid} p:hasService ex:Service/{ServiceID} .
+source		SELECT `_amb_rowid`, `ServiceID` FROM `Travel_Agency_Service` WHERE `ServiceID` IS NOT NULL
+
+mappingId	Travel_Agency_Service_AgencyID_fk
+target		ex:Travel_Agency_Service/{_amb_rowid} p:hasTravel_Agency ex:Travel_Agency/{AgencyID} .
+source		SELECT `_amb_rowid`, `AgencyID` FROM `Travel_Agency_Service` WHERE `AgencyID` IS NOT NULL
+
+]]

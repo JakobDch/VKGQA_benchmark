@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_hr_professionals_functions",
+  "schema": "amb_scope_hr_professionals_functions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What functions are there performed by all the HR professionals?",
+      "qtype": "ambig",
+      "sql": "SELECT Functions.description  from Hr_Professionals_Functions join Functions on Hr_Professionals_Functions.functionId = Functions.functionId join Hr_Professionals on Hr_Professionals_Functions.hrProfessionalId = Hr_Professionals.id   GROUP BY Hr_Professionals_Functions.functionId HAVING COUNT(DISTINCT Hr_Professionals_Functions.hrProfessionalId) = (SELECT COUNT(*) FROM  Hr_Professionals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:functionId ?cg . ?child a :Functions ; p:functionId ?cg . ?l p:hrProfessionalId ?pg . ?parent a :Hr_Professionals ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hr_Professionals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What functions are there performed by all the HR professionals?",
+      "qtype": "ambig",
+      "sql": "select hr_professionals.name , functions.description from Hr_Professionals_Functions join Functions on Hr_Professionals_Functions.functionId = Functions.functionId join Hr_Professionals on Hr_Professionals_Functions.hrProfessionalId = Hr_Professionals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?hr_professionals_functions a :Hr_Professionals_Functions .\n  ?functions a :Functions .\n  ?hr_professionals_functions p:hasFunctions ?functions .\n  ?hr_professionals a :Hr_Professionals .\n  ?hr_professionals_functions p:hasHr_Professionals ?hr_professionals .\n  ?hr_professionals p:name ?name .\n  ?functions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What functions are there performed by all the HR professionals?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?hr_professionals_functions a :Hr_Professionals_Functions .\n  ?functions a :Functions .\n  ?hr_professionals_functions p:hasFunctions ?functions .\n  ?hr_professionals a :Hr_Professionals .\n  ?hr_professionals_functions p:hasHr_Professionals ?hr_professionals .\n  ?hr_professionals p:name ?name .\n  ?functions p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:functionId ?cg . ?child a :Functions ; p:functionId ?cg . ?l p:hrProfessionalId ?pg . ?parent a :Hr_Professionals ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hr_Professionals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

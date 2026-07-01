@@ -1,0 +1,108 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_theatres_plays",
+  "schema": "amb_scope_theatres_plays",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the play titles and genres for each theatre.",
+      "qtype": "ambig",
+      "sql": "SELECT Plays.title, Plays.genre  from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id   GROUP BY TheatrePerformances.playId HAVING COUNT(DISTINCT TheatrePerformances.theatreId) = (SELECT COUNT(*) FROM  Theatres)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:title ?title .\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the play titles and genres for each theatre.",
+      "qtype": "ambig",
+      "sql": "select theatres.name , plays.title , plays.genre from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title ?genre WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:title ?title .\n  ?plays p:genre ?genre .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "For each theatre, what is the corresponding genre of play?",
+      "qtype": "unambig",
+      "sql": "select theatres.name , plays.genre from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?genre WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:genre ?genre .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the theatre and the corresponding play title.",
+      "qtype": "unambig",
+      "sql": "select theatres.name , plays.title from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the play title for each theatre.",
+      "qtype": "ambig",
+      "sql": "SELECT Plays.title  from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id   GROUP BY TheatrePerformances.playId HAVING COUNT(DISTINCT TheatrePerformances.theatreId) = (SELECT COUNT(*) FROM  Theatres)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:title ?title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the genre of play that is common to all theatres?",
+      "qtype": "unambig",
+      "sql": "SELECT Plays.genre  from TheatrePerformances join Plays on TheatrePerformances.playId = Plays.id join Theatres on TheatrePerformances.theatreId = Theatres.id   GROUP BY TheatrePerformances.playId HAVING COUNT(DISTINCT TheatrePerformances.theatreId) = (SELECT COUNT(*) FROM  Theatres)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the genre of plays for each theatre.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?genre WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:genre ?genre .\n} }\n  collective: { SELECT ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the play title for each theatre.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?title WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:title ?title .\n} }\n  collective: { SELECT ?title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:title ?title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the play titles and genres for each theatre.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?title ?genre WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:playId ?cg . ?child a :Play ; p:id ?cg . ?l p:theatreId ?pg . ?parent a :Theatre ; p:id ?pg . } GROUP BY ?child }\n  ?child p:title ?title .\n  ?child p:genre ?genre .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theatre } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?title ?genre WHERE {\n  ?theatreperformances a :TheatrePerformances .\n  ?plays a :Play .\n  ?theatreperformances p:hasPlays ?plays .\n  ?theatres a :Theatre .\n  ?theatreperformances p:hasTheatres ?theatres .\n  ?theatres p:name ?name .\n  ?plays p:title ?title .\n  ?plays p:genre ?genre .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:name {name} ; p:age {age} ; p:gender {gender} .
+source		SELECT `id`, `name`, `age`, `gender` FROM `Students`
+
+mappingId	Reviews_base
+target		ex:Reviews/{id} a :Reviews ; p:id {id} ; p:rating {rating} ; p:book_id {book_id} ; p:student_id {student_id} .
+source		SELECT `id`, `rating`, `book_id`, `student_id` FROM `Reviews`
+
+mappingId	Reviews_student_id_fk
+target		ex:Reviews/{id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `id`, `student_id` FROM `Reviews` WHERE `student_id` IS NOT NULL
+
+mappingId	Reviews_book_id_fk
+target		ex:Reviews/{id} p:hasBooks ex:Books/{book_id} .
+source		SELECT `id`, `book_id` FROM `Reviews` WHERE `book_id` IS NOT NULL
+
+mappingId	Books_base
+target		ex:Books/{id} a :Books ; p:id {id} ; p:title {title} ; p:type_of_book {type_of_book} ; p:literature {literature} .
+source		SELECT `id`, `title`, `type_of_book`, `literature` FROM `Books`
+
+]]

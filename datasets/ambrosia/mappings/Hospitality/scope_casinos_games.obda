@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Casinos_base
+target		ex:Casinos/{id} a :Casinos ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Casinos`
+
+mappingId	Games_base
+target		ex:Games/{id} a :Games ; p:id {id} ; p:game_name {game_name} ; p:description {description} .
+source		SELECT `id`, `game_name`, `description` FROM `Games`
+
+mappingId	Casinos_Games_base
+target		ex:Casinos_Games/{casino_id}/{game_id} a :Casinos_Games ; p:casino_id {casino_id} ; p:game_id {game_id} .
+source		SELECT `casino_id`, `game_id` FROM `Casinos_Games`
+
+mappingId	Casinos_Games_game_id_fk
+target		ex:Casinos_Games/{casino_id}/{game_id} p:hasGames ex:Games/{game_id} .
+source		SELECT `casino_id`, `game_id` FROM `Casinos_Games` WHERE `game_id` IS NOT NULL
+
+mappingId	Casinos_Games_casino_id_fk
+target		ex:Casinos_Games/{casino_id}/{game_id} p:hasCasinos ex:Casinos/{casino_id} .
+source		SELECT `casino_id`, `game_id` FROM `Casinos_Games` WHERE `casino_id` IS NOT NULL
+
+]]

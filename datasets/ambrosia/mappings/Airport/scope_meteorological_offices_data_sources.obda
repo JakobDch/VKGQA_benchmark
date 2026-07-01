@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Meteorological_Offices_base
+target		ex:Meteorological_Offices/{id} a :Meteorological_Offices ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Meteorological_Offices`
+
+mappingId	Data_Sources_base
+target		ex:Data_Sources/{id} a :Data_Sources ; p:id {id} ; p:source_type {source_type} ; p:description {description} .
+source		SELECT `id`, `source_type`, `description` FROM `Data_Sources`
+
+mappingId	Meteorological_Offices_Data_Sources_base
+target		ex:Meteorological_Offices_Data_Sources/{_amb_rowid} a :Meteorological_Offices_Data_Sources ; p:meteo_office_id {meteo_office_id} ; p:data_source_id {data_source_id} .
+source		SELECT `_amb_rowid`, `meteo_office_id`, `data_source_id` FROM `Meteorological_Offices_Data_Sources`
+
+mappingId	Meteorological_Offices_Data_Sources_data_source_id_fk
+target		ex:Meteorological_Offices_Data_Sources/{_amb_rowid} p:hasData_Sources ex:Data_Sources/{data_source_id} .
+source		SELECT `_amb_rowid`, `data_source_id` FROM `Meteorological_Offices_Data_Sources` WHERE `data_source_id` IS NOT NULL
+
+mappingId	Meteorological_Offices_Data_Sources_meteo_office_id_fk
+target		ex:Meteorological_Offices_Data_Sources/{_amb_rowid} p:hasMeteorological_Offices ex:Meteorological_Offices/{meteo_office_id} .
+source		SELECT `_amb_rowid`, `meteo_office_id` FROM `Meteorological_Offices_Data_Sources` WHERE `meteo_office_id` IS NOT NULL
+
+mappingId	Runways_base
+target		ex:Runways/{id} a :Runways ; p:id {id} ; p:length {length} ; p:width {width} .
+source		SELECT `id`, `length`, `width` FROM `Runways`
+
+mappingId	Terminals_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:terminal_name {terminal_name} ; p:capacity {capacity} .
+source		SELECT `id`, `terminal_name`, `capacity` FROM `Terminals`
+
+mappingId	Flights_base
+target		ex:Flights/{flight_number} a :Flights ; p:flight_number {flight_number} ; p:departure_time {departure_time} ; p:arrival_time {arrival_time} ; p:destination_airport {destination_airport} ; p:airline_company {airline_company} .
+source		SELECT `flight_number`, `departure_time`, `arrival_time`, `destination_airport`, `airline_company` FROM `Flights`
+
+]]

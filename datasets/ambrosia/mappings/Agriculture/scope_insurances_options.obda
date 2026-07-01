@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Insurances_base
+target		ex:Insurances/{id} a :Insurances ; p:id {id} ; p:name {policy_holder} ; p:premium {premium} .
+source		SELECT `id`, `policy_holder`, `premium` FROM `Insurances`
+
+mappingId	Options_base
+target		ex:Options/{id} a :Options ; p:id {id} ; p:name {option_name} .
+source		SELECT `id`, `option_name` FROM `Options`
+
+mappingId	Insurance_Options_base
+target		ex:Insurance_Options/{insurance_id}/{option_id} a :Insurance_Options ; p:insurance_id {insurance_id} ; p:option_id {option_id} .
+source		SELECT `insurance_id`, `option_id` FROM `Insurance_Options`
+
+mappingId	Insurance_Options_option_id_fk
+target		ex:Insurance_Options/{insurance_id}/{option_id} p:hasOptions ex:Options/{option_id} .
+source		SELECT `insurance_id`, `option_id` FROM `Insurance_Options` WHERE `option_id` IS NOT NULL
+
+mappingId	Insurance_Options_insurance_id_fk
+target		ex:Insurance_Options/{insurance_id}/{option_id} p:hasInsurances ex:Insurances/{insurance_id} .
+source		SELECT `insurance_id`, `option_id` FROM `Insurance_Options` WHERE `insurance_id` IS NOT NULL
+
+]]

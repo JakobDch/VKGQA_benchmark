@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_mobility_aids",
+  "schema": "amb_attachment_1tab_val_mobility_aids",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What wheelchair assistance is available at entrance A and what mobility scooters are available at the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Passenger.FullName\nFROM Passenger\nWHERE (Passenger.mobilityAids = \"Wheelchair Assistance\" OR Passenger.mobilityAids = \"Mobility Scooter\") AND Passenger.pickUpDropOffLocation = \"Entrance A\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?passenger a :Passengers .\n  ?passenger p:name ?fullname .\n  ?passenger p:mobilityAids ?mobilityaids_w .\n  ?passenger p:mobilityAids ?mobilityaids_w2 .\n  ?passenger p:pickUpDropOffLocation ?pickupdropofflocation_w .\n  FILTER((((STR(?mobilityaids_w) = \"Wheelchair Assistance\" || STR(?mobilityaids_w2) = \"Mobility Scooter\")) && STR(?pickupdropofflocation_w) = \"Entrance A\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the wheelchair assistance and mobility scooters available at entrance A.",
+      "qtype": "ambig",
+      "sql": "SELECT Passenger.FullName\nFROM Passenger\nWHERE Passenger.mobilityAids = \"Wheelchair Assistance\" OR Passenger.mobilityAids = \"Mobility Scooter\" AND Passenger.pickUpDropOffLocation = \"Entrance A\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?passenger a :Passengers .\n  ?passenger p:name ?fullname .\n  ?passenger p:mobilityAids ?mobilityaids_w .\n  ?passenger p:mobilityAids ?mobilityaids_w2 .\n  ?passenger p:pickUpDropOffLocation ?pickupdropofflocation_w .\n  FILTER((STR(?mobilityaids_w) = \"Wheelchair Assistance\" || (STR(?mobilityaids_w2) = \"Mobility Scooter\" && STR(?pickupdropofflocation_w) = \"Entrance A\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the wheelchair assistance and mobility scooters available at entrance A.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?passenger a :Passengers .\n  ?passenger p:name ?fullname .\n  ?passenger p:mobilityAids ?mobilityaids_w .\n  ?passenger p:mobilityAids ?mobilityaids_w2 .\n  ?passenger p:pickUpDropOffLocation ?pickupdropofflocation_w .\n  FILTER((((STR(?mobilityaids_w) = \"Wheelchair Assistance\" || STR(?mobilityaids_w2) = \"Mobility Scooter\")) && STR(?pickupdropofflocation_w) = \"Entrance A\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?passenger a :Passengers .\n  ?passenger p:name ?fullname .\n  ?passenger p:mobilityAids ?mobilityaids_w .\n  ?passenger p:mobilityAids ?mobilityaids_w2 .\n  ?passenger p:pickUpDropOffLocation ?pickupdropofflocation_w .\n  FILTER((STR(?mobilityaids_w) = \"Wheelchair Assistance\" || (STR(?mobilityaids_w2) = \"Mobility Scooter\" && STR(?pickupdropofflocation_w) = \"Entrance A\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

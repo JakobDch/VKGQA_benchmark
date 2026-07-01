@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_animation_studio",
+  "schema": "amb_attachment_1tab_val_animation_studio",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me Pixar films and DreamWorks films that won Golden Globe.",
+      "qtype": "ambig",
+      "sql": "SELECT Film.title \nFROM Film\nWHERE (Film.animationStudio = \"Pixar\" OR Film.animationStudio = \"DreamWorks\") AND Film.awards = \"Golden Globe\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?film a :Films .\n  ?film p:title ?title .\n  ?film p:animationStudio ?animationstudio_w .\n  ?film p:animationStudio ?animationstudio_w2 .\n  ?film p:awards ?awards_w .\n  FILTER((((STR(?animationstudio_w) = \"Pixar\" || STR(?animationstudio_w2) = \"DreamWorks\")) && STR(?awards_w) = \"Golden Globe\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me Pixar films and DreamWorks films that won Golden Globe.",
+      "qtype": "ambig",
+      "sql": "SELECT Film.title \nFROM Film\nWHERE Film.animationStudio = \"Pixar\" OR Film.animationStudio = \"DreamWorks\" AND Film.awards = \"Golden Globe\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?film a :Films .\n  ?film p:title ?title .\n  ?film p:animationStudio ?animationstudio_w .\n  ?film p:animationStudio ?animationstudio_w2 .\n  ?film p:awards ?awards_w .\n  FILTER((STR(?animationstudio_w) = \"Pixar\" || (STR(?animationstudio_w2) = \"DreamWorks\" && STR(?awards_w) = \"Golden Globe\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me Pixar films and DreamWorks films that won Golden Globe.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?film a :Films .\n  ?film p:title ?title .\n  ?film p:animationStudio ?animationstudio_w .\n  ?film p:animationStudio ?animationstudio_w2 .\n  ?film p:awards ?awards_w .\n  FILTER((((STR(?animationstudio_w) = \"Pixar\" || STR(?animationstudio_w2) = \"DreamWorks\")) && STR(?awards_w) = \"Golden Globe\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?film a :Films .\n  ?film p:title ?title .\n  ?film p:animationStudio ?animationstudio_w .\n  ?film p:animationStudio ?animationstudio_w2 .\n  ?film p:awards ?awards_w .\n  FILTER((STR(?animationstudio_w) = \"Pixar\" || (STR(?animationstudio_w2) = \"DreamWorks\" && STR(?awards_w) = \"Golden Globe\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

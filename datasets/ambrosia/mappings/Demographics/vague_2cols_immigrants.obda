@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Population_base
+target		ex:Population/{id} a :Population ; p:id {id} ; p:totalPopulation {totalPopulation} ; p:year {year} .
+source		SELECT `id`, `totalPopulation`, `year` FROM `Population`
+
+mappingId	AgeGroup_base
+target		ex:AgeGroup/{id} a :AgeGroup ; p:id {id} ; p:ageFrom {ageFrom} ; p:ageTo {ageTo} ; p:population {population} .
+source		SELECT `id`, `ageFrom`, `ageTo`, `population` FROM `AgeGroup`
+
+mappingId	AgeGroup_population_fk
+target		ex:AgeGroup/{id} p:hasPopulation ex:Population/{population} .
+source		SELECT `id`, `population` FROM `AgeGroup` WHERE `population` IS NOT NULL
+
+mappingId	Country_base
+target		ex:Countries/{id} a :Countries ; p:id {id} ; p:countryName {countryName} ; p:continent {continent} .
+source		SELECT `id`, `countryName`, `continent` FROM `Country`
+
+mappingId	ImmigrationStats_base
+target		ex:ImmigrationStats/{id} a :ImmigrationStats ; p:id {id} ; p:numberOfImmigrants {numberOfImmigrants} ; p:immigrantPercentage {immigrantPercentage} ; p:countryId {countryId} ; p:year {year} .
+source		SELECT `id`, `numberOfImmigrants`, `immigrantPercentage`, `countryId`, `year` FROM `ImmigrationStats`
+
+mappingId	ImmigrationStats_countryId_fk
+target		ex:ImmigrationStats/{id} p:hasCountries ex:Countries/{countryId} .
+source		SELECT `id`, `countryId` FROM `ImmigrationStats` WHERE `countryId` IS NOT NULL
+
+mappingId	Ethnicity_base
+target		ex:Ethnicity/{id} a :Ethnicity ; p:id {id} ; p:ethnicGroupName {ethnicGroupName} ; p:population {population} .
+source		SELECT `id`, `ethnicGroupName`, `population` FROM `Ethnicity`
+
+mappingId	Ethnicity_population_fk
+target		ex:Ethnicity/{id} p:hasPopulation ex:Population/{population} .
+source		SELECT `id`, `population` FROM `Ethnicity` WHERE `population` IS NOT NULL
+
+mappingId	EducationLevel_base
+target		ex:EducationLevel/{id} a :EducationLevel ; p:id {id} ; p:levelName {levelName} ; p:percentage {percentage} .
+source		SELECT `id`, `levelName`, `percentage` FROM `EducationLevel`
+
+mappingId	EducationLevel_levelName_fk
+target		ex:EducationLevel/{id} p:hasEthnicity ex:Ethnicity/{levelName} .
+source		SELECT `id`, `levelName` FROM `EducationLevel` WHERE `levelName` IS NOT NULL
+
+]]

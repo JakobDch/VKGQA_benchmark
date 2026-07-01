@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Visual_Effects_Artists_base
+target		ex:Visual_Effects_Artists/{artist_id} a :Visual_Effects_Artists ; p:artist_id {artist_id} ; p:name {name} ; p:email {email} .
+source		SELECT `artist_id`, `name`, `email` FROM `Visual_Effects_Artists`
+
+mappingId	Programs_base
+target		ex:Programs/{program_id} a :Programs ; p:program_id {program_id} ; p:name {name} ; p:version {version} .
+source		SELECT `program_id`, `name`, `version` FROM `Programs`
+
+mappingId	Movies_base
+target		ex:Movies/{movie_id} a :Movies ; p:movie_id {movie_id} ; p:title {title} ; p:release_date {release_date} .
+source		SELECT `movie_id`, `title`, `release_date` FROM `Movies`
+
+mappingId	Film_Movies_base
+target		ex:Film_Movies/{film_id}/{movie_id} a :Film_Movies ; p:film_id {film_id} ; p:movie_id {movie_id} .
+source		SELECT `film_id`, `movie_id` FROM `Film_Movies`
+
+mappingId	Film_Movies_movie_id_fk
+target		ex:Film_Movies/{film_id}/{movie_id} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `film_id`, `movie_id` FROM `Film_Movies` WHERE `movie_id` IS NOT NULL
+
+mappingId	Visual_Effects_Artists_Programs_base
+target		ex:Visual_Effects_Artists_Programs/{visual_effects_artist_id}/{program_id} a :Visual_Effects_Artists_Programs ; p:visual_effects_artist_id {visual_effects_artist_id} ; p:program_id {program_id} .
+source		SELECT `visual_effects_artist_id`, `program_id` FROM `Visual_Effects_Artists_Programs`
+
+mappingId	Visual_Effects_Artists_Programs_program_id_fk
+target		ex:Visual_Effects_Artists_Programs/{visual_effects_artist_id}/{program_id} p:hasPrograms ex:Programs/{program_id} .
+source		SELECT `visual_effects_artist_id`, `program_id` FROM `Visual_Effects_Artists_Programs` WHERE `program_id` IS NOT NULL
+
+mappingId	Visual_Effects_Artists_Programs_visual_effects_artist_id_fk
+target		ex:Visual_Effects_Artists_Programs/{visual_effects_artist_id}/{program_id} p:hasVisual_Effects_Artists ex:Visual_Effects_Artists/{visual_effects_artist_id} .
+source		SELECT `visual_effects_artist_id`, `program_id` FROM `Visual_Effects_Artists_Programs` WHERE `visual_effects_artist_id` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Reporters_base
+target		ex:Reporters/{ID} a :Reporters ; p:ID {ID} ; p:name {Name} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:Start_Year {Start_Year} ; p:Start_Month {Start_Month} ; p:ReporterName {ReporterName} .
+source		SELECT `ID`, `Name`, `Email`, `PhoneNumber`, `Start_Year`, `Start_Month`, `ReporterName` FROM `Reporters`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublicationDate {PublicationDate} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublicationDate`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasReporters ex:Reporters/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{SourceId} a :Sources ; p:SourceId {SourceId} ; p:name {Name} ; p:ContactInfo {ContactInfo} ; p:LastContacted {LastContacted} .
+source		SELECT `SourceId`, `Name`, `ContactInfo`, `LastContacted` FROM `Sources`
+
+mappingId	Interviews_base
+target		ex:Interviews/{InterviewID} a :Interviews ; p:InterviewID {InterviewID} ; p:Date {Date} ; p:SourceId {SourceId} ; p:Notes {Notes} .
+source		SELECT `InterviewID`, `Date`, `SourceId`, `Notes` FROM `Interviews`
+
+mappingId	Interviews_SourceId_fk
+target		ex:Interviews/{InterviewID} p:hasSources ex:Sources/{SourceId} .
+source		SELECT `InterviewID`, `SourceId` FROM `Interviews` WHERE `SourceId` IS NOT NULL
+
+mappingId	Magazines_base
+target		ex:Magazines/{MagazineId} a :Magazines ; p:MagazineId {MagazineId} ; p:name {Name} ; p:EditorInChiefID {EditorInChiefID} .
+source		SELECT `MagazineId`, `Name`, `EditorInChiefID` FROM `Magazines`
+
+mappingId	Magazines_EditorInChiefID_fk
+target		ex:Magazines/{MagazineId} p:hasReporters ex:Reporters/{EditorInChiefID} .
+source		SELECT `MagazineId`, `EditorInChiefID` FROM `Magazines` WHERE `EditorInChiefID` IS NOT NULL
+
+mappingId	Stories_base
+target		ex:Stories/{StoryId} a :Stories ; p:StoryId {StoryId} ; p:Headline {Headline} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:AssignedToReporterID {AssignedToReporterID} ; p:MagazineId {MagazineId} .
+source		SELECT `StoryId`, `Headline`, `Content`, `PublishDate`, `AssignedToReporterID`, `MagazineId` FROM `Stories`
+
+mappingId	Stories_MagazineId_fk
+target		ex:Stories/{StoryId} p:hasMagazines ex:Magazines/{MagazineId} .
+source		SELECT `StoryId`, `MagazineId` FROM `Stories` WHERE `MagazineId` IS NOT NULL
+
+mappingId	Stories_AssignedToReporterID_fk
+target		ex:Stories/{StoryId} p:hasReporters ex:Reporters/{AssignedToReporterID} .
+source		SELECT `StoryId`, `AssignedToReporterID` FROM `Stories` WHERE `AssignedToReporterID` IS NOT NULL
+
+]]

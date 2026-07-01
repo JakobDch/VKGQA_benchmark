@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Textbooks_base
+target		ex:Textbooks/{id} a :Textbooks ; p:id {id} ; p:title {title} ; p:author {author} .
+source		SELECT `id`, `title`, `author` FROM `Textbooks`
+
+mappingId	Supplies_base
+target		ex:Supplies/{id} a :Supplies ; p:id {id} ; p:name {name} ; p:quantity_needed {quantity_needed} .
+source		SELECT `id`, `name`, `quantity_needed` FROM `Supplies`
+
+mappingId	Projects_base
+target		ex:Projects/{id} a :Projects ; p:id {id} ; p:project_name {project_name} ; p:description {description} ; p:supplies_id {supplies_id} ; p:textbook_id {textbook_id} .
+source		SELECT `id`, `project_name`, `description`, `supplies_id`, `textbook_id` FROM `Projects`
+
+mappingId	Projects_textbook_id_fk
+target		ex:Projects/{id} p:hasTextbooks ex:Textbooks/{textbook_id} .
+source		SELECT `id`, `textbook_id` FROM `Projects` WHERE `textbook_id` IS NOT NULL
+
+mappingId	Projects_supplies_id_fk
+target		ex:Projects/{id} p:hasSupplies ex:Supplies/{supplies_id} .
+source		SELECT `id`, `supplies_id` FROM `Projects` WHERE `supplies_id` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:student_name {student_name} ; p:age {age} ; p:class_id {class_id} .
+source		SELECT `id`, `student_name`, `age`, `class_id` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{id} a :Teachers ; p:id {id} ; p:teacher_name {teacher_name} ; p:subject {subject} ; p:class_id {class_id} .
+source		SELECT `id`, `teacher_name`, `subject`, `class_id` FROM `Teachers`
+
+mappingId	Teachers_class_id_fk
+target		ex:Teachers/{id} p:hasStudents ex:Students/{class_id} .
+source		SELECT `id`, `class_id` FROM `Teachers` WHERE `class_id` IS NOT NULL
+
+]]

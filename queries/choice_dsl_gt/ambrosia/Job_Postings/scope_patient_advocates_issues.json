@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_patient_advocates_issues",
+  "schema": "amb_scope_patient_advocates_issues",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each patient advocate, show me the issue name and description.",
+      "qtype": "unambig",
+      "sql": "select patient_advocates.name , issues.issue_name , issues.description from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?issue_name ?description WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:issue_name ?issue_name .\n  ?issues p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the issue name and description for each patient advocate.",
+      "qtype": "ambig",
+      "sql": "SELECT Issues.issue_name, Issues.description  from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id   GROUP BY Patient_Advocates_Issues.issue_id HAVING COUNT(DISTINCT Patient_Advocates_Issues.patient_advocate_id) = (SELECT COUNT(*) FROM  Patient_Advocates)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?issue_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:issue_name ?issue_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the patient advocates and the corresponding issue descriptions.",
+      "qtype": "unambig",
+      "sql": "select patient_advocates.name , issues.description from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the issue description of each patient advocate.",
+      "qtype": "ambig",
+      "sql": "SELECT Issues.description  from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id   GROUP BY Patient_Advocates_Issues.issue_id HAVING COUNT(DISTINCT Patient_Advocates_Issues.patient_advocate_id) = (SELECT COUNT(*) FROM  Patient_Advocates)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Display the issue that is common for all patient advocates.",
+      "qtype": "unambig",
+      "sql": "SELECT Issues.issue_name  from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id   GROUP BY Patient_Advocates_Issues.issue_id HAVING COUNT(DISTINCT Patient_Advocates_Issues.patient_advocate_id) = (SELECT COUNT(*) FROM  Patient_Advocates)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?issue_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:issue_name ?issue_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each patient advocate, provide the corresponding issues.",
+      "qtype": "unambig",
+      "sql": "select patient_advocates.name , issues.issue_name from Patient_Advocates_Issues join Issues on Patient_Advocates_Issues.issue_id = Issues.id join Patient_Advocates on Patient_Advocates_Issues.patient_advocate_id = Patient_Advocates.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?issue_name WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:issue_name ?issue_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the issue name and description for each patient advocate.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?issue_name ?description WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:issue_name ?issue_name .\n  ?issues p:description ?description .\n} }\n  collective: { SELECT ?issue_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:issue_name ?issue_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the issue description of each patient advocate.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What issues are associated with each patient advocate?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?issue_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:issue_id ?cg . ?child a :Issues ; p:id ?cg . ?l p:patient_advocate_id ?pg . ?parent a :Patient_Advocates ; p:id ?pg . } GROUP BY ?child }\n  ?child p:issue_name ?issue_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Patient_Advocates } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?issue_name WHERE {\n  ?patient_advocates_issues a :Patient_Advocates_Issues .\n  ?issues a :Issues .\n  ?patient_advocates_issues p:hasIssues ?issues .\n  ?patient_advocates a :Patient_Advocates .\n  ?patient_advocates_issues p:hasPatient_Advocates ?patient_advocates .\n  ?patient_advocates p:name ?name .\n  ?issues p:issue_name ?issue_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

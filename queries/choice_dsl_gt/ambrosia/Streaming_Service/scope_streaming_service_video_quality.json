@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_video_quality",
+  "schema": "amb_scope_streaming_service_video_quality",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What video quality is common across all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Video_Quality.quality  from Streaming_Service_Video_Quality join Video_Quality on Streaming_Service_Video_Quality.video_quality_id = Video_Quality.id join Streaming_Service on Streaming_Service_Video_Quality.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Video_Quality.video_quality_id HAVING COUNT(DISTINCT Streaming_Service_Video_Quality.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?quality WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Quality ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:quality ?quality .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the video quality that every streaming service offers.",
+      "qtype": "ambig",
+      "sql": "select streaming_service.name , video_quality.quality from Streaming_Service_Video_Quality join Video_Quality on Streaming_Service_Video_Quality.video_quality_id = Video_Quality.id join Streaming_Service on Streaming_Service_Video_Quality.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?quality WHERE {\n  ?streaming_service_video_quality a :Streaming_Service_Video_Quality .\n  ?video_quality a :Video_Quality .\n  ?streaming_service_video_quality p:hasVideo_Quality ?video_quality .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_video_quality p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?video_quality p:quality ?quality .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the video quality that every streaming service offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?quality WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Quality ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:quality ?quality .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?quality WHERE {\n  ?streaming_service_video_quality a :Streaming_Service_Video_Quality .\n  ?video_quality a :Video_Quality .\n  ?streaming_service_video_quality p:hasVideo_Quality ?video_quality .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_video_quality p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?video_quality p:quality ?quality .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

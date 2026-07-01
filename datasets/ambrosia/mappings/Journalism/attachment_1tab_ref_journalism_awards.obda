@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} .
+source		SELECT `AuthorID`, `FirstName`, `LastName` FROM `Authors`
+
+mappingId	Publications_base
+target		ex:Publications/{PublisherID} a :Publications ; p:PublisherID {PublisherID} ; p:name {Name} ; p:YearOfEstablishment {YearOfEstablishment} .
+source		SELECT `PublisherID`, `Name`, `YearOfEstablishment` FROM `Publications`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:DatePublished {DatePublished} ; p:AuthorID {AuthorID} ; p:PublisherID {PublisherID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `DatePublished`, `AuthorID`, `PublisherID` FROM `Articles`
+
+mappingId	Articles_PublisherID_fk
+target		ex:Articles/{ArticleID} p:hasPublications ex:Publications/{PublisherID} .
+source		SELECT `ArticleID`, `PublisherID` FROM `Articles` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Awards_base
+target		ex:Awards/{AwardID} a :Awards ; p:AwardID {AwardID} ; p:AwardType {AwardType} .
+source		SELECT `AwardID`, `AwardType` FROM `Awards`
+
+mappingId	Winners_base
+target		ex:Winners/{id} a :Winners ; p:id {id} ; p:WinningArticleID {WinningArticleID} ; p:Year {Year} ; p:AwardID {AwardID} .
+source		SELECT `id`, `WinningArticleID`, `Year`, `AwardID` FROM `Winners`
+
+mappingId	Winners_AwardID_fk
+target		ex:Winners/{id} p:hasAwards ex:Awards/{AwardID} .
+source		SELECT `id`, `AwardID` FROM `Winners` WHERE `AwardID` IS NOT NULL
+
+mappingId	Winners_WinningArticleID_fk
+target		ex:Winners/{id} p:hasArticles ex:Articles/{WinningArticleID} .
+source		SELECT `id`, `WinningArticleID` FROM `Winners` WHERE `WinningArticleID` IS NOT NULL
+
+]]

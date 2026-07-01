@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_culinary_schools_cuisine_types",
+  "schema": "amb_scope_culinary_schools_cuisine_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the cuisine types common to all schools?",
+      "qtype": "unambig",
+      "sql": "SELECT Cuisine_Types.type  from Culinary_Schools_Cuisine_Types join Cuisine_Types on Culinary_Schools_Cuisine_Types.cuisine_type_id = Cuisine_Types.cuisine_id join Culinary_Schools on Culinary_Schools_Cuisine_Types.culinary_school_id = Culinary_Schools.id   GROUP BY Culinary_Schools_Cuisine_Types.cuisine_type_id HAVING COUNT(DISTINCT Culinary_Schools_Cuisine_Types.culinary_school_id) = (SELECT COUNT(*) FROM  Culinary_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCuisine_Types ?child ; p:hasCulinary_Schools ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Culinary_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each of the schools, what cuisine types are there?",
+      "qtype": "unambig",
+      "sql": "select culinary_schools.name , cuisine_types.type from Culinary_Schools_Cuisine_Types join Cuisine_Types on Culinary_Schools_Cuisine_Types.cuisine_type_id = Cuisine_Types.cuisine_id join Culinary_Schools on Culinary_Schools_Cuisine_Types.culinary_school_id = Culinary_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?culinary_schools_cuisine_types a :Culinary_Schools_Cuisine_Types .\n  ?cuisine_types a :Cuisine_Types .\n  ?culinary_schools_cuisine_types p:hasCuisine_Types ?cuisine_types .\n  ?culinary_schools a :Culinary_Schools .\n  ?culinary_schools_cuisine_types p:hasCulinary_Schools ?culinary_schools .\n  ?culinary_schools p:name ?name .\n  ?cuisine_types p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the cuisine types available for every one of the culinary schools?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCuisine_Types ?child ; p:hasCulinary_Schools ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Culinary_Schools } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?culinary_schools_cuisine_types a :Culinary_Schools_Cuisine_Types .\n  ?cuisine_types a :Cuisine_Types .\n  ?culinary_schools_cuisine_types p:hasCuisine_Types ?cuisine_types .\n  ?culinary_schools a :Culinary_Schools .\n  ?culinary_schools_cuisine_types p:hasCulinary_Schools ?culinary_schools .\n  ?culinary_schools p:name ?name .\n  ?cuisine_types p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

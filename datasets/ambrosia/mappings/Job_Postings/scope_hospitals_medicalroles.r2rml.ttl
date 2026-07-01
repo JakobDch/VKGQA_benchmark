@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_hospitals_medicalroles_0_Hospitals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"Name\", \"Location\" FROM \"Hospitals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Hospitals/{HospitalID}" ; rr:class :Hospitals ] ;
+  rr:predicateObjectMap [ rr:predicate p:HospitalID ; rr:objectMap [ rr:column "HospitalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_hospitals_medicalroles_1_MedicalRoles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"RoleName\", \"Salary\" FROM \"MedicalRoles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/MedicalRoles/{RoleID}" ; rr:class :MedicalRoles ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleName ; rr:objectMap [ rr:column "RoleName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Salary ; rr:objectMap [ rr:column "Salary" ] ] .
+
+<#tm_scope_hospitals_medicalroles_2_Hospitals_Medical_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"RoleID\" FROM \"Hospitals_Medical_Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Hospitals_Medical_Roles/{HospitalID}/{RoleID}" ; rr:class :Hospitals_Medical_Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:HospitalID ; rr:objectMap [ rr:column "HospitalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] .
+
+<#tm_scope_hospitals_medicalroles_3_Hospitals_Medical_Roles_RoleID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"RoleID\" FROM \"Hospitals_Medical_Roles\" WHERE \"RoleID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Hospitals_Medical_Roles/{HospitalID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedicalRoles ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/MedicalRoles/{RoleID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_hospitals_medicalroles_4_Hospitals_Medical_Roles_HospitalID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"RoleID\" FROM \"Hospitals_Medical_Roles\" WHERE \"HospitalID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Hospitals_Medical_Roles/{HospitalID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHospitals ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Hospitals/{HospitalID}" ; rr:termType rr:IRI ] ] .
+

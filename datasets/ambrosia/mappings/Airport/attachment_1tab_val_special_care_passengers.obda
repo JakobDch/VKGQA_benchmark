@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `name`, `city`, `country` FROM `Airports`
+
+mappingId	Flights_base
+target		ex:Flights/{flightNumber} a :Flights ; p:flightNumber {flightNumber} ; p:departureAirportId {departureAirportId} ; p:arrivalAirportId {arrivalAirportId} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} .
+source		SELECT `flightNumber`, `departureAirportId`, `arrivalAirportId`, `departureTime`, `arrivalTime` FROM `Flights`
+
+mappingId	Flights_arrivalAirportId_fk
+target		ex:Flights/{flightNumber} p:hasAirports_arrivalAirportId ex:Airports/{arrivalAirportId} .
+source		SELECT `flightNumber`, `arrivalAirportId` FROM `Flights` WHERE `arrivalAirportId` IS NOT NULL
+
+mappingId	Flights_departureAirportId_fk
+target		ex:Flights/{flightNumber} p:hasAirports_departureAirportId ex:Airports/{departureAirportId} .
+source		SELECT `flightNumber`, `departureAirportId` FROM `Flights` WHERE `departureAirportId` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{passengerId} a :Passengers ; p:passengerId {passengerId} ; p:dateOfBirth {dateOfBirth} ; p:isMinor {isMinor} ; p:name {FullName} .
+source		SELECT `passengerId`, `dateOfBirth`, `isMinor`, `FullName` FROM `Passengers`
+
+mappingId	Requirements_base
+target		ex:Requirements/{requirementId} a :Requirements ; p:requirementId {requirementId} ; p:passengerId {passengerId} ; p:description {description} ; p:assistant {assistant} .
+source		SELECT `requirementId`, `passengerId`, `description`, `assistant` FROM `Requirements`
+
+mappingId	Requirements_passengerId_fk
+target		ex:Requirements/{requirementId} p:hasPassengers ex:Passengers/{passengerId} .
+source		SELECT `requirementId`, `passengerId` FROM `Requirements` WHERE `passengerId` IS NOT NULL
+
+]]

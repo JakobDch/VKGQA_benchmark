@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_revenue_streams",
+  "schema": "amb_scope_streaming_services_revenue_streams",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are descriptions of revenue streams all streaming services have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Revenue_Streams.description  from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id   GROUP BY Streaming_Service_Revenue.stream_id HAVING COUNT(DISTINCT Streaming_Service_Revenue.service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each streaming service, list the revenue streams they have and their descriptions.",
+      "qtype": "unambig",
+      "sql": "select streaming_services.name , revenue_streams.name , revenue_streams.description from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?description WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:name ?name2 .\n  ?revenue_streams p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "Give me a description of revenue streams each streaming service uses.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.name , revenue_streams.description from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the revenue streams of every streaming service.",
+      "qtype": "ambig",
+      "sql": "SELECT Revenue_Streams.name  from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id   GROUP BY Streaming_Service_Revenue.stream_id HAVING COUNT(DISTINCT Streaming_Service_Revenue.service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the revenue streams of every streaming service.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.name , revenue_streams.name from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "Show me revenue streams each streaming service has and their descriptions.",
+      "qtype": "ambig",
+      "sql": "SELECT Revenue_Streams.name, Revenue_Streams.description  from Streaming_Service_Revenue join Revenue_Streams on Streaming_Service_Revenue.stream_id = Revenue_Streams.id join Streaming_Services on Streaming_Service_Revenue.service_id = Streaming_Services.id   GROUP BY Streaming_Service_Revenue.stream_id HAVING COUNT(DISTINCT Streaming_Service_Revenue.service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me a description of revenue streams each streaming service uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me revenue streams each streaming service has and their descriptions.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 ?description WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:name ?name2 .\n  ?revenue_streams p:description ?description .\n} }\n  collective: { SELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the revenue streams of every streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRevenue_Streams ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?streaming_service_revenue a :Streaming_Service_Revenue .\n  ?revenue_streams a :Revenue_Streams .\n  ?streaming_service_revenue p:hasRevenue_Streams ?revenue_streams .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_revenue p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:name ?name .\n  ?revenue_streams p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_customer_service_representatives_channels",
+  "schema": "amb_scope_customer_service_representatives_channels",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "provide the communication channel that is common to all customer service representatives",
+      "qtype": "unambig",
+      "sql": "SELECT Channels.channel_value  from Customer_Service_Representatives_Channels join Channels on Customer_Service_Representatives_Channels.channel_id = Channels.channel_id join Customer_Service_Representatives on Customer_Service_Representatives_Channels.representative_id = Customer_Service_Representatives.id   GROUP BY Customer_Service_Representatives_Channels.channel_id HAVING COUNT(DISTINCT Customer_Service_Representatives_Channels.representative_id) = (SELECT COUNT(*) FROM  Customer_Service_Representatives)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?channel_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:channel_id ?cg . ?child a :Channels ; p:channel_id ?cg . ?l p:representative_id ?pg . ?parent a :Customer_Service_Representatives ; p:id ?pg . } GROUP BY ?child }\n  ?child p:channel_value ?channel_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Customer_Service_Representatives } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "which communication channels are assigned to each customer service representative?",
+      "qtype": "ambig",
+      "sql": "select customer_service_representatives.email , channels.channel_value from Customer_Service_Representatives_Channels join Channels on Customer_Service_Representatives_Channels.channel_id = Channels.channel_id join Customer_Service_Representatives on Customer_Service_Representatives_Channels.representative_id = Customer_Service_Representatives.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?email ?channel_value WHERE {\n  ?customer_service_representatives_channels a :Customer_Service_Representatives_Channels .\n  ?channels a :Channels .\n  ?customer_service_representatives_channels p:hasChannels ?channels .\n  ?customer_service_representatives a :Customer_Service_Representatives .\n  ?customer_service_representatives_channels p:hasCustomer_Service_Representatives ?customer_service_representatives .\n  ?customer_service_representatives p:email ?email .\n  ?channels p:channel_value ?channel_value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "which communication channels are assigned to each customer service representative?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?channel_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:channel_id ?cg . ?child a :Channels ; p:channel_id ?cg . ?l p:representative_id ?pg . ?parent a :Customer_Service_Representatives ; p:id ?pg . } GROUP BY ?child }\n  ?child p:channel_value ?channel_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Customer_Service_Representatives } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?email ?channel_value WHERE {\n  ?customer_service_representatives_channels a :Customer_Service_Representatives_Channels .\n  ?channels a :Channels .\n  ?customer_service_representatives_channels p:hasChannels ?channels .\n  ?customer_service_representatives a :Customer_Service_Representatives .\n  ?customer_service_representatives_channels p:hasCustomer_Service_Representatives ?customer_service_representatives .\n  ?customer_service_representatives p:email ?email .\n  ?channels p:channel_value ?channel_value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

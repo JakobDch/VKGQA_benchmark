@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Age_Group_base
+target		ex:Age_Group/{id} a :Age_Group ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Age_Group`
+
+mappingId	Health_Condition_base
+target		ex:Health_Condition/{id} a :Health_Condition ; p:id {id} ; p:condition_name {condition_name} .
+source		SELECT `id`, `condition_name` FROM `Health_Condition`
+
+mappingId	Vaccine_base
+target		ex:Vaccine/{id} a :Vaccine ; p:id {id} ; p:vaccine_name {vaccine_name} ; p:age_group_id {age_group_id} ; p:health_condition_id {health_condition_id} .
+source		SELECT `id`, `vaccine_name`, `age_group_id`, `health_condition_id` FROM `Vaccine`
+
+mappingId	Vaccine_health_condition_id_fk
+target		ex:Vaccine/{id} p:hasHealth_Condition ex:Health_Condition/{health_condition_id} .
+source		SELECT `id`, `health_condition_id` FROM `Vaccine` WHERE `health_condition_id` IS NOT NULL
+
+mappingId	Vaccine_age_group_id_fk
+target		ex:Vaccine/{id} p:hasAge_Group ex:Age_Group/{age_group_id} .
+source		SELECT `id`, `age_group_id` FROM `Vaccine` WHERE `age_group_id` IS NOT NULL
+
+mappingId	Patient_base
+target		ex:Patients/{patient_id} a :Patients ; p:patient_id {patient_id} ; p:birthdate {birthdate} ; p:phone_number {phone_number} ; p:age_group_id {age_group_id} ; p:name {full_name} .
+source		SELECT `patient_id`, `birthdate`, `phone_number`, `age_group_id`, `full_name` FROM `Patient`
+
+mappingId	Patient_age_group_id_fk
+target		ex:Patients/{patient_id} p:hasAge_Group ex:Age_Group/{age_group_id} .
+source		SELECT `patient_id`, `age_group_id` FROM `Patient` WHERE `age_group_id` IS NOT NULL
+
+mappingId	Doctor_base
+target		ex:Doctors/{doctor_id} a :Doctors ; p:doctor_id {doctor_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:specialty {specialty} .
+source		SELECT `doctor_id`, `first_name`, `last_name`, `specialty` FROM `Doctor`
+
+mappingId	Appointment_base
+target		ex:Appointments/{appointment_id} a :Appointments ; p:appointment_id {appointment_id} ; p:date {date} ; p:patient_id {patient_id} ; p:doctor_id {doctor_id} ; p:medicalrecord_id {medicalrecord_id} .
+source		SELECT `appointment_id`, `date`, `patient_id`, `doctor_id`, `medicalrecord_id` FROM `Appointment`
+
+mappingId	Appointment_medicalrecord_id_fk
+target		ex:Appointments/{appointment_id} p:hasMedicalRecord ex:MedicalRecord/{medicalrecord_id} .
+source		SELECT `appointment_id`, `medicalrecord_id` FROM `Appointment` WHERE `medicalrecord_id` IS NOT NULL
+
+mappingId	Appointment_doctor_id_fk
+target		ex:Appointments/{appointment_id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `appointment_id`, `doctor_id` FROM `Appointment` WHERE `doctor_id` IS NOT NULL
+
+mappingId	Appointment_patient_id_fk
+target		ex:Appointments/{appointment_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `appointment_id`, `patient_id` FROM `Appointment` WHERE `patient_id` IS NOT NULL
+
+mappingId	MedicalRecord_base
+target		ex:MedicalRecord/{medicalrecord_id} a :MedicalRecord ; p:medicalrecord_id {medicalrecord_id} ; p:patient_id {patient_id} ; p:diagnosis {diagnosis} ; p:treatment_plan {treatment_plan} .
+source		SELECT `medicalrecord_id`, `patient_id`, `diagnosis`, `treatment_plan` FROM `MedicalRecord`
+
+mappingId	MedicalRecord_patient_id_fk
+target		ex:MedicalRecord/{medicalrecord_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `medicalrecord_id`, `patient_id` FROM `MedicalRecord` WHERE `patient_id` IS NOT NULL
+
+]]

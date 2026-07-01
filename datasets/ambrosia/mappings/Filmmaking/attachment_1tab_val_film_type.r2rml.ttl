@@ -1,0 +1,83 @@
+@prefix : <http://ambrosia.example.org/filmmaking#> .
+@prefix p: <http://ambrosia.example.org/filmmaking/prop#> .
+@prefix ex: <http://ambrosia.example.org/filmmaking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_val_film_type_0_Directors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DirectorID\", \"Name\", \"BirthDate\", \"Nationality\" FROM \"Directors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Directors/{DirectorID}" ; rr:class :Directors ] ;
+  rr:predicateObjectMap [ rr:predicate p:DirectorID ; rr:objectMap [ rr:column "DirectorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BirthDate ; rr:objectMap [ rr:column "BirthDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Nationality ; rr:objectMap [ rr:column "Nationality" ] ] .
+
+<#tm_attachment_1tab_val_film_type_1_Producers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProducerID\", \"Name\", \"ContactNumber\", \"Email\", \"AssociatedDirector\" FROM \"Producers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Producers/{ProducerID}" ; rr:class :Producers ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProducerID ; rr:objectMap [ rr:column "ProducerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ContactNumber ; rr:objectMap [ rr:column "ContactNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "Email" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AssociatedDirector ; rr:objectMap [ rr:column "AssociatedDirector" ] ] .
+
+<#tm_attachment_1tab_val_film_type_2_Producers_AssociatedDirector_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProducerID\", \"AssociatedDirector\" FROM \"Producers\" WHERE \"AssociatedDirector\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Producers/{ProducerID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDirectors ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Directors/{AssociatedDirector}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_film_type_3_Films_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FilmID\", \"Title\", \"ReleaseYear\", \"FilmType\", \"Budget\", \"ProductionCompanyID\" FROM \"Films\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Films/{FilmID}" ; rr:class :Films ] ;
+  rr:predicateObjectMap [ rr:predicate p:FilmID ; rr:objectMap [ rr:column "FilmID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ReleaseYear ; rr:objectMap [ rr:column "ReleaseYear" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FilmType ; rr:objectMap [ rr:column "FilmType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Budget ; rr:objectMap [ rr:column "Budget" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProductionCompanyID ; rr:objectMap [ rr:column "ProductionCompanyID" ] ] .
+
+<#tm_attachment_1tab_val_film_type_4_Films_ProductionCompanyID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FilmID\", \"ProductionCompanyID\" FROM \"Films\" WHERE \"ProductionCompanyID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Films/{FilmID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCompanies ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Companies/{ProductionCompanyID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_film_type_5_Actors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ActorID\", \"FirstName\", \"LastName\", \"DateOfBirth\" FROM \"Actors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Actors/{ActorID}" ; rr:class :Actors ] ;
+  rr:predicateObjectMap [ rr:predicate p:ActorID ; rr:objectMap [ rr:column "ActorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DateOfBirth ; rr:objectMap [ rr:column "DateOfBirth" ] ] .
+
+<#tm_attachment_1tab_val_film_type_6_Casts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"FilmID\", \"ActorID\", \"CharacterName\", \"AppearanceFee\" FROM \"Casts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/FilmActors/{RoleID}" ; rr:class :FilmActors ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FilmID ; rr:objectMap [ rr:column "FilmID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ActorID ; rr:objectMap [ rr:column "ActorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CharacterName ; rr:objectMap [ rr:column "CharacterName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AppearanceFee ; rr:objectMap [ rr:column "AppearanceFee" ] ] .
+
+<#tm_attachment_1tab_val_film_type_7_Casts_FilmID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"FilmID\" FROM \"Casts\" WHERE \"FilmID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/FilmActors/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFilms ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Films/{FilmID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_film_type_8_Casts_ActorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"ActorID\" FROM \"Casts\" WHERE \"ActorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/FilmActors/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasActors ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Actors/{ActorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_film_type_9_Companies_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CompanyID\", \"CompanyName\", \"AddressLine1\", \"AddressLine2\", \"City\", \"StateOrRegion\", \"PostalCode\", \"Country\" FROM \"Companies\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Companies/{CompanyID}" ; rr:class :Companies ] ;
+  rr:predicateObjectMap [ rr:predicate p:CompanyID ; rr:objectMap [ rr:column "CompanyID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CompanyName ; rr:objectMap [ rr:column "CompanyName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AddressLine1 ; rr:objectMap [ rr:column "AddressLine1" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AddressLine2 ; rr:objectMap [ rr:column "AddressLine2" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:City ; rr:objectMap [ rr:column "City" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StateOrRegion ; rr:objectMap [ rr:column "StateOrRegion" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PostalCode ; rr:objectMap [ rr:column "PostalCode" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Country ; rr:objectMap [ rr:column "Country" ] ] .
+

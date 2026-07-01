@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Art_Galleries_base
+target		ex:Art_Galleries/{GalleryID} a :Art_Galleries ; p:GalleryID {GalleryID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `GalleryID`, `Name`, `Location` FROM `Art_Galleries`
+
+mappingId	Exhibitions_base
+target		ex:Exhibitions/{ExhibitionID} a :Exhibitions ; p:ExhibitionID {ExhibitionID} ; p:Type {Type} ; p:Description {Description} .
+source		SELECT `ExhibitionID`, `Type`, `Description` FROM `Exhibitions`
+
+mappingId	Art_Galleries_Exhibitions_base
+target		ex:Art_Galleries_Exhibitions/{GalleryID}/{ExhibitionID} a :Art_Galleries_Exhibitions ; p:GalleryID {GalleryID} ; p:ExhibitionID {ExhibitionID} .
+source		SELECT `GalleryID`, `ExhibitionID` FROM `Art_Galleries_Exhibitions`
+
+mappingId	Art_Galleries_Exhibitions_ExhibitionID_fk
+target		ex:Art_Galleries_Exhibitions/{GalleryID}/{ExhibitionID} p:hasExhibitions ex:Exhibitions/{ExhibitionID} .
+source		SELECT `GalleryID`, `ExhibitionID` FROM `Art_Galleries_Exhibitions` WHERE `ExhibitionID` IS NOT NULL
+
+mappingId	Art_Galleries_Exhibitions_GalleryID_fk
+target		ex:Art_Galleries_Exhibitions/{GalleryID}/{ExhibitionID} p:hasArt_Galleries ex:Art_Galleries/{GalleryID} .
+source		SELECT `GalleryID`, `ExhibitionID` FROM `Art_Galleries_Exhibitions` WHERE `GalleryID` IS NOT NULL
+
+]]

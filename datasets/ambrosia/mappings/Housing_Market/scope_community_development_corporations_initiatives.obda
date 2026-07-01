@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Community_Development_Corporations_base
+target		ex:Community_Development_Corporations/{id} a :Community_Development_Corporations ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Community_Development_Corporations`
+
+mappingId	Initiatives_base
+target		ex:Initiatives/{id} a :Initiatives ; p:id {id} ; p:initiative_name {initiative_name} ; p:description {description} .
+source		SELECT `id`, `initiative_name`, `description` FROM `Initiatives`
+
+mappingId	Community_Development_Corporations_Initiatives_base
+target		ex:Community_Development_Corporations_Initiatives/{_amb_rowid} a :Community_Development_Corporations_Initiatives ; p:community_development_corporation_id {community_development_corporation_id} ; p:initiative_id {initiative_id} .
+source		SELECT `_amb_rowid`, `community_development_corporation_id`, `initiative_id` FROM `Community_Development_Corporations_Initiatives`
+
+mappingId	Community_Development_Corporations_Initiatives_initiative_id_fk
+target		ex:Community_Development_Corporations_Initiatives/{_amb_rowid} p:hasInitiatives ex:Initiatives/{initiative_id} .
+source		SELECT `_amb_rowid`, `initiative_id` FROM `Community_Development_Corporations_Initiatives` WHERE `initiative_id` IS NOT NULL
+
+mappingId	Community_Development_Corporations_Initiatives_community_development_corporation_id_fk
+target		ex:Community_Development_Corporations_Initiatives/{_amb_rowid} p:hasCommunity_Development_Corporations ex:Community_Development_Corporations/{community_development_corporation_id} .
+source		SELECT `_amb_rowid`, `community_development_corporation_id` FROM `Community_Development_Corporations_Initiatives` WHERE `community_development_corporation_id` IS NOT NULL
+
+]]

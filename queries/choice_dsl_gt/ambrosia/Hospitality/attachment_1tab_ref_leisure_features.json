@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_leisure_features",
+  "schema": "amb_attachment_1tab_ref_leisure_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What hotels with swimming pools are in New York and what hotels with hot tubs are in the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Hotel.name \nFROM LeisureFeature JOIN FeatureInRoom ON LeisureFeature.id = FeatureInRoom.leisurefeature_id JOIN RoomType ON FeatureInRoom.roomtype_id = RoomType.id JOIN Hotel ON RoomType.hotel_id = Hotel.id JOIN City ON Hotel.city_id = City.id\nWHERE (LeisureFeature.feature = \"Swimming Pool\" OR LeisureFeature.feature = \"Hot Tub\") AND City.name = \"New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?leisurefeature a :LeisureFeature .\n  ?featureinroom a :FeatureInRoom .\n  ?featureinroom p:hasLeisureFeature ?leisurefeature .\n  ?roomtype a :RoomTypes .\n  ?featureinroom p:hasRoomType ?roomtype .\n  ?hotel a :Hotels .\n  ?roomtype p:hasHotel ?hotel .\n  ?city a :City .\n  ?hotel p:hasCity ?city .\n  ?hotel p:name ?name .\n  ?leisurefeature p:feature ?feature_w .\n  ?leisurefeature p:feature ?feature_w2 .\n  ?city p:name ?name_w .\n  FILTER((((STR(?feature_w) = \"Swimming Pool\" || STR(?feature_w2) = \"Hot Tub\")) && STR(?name_w) = \"New York\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all hotels with swimming pools and also list hotels with hot tubs in New York.",
+      "qtype": "unambig",
+      "sql": "SELECT Hotel.name \nFROM LeisureFeature JOIN FeatureInRoom ON LeisureFeature.id = FeatureInRoom.leisurefeature_id JOIN RoomType ON FeatureInRoom.roomtype_id = RoomType.id JOIN Hotel ON RoomType.hotel_id = Hotel.id JOIN City ON Hotel.city_id = City.id\nWHERE LeisureFeature.feature = \"Swimming Pool\" OR LeisureFeature.feature = \"Hot Tub\" AND City.name = \"New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?leisurefeature a :LeisureFeature .\n  ?featureinroom a :FeatureInRoom .\n  ?featureinroom p:hasLeisureFeature ?leisurefeature .\n  ?roomtype a :RoomTypes .\n  ?featureinroom p:hasRoomType ?roomtype .\n  ?hotel a :Hotels .\n  ?roomtype p:hasHotel ?hotel .\n  ?city a :City .\n  ?hotel p:hasCity ?city .\n  ?hotel p:name ?name .\n  ?leisurefeature p:feature ?feature_w .\n  ?leisurefeature p:feature ?feature_w2 .\n  ?city p:name ?name_w .\n  FILTER((STR(?feature_w) = \"Swimming Pool\" || (STR(?feature_w2) = \"Hot Tub\" && STR(?name_w) = \"New York\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show hotels with swimming pools or hot tubs in New York.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?leisurefeature a :LeisureFeature .\n  ?featureinroom a :FeatureInRoom .\n  ?featureinroom p:hasLeisureFeature ?leisurefeature .\n  ?roomtype a :RoomTypes .\n  ?featureinroom p:hasRoomType ?roomtype .\n  ?hotel a :Hotels .\n  ?roomtype p:hasHotel ?hotel .\n  ?city a :City .\n  ?hotel p:hasCity ?city .\n  ?hotel p:name ?name .\n  ?leisurefeature p:feature ?feature_w .\n  ?leisurefeature p:feature ?feature_w2 .\n  ?city p:name ?name_w .\n  FILTER((((STR(?feature_w) = \"Swimming Pool\" || STR(?feature_w2) = \"Hot Tub\")) && STR(?name_w) = \"New York\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?leisurefeature a :LeisureFeature .\n  ?featureinroom a :FeatureInRoom .\n  ?featureinroom p:hasLeisureFeature ?leisurefeature .\n  ?roomtype a :RoomTypes .\n  ?featureinroom p:hasRoomType ?roomtype .\n  ?hotel a :Hotels .\n  ?roomtype p:hasHotel ?hotel .\n  ?city a :City .\n  ?hotel p:hasCity ?city .\n  ?hotel p:name ?name .\n  ?leisurefeature p:feature ?feature_w .\n  ?leisurefeature p:feature ?feature_w2 .\n  ?city p:name ?name_w .\n  FILTER((STR(?feature_w) = \"Swimming Pool\" || (STR(?feature_w2) = \"Hot Tub\" && STR(?name_w) = \"New York\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

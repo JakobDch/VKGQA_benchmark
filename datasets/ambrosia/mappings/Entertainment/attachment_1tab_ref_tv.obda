@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genre/{Id} a :Genre ; p:Id {Id} ; p:name {Name} .
+source		SELECT `Id`, `Name` FROM `Genres`
+
+mappingId	TVShows_base
+target		ex:Tv_Show/{Id} a :Tv_Show ; p:Id {Id} ; p:Title {Title} ; p:Type {Type} ; p:ReleaseDate {ReleaseDate} ; p:GENRE_ID {GENRE_ID} .
+source		SELECT `Id`, `Title`, `Type`, `ReleaseDate`, `GENRE_ID` FROM `TVShows`
+
+mappingId	TVShows_GENRE_ID_fk
+target		ex:Tv_Show/{Id} p:hasGenre ex:Genre/{GENRE_ID} .
+source		SELECT `Id`, `GENRE_ID` FROM `TVShows` WHERE `GENRE_ID` IS NOT NULL
+
+mappingId	EpisodeCounts_base
+target		ex:EpisodeCounts/{_amb_rowid} a :EpisodeCounts ; p:Show_ID {Show_ID} ; p:Number_of_Episodes {Number_of_Episodes} .
+source		SELECT `_amb_rowid`, `Show_ID`, `Number_of_Episodes` FROM `EpisodeCounts`
+
+mappingId	EpisodeCounts_Show_ID_fk
+target		ex:EpisodeCounts/{_amb_rowid} p:hasTv_Show ex:Tv_Show/{Show_ID} .
+source		SELECT `_amb_rowid`, `Show_ID` FROM `EpisodeCounts` WHERE `Show_ID` IS NOT NULL
+
+mappingId	Ratings_base
+target		ex:Rating/{_amb_rowid} a :Rating ; p:Show_ID {Show_ID} ; p:RatingValue {RatingValue} ; p:ReviewText {ReviewText} ; p:RaterName {RaterName} ; p:RatedOn {RatedOn} .
+source		SELECT `_amb_rowid`, `Show_ID`, `RatingValue`, `ReviewText`, `RaterName`, `RatedOn` FROM `Ratings`
+
+mappingId	Ratings_Show_ID_fk
+target		ex:Rating/{_amb_rowid} p:hasTv_Show ex:Tv_Show/{Show_ID} .
+source		SELECT `_amb_rowid`, `Show_ID` FROM `Ratings` WHERE `Show_ID` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_specialist_doctors",
+  "schema": "amb_attachment_2tab_ref_specialist_doctors",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all radiologists and also list ultrasound Techs in Central Valley Clinic.",
+      "qtype": "unambig",
+      "sql": "SELECT Radiologist.FullName\nFROM Hospital JOIN Radiologist ON Hospital.id = Radiologist.hospital_id\nUNION\nSELECT Ultrasound_Tech.FullName\nFROM Hospital JOIN Ultrasound_Tech ON Hospital.id = Ultrasound_Tech.hospital_id\nWHERE Hospital.name = \"Central Valley Clinic\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hospital a :Hospitals .\n    ?radiologist a :Radiologist .\n    ?radiologist p:hasHospital ?hospital .\n    ?radiologist p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hospital a :Hospitals .\n    ?ultrasound_tech a :Ultrasound_Tech .\n    ?ultrasound_tech p:hasHospital ?hospital .\n    ?ultrasound_tech p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Give me radiologists and ultrasound techs who are in Central Valley Clinic.",
+      "qtype": "ambig",
+      "sql": "SELECT Radiologist.FullName\nFROM Hospital JOIN Radiologist ON Hospital.id = Radiologist.hospital_id\nWHERE Hospital.name = \"Central Valley Clinic\"\nUNION\nSELECT Ultrasound_Tech.FullName\nFROM Hospital JOIN Ultrasound_Tech ON Hospital.id = Ultrasound_Tech.hospital_id\nWHERE Hospital.name = \"Central Valley Clinic\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hospital a :Hospitals .\n    ?radiologist a :Radiologist .\n    ?radiologist p:hasHospital ?hospital .\n    ?radiologist p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hospital a :Hospitals .\n    ?ultrasound_tech a :Ultrasound_Tech .\n    ?ultrasound_tech p:hasHospital ?hospital .\n    ?ultrasound_tech p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me radiologists and ultrasound techs who are in Central Valley Clinic.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hospital a :Hospitals .\n    ?radiologist a :Radiologist .\n    ?radiologist p:hasHospital ?hospital .\n    ?radiologist p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hospital a :Hospitals .\n    ?ultrasound_tech a :Ultrasound_Tech .\n    ?ultrasound_tech p:hasHospital ?hospital .\n    ?ultrasound_tech p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hospital a :Hospitals .\n    ?radiologist a :Radiologist .\n    ?radiologist p:hasHospital ?hospital .\n    ?radiologist p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hospital a :Hospitals .\n    ?ultrasound_tech a :Ultrasound_Tech .\n    ?ultrasound_tech p:hasHospital ?hospital .\n    ?ultrasound_tech p:name ?fullname .\n    ?hospital p:name ?name_f .\n    FILTER(STR(?name_f) = \"Central Valley Clinic\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_festivals_performances",
+  "schema": "amb_scope_festivals_performances",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the performances every festival has.",
+      "qtype": "ambig",
+      "sql": "SELECT Performances.Type  from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID   GROUP BY Festivals_Performances.PerformanceID HAVING COUNT(DISTINCT Festivals_Performances.FestivalID) = (SELECT COUNT(*) FROM  Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the performances every festival has.",
+      "qtype": "ambig",
+      "sql": "select festivals.name , performances.type from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "For each festival, show me the type and descriptions of performances at that festival",
+      "qtype": "unambig",
+      "sql": "select festivals.name , performances.type , performances.description from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Type ?type .\n  ?performances p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Provide me the performance types and descriptions that are common to all festivals",
+      "qtype": "unambig",
+      "sql": "SELECT Performances.Type, Performances.Description  from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID   GROUP BY Festivals_Performances.PerformanceID HAVING COUNT(DISTINCT Festivals_Performances.FestivalID) = (SELECT COUNT(*) FROM  Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "List the performance descriptions shown for every festival.",
+      "qtype": "ambig",
+      "sql": "SELECT Performances.Description  from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID   GROUP BY Festivals_Performances.PerformanceID HAVING COUNT(DISTINCT Festivals_Performances.FestivalID) = (SELECT COUNT(*) FROM  Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "List the performance descriptions shown for every festival.",
+      "qtype": "ambig",
+      "sql": "select festivals.name , performances.description from Festivals_Performances join Performances on Festivals_Performances.PerformanceID = Performances.PerformanceID join Festivals on Festivals_Performances.FestivalID = Festivals.FestivalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the performance types and descriptions that we have for every festival",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Type ?type .\n  ?performances p:Description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the performance descriptions shown for every festival.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the performances every festival has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:PerformanceID ?cg . ?child a :Performance ; p:PerformanceID ?cg . ?l p:FestivalID ?pg . ?parent a :Festivals ; p:FestivalID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Festivals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?festivals_performances a :Festivals_Performances .\n  ?performances a :Performance .\n  ?festivals_performances p:hasPerformances ?performances .\n  ?festivals a :Festivals .\n  ?festivals_performances p:hasFestivals ?festivals .\n  ?festivals p:name ?name .\n  ?performances p:Type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

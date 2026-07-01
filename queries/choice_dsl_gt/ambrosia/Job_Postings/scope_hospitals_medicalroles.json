@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_hospitals_medicalroles",
+  "schema": "amb_scope_hospitals_medicalroles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the salary for a position that is common to all hospitals?",
+      "qtype": "unambig",
+      "sql": "SELECT MedicalRoles.Salary  from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Medical_Roles.RoleID HAVING COUNT(DISTINCT Hospitals_Medical_Roles.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salary WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:Salary ?salary .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What roles do all hospitals have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT MedicalRoles.RoleName  from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Medical_Roles.RoleID HAVING COUNT(DISTINCT Hospitals_Medical_Roles.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the roles every hospital has.",
+      "qtype": "ambig",
+      "sql": "select hospitals.name , medicalroles.rolename from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?rolename WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:RoleName ?rolename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "For each hospital, show me the salaries of the roles there.",
+      "qtype": "unambig",
+      "sql": "select hospitals.name , medicalroles.salary from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?salary WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:Salary ?salary .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What name and salary combinations do we have for medical roles that are common to all hospitals",
+      "qtype": "unambig",
+      "sql": "SELECT MedicalRoles.RoleName, MedicalRoles.Salary  from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Medical_Roles.RoleID HAVING COUNT(DISTINCT Hospitals_Medical_Roles.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rolename ?salary WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  ?child p:Salary ?salary .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For all hospitals, show me the names and salaries of all the medical roles they have.",
+      "qtype": "unambig",
+      "sql": "select hospitals.name , medicalroles.rolename , medicalroles.salary from Hospitals_Medical_Roles join MedicalRoles on Hospitals_Medical_Roles.RoleID = MedicalRoles.RoleID join Hospitals on Hospitals_Medical_Roles.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?rolename ?salary WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:RoleName ?rolename .\n  ?medicalroles p:Salary ?salary .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the salary of a role that each hospital has?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?salary WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:Salary ?salary .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?salary WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:Salary ?salary .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the roles every hospital has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?rolename WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:RoleName ?rolename .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What name and salary do we have in medical roles for every hospital",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?rolename ?salary WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :MedicalRoles ; p:RoleID ?cg . ?l p:HospitalID ?pg . ?parent a :Hospitals ; p:HospitalID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  ?child p:Salary ?salary .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?rolename ?salary WHERE {\n  ?hospitals_medical_roles a :Hospitals_Medical_Roles .\n  ?medicalroles a :MedicalRoles .\n  ?hospitals_medical_roles p:hasMedicalRoles ?medicalroles .\n  ?hospitals a :Hospitals .\n  ?hospitals_medical_roles p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?medicalroles p:RoleName ?rolename .\n  ?medicalroles p:Salary ?salary .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

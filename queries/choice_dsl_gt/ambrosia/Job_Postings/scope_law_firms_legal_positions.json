@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_law_firms_legal_positions",
+  "schema": "amb_scope_law_firms_legal_positions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the law firms and the corresponding legal positions.",
+      "qtype": "unambig",
+      "sql": "select law_firms.name , legal_positions.position_name from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?position_name WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:position_name ?position_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What is the required experience of positions all law firms have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Legal_Positions.required_experience  from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id   GROUP BY Law_Firms_Legal_Positions.position_id HAVING COUNT(DISTINCT Law_Firms_Legal_Positions.firm_id) = (SELECT COUNT(*) FROM  Law_Firms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?required_experience WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:required_experience ?required_experience .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What legal positions do we have for each law firm?",
+      "qtype": "ambig",
+      "sql": "SELECT Legal_Positions.position_name  from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id   GROUP BY Law_Firms_Legal_Positions.position_id HAVING COUNT(DISTINCT Law_Firms_Legal_Positions.firm_id) = (SELECT COUNT(*) FROM  Law_Firms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_name ?position_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the required experience for positions each law firm has.",
+      "qtype": "ambig",
+      "sql": "select law_firms.name , legal_positions.required_experience from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?required_experience WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:required_experience ?required_experience .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "What are the legal position names and required experiences for each law firm?",
+      "qtype": "ambig",
+      "sql": "SELECT Legal_Positions.position_name, Legal_Positions.required_experience  from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id   GROUP BY Law_Firms_Legal_Positions.position_id HAVING COUNT(DISTINCT Law_Firms_Legal_Positions.firm_id) = (SELECT COUNT(*) FROM  Law_Firms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_name ?required_experience WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_name ?position_name .\n  ?child p:required_experience ?required_experience .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What are the legal position names and required experiences for each law firm?",
+      "qtype": "ambig",
+      "sql": "select law_firms.name , legal_positions.position_name , legal_positions.required_experience from Law_Firms_Legal_Positions join Legal_Positions on Law_Firms_Legal_Positions.position_id = Legal_Positions.id join Law_Firms on Law_Firms_Legal_Positions.firm_id = Law_Firms.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?position_name ?required_experience WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:position_name ?position_name .\n  ?legal_positions p:required_experience ?required_experience .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What legal positions do we have for each law firm?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?position_name WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:position_name ?position_name .\n} }\n  collective: { SELECT ?position_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_name ?position_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the required experience for positions each law firm has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?required_experience WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:required_experience ?required_experience .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?required_experience WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:required_experience ?required_experience .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the legal position names and required experiences for each law firm?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?position_name ?required_experience WHERE {\n  ?law_firms_legal_positions a :Law_Firms_Legal_Positions .\n  ?legal_positions a :Legal_Positions .\n  ?law_firms_legal_positions p:hasLegal_Positions ?legal_positions .\n  ?law_firms a :Law_Firms .\n  ?law_firms_legal_positions p:hasLaw_Firms ?law_firms .\n  ?law_firms p:name ?name .\n  ?legal_positions p:position_name ?position_name .\n  ?legal_positions p:required_experience ?required_experience .\n} }\n  collective: { SELECT ?position_name ?required_experience WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Legal_Positions ; p:id ?cg . ?l p:firm_id ?pg . ?parent a :Law_Firms ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_name ?position_name .\n  ?child p:required_experience ?required_experience .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Law_Firms } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

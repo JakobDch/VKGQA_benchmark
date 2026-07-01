@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `name`, `city`, `country` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:airlineName {airlineName} ; p:headquarteredIn {headquarteredIn} ; p:homeAirportId {homeAirportId} .
+source		SELECT `id`, `airlineName`, `headquarteredIn`, `homeAirportId` FROM `Airlines`
+
+mappingId	Airlines_homeAirportId_fk
+target		ex:Airlines/{id} p:hasAirports ex:Airports/{homeAirportId} .
+source		SELECT `id`, `homeAirportId` FROM `Airlines` WHERE `homeAirportId` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:flightNo {flightNo} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:originAirportId {originAirportId} ; p:destinationAirportId {destinationAirportId} ; p:aircraftId {aircraftId} .
+source		SELECT `id`, `flightNo`, `departureTime`, `arrivalTime`, `originAirportId`, `destinationAirportId`, `aircraftId` FROM `Flights`
+
+mappingId	Flights_aircraftId_fk
+target		ex:Flights/{id} p:hasManufactures ex:Manufactures/{aircraftId} .
+source		SELECT `id`, `aircraftId` FROM `Flights` WHERE `aircraftId` IS NOT NULL
+
+mappingId	Flights_destinationAirportId_fk
+target		ex:Flights/{id} p:hasAirports_destinationAirportId ex:Airports/{destinationAirportId} .
+source		SELECT `id`, `destinationAirportId` FROM `Flights` WHERE `destinationAirportId` IS NOT NULL
+
+mappingId	Flights_originAirportId_fk
+target		ex:Flights/{id} p:hasAirports_originAirportId ex:Airports/{originAirportId} .
+source		SELECT `id`, `originAirportId` FROM `Flights` WHERE `originAirportId` IS NOT NULL
+
+mappingId	Manufactures_base
+target		ex:Manufactures/{id} a :Manufactures ; p:id {id} ; p:aircraftModel {aircraftModel} ; p:manufacturers {manufacturers} ; p:numberOfSeats {numberOfSeats} .
+source		SELECT `id`, `aircraftModel`, `manufacturers`, `numberOfSeats` FROM `Manufactures`
+
+]]

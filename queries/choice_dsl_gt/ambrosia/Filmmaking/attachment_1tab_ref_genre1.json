@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_genre1",
+  "schema": "amb_attachment_1tab_ref_genre1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display all the 2-hour-long movies that are action or romantic comedies.",
+      "qtype": "unambig",
+      "sql": "SELECT Movies.title \nFROM Genres JOIN Movies ON Genres.id = Movies.genre_id JOIN MovieDurations ON Movies.id = MovieDurations.movie_id JOIN Durations ON MovieDurations.duration_id = Durations.id\nWHERE (Genres.name = \"Action Movie\" OR Genres.name = \"Romantic Comedy\") AND Durations.minutes = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?movies a :Movies .\n  ?movies p:hasGenres ?genres .\n  ?moviedurations a :MovieDurations .\n  ?moviedurations p:hasMovies ?movies .\n  ?durations a :Durations .\n  ?moviedurations p:hasDurations ?durations .\n  ?movies p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?durations p:minutes ?minutes_w .\n  FILTER((((STR(?name_w) = \"Action Movie\" || STR(?name_w2) = \"Romantic Comedy\")) && (STR(?minutes_w) = \"120\" || STR(?minutes_w) = \"120.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the action movies and show just the 2-hour-long romantic comedies.",
+      "qtype": "unambig",
+      "sql": "SELECT Movies.title \nFROM Genres JOIN Movies ON Genres.id = Movies.genre_id JOIN MovieDurations ON Movies.id = MovieDurations.movie_id JOIN Durations ON MovieDurations.duration_id = Durations.id\nWHERE Genres.name = \"Action Movie\" OR Genres.name = \"Romantic Comedy\" AND Durations.minutes = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?movies a :Movies .\n  ?movies p:hasGenres ?genres .\n  ?moviedurations a :MovieDurations .\n  ?moviedurations p:hasMovies ?movies .\n  ?durations a :Durations .\n  ?moviedurations p:hasDurations ?durations .\n  ?movies p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?durations p:minutes ?minutes_w .\n  FILTER((STR(?name_w) = \"Action Movie\" || (STR(?name_w2) = \"Romantic Comedy\" && (STR(?minutes_w) = \"120\" || STR(?minutes_w) = \"120.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all 2-hour-long romantic comedies and action movies.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?movies a :Movies .\n  ?movies p:hasGenres ?genres .\n  ?moviedurations a :MovieDurations .\n  ?moviedurations p:hasMovies ?movies .\n  ?durations a :Durations .\n  ?moviedurations p:hasDurations ?durations .\n  ?movies p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?durations p:minutes ?minutes_w .\n  FILTER((((STR(?name_w) = \"Action Movie\" || STR(?name_w2) = \"Romantic Comedy\")) && (STR(?minutes_w) = \"120\" || STR(?minutes_w) = \"120.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?movies a :Movies .\n  ?movies p:hasGenres ?genres .\n  ?moviedurations a :MovieDurations .\n  ?moviedurations p:hasMovies ?movies .\n  ?durations a :Durations .\n  ?moviedurations p:hasDurations ?durations .\n  ?movies p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?durations p:minutes ?minutes_w .\n  FILTER((STR(?name_w) = \"Action Movie\" || (STR(?name_w2) = \"Romantic Comedy\" && (STR(?minutes_w) = \"120\" || STR(?minutes_w) = \"120.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

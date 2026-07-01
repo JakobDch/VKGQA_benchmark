@@ -1,0 +1,65 @@
+@prefix : <http://ambrosia.example.org/airport#> .
+@prefix p: <http://ambrosia.example.org/airport/prop#> .
+@prefix ex: <http://ambrosia.example.org/airport/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_building_design_0_Architects_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"email\" FROM \"Architects\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Architects/{id}" ; rr:class :Architects ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] .
+
+<#tm_vague_2cols_building_design_1_Airports_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Airports\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{id}" ; rr:class :Airports ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_vague_2cols_building_design_2_Terminals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"airport_id\", \"terminal_name\", \"capacity\" FROM \"Terminals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{id}" ; rr:class :Terminals ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:airport_id ; rr:objectMap [ rr:column "airport_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:terminal_name ; rr:objectMap [ rr:column "terminal_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:capacity ; rr:objectMap [ rr:column "capacity" ] ] .
+
+<#tm_vague_2cols_building_design_3_Terminals_airport_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"airport_id\" FROM \"Terminals\" WHERE \"airport_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAirports ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{airport_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_building_design_4_Buildings_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"architecture_firm\", \"architect\", \"airport_terminal\" FROM \"Buildings\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Buildings/{id}" ; rr:class :Buildings ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:architecture_firm ; rr:objectMap [ rr:column "architecture_firm" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:architect ; rr:objectMap [ rr:column "architect" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:airport_terminal ; rr:objectMap [ rr:column "airport_terminal" ] ] .
+
+<#tm_vague_2cols_building_design_5_Buildings_airport_terminal_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"airport_terminal\" FROM \"Buildings\" WHERE \"airport_terminal\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Buildings/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{airport_terminal}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_building_design_6_Flights_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"flight_number\", \"departure_airport\", \"arrival_airport\" FROM \"Flights\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{id}" ; rr:class :Flights ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:flight_number ; rr:objectMap [ rr:column "flight_number" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:departure_airport ; rr:objectMap [ rr:column "departure_airport" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:arrival_airport ; rr:objectMap [ rr:column "arrival_airport" ] ] .
+
+<#tm_vague_2cols_building_design_7_Flights_arrival_airport_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"arrival_airport\" FROM \"Flights\" WHERE \"arrival_airport\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAirports_arrival_airport ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{arrival_airport}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_building_design_8_Flights_departure_airport_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"departure_airport\" FROM \"Flights\" WHERE \"departure_airport\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAirports_departure_airport ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{departure_airport}" ; rr:termType rr:IRI ] ] .
+

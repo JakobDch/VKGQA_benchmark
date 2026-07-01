@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_languages",
+  "schema": "amb_vague_2cols_languages",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show spoken languages of country with the smallest population.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Spoken_Language FROM Countries ORDER BY Population ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show official and spoken languages of country with the smallest population.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Official_Language, Spoken_Language FROM Countries ORDER BY Population ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?official_language ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show the official languages of all countries with a population less than 100 million and these countries.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Official_Language FROM Countries WHERE Population < '100000000'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?official_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show the spoken languages of all countries with a population less than 100 million and these countries.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Spoken_Language FROM Countries WHERE Population < '100000000'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show official languages of country with the smallest population.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Official_Language FROM Countries ORDER BY Population ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?official_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show the official and spoken languages of all countries with a population less than 100 million and these countries.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Official_Language, Spoken_Language FROM Countries WHERE Population < '100000000'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?official_language ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the country with the smallest population and its language.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n  full: { SELECT ?name ?official_language ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n  component_2: { SELECT ?name ?official_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show all countries that have a population less than 100000000 and their languages.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?official_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n} }\n  component_2: { SELECT ?name ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n} }\n  full: { SELECT ?name ?official_language ?spoken_language WHERE {\n  ?countries a :Countries .\n  ?countries p:name ?name .\n  ?countries p:Official_Language ?official_language .\n  ?countries p:Spoken_Language ?spoken_language .\n  ?countries p:Population ?population_f .\n  FILTER(?population_f < 100000000)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

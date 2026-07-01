@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Formats_base
+target		ex:Formats/{id} a :Formats ; p:id {id} ; p:format_name {format_name} .
+source		SELECT `id`, `format_name` FROM `Formats`
+
+mappingId	Broadcasts_base
+target		ex:Broadcasts/{id} a :Broadcasts ; p:id {id} ; p:title {title} ; p:date {date} .
+source		SELECT `id`, `title`, `date` FROM `Broadcasts`
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publish_date {publish_date} ; p:author_id {author_id} .
+source		SELECT `id`, `title`, `content`, `publish_date`, `author_id` FROM `Articles`
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Comments_base
+target		ex:Comments/{id} a :Comments ; p:id {id} ; p:comment {comment} ; p:article_id {article_id} .
+source		SELECT `id`, `comment`, `article_id` FROM `Comments`
+
+mappingId	Comments_article_id_fk
+target		ex:Comments/{id} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `id`, `article_id` FROM `Comments` WHERE `article_id` IS NOT NULL
+
+mappingId	Broadcasts_Formats_base
+target		ex:Broadcasts_Formats/{_amb_rowid} a :Broadcasts_Formats ; p:broadcast_id {broadcast_id} ; p:format_id {format_id} .
+source		SELECT `_amb_rowid`, `broadcast_id`, `format_id` FROM `Broadcasts_Formats`
+
+mappingId	Broadcasts_Formats_format_id_fk
+target		ex:Broadcasts_Formats/{_amb_rowid} p:hasFormats ex:Formats/{format_id} .
+source		SELECT `_amb_rowid`, `format_id` FROM `Broadcasts_Formats` WHERE `format_id` IS NOT NULL
+
+mappingId	Broadcasts_Formats_broadcast_id_fk
+target		ex:Broadcasts_Formats/{_amb_rowid} p:hasBroadcasts ex:Broadcasts/{broadcast_id} .
+source		SELECT `_amb_rowid`, `broadcast_id` FROM `Broadcasts_Formats` WHERE `broadcast_id` IS NOT NULL
+
+]]

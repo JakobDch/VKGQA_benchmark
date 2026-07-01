@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_family_entertainment",
+  "schema": "amb_attachment_2tab_ref_family_entertainment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all amusement parks and also show water parks located in California.",
+      "qtype": "unambig",
+      "sql": "SELECT AmusementPark.name\nFROM Location JOIN AmusementPark ON Location.id = AmusementPark.locationID\nUNION\nSELECT WaterPark.name\nFROM Location JOIN WaterPark ON Location.id = WaterPark.locationID\nWHERE Location.state = \"California\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Location .\n    ?amusementpark a :AmusementPark .\n    ?amusementpark p:hasLocation ?location .\n    ?amusementpark p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Location .\n    ?waterpark a :WaterPark .\n    ?waterpark p:hasLocation ?location .\n    ?waterpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide amusement parks and water parks located in California.",
+      "qtype": "ambig",
+      "sql": "SELECT AmusementPark.name\nFROM Location JOIN AmusementPark ON Location.id = AmusementPark.locationID\nWHERE Location.state = \"California\"\nUNION\nSELECT WaterPark.name\nFROM Location JOIN WaterPark ON Location.id = WaterPark.locationID\nWHERE Location.state = \"California\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Location .\n    ?amusementpark a :AmusementPark .\n    ?amusementpark p:hasLocation ?location .\n    ?amusementpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Location .\n    ?waterpark a :WaterPark .\n    ?waterpark p:hasLocation ?location .\n    ?waterpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide amusement parks and water parks located in California.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Location .\n    ?amusementpark a :AmusementPark .\n    ?amusementpark p:hasLocation ?location .\n    ?amusementpark p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Location .\n    ?waterpark a :WaterPark .\n    ?waterpark p:hasLocation ?location .\n    ?waterpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Location .\n    ?amusementpark a :AmusementPark .\n    ?amusementpark p:hasLocation ?location .\n    ?amusementpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Location .\n    ?waterpark a :WaterPark .\n    ?waterpark p:hasLocation ?location .\n    ?waterpark p:name ?name .\n    ?location p:state ?state_f .\n    FILTER(STR(?state_f) = \"California\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Courts_Reporters_base
+target		ex:Courts_Reporters/{id} a :Courts_Reporters ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Courts_Reporters`
+
+mappingId	Trials_base
+target		ex:Trials/{id} a :Trials ; p:id {id} ; p:caseName {caseName} ; p:trialType {trialType} .
+source		SELECT `id`, `caseName`, `trialType` FROM `Trials`
+
+mappingId	Courts_Reporters_Trials_base
+target		ex:Courts_Reporters_Trials/{_amb_rowid} a :Courts_Reporters_Trials ; p:reporterId {reporterId} ; p:trialId {trialId} .
+source		SELECT `_amb_rowid`, `reporterId`, `trialId` FROM `Courts_Reporters_Trials`
+
+mappingId	Courts_Reporters_Trials_trialId_fk
+target		ex:Courts_Reporters_Trials/{_amb_rowid} p:hasTrials ex:Trials/{trialId} .
+source		SELECT `_amb_rowid`, `trialId` FROM `Courts_Reporters_Trials` WHERE `trialId` IS NOT NULL
+
+mappingId	Courts_Reporters_Trials_reporterId_fk
+target		ex:Courts_Reporters_Trials/{_amb_rowid} p:hasCourts_Reporters ex:Courts_Reporters/{reporterId} .
+source		SELECT `_amb_rowid`, `reporterId` FROM `Courts_Reporters_Trials` WHERE `reporterId` IS NOT NULL
+
+]]

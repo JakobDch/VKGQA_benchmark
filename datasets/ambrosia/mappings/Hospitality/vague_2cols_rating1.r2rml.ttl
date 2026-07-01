@@ -1,0 +1,75 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_rating1_0_Customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CustomerID\", \"EmailAddress\", \"PhoneNumber\", \"fullname\" FROM \"Customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Customers/{CustomerID}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "EmailAddress" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PhoneNumber ; rr:objectMap [ rr:column "PhoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "fullname" ] ] .
+
+<#tm_vague_2cols_rating1_1_Hotels_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HotelID\", \"Name\", \"Address\", \"City\", \"State\", \"PostalCode\", \"Country\" FROM \"Hotels\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{HotelID}" ; rr:class :Hotels ] ;
+  rr:predicateObjectMap [ rr:predicate p:HotelID ; rr:objectMap [ rr:column "HotelID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Address ; rr:objectMap [ rr:column "Address" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:City ; rr:objectMap [ rr:column "City" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:State ; rr:objectMap [ rr:column "State" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PostalCode ; rr:objectMap [ rr:column "PostalCode" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Country ; rr:objectMap [ rr:column "Country" ] ] .
+
+<#tm_vague_2cols_rating1_2_Rooms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoomID\", \"HotelID\", \"Number\", \"Type\", \"Amenities\" FROM \"Rooms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Rooms/{RoomID}" ; rr:class :Rooms ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoomID ; rr:objectMap [ rr:column "RoomID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:HotelID ; rr:objectMap [ rr:column "HotelID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Number ; rr:objectMap [ rr:column "Number" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Type ; rr:objectMap [ rr:column "Type" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Amenities ; rr:objectMap [ rr:column "Amenities" ] ] .
+
+<#tm_vague_2cols_rating1_3_Rooms_HotelID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoomID\", \"HotelID\" FROM \"Rooms\" WHERE \"HotelID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Rooms/{RoomID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHotels ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{HotelID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_rating1_4_Reservations_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReservationID\", \"CheckInDate\", \"CheckOutDate\", \"GuestID\", \"TotalCost\", \"PaymentMethod\" FROM \"Reservations\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reservations/{ReservationID}" ; rr:class :Reservations ] ;
+  rr:predicateObjectMap [ rr:predicate p:ReservationID ; rr:objectMap [ rr:column "ReservationID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CheckInDate ; rr:objectMap [ rr:column "CheckInDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CheckOutDate ; rr:objectMap [ rr:column "CheckOutDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:GuestID ; rr:objectMap [ rr:column "GuestID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalCost ; rr:objectMap [ rr:column "TotalCost" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PaymentMethod ; rr:objectMap [ rr:column "PaymentMethod" ] ] .
+
+<#tm_vague_2cols_rating1_5_Reservations_GuestID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReservationID\", \"GuestID\" FROM \"Reservations\" WHERE \"GuestID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reservations/{ReservationID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Customers/{GuestID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_rating1_6_Reviews_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReviewID\", \"CustomerID\", \"HotelID\", \"Customer_Reviews\", \"Number_Of_Stars\", \"Date_Of_Review\" FROM \"Reviews\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reviews/{ReviewID}" ; rr:class :Reviews ] ;
+  rr:predicateObjectMap [ rr:predicate p:ReviewID ; rr:objectMap [ rr:column "ReviewID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:HotelID ; rr:objectMap [ rr:column "HotelID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Customer_Reviews ; rr:objectMap [ rr:column "Customer_Reviews" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Number_Of_Stars ; rr:objectMap [ rr:column "Number_Of_Stars" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Date_Of_Review ; rr:objectMap [ rr:column "Date_Of_Review" ] ] .
+
+<#tm_vague_2cols_rating1_7_Reviews_HotelID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReviewID\", \"HotelID\" FROM \"Reviews\" WHERE \"HotelID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reviews/{ReviewID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHotels ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Hotels/{HotelID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_rating1_8_Reviews_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReviewID\", \"CustomerID\" FROM \"Reviews\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Reviews/{ReviewID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+

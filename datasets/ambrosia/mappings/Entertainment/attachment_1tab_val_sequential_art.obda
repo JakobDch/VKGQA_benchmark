@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{AuthorID} a :Author ; p:AuthorID {AuthorID} ; p:name {Name} .
+source		SELECT `AuthorID`, `Name` FROM `Authors`
+
+mappingId	Publisher_base
+target		ex:Publisher/{PublisherID} a :Publisher ; p:PublisherID {PublisherID} ; p:name {Name} .
+source		SELECT `PublisherID`, `Name` FROM `Publisher`
+
+mappingId	Comics_base
+target		ex:Comics/{ComicID} a :Comics ; p:ComicID {ComicID} ; p:Title {Title} ; p:SequentialArt {SequentialArt} ; p:ReleaseDate {ReleaseDate} ; p:PublisherId {PublisherId} ; p:AuthorId {AuthorId} .
+source		SELECT `ComicID`, `Title`, `SequentialArt`, `ReleaseDate`, `PublisherId`, `AuthorId` FROM `Comics`
+
+mappingId	Comics_PublisherId_fk
+target		ex:Comics/{ComicID} p:hasPublisher ex:Publisher/{PublisherId} .
+source		SELECT `ComicID`, `PublisherId` FROM `Comics` WHERE `PublisherId` IS NOT NULL
+
+mappingId	Comics_AuthorId_fk
+target		ex:Comics/{ComicID} p:hasAuthor ex:Author/{AuthorId} .
+source		SELECT `ComicID`, `AuthorId` FROM `Comics` WHERE `AuthorId` IS NOT NULL
+
+mappingId	Movie_base
+target		ex:Movie/{MovieID} a :Movie ; p:MovieID {MovieID} ; p:Title {Title} ; p:DirectorName {DirectorName} ; p:ReleaseDate {ReleaseDate} .
+source		SELECT `MovieID`, `Title`, `DirectorName`, `ReleaseDate` FROM `Movie`
+
+]]

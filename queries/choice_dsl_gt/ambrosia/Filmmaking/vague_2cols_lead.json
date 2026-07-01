@@ -1,0 +1,80 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "vague_2cols_lead",
+  "schema": "amb_vague_2cols_lead",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show the name and id of the main actress with the most films?",
+      "qtype": "unambig",
+      "sql": "SELECT Actress.id, Actress.Fullname FROM Actress JOIN Movie ON Actress.id = Movie.LeadActressId GROUP BY Actress.id, Actress.Fullname HAVING COUNT(Movie.id) = (SELECT MAX(MovieCount) FROm (SELECT Count(Movie.id) AS MovieCount FROM Actress JOIN Movie ON Actress.id = Movie.LeadActressId GROUP BY Actress.id, Actress.Fullname))",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?aid ?fn WHERE { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActressId ?laid . ?a a :Actress ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actress ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActressId ?l2 . ?ax a :Actress ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): actress(es) with most lead roles; nested MAX(COUNT) + value-join Movie.LeadActre"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the name of a film with the oldest lead actor.",
+      "qtype": "unambig",
+      "sql": "Select Title, Fullname FROM Movie JOIN Actor on Actor.id = Movie.LeadActorId ORDER BY DateOfBirth ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?fullname WHERE {\n  ?movie a :Movies .\n  ?actor a :Actors .\n  ?movie p:hasActor ?actor .\n  ?movie p:Title ?title .\n  ?actor p:name ?fullname .\n  ?actor p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY ASC(?dateofbirth_o)\nLIMIT 1",
+      "status": "exception",
+      "note": "non-deterministic gold: ORDER BY DateOfBirth ASC LIMIT 1 with a tie (Tom Cruise, DOB 1962-07-03, leads 2 movies) -> arbitrary single row"
+    },
+    {
+      "qid": 2,
+      "question": "What film has the oldest lead actress?",
+      "qtype": "unambig",
+      "sql": "Select Title, Fullname FROM Movie JOIN Actress on Actress.id = Movie.LeadActressId ORDER BY DateOfBirth ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?fullname WHERE {\n  ?movie a :Movies .\n  ?actress a :Actress .\n  ?movie p:hasActress ?actress .\n  ?movie p:Title ?title .\n  ?actress p:name ?fullname .\n  ?actress p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY ASC(?dateofbirth_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Can you show the name and id of the main actor with the most films and also the name and id of the actress with the most films?",
+      "qtype": "unambig",
+      "sql": "SELECT Actor.id, Actor.Fullname FROM Actor JOIN Movie ON Actor.id = Movie.LeadActorId GROUP BY Actor.id, Actor.Fullname HAVING COUNT(Movie.id) = (SELECT MAX(MovieCount) FROm (SELECT Count(Movie.id) AS MovieCount FROM Actor JOIN Movie ON Actor.id = Movie.LeadActorId GROUP BY Actor.id, Actor.Fullname)) UNION SELECT Actress.id, Actress.Fullname FROM Actress JOIN Movie ON Actress.id = Movie.LeadActressId GROUP BY Actress.id, Actress.Fullname HAVING COUNT(Movie.id) = (SELECT MAX(MovieCount) FROm (SELECT Count(Movie.id) AS MovieCount FROM Actress JOIN Movie ON Actress.id = Movie.LeadActressId GROUP BY Actress.id, Actress.Fullname))",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?aid ?fn WHERE { { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActorId ?laid . ?a a :Actors ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actors ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActorId ?l2 . ?ax a :Actors ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } UNION { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActressId ?laid . ?a a :Actress ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actress ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActressId ?l2 . ?ax a :Actress ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): actors AND actresses with most lead roles (UNION of the two most-roles queries)"
+    },
+    {
+      "qid": 4,
+      "question": "Can you show the name and id of the main actor with the most films?",
+      "qtype": "unambig",
+      "sql": "SELECT Actor.id, Actor.Fullname FROM Actor JOIN Movie ON Actor.id = Movie.LeadActorId GROUP BY Actor.id, Actor.Fullname HAVING COUNT(Movie.id) = (SELECT MAX(MovieCount) FROm (SELECT Count(Movie.id) AS MovieCount FROM Actor JOIN Movie ON Actor.id = Movie.LeadActorId GROUP BY Actor.id, Actor.Fullname))",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?aid ?fn WHERE { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActorId ?laid . ?a a :Actors ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actors ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActorId ?l2 . ?ax a :Actors ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): actor(s) with most lead roles"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the name of a film with the oldest lead actor. What film has the oldest lead actress?",
+      "qtype": "unambig",
+      "sql": "Select Title, Actor.Fullname, Actress.Fullname FROM Movie JOIN Actor on Actor.id = Movie.LeadActorId JOIN Actress on Actress.id = Movie.LeadActressId ORDER BY Actor.DateOfBirth, Actress.DateOfBirth ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?fullname ?fullname2 WHERE {\n  ?movie a :Movies .\n  ?actor a :Actors .\n  ?movie p:hasActor ?actor .\n  ?actress a :Actress .\n  ?movie p:hasActress ?actress .\n  ?movie p:Title ?title .\n  ?actor p:name ?fullname .\n  ?actress p:name ?fullname2 .\n  ?actor p:DateOfBirth ?dateofbirth_o .\n  ?actress p:DateOfBirth ?dateofbirth_o2 .\n}\nORDER BY ASC(?dateofbirth_o) ASC(?dateofbirth_o2)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the name and id of the lead actor with the most films",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nCHOICE vague {\n  component: { SELECT ?aid ?fn WHERE { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActressId ?laid . ?a a :Actress ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actress ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActressId ?l2 . ?ax a :Actress ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } }\n  full: { SELECT ?aid ?fn WHERE { { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActorId ?laid . ?a a :Actors ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actors ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActorId ?l2 . ?ax a :Actors ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } UNION { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActressId ?laid . ?a a :Actress ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actress ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActressId ?l2 . ?ax a :Actress ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } } }\n  component_2: { SELECT ?aid ?fn WHERE { { SELECT ?aid (COUNT(?m) AS ?c) WHERE { ?m a :Movies ; p:LeadActorId ?laid . ?a a :Actors ; p:id ?aid . FILTER(STR(?laid)=STR(?aid)) } GROUP BY ?aid } ?a2 a :Actors ; p:id ?aid ; p:name ?fn . { SELECT (MAX(?c2) AS ?mx) WHERE { SELECT ?aid2 (COUNT(?m2) AS ?c2) WHERE { ?m2 a :Movies ; p:LeadActorId ?l2 . ?ax a :Actors ; p:id ?aid2 . FILTER(STR(?l2)=STR(?aid2)) } GROUP BY ?aid2 } } FILTER(?c = ?mx) } }\n}",
+      "verified": true
+    }
+  ]
+}

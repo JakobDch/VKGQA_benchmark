@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_learning_materials",
+  "schema": "amb_attachment_1tab_ref_learning_materials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all of the textbooks and only those online courses that are suitable for those who understand the basics.",
+      "qtype": "unambig",
+      "sql": "SELECT Learning_Materials.title \nFROM Learning_Materials JOIN Difficulty_levels ON Learning_Materials.difficultyLevel = Difficulty_levels.difficultyLevel\nWHERE Learning_Materials.typeOfMaterial = \"Textbook\" OR Learning_Materials.typeOfMaterial = \"Online Course\" AND Difficulty_levels.levelDescription = \"For those who have a good understanding of the basics.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?learning_materials a :Learning_Materials .\n  ?difficulty_levels a :Difficulty_Level .\n  ?learning_materials p:hasDifficulty_levels ?difficulty_levels .\n  ?learning_materials p:title ?title .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w2 .\n  ?difficulty_levels p:levelDescription ?leveldescription_w .\n  FILTER((STR(?typeofmaterial_w) = \"Textbook\" || (STR(?typeofmaterial_w2) = \"Online Course\" && STR(?leveldescription_w) = \"For those who have a good understanding of the basics.\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List both the textbooks for students who understand the basics and online courses for audiences at the same level.",
+      "qtype": "unambig",
+      "sql": "SELECT Learning_Materials.title \nFROM Learning_Materials JOIN Difficulty_levels ON Learning_Materials.difficultyLevel = Difficulty_levels.difficultyLevel\nWHERE (Learning_Materials.typeOfMaterial = \"Textbook\" OR Learning_Materials.typeOfMaterial = \"Online Course\") AND Difficulty_levels.levelDescription = \"For those who have a good understanding of the basics.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?learning_materials a :Learning_Materials .\n  ?difficulty_levels a :Difficulty_Level .\n  ?learning_materials p:hasDifficulty_levels ?difficulty_levels .\n  ?learning_materials p:title ?title .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w2 .\n  ?difficulty_levels p:levelDescription ?leveldescription_w .\n  FILTER((((STR(?typeofmaterial_w) = \"Textbook\" || STR(?typeofmaterial_w2) = \"Online Course\")) && STR(?leveldescription_w) = \"For those who have a good understanding of the basics.\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all textbooks and online courses for students who understand the basics.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?learning_materials a :Learning_Materials .\n  ?difficulty_levels a :Difficulty_Level .\n  ?learning_materials p:hasDifficulty_levels ?difficulty_levels .\n  ?learning_materials p:title ?title .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w2 .\n  ?difficulty_levels p:levelDescription ?leveldescription_w .\n  FILTER((STR(?typeofmaterial_w) = \"Textbook\" || (STR(?typeofmaterial_w2) = \"Online Course\" && STR(?leveldescription_w) = \"For those who have a good understanding of the basics.\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?learning_materials a :Learning_Materials .\n  ?difficulty_levels a :Difficulty_Level .\n  ?learning_materials p:hasDifficulty_levels ?difficulty_levels .\n  ?learning_materials p:title ?title .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w .\n  ?learning_materials p:typeOfMaterial ?typeofmaterial_w2 .\n  ?difficulty_levels p:levelDescription ?leveldescription_w .\n  FILTER((((STR(?typeofmaterial_w) = \"Textbook\" || STR(?typeofmaterial_w2) = \"Online Course\")) && STR(?leveldescription_w) = \"For those who have a good understanding of the basics.\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

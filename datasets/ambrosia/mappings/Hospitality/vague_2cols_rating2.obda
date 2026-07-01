@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `customers`
+
+mappingId	rooms_base
+target		ex:Rooms/{room_id} a :Rooms ; p:room_id {room_id} ; p:room_type {room_type} ; p:price {price} ; p:available {available} .
+source		SELECT `room_id`, `room_type`, `price`, `available` FROM `rooms`
+
+mappingId	bookings_base
+target		ex:Bookings/{booking_id} a :Bookings ; p:booking_id {booking_id} ; p:customer_id {customer_id} ; p:checkin {checkin} ; p:checkout {checkout} ; p:total_amount {total_amount} .
+source		SELECT `booking_id`, `customer_id`, `checkin`, `checkout`, `total_amount` FROM `bookings`
+
+mappingId	bookings_customer_id_fk
+target		ex:Bookings/{booking_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `booking_id`, `customer_id` FROM `bookings` WHERE `customer_id` IS NOT NULL
+
+mappingId	reviews_base
+target		ex:Reviews/{review_id} a :Reviews ; p:review_id {review_id} ; p:customer_review {customer_review} ; p:difficulty_level {difficulty_level} ; p:hikes {hikes} .
+source		SELECT `review_id`, `customer_review`, `difficulty_level`, `hikes` FROM `reviews`
+
+]]

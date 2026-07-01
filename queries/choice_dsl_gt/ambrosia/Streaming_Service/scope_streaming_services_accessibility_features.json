@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_accessibility_features",
+  "schema": "amb_scope_streaming_services_accessibility_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which accessibility feature is common across all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Accessibility_Features.featureName  from Streaming_Services_Accessibility_Features join Accessibility_Features on Streaming_Services_Accessibility_Features.accessibilityFeatureId = Accessibility_Features.id join Streaming_Services on Streaming_Services_Accessibility_Features.streamingServiceId = Streaming_Services.id   GROUP BY Streaming_Services_Accessibility_Features.accessibilityFeatureId HAVING COUNT(DISTINCT Streaming_Services_Accessibility_Features.streamingServiceId) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?featurename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAccessibility_Features ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:featureName ?featurename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each streaming service, what are the associated feature names of accessibility features?",
+      "qtype": "unambig",
+      "sql": "select streaming_services.servicename , accessibility_features.featurename from Streaming_Services_Accessibility_Features join Accessibility_Features on Streaming_Services_Accessibility_Features.accessibilityFeatureId = Accessibility_Features.id join Streaming_Services on Streaming_Services_Accessibility_Features.streamingServiceId = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename ?featurename WHERE {\n  ?streaming_services_accessibility_features a :Streaming_Services_Accessibility_Features .\n  ?accessibility_features a :Accessibility_Features .\n  ?streaming_services_accessibility_features p:hasAccessibility_Features ?accessibility_features .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_accessibility_features p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?accessibility_features p:featureName ?featurename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which accessibility features are available for each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?featurename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAccessibility_Features ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:featureName ?featurename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?servicename ?featurename WHERE {\n  ?streaming_services_accessibility_features a :Streaming_Services_Accessibility_Features .\n  ?accessibility_features a :Accessibility_Features .\n  ?streaming_services_accessibility_features p:hasAccessibility_Features ?accessibility_features .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_accessibility_features p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?accessibility_features p:featureName ?featurename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

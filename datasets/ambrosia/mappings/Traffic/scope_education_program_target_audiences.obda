@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Education_Program_base
+target		ex:Education_Program/{id} a :Education_Program ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Education_Program`
+
+mappingId	Target_Audiences_base
+target		ex:Target_Audiences/{id} a :Target_Audiences ; p:id {id} ; p:name {audience_name} .
+source		SELECT `id`, `audience_name` FROM `Target_Audiences`
+
+mappingId	Education_Program_Target_Audiences_base
+target		ex:Education_Program_Target_Audiences/{education_program_id}/{target_audience_id} a :Education_Program_Target_Audiences .
+source		SELECT `education_program_id`, `target_audience_id` FROM `Education_Program_Target_Audiences`
+
+mappingId	Education_Program_Target_Audiences_target_audience_id_fk
+target		ex:Education_Program_Target_Audiences/{education_program_id}/{target_audience_id} p:hasTarget_Audiences ex:Target_Audiences/{target_audience_id} .
+source		SELECT `education_program_id`, `target_audience_id` FROM `Education_Program_Target_Audiences` WHERE `target_audience_id` IS NOT NULL
+
+mappingId	Education_Program_Target_Audiences_education_program_id_fk
+target		ex:Education_Program_Target_Audiences/{education_program_id}/{target_audience_id} p:hasEducation_Program ex:Education_Program/{education_program_id} .
+source		SELECT `education_program_id`, `target_audience_id` FROM `Education_Program_Target_Audiences` WHERE `education_program_id` IS NOT NULL
+
+]]

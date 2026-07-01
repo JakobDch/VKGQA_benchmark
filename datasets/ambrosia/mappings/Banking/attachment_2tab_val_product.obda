@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {Email} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth`, `Email` FROM `Customers`
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:Amount {Amount} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:Rate {Rate} .
+source		SELECT `LoanID`, `CustomerID`, `Amount`, `StartDate`, `EndDate`, `Rate` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountID {AccountID} ; p:Type {Type} ; p:Amount {Amount} ; p:DateAndTime {DateAndTime} .
+source		SELECT `TransactionID`, `AccountID`, `Type`, `Amount`, `DateAndTime` FROM `Transactions`
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasCheckingAccounts ex:CheckingAccounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasSavingsAccounts ex:SavingsAccounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+mappingId	Checking_Accounts_base
+target		ex:CheckingAccounts/{AccountID} a :CheckingAccounts ; p:AccountID {AccountID} ; p:AccountNumber {AccountNumber} ; p:CustomerName {CustomerName} ; p:OpenDate {OpenDate} ; p:Balance {Balance} ; p:OverdraftLimit {OverdraftLimit} ; p:Interest_Rate {Interest_Rate} .
+source		SELECT `AccountID`, `AccountNumber`, `CustomerName`, `OpenDate`, `Balance`, `OverdraftLimit`, `Interest_Rate` FROM `Checking_Accounts`
+
+mappingId	Savings_Accounts_base
+target		ex:SavingsAccounts/{AccountID} a :SavingsAccounts ; p:AccountID {AccountID} ; p:AccountNumber {AccountNumber} ; p:CustomerName {CustomerName} ; p:OpenDate {OpenDate} ; p:Balance {Balance} ; p:Interest_Rate {Interest_Rate} .
+source		SELECT `AccountID`, `AccountNumber`, `CustomerName`, `OpenDate`, `Balance`, `Interest_Rate` FROM `Savings_Accounts`
+
+]]

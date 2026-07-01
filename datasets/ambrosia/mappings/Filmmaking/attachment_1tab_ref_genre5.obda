@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Directors_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Directors`
+
+mappingId	Producers_base
+target		ex:Producers/{id} a :Producers ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Producers`
+
+mappingId	Actors_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Actors`
+
+mappingId	Films_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:director_id {director_id} ; p:producer_id {producer_id} ; p:actor_id {actor_id} .
+source		SELECT `id`, `title`, `release_year`, `director_id`, `producer_id`, `actor_id` FROM `Films`
+
+mappingId	Films_actor_id_fk
+target		ex:Films/{id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `id`, `actor_id` FROM `Films` WHERE `actor_id` IS NOT NULL
+
+mappingId	Films_producer_id_fk
+target		ex:Films/{id} p:hasProducers ex:Producers/{producer_id} .
+source		SELECT `id`, `producer_id` FROM `Films` WHERE `producer_id` IS NOT NULL
+
+mappingId	Films_director_id_fk
+target		ex:Films/{id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `id`, `director_id` FROM `Films` WHERE `director_id` IS NOT NULL
+
+mappingId	FilmGenres_base
+target		ex:Film_Genre/{film_id}/{genre} a :Film_Genre ; p:film_id {film_id} ; p:genre {genre} .
+source		SELECT `film_id`, `genre` FROM `FilmGenres`
+
+mappingId	FilmGenres_film_id_fk
+target		ex:Film_Genre/{film_id}/{genre} p:hasFilms ex:Films/{film_id} .
+source		SELECT `film_id`, `genre` FROM `FilmGenres` WHERE `film_id` IS NOT NULL
+
+]]

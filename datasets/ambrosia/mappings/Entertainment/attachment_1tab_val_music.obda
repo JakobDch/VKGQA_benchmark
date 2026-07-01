@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Music_Genre_base
+target		ex:Music_Genre/{id} a :Music_Genre ; p:id {id} ; p:Genre {Genre} .
+source		SELECT `id`, `Genre` FROM `Music_Genre`
+
+mappingId	Singers_base
+target		ex:Singer/{id} a :Singer ; p:id {id} ; p:SingerName {SingerName} .
+source		SELECT `id`, `SingerName` FROM `Singers`
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:AlbumTitle {AlbumTitle} ; p:ReleaseYear {ReleaseYear} ; p:Music_Genre_id {Music_Genre_id} .
+source		SELECT `id`, `AlbumTitle`, `ReleaseYear`, `Music_Genre_id` FROM `Albums`
+
+mappingId	Albums_Music_Genre_id_fk
+target		ex:Album/{id} p:hasMusic_Genre ex:Music_Genre/{Music_Genre_id} .
+source		SELECT `id`, `Music_Genre_id` FROM `Albums` WHERE `Music_Genre_id` IS NOT NULL
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:SongTitle {SongTitle} ; p:Duration {Duration} ; p:Music {Music} ; p:Singer_id {Singer_id} ; p:Album_id {Album_id} .
+source		SELECT `id`, `SongTitle`, `Duration`, `Music`, `Singer_id`, `Album_id` FROM `Songs`
+
+mappingId	Songs_Album_id_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{Album_id} .
+source		SELECT `id`, `Album_id` FROM `Songs` WHERE `Album_id` IS NOT NULL
+
+mappingId	Songs_Singer_id_fk
+target		ex:Song/{id} p:hasSinger ex:Singer/{Singer_id} .
+source		SELECT `id`, `Singer_id` FROM `Songs` WHERE `Singer_id` IS NOT NULL
+
+mappingId	Performances_base
+target		ex:Performance/{id} a :Performance ; p:id {id} ; p:PerformanceDate {PerformanceDate} ; p:Venue {Venue} ; p:Song_id {Song_id} .
+source		SELECT `id`, `PerformanceDate`, `Venue`, `Song_id` FROM `Performances`
+
+mappingId	Performances_Song_id_fk
+target		ex:Performance/{id} p:hasSong ex:Song/{Song_id} .
+source		SELECT `id`, `Song_id` FROM `Performances` WHERE `Song_id` IS NOT NULL
+
+]]

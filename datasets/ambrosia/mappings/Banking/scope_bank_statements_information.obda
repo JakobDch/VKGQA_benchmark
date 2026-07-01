@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Accounts_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:name {name} ; p:balance {balance} .
+source		SELECT `id`, `name`, `balance` FROM `Accounts`
+
+mappingId	Transactions_base
+target		ex:Transactions/{id} a :Transactions ; p:id {id} ; p:date {date} ; p:amount {amount} ; p:type {type} .
+source		SELECT `id`, `date`, `amount`, `type` FROM `Transactions`
+
+mappingId	Information_base
+target		ex:Information/{info_id} a :Information ; p:info_id {info_id} ; p:description {description} ; p:value {value} .
+source		SELECT `info_id`, `description`, `value` FROM `Information`
+
+mappingId	Bank_Statements_base
+target		ex:Bank_Statements/{statement_id} a :Bank_Statements ; p:statement_id {statement_id} ; p:account_id {account_id} ; p:transaction_id {transaction_id} .
+source		SELECT `statement_id`, `account_id`, `transaction_id` FROM `Bank_Statements`
+
+mappingId	Bank_Statements_transaction_id_fk
+target		ex:Bank_Statements/{statement_id} p:hasTransactions ex:Transactions/{transaction_id} .
+source		SELECT `statement_id`, `transaction_id` FROM `Bank_Statements` WHERE `transaction_id` IS NOT NULL
+
+mappingId	Bank_Statements_account_id_fk
+target		ex:Bank_Statements/{statement_id} p:hasAccounts ex:Accounts/{account_id} .
+source		SELECT `statement_id`, `account_id` FROM `Bank_Statements` WHERE `account_id` IS NOT NULL
+
+mappingId	Bank_Statement_Information_base
+target		ex:Bank_Statement_Information/{bank_statement_info_id} a :Bank_Statement_Information ; p:bank_statement_info_id {bank_statement_info_id} ; p:bank_statements_id {bank_statements_id} ; p:information_id {information_id} .
+source		SELECT `bank_statement_info_id`, `bank_statements_id`, `information_id` FROM `Bank_Statement_Information`
+
+mappingId	Bank_Statement_Information_information_id_fk
+target		ex:Bank_Statement_Information/{bank_statement_info_id} p:hasInformation ex:Information/{information_id} .
+source		SELECT `bank_statement_info_id`, `information_id` FROM `Bank_Statement_Information` WHERE `information_id` IS NOT NULL
+
+mappingId	Bank_Statement_Information_bank_statements_id_fk
+target		ex:Bank_Statement_Information/{bank_statement_info_id} p:hasBank_Statements ex:Bank_Statements/{bank_statements_id} .
+source		SELECT `bank_statement_info_id`, `bank_statements_id` FROM `Bank_Statement_Information` WHERE `bank_statements_id` IS NOT NULL
+
+]]

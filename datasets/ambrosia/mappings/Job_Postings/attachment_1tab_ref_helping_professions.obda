@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	HelpingProfession_base
+target		ex:HelpingProfession/{ProfessionID} a :HelpingProfession ; p:ProfessionID {ProfessionID} ; p:ProfessionName {ProfessionName} .
+source		SELECT `ProfessionID`, `ProfessionName` FROM `HelpingProfession`
+
+mappingId	GeoArea_base
+target		ex:GeoArea/{AreaID} a :GeoArea ; p:AreaID {AreaID} ; p:LocationText {LocationText} .
+source		SELECT `AreaID`, `LocationText` FROM `GeoArea`
+
+mappingId	Company_base
+target		ex:Companies/{CompanyID} a :Companies ; p:CompanyID {CompanyID} ; p:name {Name} ; p:AddressLine1 {AddressLine1} ; p:AddressLine2 {AddressLine2} ; p:City {City} ; p:State {State} ; p:ZipCode {ZipCode} ; p:PhoneNumber {PhoneNumber} ; p:email {EmailAddress} .
+source		SELECT `CompanyID`, `Name`, `AddressLine1`, `AddressLine2`, `City`, `State`, `ZipCode`, `PhoneNumber`, `EmailAddress` FROM `Company`
+
+mappingId	JobPosting_base
+target		ex:JobPostings/{JobID} a :JobPostings ; p:JobID {JobID} ; p:Title {Title} ; p:Description {Description} ; p:PostedDate {PostedDate} ; p:DeadlineDate {DeadlineDate} ; p:SalaryRange {SalaryRange} ; p:Status {Status} ; p:ProfessionID {ProfessionID} ; p:AreaID {AreaID} .
+source		SELECT `JobID`, `Title`, `Description`, `PostedDate`, `DeadlineDate`, `SalaryRange`, `Status`, `ProfessionID`, `AreaID` FROM `JobPosting`
+
+mappingId	JobPosting_AreaID_fk
+target		ex:JobPostings/{JobID} p:hasGeoArea ex:GeoArea/{AreaID} .
+source		SELECT `JobID`, `AreaID` FROM `JobPosting` WHERE `AreaID` IS NOT NULL
+
+mappingId	JobPosting_ProfessionID_fk
+target		ex:JobPostings/{JobID} p:hasHelpingProfession ex:HelpingProfession/{ProfessionID} .
+source		SELECT `JobID`, `ProfessionID` FROM `JobPosting` WHERE `ProfessionID` IS NOT NULL
+
+mappingId	Applicant_base
+target		ex:Applicants/{ApplicantID} a :Applicants ; p:ApplicantID {ApplicantID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {Email} ; p:ResumePath {ResumePath} .
+source		SELECT `ApplicantID`, `FirstName`, `LastName`, `DateOfBirth`, `Email`, `ResumePath` FROM `Applicant`
+
+mappingId	Application_base
+target		ex:Application/{AppID} a :Application ; p:AppID {AppID} ; p:JobID {JobID} ; p:ApplicantID {ApplicantID} ; p:SubmissionDate {SubmissionDate} ; p:CoverLetterPath {CoverLetterPath} ; p:Status {Status} .
+source		SELECT `AppID`, `JobID`, `ApplicantID`, `SubmissionDate`, `CoverLetterPath`, `Status` FROM `Application`
+
+mappingId	Application_ApplicantID_fk
+target		ex:Application/{AppID} p:hasApplicants ex:Applicants/{ApplicantID} .
+source		SELECT `AppID`, `ApplicantID` FROM `Application` WHERE `ApplicantID` IS NOT NULL
+
+mappingId	Application_JobID_fk
+target		ex:Application/{AppID} p:hasJobPostings ex:JobPostings/{JobID} .
+source		SELECT `AppID`, `JobID` FROM `Application` WHERE `JobID` IS NOT NULL
+
+]]

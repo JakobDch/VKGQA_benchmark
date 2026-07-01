@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Directors_base
+target		ex:Directors/{DirectorID} a :Directors ; p:DirectorID {DirectorID} ; p:name {Name} ; p:BirthDate {BirthDate} .
+source		SELECT `DirectorID`, `Name`, `BirthDate` FROM `Directors`
+
+mappingId	Movies_base
+target		ex:Movies/{MovieID} a :Movies ; p:MovieID {MovieID} ; p:Title {Title} ; p:Genre {Genre} ; p:Budget {Budget} ; p:ReleaseYear {ReleaseYear} ; p:DirectorID {DirectorID} .
+source		SELECT `MovieID`, `Title`, `Genre`, `Budget`, `ReleaseYear`, `DirectorID` FROM `Movies`
+
+mappingId	Movies_DirectorID_fk
+target		ex:Movies/{MovieID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `MovieID`, `DirectorID` FROM `Movies` WHERE `DirectorID` IS NOT NULL
+
+mappingId	Actors_base
+target		ex:Actors/{ActorID} a :Actors ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `BirthDate` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{RoleID} a :Roles ; p:RoleID {RoleID} ; p:MovieID {MovieID} ; p:ActorID {ActorID} ; p:CharacterName {CharacterName} .
+source		SELECT `RoleID`, `MovieID`, `ActorID`, `CharacterName` FROM `Roles`
+
+mappingId	Roles_ActorID_fk
+target		ex:Roles/{RoleID} p:hasActors ex:Actors/{ActorID} .
+source		SELECT `RoleID`, `ActorID` FROM `Roles` WHERE `ActorID` IS NOT NULL
+
+mappingId	Roles_MovieID_fk
+target		ex:Roles/{RoleID} p:hasMovies ex:Movies/{MovieID} .
+source		SELECT `RoleID`, `MovieID` FROM `Roles` WHERE `MovieID` IS NOT NULL
+
+]]

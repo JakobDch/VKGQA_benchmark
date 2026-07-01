@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	filmmaking_base
+target		ex:filmmaking/{id} a :filmmaking ; p:id {id} ; p:name {name} ; p:directorName {directorName} ; p:releaseDate {releaseDate} .
+source		SELECT `id`, `name`, `directorName`, `releaseDate` FROM `filmmaking`
+
+mappingId	film_type_base
+target		ex:film_type/{id} a :film_type ; p:id {id} ; p:type {type} .
+source		SELECT `id`, `type` FROM `film_type`
+
+mappingId	budget_base
+target		ex:budget/{id} a :budget ; p:id {id} ; p:amount {amount} .
+source		SELECT `id`, `amount` FROM `budget`
+
+mappingId	film_details_base
+target		ex:film_details/{id} a :film_details ; p:id {id} ; p:filmmakingId {filmmakingId} ; p:film_typeId {film_typeId} ; p:budgetId {budgetId} .
+source		SELECT `id`, `filmmakingId`, `film_typeId`, `budgetId` FROM `film_details`
+
+mappingId	film_details_budgetId_fk
+target		ex:film_details/{id} p:hasbudget ex:budget/{budgetId} .
+source		SELECT `id`, `budgetId` FROM `film_details` WHERE `budgetId` IS NOT NULL
+
+mappingId	film_details_film_typeId_fk
+target		ex:film_details/{id} p:hasfilm_type ex:film_type/{film_typeId} .
+source		SELECT `id`, `film_typeId` FROM `film_details` WHERE `film_typeId` IS NOT NULL
+
+mappingId	film_details_filmmakingId_fk
+target		ex:film_details/{id} p:hasfilmmaking ex:filmmaking/{filmmakingId} .
+source		SELECT `id`, `filmmakingId` FROM `film_details` WHERE `filmmakingId` IS NOT NULL
+
+mappingId	crew_members_base
+target		ex:Crew_Members/{id} a :Crew_Members ; p:id {id} ; p:role {role} ; p:memberName {memberName} .
+source		SELECT `id`, `role`, `memberName` FROM `crew_members`
+
+mappingId	casts_base
+target		ex:FilmActors/{id} a :FilmActors ; p:id {id} ; p:filmmakingId {filmmakingId} ; p:characterName {characterName} ; p:actorName {actorName} .
+source		SELECT `id`, `filmmakingId`, `characterName`, `actorName` FROM `casts`
+
+mappingId	casts_filmmakingId_fk
+target		ex:FilmActors/{id} p:hasfilmmaking ex:filmmaking/{filmmakingId} .
+source		SELECT `id`, `filmmakingId` FROM `casts` WHERE `filmmakingId` IS NOT NULL
+
+]]

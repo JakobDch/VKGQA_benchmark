@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_film_festivals_categories",
+  "schema": "amb_scope_film_festivals_categories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all  film festivals and their categories.",
+      "qtype": "unambig",
+      "sql": "select film_festivals.name , categories.categoryname from Film_Festival_Categories join Categories on Film_Festival_Categories.categoryId = Categories.id join Film_Festivals on Film_Festival_Categories.festivalId = Film_Festivals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?categoryname WHERE {\n  ?film_festival_categories a :Film_Festival_Categories .\n  ?categories a :Categories .\n  ?film_festival_categories p:hasCategories ?categories .\n  ?film_festivals a :Film_Festivals .\n  ?film_festival_categories p:hasFilm_Festivals ?film_festivals .\n  ?film_festivals p:name ?name .\n  ?categories p:categoryName ?categoryname .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What film categories does each film festival offer?",
+      "qtype": "ambig",
+      "sql": "SELECT Categories.categoryName  from Film_Festival_Categories join Categories on Film_Festival_Categories.categoryId = Categories.id join Film_Festivals on Film_Festival_Categories.festivalId = Film_Festivals.id   GROUP BY Film_Festival_Categories.categoryId HAVING COUNT(DISTINCT Film_Festival_Categories.festivalId) = (SELECT COUNT(*) FROM  Film_Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasFilm_Festivals ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What film categories does each film festival offer?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?categoryname WHERE {\n  ?film_festival_categories a :Film_Festival_Categories .\n  ?categories a :Categories .\n  ?film_festival_categories p:hasCategories ?categories .\n  ?film_festivals a :Film_Festivals .\n  ?film_festival_categories p:hasFilm_Festivals ?film_festivals .\n  ?film_festivals p:name ?name .\n  ?categories p:categoryName ?categoryname .\n} }\n  collective: { SELECT ?categoryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasFilm_Festivals ?parent . } GROUP BY ?child }\n  ?child p:categoryName ?categoryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Festivals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

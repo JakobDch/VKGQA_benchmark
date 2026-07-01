@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_education_program_target_audiences",
+  "schema": "amb_scope_education_program_target_audiences",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each education program, list the audience being targeted.",
+      "qtype": "unambig",
+      "sql": "select education_program.name , target_audiences.audience_name from Education_Program_Target_Audiences join Target_Audiences on Education_Program_Target_Audiences.target_audience_id = Target_Audiences.id join Education_Program on Education_Program_Target_Audiences.education_program_id = Education_Program.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?audience_name WHERE {\n  ?education_program_target_audiences a :Education_Program_Target_Audiences .\n  ?target_audiences a :Target_Audiences .\n  ?education_program_target_audiences p:hasTarget_Audiences ?target_audiences .\n  ?education_program a :Education_Program .\n  ?education_program_target_audiences p:hasEducation_Program ?education_program .\n  ?education_program p:name ?name .\n  ?target_audiences p:name ?audience_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the audience each education program is targeting.",
+      "qtype": "ambig",
+      "sql": "SELECT Target_Audiences.audience_name  from Education_Program_Target_Audiences join Target_Audiences on Education_Program_Target_Audiences.target_audience_id = Target_Audiences.id join Education_Program on Education_Program_Target_Audiences.education_program_id = Education_Program.id   GROUP BY Education_Program_Target_Audiences.target_audience_id HAVING COUNT(DISTINCT Education_Program_Target_Audiences.education_program_id) = (SELECT COUNT(*) FROM  Education_Program)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?audience_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTarget_Audiences ?child ; p:hasEducation_Program ?parent . } GROUP BY ?child }\n  ?child p:name ?audience_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Education_Program } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the audience each education program is targeting.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?audience_name WHERE {\n  ?education_program_target_audiences a :Education_Program_Target_Audiences .\n  ?target_audiences a :Target_Audiences .\n  ?education_program_target_audiences p:hasTarget_Audiences ?target_audiences .\n  ?education_program a :Education_Program .\n  ?education_program_target_audiences p:hasEducation_Program ?education_program .\n  ?education_program p:name ?name .\n  ?target_audiences p:name ?audience_name .\n} }\n  collective: { SELECT ?audience_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTarget_Audiences ?child ; p:hasEducation_Program ?parent . } GROUP BY ?child }\n  ?child p:name ?audience_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Education_Program } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

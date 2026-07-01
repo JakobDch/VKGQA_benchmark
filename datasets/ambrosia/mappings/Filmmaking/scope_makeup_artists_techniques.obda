@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Makeup_Artists_base
+target		ex:Makeup_Artists/{artist_id} a :Makeup_Artists ; p:artist_id {artist_id} ; p:name {full_name} .
+source		SELECT `artist_id`, `full_name` FROM `Makeup_Artists`
+
+mappingId	Techniques_base
+target		ex:Techniques/{technique_id} a :Techniques ; p:technique_id {technique_id} ; p:name {name} .
+source		SELECT `technique_id`, `name` FROM `Techniques`
+
+mappingId	Movies_base
+target		ex:Movies/{movie_id} a :Movies ; p:movie_id {movie_id} ; p:title {title} ; p:release_date {release_date} .
+source		SELECT `movie_id`, `title`, `release_date` FROM `Movies`
+
+mappingId	Movie_Makeup_Artists_base
+target		ex:Movie_Makeup_Artists/{_amb_rowid} a :Movie_Makeup_Artists ; p:movie_id {movie_id} ; p:artist_id {artist_id} .
+source		SELECT `_amb_rowid`, `movie_id`, `artist_id` FROM `Movie_Makeup_Artists`
+
+mappingId	Movie_Makeup_Artists_artist_id_fk
+target		ex:Movie_Makeup_Artists/{_amb_rowid} p:hasMakeup_Artists ex:Makeup_Artists/{artist_id} .
+source		SELECT `_amb_rowid`, `artist_id` FROM `Movie_Makeup_Artists` WHERE `artist_id` IS NOT NULL
+
+mappingId	Movie_Makeup_Artists_movie_id_fk
+target		ex:Movie_Makeup_Artists/{_amb_rowid} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `_amb_rowid`, `movie_id` FROM `Movie_Makeup_Artists` WHERE `movie_id` IS NOT NULL
+
+mappingId	Movie_Technique_base
+target		ex:Movie_Technique/{_amb_rowid} a :Movie_Technique ; p:movie_id {movie_id} ; p:technique_id {technique_id} .
+source		SELECT `_amb_rowid`, `movie_id`, `technique_id` FROM `Movie_Technique`
+
+mappingId	Movie_Technique_technique_id_fk
+target		ex:Movie_Technique/{_amb_rowid} p:hasTechniques ex:Techniques/{technique_id} .
+source		SELECT `_amb_rowid`, `technique_id` FROM `Movie_Technique` WHERE `technique_id` IS NOT NULL
+
+mappingId	Movie_Technique_movie_id_fk
+target		ex:Movie_Technique/{_amb_rowid} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `_amb_rowid`, `movie_id` FROM `Movie_Technique` WHERE `movie_id` IS NOT NULL
+
+mappingId	Artist_Techniques_base
+target		ex:Artist_Techniques/{_amb_rowid} a :Artist_Techniques ; p:artist_id {artist_id} ; p:technique_id {technique_id} .
+source		SELECT `_amb_rowid`, `artist_id`, `technique_id` FROM `Artist_Techniques`
+
+mappingId	Artist_Techniques_technique_id_fk
+target		ex:Artist_Techniques/{_amb_rowid} p:hasTechniques ex:Techniques/{technique_id} .
+source		SELECT `_amb_rowid`, `technique_id` FROM `Artist_Techniques` WHERE `technique_id` IS NOT NULL
+
+mappingId	Artist_Techniques_artist_id_fk
+target		ex:Artist_Techniques/{_amb_rowid} p:hasMakeup_Artists ex:Makeup_Artists/{artist_id} .
+source		SELECT `_amb_rowid`, `artist_id` FROM `Artist_Techniques` WHERE `artist_id` IS NOT NULL
+
+]]

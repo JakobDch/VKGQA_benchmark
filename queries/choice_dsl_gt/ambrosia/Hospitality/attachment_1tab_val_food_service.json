@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_food_service",
+  "schema": "amb_attachment_1tab_val_food_service",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What restaurants serve Italian cuisine and what cafes serve the same cuisine?",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurants.Name \nFROM Restaurants\nWHERE (Restaurants.Food_Service = \"Restaurant\" OR Restaurants.Food_Service = \"Café\") AND Restaurants.Cuisine = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Food_Service ?food_service_w .\n  ?restaurants p:Food_Service ?food_service_w2 .\n  ?restaurants p:Cuisine ?cuisine_w .\n  FILTER((((STR(?food_service_w) = \"Restaurant\" || STR(?food_service_w2) = \"Café\")) && STR(?cuisine_w) = \"Italian\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List all restaurants and also list cafes that serve Italian cuisine.",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurants.Name \nFROM Restaurants\nWHERE Restaurants.Food_Service = \"Restaurant\" OR Restaurants.Food_Service = \"Café\" AND Restaurants.Cuisine = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Food_Service ?food_service_w .\n  ?restaurants p:Food_Service ?food_service_w2 .\n  ?restaurants p:Cuisine ?cuisine_w .\n  FILTER((STR(?food_service_w) = \"Restaurant\" || (STR(?food_service_w2) = \"Café\" && STR(?cuisine_w) = \"Italian\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me restaurants and cafes that serve Italian cuisine.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Food_Service ?food_service_w .\n  ?restaurants p:Food_Service ?food_service_w2 .\n  ?restaurants p:Cuisine ?cuisine_w .\n  FILTER((((STR(?food_service_w) = \"Restaurant\" || STR(?food_service_w2) = \"Café\")) && STR(?cuisine_w) = \"Italian\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Food_Service ?food_service_w .\n  ?restaurants p:Food_Service ?food_service_w2 .\n  ?restaurants p:Cuisine ?cuisine_w .\n  FILTER((STR(?food_service_w) = \"Restaurant\" || (STR(?food_service_w2) = \"Café\" && STR(?cuisine_w) = \"Italian\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

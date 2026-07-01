@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_condominium_complexes_facilities",
+  "schema": "amb_scope_condominium_complexes_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What facilities do we have for every condominium?",
+      "qtype": "ambig",
+      "sql": "SELECT Facilities.facilityName  from Condominium_Complexes_Facilities join Facilities on Condominium_Complexes_Facilities.facilityId = Facilities.id join Condominium_Complexes on Condominium_Complexes_Facilities.condoId = Condominium_Complexes.id   GROUP BY Condominium_Complexes_Facilities.facilityId HAVING COUNT(DISTINCT Condominium_Complexes_Facilities.condoId) = (SELECT COUNT(*) FROM  Condominium_Complexes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCondominium_Complexes ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Condominium_Complexes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What facilities do we have for every condominium?",
+      "qtype": "ambig",
+      "sql": "select condominium_complexes.name , facilities.facilityname from Condominium_Complexes_Facilities join Facilities on Condominium_Complexes_Facilities.facilityId = Facilities.id join Condominium_Complexes on Condominium_Complexes_Facilities.condoId = Condominium_Complexes.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?facilityname WHERE {\n  ?condominium_complexes_facilities a :Condominium_Complexes_Facilities .\n  ?facilities a :Facilities .\n  ?condominium_complexes_facilities p:hasFacilities ?facilities .\n  ?condominium_complexes a :Condominium_Complexes .\n  ?condominium_complexes_facilities p:hasCondominium_Complexes ?condominium_complexes .\n  ?condominium_complexes p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What facilities do we have for every condominium?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCondominium_Complexes ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Condominium_Complexes } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?facilityname WHERE {\n  ?condominium_complexes_facilities a :Condominium_Complexes_Facilities .\n  ?facilities a :Facilities .\n  ?condominium_complexes_facilities p:hasFacilities ?facilities .\n  ?condominium_complexes a :Condominium_Complexes .\n  ?condominium_complexes_facilities p:hasCondominium_Complexes ?condominium_complexes .\n  ?condominium_complexes p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

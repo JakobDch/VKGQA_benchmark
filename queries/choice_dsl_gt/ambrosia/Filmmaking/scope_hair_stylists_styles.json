@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_hair_stylists_styles",
+  "schema": "amb_scope_hair_stylists_styles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every hair stylist, give me the styles that they offer",
+      "qtype": "unambig",
+      "sql": "select hair_stylists.name , styles.style_name from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?style_name WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:style_name ?style_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "For each hair stylist, list information on the styles offered (including their descriptions).",
+      "qtype": "unambig",
+      "sql": "select hair_stylists.name , styles.style_name , styles.description from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?style_name ?description WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:style_name ?style_name .\n  ?styles p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What styles are available at every hair stylist?",
+      "qtype": "ambig",
+      "sql": "SELECT Styles.style_name  from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id   GROUP BY Hair_Stylists_Styles.style_id HAVING COUNT(DISTINCT Hair_Stylists_Styles.hairdresser_id) = (SELECT COUNT(*) FROM  Hair_Stylists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?style_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:style_name ?style_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the style description that is in common for all hair stylists?",
+      "qtype": "unambig",
+      "sql": "SELECT Styles.description  from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id   GROUP BY Hair_Stylists_Styles.style_id HAVING COUNT(DISTINCT Hair_Stylists_Styles.hairdresser_id) = (SELECT COUNT(*) FROM  Hair_Stylists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me about the styles every hair stylist offers (with their descriptions).",
+      "qtype": "ambig",
+      "sql": "SELECT Styles.style_name, Styles.description  from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id   GROUP BY Hair_Stylists_Styles.style_id HAVING COUNT(DISTINCT Hair_Stylists_Styles.hairdresser_id) = (SELECT COUNT(*) FROM  Hair_Stylists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?style_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:style_name ?style_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each hair stylist, give me the style description.",
+      "qtype": "unambig",
+      "sql": "select hair_stylists.name , styles.description from Hair_Stylists_Styles join Styles on Hair_Stylists_Styles.style_id = Styles.style_id join Hair_Stylists on Hair_Stylists_Styles.hairdresser_id = Hair_Stylists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What styles are available at every hair stylist?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?style_name WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:style_name ?style_name .\n} }\n  collective: { SELECT ?style_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:style_name ?style_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me about the styles every hair stylist offers (with their descriptions).",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?style_name ?description WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:style_name ?style_name .\n  ?styles p:description ?description .\n} }\n  collective: { SELECT ?style_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:style_name ?style_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the style description for each hair stylist.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStyles ?child ; p:hasHair_Stylists ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hair_Stylists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?hair_stylists_styles a :Hair_Stylists_Styles .\n  ?styles a :Styles .\n  ?hair_stylists_styles p:hasStyles ?styles .\n  ?hair_stylists a :Hair_Stylists .\n  ?hair_stylists_styles p:hasHair_Stylists ?hair_stylists .\n  ?hair_stylists p:name ?name .\n  ?styles p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{studentID} a :Students ; p:studentID {studentID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} .
+source		SELECT `studentID`, `firstName`, `lastName`, `dateOfBirth` FROM `Students`
+
+mappingId	Educators_base
+target		ex:Educators/{educatorID} a :Educators ; p:educatorID {educatorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:subject {subject} .
+source		SELECT `educatorID`, `firstName`, `lastName`, `subject` FROM `Educators`
+
+mappingId	Classes_base
+target		ex:Classes/{classID} a :Classes ; p:classID {classID} ; p:title {title} ; p:startDate {startDate} ; p:endDate {endDate} ; p:EducatorID {EducatorID} .
+source		SELECT `classID`, `title`, `startDate`, `endDate`, `EducatorID` FROM `Classes`
+
+mappingId	Classes_classID_fk
+target		ex:Classes/{classID} p:hasEnrollments ex:Enrollments/{classID} .
+source		SELECT `classID` FROM `Classes` WHERE `classID` IS NOT NULL
+
+mappingId	Classes_EducatorID_fk
+target		ex:Classes/{classID} p:hasEducators ex:Educators/{EducatorID} .
+source		SELECT `classID`, `EducatorID` FROM `Classes` WHERE `EducatorID` IS NOT NULL
+
+mappingId	Curriculums_base
+target		ex:Curriculums/{curriculumID} a :Curriculums ; p:curriculumID {curriculumID} ; p:name {name} ; p:EducatorID {EducatorID} .
+source		SELECT `curriculumID`, `name`, `EducatorID` FROM `Curriculums`
+
+mappingId	Curriculums_EducatorID_fk
+target		ex:Curriculums/{curriculumID} p:hasEducators ex:Educators/{EducatorID} .
+source		SELECT `curriculumID`, `EducatorID` FROM `Curriculums` WHERE `EducatorID` IS NOT NULL
+
+mappingId	CourseMaterials_base
+target		ex:CourseMaterials/{materialID} a :CourseMaterials ; p:materialID {materialID} ; p:title {title} ; p:url {url} .
+source		SELECT `materialID`, `title`, `url` FROM `CourseMaterials`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollmentID} a :Enrollments ; p:enrollmentID {enrollmentID} ; p:StudentID {StudentID} ; p:classID {classID} ; p:courseMaterialID {courseMaterialID} .
+source		SELECT `enrollmentID`, `StudentID`, `classID`, `courseMaterialID` FROM `Enrollments`
+
+mappingId	Enrollments_courseMaterialID_fk
+target		ex:Enrollments/{enrollmentID} p:hasCourseMaterials ex:CourseMaterials/{courseMaterialID} .
+source		SELECT `enrollmentID`, `courseMaterialID` FROM `Enrollments` WHERE `courseMaterialID` IS NOT NULL
+
+mappingId	Enrollments_classID_fk
+target		ex:Enrollments/{enrollmentID} p:hasClasses ex:Classes/{classID} .
+source		SELECT `enrollmentID`, `classID` FROM `Enrollments` WHERE `classID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{enrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `enrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Lessons_base
+target		ex:Lessons/{lessonID} a :Lessons ; p:lessonID {lessonID} ; p:content {content} ; p:educationalMethod {educationalMethod} ; p:curriculumID {curriculumID} ; p:classID {classID} .
+source		SELECT `lessonID`, `content`, `educationalMethod`, `curriculumID`, `classID` FROM `Lessons`
+
+mappingId	Lessons_classID_fk
+target		ex:Lessons/{lessonID} p:hasClasses ex:Classes/{classID} .
+source		SELECT `lessonID`, `classID` FROM `Lessons` WHERE `classID` IS NOT NULL
+
+mappingId	Lessons_curriculumID_fk
+target		ex:Lessons/{lessonID} p:hasCurriculums ex:Curriculums/{curriculumID} .
+source		SELECT `lessonID`, `curriculumID` FROM `Lessons` WHERE `curriculumID` IS NOT NULL
+
+]]

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:name {name} ; p:types_of_bank {types_of_bank} ; p:country {country} .
+source		SELECT `id`, `name`, `types_of_bank`, `country` FROM `Banks`
+
+mappingId	Branches_base
+target		ex:Branches/{id} a :Branches ; p:id {id} ; p:bank_id {bank_id} ; p:address {address} ; p:city {city} ; p:state {state} .
+source		SELECT `id`, `bank_id`, `address`, `city`, `state` FROM `Branches`
+
+mappingId	Branches_bank_id_fk
+target		ex:Branches/{id} p:hasBanks ex:Banks/{bank_id} .
+source		SELECT `id`, `bank_id` FROM `Branches` WHERE `bank_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birth_date {birth_date} ; p:phone_number {phone_number} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `birth_date`, `phone_number`, `email` FROM `Customers`
+
+mappingId	Transactions_base
+target		ex:Transactions/{id} a :Transactions ; p:id {id} ; p:branch_id {branch_id} ; p:customer_id {customer_id} ; p:transaction_type {transaction_type} ; p:amount {amount} ; p:date {date} .
+source		SELECT `id`, `branch_id`, `customer_id`, `transaction_type`, `amount`, `date` FROM `Transactions`
+
+mappingId	Transactions_customer_id_fk
+target		ex:Transactions/{id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `id`, `customer_id` FROM `Transactions` WHERE `customer_id` IS NOT NULL
+
+mappingId	Transactions_branch_id_fk
+target		ex:Transactions/{id} p:hasBranches ex:Branches/{branch_id} .
+source		SELECT `id`, `branch_id` FROM `Transactions` WHERE `branch_id` IS NOT NULL
+
+]]

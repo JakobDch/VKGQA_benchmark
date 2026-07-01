@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_audience",
+  "schema": "amb_vague_2cols_audience",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me a list of magazine names and publishers along with the associated demographic groups and professional fields",
+      "qtype": "unambig",
+      "sql": "SELECT \n    d.demographic_group, professional_field,\n    m.name AS magazine_name,\n    m.publisher\nFROM \n    Demographics d\nJOIN \n    Magazines m ON d.magazineID = m.magazineID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?demographic_group ?professional_field ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:demographic_group ?demographic_group .\n  ?d p:professional_field ?professional_field .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "In each professional field, how many magazines cater for them.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    professional_field,\n    COUNT(*) AS magazine_count\nFROM \n    Demographics\nGROUP BY \n    professional_field;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?professional_field_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:professional_field ?professional_field_g .\n}\nGROUP BY ?professional_field_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "For each demographic group , show how many magazines cater for them.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    demographic_group,\n    COUNT(*) AS magazine_count\nFROM \n    Demographics\nGROUP BY \n    demographic_group;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?demographic_group_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:demographic_group ?demographic_group_g .\n}\nGROUP BY ?demographic_group_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "For each demographic group and professional field, show how many magazines cater for them.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    demographic_group, professional_field,\n    COUNT(*) AS magazine_count\nFROM \n    Demographics\nGROUP BY \n    demographic_group, professional_field;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?demographic_group_g ?professional_field_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:demographic_group ?demographic_group_g .\n  ?demographics p:professional_field ?professional_field_g .\n}\nGROUP BY ?demographic_group_g ?professional_field_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Give me a list of magazine names and publishers along with the associated demographic groups",
+      "qtype": "unambig",
+      "sql": "SELECT \n    d.demographic_group,\n    m.name AS magazine_name,\n    m.publisher\nFROM \n    Demographics d\nJOIN \n    Magazines m ON d.magazineID = m.magazineID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?demographic_group ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:demographic_group ?demographic_group .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Give me a list of magazine names and publishers along with the associated professional fields",
+      "qtype": "unambig",
+      "sql": "SELECT \n    d.professional_field,\n    m.name AS magazine_name,\n    m.publisher\nFROM \n    Demographics d\nJOIN \n    Magazines m ON d.magazineID = m.magazineID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?professional_field ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:professional_field ?professional_field .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which magazines correspond to each audience demographic, along with their publishers",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?demographic_group ?professional_field ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:demographic_group ?demographic_group .\n  ?d p:professional_field ?professional_field .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n} }\n  component: { SELECT ?demographic_group ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:demographic_group ?demographic_group .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n} }\n  component_2: { SELECT ?professional_field ?name ?publisher WHERE {\n  ?d a :Demographics .\n  ?m a :Magazines .\n  ?d p:hasMagazines ?m .\n  ?d p:professional_field ?professional_field .\n  ?m p:name ?name .\n  ?m p:publisher ?publisher .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "How many magazines cater to each audience demographic",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?professional_field_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:professional_field ?professional_field_g .\n}\nGROUP BY ?professional_field_g }\n  component_2: { SELECT ?demographic_group_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:demographic_group ?demographic_group_g .\n}\nGROUP BY ?demographic_group_g }\n  full: { SELECT ?demographic_group_g ?professional_field_g (COUNT(*) AS ?agg) WHERE {\n  ?demographics a :Demographics .\n  ?demographics p:demographic_group ?demographic_group_g .\n  ?demographics p:professional_field ?professional_field_g .\n}\nGROUP BY ?demographic_group_g ?professional_field_g }\n}",
+      "verified": true
+    }
+  ]
+}

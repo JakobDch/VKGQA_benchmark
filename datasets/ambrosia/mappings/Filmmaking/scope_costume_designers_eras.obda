@@ -1,0 +1,73 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Costume_Designers_base
+target		ex:Costume_Designers/{id} a :Costume_Designers ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `id`, `name`, `birthdate` FROM `Costume_Designers`
+
+mappingId	Eras_base
+target		ex:Eras/{id} a :Eras ; p:id {id} ; p:era_name {era_name} .
+source		SELECT `id`, `era_name` FROM `Eras`
+
+mappingId	Film_Projects_base
+target		ex:Film_Projects/{id} a :Film_Projects ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:director {director} .
+source		SELECT `id`, `title`, `release_year`, `director` FROM `Film_Projects`
+
+mappingId	Films_and_Directors_base
+target		ex:Films_and_Directors/{film_id}/{director_id} a :Films_and_Directors ; p:film_id {film_id} ; p:director_id {director_id} .
+source		SELECT `film_id`, `director_id` FROM `Films_and_Directors`
+
+mappingId	Films_and_Directors_director_id_fk
+target		ex:Films_and_Directors/{film_id}/{director_id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `film_id`, `director_id` FROM `Films_and_Directors` WHERE `director_id` IS NOT NULL
+
+mappingId	Films_and_Directors_film_id_fk
+target		ex:Films_and_Directors/{film_id}/{director_id} p:hasFilm_Projects ex:Film_Projects/{film_id} .
+source		SELECT `film_id`, `director_id` FROM `Films_and_Directors` WHERE `film_id` IS NOT NULL
+
+mappingId	Actors_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `id`, `first_name`, `last_name` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{role_id} a :Roles ; p:role_id {role_id} ; p:actor_id {actor_id} ; p:character_name {character_name} .
+source		SELECT `role_id`, `actor_id`, `character_name` FROM `Roles`
+
+mappingId	Roles_actor_id_fk
+target		ex:Roles/{role_id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `role_id`, `actor_id` FROM `Roles` WHERE `actor_id` IS NOT NULL
+
+mappingId	Films_and_Actors_base
+target		ex:Films_and_Actors/{film_id}/{actor_id} a :Films_and_Actors ; p:film_id {film_id} ; p:actor_id {actor_id} .
+source		SELECT `film_id`, `actor_id` FROM `Films_and_Actors`
+
+mappingId	Films_and_Actors_actor_id_fk
+target		ex:Films_and_Actors/{film_id}/{actor_id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `film_id`, `actor_id` FROM `Films_and_Actors` WHERE `actor_id` IS NOT NULL
+
+mappingId	Films_and_Actors_film_id_fk
+target		ex:Films_and_Actors/{film_id}/{actor_id} p:hasFilm_Projects ex:Film_Projects/{film_id} .
+source		SELECT `film_id`, `actor_id` FROM `Films_and_Actors` WHERE `film_id` IS NOT NULL
+
+mappingId	Directors_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `id`, `first_name`, `last_name` FROM `Directors`
+
+mappingId	Costume_Designers_Eras_base
+target		ex:Costume_Designers_Eras/{costume_designer_id}/{eras_id} a :Costume_Designers_Eras ; p:costume_designer_id {costume_designer_id} ; p:eras_id {eras_id} .
+source		SELECT `costume_designer_id`, `eras_id` FROM `Costume_Designers_Eras`
+
+mappingId	Costume_Designers_Eras_eras_id_fk
+target		ex:Costume_Designers_Eras/{costume_designer_id}/{eras_id} p:hasEras ex:Eras/{eras_id} .
+source		SELECT `costume_designer_id`, `eras_id` FROM `Costume_Designers_Eras` WHERE `eras_id` IS NOT NULL
+
+mappingId	Costume_Designers_Eras_costume_designer_id_fk
+target		ex:Costume_Designers_Eras/{costume_designer_id}/{eras_id} p:hasCostume_Designers ex:Costume_Designers/{costume_designer_id} .
+source		SELECT `costume_designer_id`, `eras_id` FROM `Costume_Designers_Eras` WHERE `costume_designer_id` IS NOT NULL
+
+]]

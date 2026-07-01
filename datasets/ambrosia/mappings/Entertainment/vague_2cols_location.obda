@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	artists_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {name} ; p:genre {genre} .
+source		SELECT `id`, `name`, `genre` FROM `artists`
+
+mappingId	concerts_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:artistId {artistId} ; p:date {date} ; p:city {city} ; p:concertHall {concertHall} .
+source		SELECT `id`, `artistId`, `date`, `city`, `concertHall` FROM `concerts`
+
+mappingId	concerts_artistId_fk
+target		ex:Concert/{id} p:hasArtist ex:Artist/{artistId} .
+source		SELECT `id`, `artistId` FROM `concerts` WHERE `artistId` IS NOT NULL
+
+mappingId	venues_base
+target		ex:Venue/{id} a :Venue ; p:id {id} ; p:venueName {venueName} ; p:location {location} ; p:capacity {capacity} .
+source		SELECT `id`, `venueName`, `location`, `capacity` FROM `venues`
+
+mappingId	tickets_base
+target		ex:Tickets/{id} a :Tickets ; p:id {id} ; p:concertId {concertId} ; p:price {price} ; p:quantity {quantity} ; p:type {type} .
+source		SELECT `id`, `concertId`, `price`, `quantity`, `type` FROM `tickets`
+
+mappingId	tickets_concertId_fk
+target		ex:Tickets/{id} p:hasConcert ex:Concert/{concertId} .
+source		SELECT `id`, `concertId` FROM `tickets` WHERE `concertId` IS NOT NULL
+
+mappingId	users_base
+target		ex:users/{id} a :users ; p:id {id} ; p:username {username} ; p:email {email} ; p:passwordHash {passwordHash} .
+source		SELECT `id`, `username`, `email`, `passwordHash` FROM `users`
+
+mappingId	bookings_base
+target		ex:bookings/{id} a :bookings ; p:id {id} ; p:userId {userId} ; p:ticketId {ticketId} ; p:bookingDate {bookingDate} ; p:status {status} .
+source		SELECT `id`, `userId`, `ticketId`, `bookingDate`, `status` FROM `bookings`
+
+mappingId	bookings_ticketId_fk
+target		ex:bookings/{id} p:hasTickets ex:Tickets/{ticketId} .
+source		SELECT `id`, `ticketId` FROM `bookings` WHERE `ticketId` IS NOT NULL
+
+mappingId	bookings_userId_fk
+target		ex:bookings/{id} p:hasusers ex:users/{userId} .
+source		SELECT `id`, `userId` FROM `bookings` WHERE `userId` IS NOT NULL
+
+]]

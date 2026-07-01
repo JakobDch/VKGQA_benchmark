@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:major {major} ; p:yearInSchool {yearInSchool} .
+source		SELECT `id`, `firstName`, `lastName`, `major`, `yearInSchool` FROM `Students`
+
+mappingId	Classes_base
+target		ex:Classes/{classId} a :Classes ; p:classId {classId} ; p:className {className} ; p:professorName {professorName} ; p:roomNumber {roomNumber} ; p:capacity {capacity} ; p:timeSlot {timeSlot} .
+source		SELECT `classId`, `className`, `professorName`, `roomNumber`, `capacity`, `timeSlot` FROM `Classes`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollmentId} a :Enrollments ; p:enrollmentId {enrollmentId} ; p:studentId {studentId} ; p:classId {classId} ; p:grade {grade} .
+source		SELECT `enrollmentId`, `studentId`, `classId`, `grade` FROM `Enrollments`
+
+mappingId	Enrollments_classId_fk
+target		ex:Enrollments/{enrollmentId} p:hasClasses ex:Classes/{classId} .
+source		SELECT `enrollmentId`, `classId` FROM `Enrollments` WHERE `classId` IS NOT NULL
+
+mappingId	Enrollments_studentId_fk
+target		ex:Enrollments/{enrollmentId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `enrollmentId`, `studentId` FROM `Enrollments` WHERE `studentId` IS NOT NULL
+
+mappingId	Projects_base
+target		ex:Projects/{projectId} a :Projects ; p:projectId {projectId} ; p:title {title} ; p:description {description} ; p:dueDate {dueDate} ; p:status {status} .
+source		SELECT `projectId`, `title`, `description`, `dueDate`, `status` FROM `Projects`
+
+mappingId	Theme_Tracks_base
+target		ex:Theme_Tracks/{themeTrackId} a :Theme_Tracks ; p:themeTrackId {themeTrackId} ; p:themeTrack {themeTrack} ; p:submissionTopic {submissionTopic} ; p:conference {conference} ; p:abstract {abstract} ; p:fullPaper {fullPaper} .
+source		SELECT `themeTrackId`, `themeTrack`, `submissionTopic`, `conference`, `abstract`, `fullPaper` FROM `Theme_Tracks`
+
+mappingId	Submissions_base
+target		ex:Submissions/{submissionId} a :Submissions ; p:submissionId {submissionId} ; p:studentId {studentId} ; p:themeTrackId {themeTrackId} ; p:projectId {projectId} ; p:dateOfSubmission {dateOfSubmission} ; p:feedback {feedback} ; p:grade {grade} .
+source		SELECT `submissionId`, `studentId`, `themeTrackId`, `projectId`, `dateOfSubmission`, `feedback`, `grade` FROM `Submissions`
+
+mappingId	Submissions_projectId_fk
+target		ex:Submissions/{submissionId} p:hasProjects ex:Projects/{projectId} .
+source		SELECT `submissionId`, `projectId` FROM `Submissions` WHERE `projectId` IS NOT NULL
+
+mappingId	Submissions_themeTrackId_fk
+target		ex:Submissions/{submissionId} p:hasTheme_Tracks ex:Theme_Tracks/{themeTrackId} .
+source		SELECT `submissionId`, `themeTrackId` FROM `Submissions` WHERE `themeTrackId` IS NOT NULL
+
+mappingId	Submissions_studentId_fk
+target		ex:Submissions/{submissionId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `submissionId`, `studentId` FROM `Submissions` WHERE `studentId` IS NOT NULL
+
+]]

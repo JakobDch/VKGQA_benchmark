@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_airline_types",
+  "schema": "amb_attachment_1tab_ref_airline_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the alliance airlines and also show the independent carriers but only with flights using the Airbus A320.",
+      "qtype": "unambig",
+      "sql": "SELECT Airlines.airline_name \nFROM Airlines JOIN Flights ON Airlines.id = Flights.airline_id\nWHERE Airlines.type_of_alliance = \"Airline Alliance\" OR Airlines.type_of_alliance = \"Independent Carrier\" AND Flights.aircraft_model = \"Airbus A320\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airline_name WHERE {\n  ?airlines a :Airlines .\n  ?flights a :Flights .\n  ?flights p:hasAirlines ?airlines .\n  ?airlines p:airline_name ?airline_name .\n  ?airlines p:type_of_alliance ?type_of_alliance_w .\n  ?airlines p:type_of_alliance ?type_of_alliance_w2 .\n  ?flights p:aircraft_model ?aircraft_model_w .\n  FILTER((STR(?type_of_alliance_w) = \"Airline Alliance\" || (STR(?type_of_alliance_w2) = \"Independent Carrier\" && STR(?aircraft_model_w) = \"Airbus A320\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the flights using an Airbus A320 for airlines that are either with the alliance airlines or are independent carriers.",
+      "qtype": "unambig",
+      "sql": "SELECT Airlines.airline_name \nFROM Airlines JOIN Flights ON Airlines.id = Flights.airline_id\nWHERE (Airlines.type_of_alliance = \"Airline Alliance\" OR Airlines.type_of_alliance = \"Independent Carrier\") AND Flights.aircraft_model = \"Airbus A320\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airline_name WHERE {\n  ?airlines a :Airlines .\n  ?flights a :Flights .\n  ?flights p:hasAirlines ?airlines .\n  ?airlines p:airline_name ?airline_name .\n  ?airlines p:type_of_alliance ?type_of_alliance_w .\n  ?airlines p:type_of_alliance ?type_of_alliance_w2 .\n  ?flights p:aircraft_model ?aircraft_model_w .\n  FILTER((((STR(?type_of_alliance_w) = \"Airline Alliance\" || STR(?type_of_alliance_w2) = \"Independent Carrier\")) && STR(?aircraft_model_w) = \"Airbus A320\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all alliance airlines and independent carriers with flights using the Airbus A320.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?airline_name WHERE {\n  ?airlines a :Airlines .\n  ?flights a :Flights .\n  ?flights p:hasAirlines ?airlines .\n  ?airlines p:airline_name ?airline_name .\n  ?airlines p:type_of_alliance ?type_of_alliance_w .\n  ?airlines p:type_of_alliance ?type_of_alliance_w2 .\n  ?flights p:aircraft_model ?aircraft_model_w .\n  FILTER((STR(?type_of_alliance_w) = \"Airline Alliance\" || (STR(?type_of_alliance_w2) = \"Independent Carrier\" && STR(?aircraft_model_w) = \"Airbus A320\")))\n} }\n  high: { SELECT ?airline_name WHERE {\n  ?airlines a :Airlines .\n  ?flights a :Flights .\n  ?flights p:hasAirlines ?airlines .\n  ?airlines p:airline_name ?airline_name .\n  ?airlines p:type_of_alliance ?type_of_alliance_w .\n  ?airlines p:type_of_alliance ?type_of_alliance_w2 .\n  ?flights p:aircraft_model ?aircraft_model_w .\n  FILTER((((STR(?type_of_alliance_w) = \"Airline Alliance\" || STR(?type_of_alliance_w2) = \"Independent Carrier\")) && STR(?aircraft_model_w) = \"Airbus A320\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

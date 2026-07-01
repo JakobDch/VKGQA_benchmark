@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Manufacturer_Name_base
+target		ex:manufacturers/{id} a :manufacturers ; p:id {id} ; p:manufacturer_name {manufacturer_name} ; p:country {country} .
+source		SELECT `id`, `manufacturer_name`, `country` FROM `Manufacturer_Name`
+
+mappingId	Model_Name_base
+target		ex:Model_Name/{id} a :Model_Name ; p:id {id} ; p:model_name {model_name} ; p:year_introduced {year_introduced} ; p:MAX_PASSENGERS {MAX_PASSENGERS} .
+source		SELECT `id`, `model_name`, `year_introduced`, `MAX_PASSENGERS` FROM `Model_Name`
+
+mappingId	Plane_base
+target		ex:Planes/{id} a :Planes ; p:id {id} ; p:plane_model_id {plane_model_id} ; p:manufacturer_id {manufacturer_id} ; p:registration_number {registration_number} ; p:aircraft_type {aircraft_type} ; p:current_location {current_location} .
+source		SELECT `id`, `plane_model_id`, `manufacturer_id`, `registration_number`, `aircraft_type`, `current_location` FROM `Plane`
+
+mappingId	Plane_manufacturer_id_fk
+target		ex:Planes/{id} p:hasmanufacturers ex:manufacturers/{manufacturer_id} .
+source		SELECT `id`, `manufacturer_id` FROM `Plane` WHERE `manufacturer_id` IS NOT NULL
+
+mappingId	Plane_plane_model_id_fk
+target		ex:Planes/{id} p:hasModel_Name ex:Model_Name/{plane_model_id} .
+source		SELECT `id`, `plane_model_id` FROM `Plane` WHERE `plane_model_id` IS NOT NULL
+
+mappingId	Airport_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:airport_code {airport_code} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `airport_code`, `name`, `city`, `country` FROM `Airport`
+
+mappingId	Runway_base
+target		ex:Runways/{id} a :Runways ; p:id {id} ; p:runway_length {runway_length} ; p:runway_width {runway_width} ; p:airport_id {airport_id} .
+source		SELECT `id`, `runway_length`, `runway_width`, `airport_id` FROM `Runway`
+
+mappingId	Runway_airport_id_fk
+target		ex:Runways/{id} p:hasAirports ex:Airports/{airport_id} .
+source		SELECT `id`, `airport_id` FROM `Runway` WHERE `airport_id` IS NOT NULL
+
+mappingId	Flight_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:flight_date {flight_date} ; p:departure_airport_id {departure_airport_id} ; p:arrival_airport_id {arrival_airport_id} ; p:plane_id {plane_id} .
+source		SELECT `id`, `flight_date`, `departure_airport_id`, `arrival_airport_id`, `plane_id` FROM `Flight`
+
+mappingId	Flight_plane_id_fk
+target		ex:Flights/{id} p:hasPlanes ex:Planes/{plane_id} .
+source		SELECT `id`, `plane_id` FROM `Flight` WHERE `plane_id` IS NOT NULL
+
+mappingId	Flight_arrival_airport_id_fk
+target		ex:Flights/{id} p:hasAirports_arrival_airport_id ex:Airports/{arrival_airport_id} .
+source		SELECT `id`, `arrival_airport_id` FROM `Flight` WHERE `arrival_airport_id` IS NOT NULL
+
+mappingId	Flight_departure_airport_id_fk
+target		ex:Flights/{id} p:hasAirports_departure_airport_id ex:Airports/{departure_airport_id} .
+source		SELECT `id`, `departure_airport_id` FROM `Flight` WHERE `departure_airport_id` IS NOT NULL
+
+]]

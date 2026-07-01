@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `BirthDate` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	DistributionPlatforms_base
+target		ex:DistributionPlatforms/{PlatformID} a :DistributionPlatforms ; p:PlatformID {PlatformID} ; p:name {Name} ; p:Type {Type} .
+source		SELECT `PlatformID`, `Name`, `Type` FROM `DistributionPlatforms`
+
+mappingId	Publications_base
+target		ex:Publications/{PublicationID} a :Publications ; p:PublicationID {PublicationID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `PublicationID`, `Name`, `Description` FROM `Publications`
+
+mappingId	PublishesIn_base
+target		ex:PublishesIn/{PublicationID}/{PlatformID} a :PublishesIn ; p:id {id} ; p:PublicationID {PublicationID} ; p:PlatformID {PlatformID} ; p:AudienceSize {AudienceSize} .
+source		SELECT `id`, `PublicationID`, `PlatformID`, `AudienceSize` FROM `PublishesIn`
+
+mappingId	PublishesIn_PlatformID_fk
+target		ex:PublishesIn/{PublicationID}/{PlatformID} p:hasDistributionPlatforms ex:DistributionPlatforms/{PlatformID} .
+source		SELECT `PublicationID`, `PlatformID` FROM `PublishesIn` WHERE `PlatformID` IS NOT NULL
+
+mappingId	PublishesIn_PublicationID_fk
+target		ex:PublishesIn/{PublicationID}/{PlatformID} p:hasPublications ex:Publications/{PublicationID} .
+source		SELECT `PublicationID`, `PlatformID` FROM `PublishesIn` WHERE `PublicationID` IS NOT NULL
+
+]]

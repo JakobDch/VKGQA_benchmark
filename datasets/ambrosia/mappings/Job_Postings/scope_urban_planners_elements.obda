@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Urban_Planners_base
+target		ex:Urban_Planners/{id} a :Urban_Planners ; p:id {id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `id`, `name`, `experience` FROM `Urban_Planners`
+
+mappingId	Elements_base
+target		ex:Elements/{id} a :Elements ; p:id {id} ; p:element_name {element_name} .
+source		SELECT `id`, `element_name` FROM `Elements`
+
+mappingId	Urban_Planners_Elements_base
+target		ex:Urban_Planners_Elements/{urban_planner_id}/{element_id} a :Urban_Planners_Elements ; p:urban_planner_id {urban_planner_id} ; p:element_id {element_id} .
+source		SELECT `urban_planner_id`, `element_id` FROM `Urban_Planners_Elements`
+
+mappingId	Urban_Planners_Elements_element_id_fk
+target		ex:Urban_Planners_Elements/{urban_planner_id}/{element_id} p:hasElements ex:Elements/{element_id} .
+source		SELECT `urban_planner_id`, `element_id` FROM `Urban_Planners_Elements` WHERE `element_id` IS NOT NULL
+
+mappingId	Urban_Planners_Elements_urban_planner_id_fk
+target		ex:Urban_Planners_Elements/{urban_planner_id}/{element_id} p:hasUrban_Planners ex:Urban_Planners/{urban_planner_id} .
+source		SELECT `urban_planner_id`, `element_id` FROM `Urban_Planners_Elements` WHERE `urban_planner_id` IS NOT NULL
+
+]]

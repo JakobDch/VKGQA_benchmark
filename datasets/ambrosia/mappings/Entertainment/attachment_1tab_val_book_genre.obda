@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{AuthorID} a :Author ; p:AuthorID {AuthorID} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `AuthorID`, `Name`, `BirthDate`, `Country` FROM `Authors`
+
+mappingId	Publishers_base
+target		ex:Publisher/{PublisherID} a :Publisher ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} ; p:YearEstablished {YearEstablished} .
+source		SELECT `PublisherID`, `Name`, `Address`, `YearEstablished` FROM `Publishers`
+
+mappingId	Genres_base
+target		ex:Genre/{GenreID} a :Genre ; p:GenreID {GenreID} ; p:Description {Description} .
+source		SELECT `GenreID`, `Description` FROM `Genres`
+
+mappingId	Books_base
+target		ex:Book/{BookID} a :Book ; p:BookID {BookID} ; p:Title {Title} ; p:PageCount {PageCount} ; p:Book_Genre {Book_Genre} ; p:Year_Of_Publication {Year_Of_Publication} ; p:AuthorID {AuthorID} ; p:PublisherID {PublisherID} ; p:GenreID {GenreID} .
+source		SELECT `BookID`, `Title`, `PageCount`, `Book_Genre`, `Year_Of_Publication`, `AuthorID`, `PublisherID`, `GenreID` FROM `Books`
+
+mappingId	Books_GenreID_fk
+target		ex:Book/{BookID} p:hasGenre ex:Genre/{GenreID} .
+source		SELECT `BookID`, `GenreID` FROM `Books` WHERE `GenreID` IS NOT NULL
+
+mappingId	Books_PublisherID_fk
+target		ex:Book/{BookID} p:hasPublisher ex:Publisher/{PublisherID} .
+source		SELECT `BookID`, `PublisherID` FROM `Books` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Books_AuthorID_fk
+target		ex:Book/{BookID} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `BookID`, `AuthorID` FROM `Books` WHERE `AuthorID` IS NOT NULL
+
+]]

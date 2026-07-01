@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_makeup_artists_techniques",
+  "schema": "amb_scope_makeup_artists_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Please provide the technique name that is common for all makeup artists.",
+      "qtype": "unambig",
+      "sql": "SELECT Techniques.name  from Artist_Techniques join Techniques on Artist_Techniques.technique_id = Techniques.technique_id join Makeup_Artists on Artist_Techniques.artist_id = Makeup_Artists.artist_id   GROUP BY Artist_Techniques.technique_id HAVING COUNT(DISTINCT Artist_Techniques.artist_id) = (SELECT COUNT(*) FROM  Makeup_Artists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasMakeup_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Makeup_Artists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each makeup artist, what are the respective names of their techniques?",
+      "qtype": "unambig",
+      "sql": "select makeup_artists.full_name , techniques.name from Artist_Techniques join Techniques on Artist_Techniques.technique_id = Techniques.technique_id join Makeup_Artists on Artist_Techniques.artist_id = Makeup_Artists.artist_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?name WHERE {\n  ?artist_techniques a :Artist_Techniques .\n  ?techniques a :Techniques .\n  ?artist_techniques p:hasTechniques ?techniques .\n  ?makeup_artists a :Makeup_Artists .\n  ?artist_techniques p:hasMakeup_Artists ?makeup_artists .\n  ?makeup_artists p:name ?full_name .\n  ?techniques p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What technique names are associated with each makeup artist?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasMakeup_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Makeup_Artists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?name WHERE {\n  ?artist_techniques a :Artist_Techniques .\n  ?techniques a :Techniques .\n  ?artist_techniques p:hasTechniques ?techniques .\n  ?makeup_artists a :Makeup_Artists .\n  ?artist_techniques p:hasMakeup_Artists ?makeup_artists .\n  ?makeup_artists p:name ?full_name .\n  ?techniques p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

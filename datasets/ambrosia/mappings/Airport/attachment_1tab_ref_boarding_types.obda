@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:Origin {Origin} ; p:Destination {Destination} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:AirlineID {AirlineID} ; p:PlaneID {PlaneID} .
+source		SELECT `FlightID`, `Origin`, `Destination`, `DepartureTime`, `ArrivalTime`, `AirlineID`, `PlaneID` FROM `Flights`
+
+mappingId	Flights_PlaneID_fk
+target		ex:Flights/{FlightID} p:hasPlanes ex:Planes/{PlaneID} .
+source		SELECT `FlightID`, `PlaneID` FROM `Flights` WHERE `PlaneID` IS NOT NULL
+
+mappingId	Flights_AirlineID_fk
+target		ex:Flights/{FlightID} p:hasAirlines ex:Airlines/{AirlineID} .
+source		SELECT `FlightID`, `AirlineID` FROM `Flights` WHERE `AirlineID` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:name {Name} ; p:Age {Age} ; p:BoardingType {BoardingType} ; p:FlightID {FlightID} .
+source		SELECT `PassengerID`, `Name`, `Age`, `BoardingType`, `FlightID` FROM `Passengers`
+
+mappingId	Passengers_FlightID_fk
+target		ex:Passengers/{PassengerID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `PassengerID`, `FlightID` FROM `Passengers` WHERE `FlightID` IS NOT NULL
+
+mappingId	Planes_base
+target		ex:Planes/{PlaneID} a :Planes ; p:PlaneID {PlaneID} ; p:Model {Model} ; p:Capacity {Capacity} .
+source		SELECT `PlaneID`, `Model`, `Capacity` FROM `Planes`
+
+mappingId	Planes_PlaneID_fk
+target		ex:Planes/{PlaneID} p:hasFlights ex:Flights/{PlaneID} .
+source		SELECT `PlaneID` FROM `Planes` WHERE `PlaneID` IS NOT NULL
+
+mappingId	Airlines_base
+target		ex:Airlines/{AirlineID} a :Airlines ; p:AirlineID {AirlineID} ; p:name {Name} .
+source		SELECT `AirlineID`, `Name` FROM `Airlines`
+
+]]

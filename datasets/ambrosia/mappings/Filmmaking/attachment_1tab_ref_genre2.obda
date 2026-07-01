@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:genre {genre} .
+source		SELECT `id`, `genre` FROM `Genres`
+
+mappingId	Stars_base
+target		ex:Stars/{id} a :Stars ; p:id {id} ; p:star_name {star_name} .
+source		SELECT `id`, `star_name` FROM `Stars`
+
+mappingId	Films_base
+target		ex:Films/{film_id} a :Films ; p:film_id {film_id} ; p:title {title} ; p:release_year {release_year} ; p:director_name {director_name} ; p:country {country} ; p:runtime {runtime} .
+source		SELECT `film_id`, `title`, `release_year`, `director_name`, `country`, `runtime` FROM `Films`
+
+mappingId	Film_Genres_base
+target		ex:Film_Genre/{_amb_rowid} a :Film_Genre ; p:film_genre_id {film_genre_id} ; p:film_id {film_id} .
+source		SELECT `_amb_rowid`, `film_genre_id`, `film_id` FROM `Film_Genres`
+
+mappingId	Film_Genres_film_id_fk
+target		ex:Film_Genre/{_amb_rowid} p:hasFilms ex:Films/{film_id} .
+source		SELECT `_amb_rowid`, `film_id` FROM `Film_Genres` WHERE `film_id` IS NOT NULL
+
+mappingId	Film_Genres_film_genre_id_fk
+target		ex:Film_Genre/{_amb_rowid} p:hasGenres ex:Genres/{film_genre_id} .
+source		SELECT `_amb_rowid`, `film_genre_id` FROM `Film_Genres` WHERE `film_genre_id` IS NOT NULL
+
+mappingId	Film_Stars_base
+target		ex:Film_Stars/{_amb_rowid} a :Film_Stars ; p:film_star_id {film_star_id} ; p:film_id {film_id} ; p:role {role} .
+source		SELECT `_amb_rowid`, `film_star_id`, `film_id`, `role` FROM `Film_Stars`
+
+mappingId	Film_Stars_film_id_fk
+target		ex:Film_Stars/{_amb_rowid} p:hasFilms ex:Films/{film_id} .
+source		SELECT `_amb_rowid`, `film_id` FROM `Film_Stars` WHERE `film_id` IS NOT NULL
+
+mappingId	Film_Stars_film_star_id_fk
+target		ex:Film_Stars/{_amb_rowid} p:hasStars ex:Stars/{film_star_id} .
+source		SELECT `_amb_rowid`, `film_star_id` FROM `Film_Stars` WHERE `film_star_id` IS NOT NULL
+
+]]

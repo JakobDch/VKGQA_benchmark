@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Countries_base
+target		ex:Countries/{CountryID} a :Countries ; p:CountryID {CountryID} ; p:name {Name} ; p:Capital {Capital} ; p:Population {Population} ; p:Official_Language {Official_Language} ; p:Spoken_Language {Spoken_Language} ; p:Community {Community} .
+source		SELECT `CountryID`, `Name`, `Capital`, `Population`, `Official_Language`, `Spoken_Language`, `Community` FROM `Countries`
+
+mappingId	Regions_base
+target		ex:Regions/{RegionID} a :Regions ; p:RegionID {RegionID} ; p:name {Name} ; p:Area {Area} ; p:PopulationCount {PopulationCount} .
+source		SELECT `RegionID`, `Name`, `Area`, `PopulationCount` FROM `Regions`
+
+mappingId	Cities_base
+target		ex:Cities/{CityID} a :Cities ; p:CityID {CityID} ; p:name {Name} ; p:Province {Province} ; p:Population {Population} ; p:RegionID {RegionID} .
+source		SELECT `CityID`, `Name`, `Province`, `Population`, `RegionID` FROM `Cities`
+
+mappingId	Cities_RegionID_fk
+target		ex:Cities/{CityID} p:hasRegions ex:Regions/{RegionID} .
+source		SELECT `CityID`, `RegionID` FROM `Cities` WHERE `RegionID` IS NOT NULL
+
+mappingId	EthnicGroups_base
+target		ex:EthnicGroup/{GroupID} a :EthnicGroup ; p:GroupID {GroupID} ; p:name {Name} ; p:Population {Population} .
+source		SELECT `GroupID`, `Name`, `Population` FROM `EthnicGroups`
+
+mappingId	Religion_base
+target		ex:Religion/{ID} a :Religion ; p:ID {ID} ; p:Denomination {Denomination} ; p:Adherents {Adherents} .
+source		SELECT `ID`, `Denomination`, `Adherents` FROM `Religion`
+
+mappingId	EducationLevel_base
+target		ex:EducationLevel/{LevelID} a :EducationLevel ; p:LevelID {LevelID} ; p:Description {Description} ; p:Percentage {Percentage} .
+source		SELECT `LevelID`, `Description`, `Percentage` FROM `EducationLevel`
+
+]]

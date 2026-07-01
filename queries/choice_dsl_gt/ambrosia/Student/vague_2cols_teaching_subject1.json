@@ -1,0 +1,61 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_teaching_subject1",
+  "schema": "amb_vague_2cols_teaching_subject1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What discipline and courses are linked to which professor?",
+      "qtype": "unambig",
+      "sql": "SELECT Disciplines.name, Courses.Course_name, COUNT(*) AS Number_of_Professors\nFROM Courses\nJOIN Disciplines ON Courses.Discipline_id = Disciplines.id\nGROUP BY Disciplines.name, Courses.Course_name;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name_g ?course_name_g (COUNT(*) AS ?agg) WHERE {\n  ?courses a :Courses .\n  ?disciplines a :Academic_Discipline .\n  ?courses p:hasDisciplines ?disciplines .\n  ?disciplines p:name ?name_g .\n  ?courses p:course_name ?course_name_g .\n}\nGROUP BY ?name_g ?course_name_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "How many professors are teaching each subject?",
+      "qtype": "ambig",
+      "sql": "SELECT Disciplines.name AS Teaching_Subject, COUNT(*) AS Number_of_Professors\nFROM Courses\nJOIN Disciplines ON Courses.Discipline_id = Disciplines.id\nGROUP BY Disciplines.name;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name_g (COUNT(*) AS ?agg) WHERE {\n  ?courses a :Courses .\n  ?disciplines a :Academic_Discipline .\n  ?courses p:hasDisciplines ?disciplines .\n  ?disciplines p:name ?name_g .\n}\nGROUP BY ?name_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "How many professors are teaching each subject?",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.Course_name AS Teaching_Subject, COUNT(*) AS Number_of_Professors\nFROM Courses\nGROUP BY Courses.Course_name;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?course_name_g (COUNT(*) AS ?agg) WHERE {\n  ?courses a :Courses .\n  ?courses p:course_name ?course_name_g .\n}\nGROUP BY ?course_name_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Provide a list of professors along with the subjects they teach",
+      "qtype": "ambig",
+      "sql": "SELECT Professors.fullname, Disciplines.name AS Teaching_Subject\nFROM Professors\nJOIN Courses ON Courses.professor_id = Professors.id\nJOIN Disciplines ON Courses.Discipline_id = Disciplines.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?professors a :Instructors .\n  ?courses a :Courses .\n  ?courses p:hasProfessors ?professors .\n  ?disciplines a :Academic_Discipline .\n  ?courses p:hasDisciplines ?disciplines .\n  ?professors p:name ?fullname .\n  ?disciplines p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Provide a list of professors along with the subjects they teach",
+      "qtype": "ambig",
+      "sql": "SELECT Professors.fullname, Courses.Course_name AS Teaching_Subject\nFROM Professors\nJOIN Courses ON Courses.professor_id = Professors.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?course_name WHERE {\n  ?professors a :Instructors .\n  ?courses a :Courses .\n  ?courses p:hasProfessors ?professors .\n  ?professors p:name ?fullname .\n  ?courses p:course_name ?course_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Provide a list of professors along with the subjects they teach",
+      "qtype": "ambig",
+      "sql": "SELECT Professors.fullname, Disciplines.name, Courses.Course_name\nFROM Professors\nJOIN Courses ON Courses.professor_id = Professors.id\nJOIN Disciplines ON Courses.Discipline_id = Disciplines.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name ?course_name WHERE {\n  ?professors a :Instructors .\n  ?courses a :Courses .\n  ?courses p:hasProfessors ?professors .\n  ?disciplines a :Academic_Discipline .\n  ?courses p:hasDisciplines ?disciplines .\n  ?professors p:name ?fullname .\n  ?disciplines p:name ?name .\n  ?courses p:course_name ?course_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ]
+}

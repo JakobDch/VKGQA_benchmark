@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Architect_base
+target		ex:Architect/{id} a :Architect ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Architect`
+
+mappingId	Firm_base
+target		ex:Firm/{id} a :Firm ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Firm`
+
+mappingId	Building_base
+target		ex:Building/{id} a :Building ; p:id {id} ; p:building_name {building_name} ; p:firm_id {firm_id} ; p:architect_id {architect_id} .
+source		SELECT `id`, `building_name`, `firm_id`, `architect_id` FROM `Building`
+
+mappingId	Building_architect_id_fk
+target		ex:Building/{id} p:hasArchitect ex:Architect/{architect_id} .
+source		SELECT `id`, `architect_id` FROM `Building` WHERE `architect_id` IS NOT NULL
+
+mappingId	Building_firm_id_fk
+target		ex:Building/{id} p:hasFirm ex:Firm/{firm_id} .
+source		SELECT `id`, `firm_id` FROM `Building` WHERE `firm_id` IS NOT NULL
+
+mappingId	Project_base
+target		ex:Projects/{id} a :Projects ; p:id {id} ; p:project_name {project_name} ; p:building_id {building_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `id`, `project_name`, `building_id`, `start_date`, `end_date` FROM `Project`
+
+mappingId	Project_building_id_fk
+target		ex:Projects/{id} p:hasBuilding ex:Building/{building_id} .
+source		SELECT `id`, `building_id` FROM `Project` WHERE `building_id` IS NOT NULL
+
+mappingId	Material_base
+target		ex:Materials/{id} a :Materials ; p:id {id} ; p:material_type {material_type} ; p:cost {cost} .
+source		SELECT `id`, `material_type`, `cost` FROM `Material`
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:employee_name {employee_name} ; p:position {position} ; p:firm_id {firm_id} .
+source		SELECT `id`, `employee_name`, `position`, `firm_id` FROM `Employee`
+
+mappingId	Employee_firm_id_fk
+target		ex:Employees/{id} p:hasFirm ex:Firm/{firm_id} .
+source		SELECT `id`, `firm_id` FROM `Employee` WHERE `firm_id` IS NOT NULL
+
+]]

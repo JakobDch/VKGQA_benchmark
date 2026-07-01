@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Teacher_base
+target		ex:Teachers/{teacherID} a :Teachers ; p:teacherID {teacherID} ; p:name {name} ; p:age {age} ; p:experience {experience} .
+source		SELECT `teacherID`, `name`, `age`, `experience` FROM `Teacher`
+
+mappingId	Student_base
+target		ex:Students/{studentID} a :Students ; p:studentID {studentID} ; p:name {name} ; p:grade {grade} ; p:teacherID {teacherID} .
+source		SELECT `studentID`, `name`, `grade`, `teacherID` FROM `Student`
+
+mappingId	Student_teacherID_fk
+target		ex:Students/{studentID} p:hasTeachers ex:Teachers/{teacherID} .
+source		SELECT `studentID`, `teacherID` FROM `Student` WHERE `teacherID` IS NOT NULL
+
+mappingId	Subject_base
+target		ex:Subjects/{subjectID} a :Subjects ; p:subjectID {subjectID} ; p:name {name} .
+source		SELECT `subjectID`, `name` FROM `Subject`
+
+mappingId	Class_base
+target		ex:Classes/{classID} a :Classes ; p:classID {classID} ; p:subjectID {subjectID} ; p:teacherID {teacherID} .
+source		SELECT `classID`, `subjectID`, `teacherID` FROM `Class`
+
+mappingId	Class_teacherID_fk
+target		ex:Classes/{classID} p:hasTeachers ex:Teachers/{teacherID} .
+source		SELECT `classID`, `teacherID` FROM `Class` WHERE `teacherID` IS NOT NULL
+
+mappingId	Class_subjectID_fk
+target		ex:Classes/{classID} p:hasSubjects ex:Subjects/{subjectID} .
+source		SELECT `classID`, `subjectID` FROM `Class` WHERE `subjectID` IS NOT NULL
+
+mappingId	Assignment_base
+target		ex:Assignments/{assignmentID} a :Assignments ; p:assignmentID {assignmentID} ; p:title {title} ; p:dueDate {dueDate} ; p:educationalMethod {educationalMethod} ; p:participants {participants} ; p:classID {classID} .
+source		SELECT `assignmentID`, `title`, `dueDate`, `educationalMethod`, `participants`, `classID` FROM `Assignment`
+
+mappingId	Assignment_classID_fk
+target		ex:Assignments/{assignmentID} p:hasClasses ex:Classes/{classID} .
+source		SELECT `assignmentID`, `classID` FROM `Assignment` WHERE `classID` IS NOT NULL
+
+]]

@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Style_base
+target		ex:Styles/{style_id} a :Styles ; p:style_id {style_id} ; p:style_name {style_name} .
+source		SELECT `style_id`, `style_name` FROM `Style`
+
+mappingId	Interior_Designer_base
+target		ex:Interior_Designers/{designer_id} a :Interior_Designers ; p:designer_id {designer_id} ; p:name {name} ; p:design_style {design_style} .
+source		SELECT `designer_id`, `name`, `design_style` FROM `Interior_Designer`
+
+mappingId	Interior_Designer_design_style_fk
+target		ex:Interior_Designers/{designer_id} p:hasStyles ex:Styles/{design_style} .
+source		SELECT `designer_id`, `design_style` FROM `Interior_Designer` WHERE `design_style` IS NOT NULL
+
+mappingId	Landscape_Architect_base
+target		ex:Landscape_Architects/{architect_id} a :Landscape_Architects ; p:architect_id {architect_id} ; p:name {name} ; p:landscape_style {landscape_style} .
+source		SELECT `architect_id`, `name`, `landscape_style` FROM `Landscape_Architect`
+
+mappingId	Landscape_Architect_landscape_style_fk
+target		ex:Landscape_Architects/{architect_id} p:hasStyles ex:Styles/{landscape_style} .
+source		SELECT `architect_id`, `landscape_style` FROM `Landscape_Architect` WHERE `landscape_style` IS NOT NULL
+
+mappingId	Project_base
+target		ex:Project/{project_id} a :Project ; p:project_id {project_id} ; p:title {title} ; p:start_date {start_date} ; p:end_date {end_date} ; p:interior_designer_id {interior_designer_id} ; p:landscape_architect_id {landscape_architect_id} .
+source		SELECT `project_id`, `title`, `start_date`, `end_date`, `interior_designer_id`, `landscape_architect_id` FROM `Project`
+
+mappingId	Project_landscape_architect_id_fk
+target		ex:Project/{project_id} p:hasLandscape_Architects ex:Landscape_Architects/{landscape_architect_id} .
+source		SELECT `project_id`, `landscape_architect_id` FROM `Project` WHERE `landscape_architect_id` IS NOT NULL
+
+mappingId	Project_interior_designer_id_fk
+target		ex:Project/{project_id} p:hasInterior_Designers ex:Interior_Designers/{interior_designer_id} .
+source		SELECT `project_id`, `interior_designer_id` FROM `Project` WHERE `interior_designer_id` IS NOT NULL
+
+mappingId	Material_base
+target		ex:Materials/{material_id} a :Materials ; p:material_id {material_id} ; p:name {name} ; p:description {description} .
+source		SELECT `material_id`, `name`, `description` FROM `Material`
+
+mappingId	ProjectMaterial_base
+target		ex:ProjectMaterial/{projectmaterial_id} a :ProjectMaterial ; p:projectmaterial_id {projectmaterial_id} ; p:project_id {project_id} ; p:material_id {material_id} ; p:quantity {quantity} .
+source		SELECT `projectmaterial_id`, `project_id`, `material_id`, `quantity` FROM `ProjectMaterial`
+
+mappingId	ProjectMaterial_material_id_fk
+target		ex:ProjectMaterial/{projectmaterial_id} p:hasMaterials ex:Materials/{material_id} .
+source		SELECT `projectmaterial_id`, `material_id` FROM `ProjectMaterial` WHERE `material_id` IS NOT NULL
+
+mappingId	ProjectMaterial_project_id_fk
+target		ex:ProjectMaterial/{projectmaterial_id} p:hasProject ex:Project/{project_id} .
+source		SELECT `projectmaterial_id`, `project_id` FROM `ProjectMaterial` WHERE `project_id` IS NOT NULL
+
+]]

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	RoomTypes_base
+target		ex:RoomTypes/{id} a :RoomTypes ; p:id {id} ; p:typeName {typeName} ; p:capacity {capacity} ; p:pricePerNight {pricePerNight} .
+source		SELECT `id`, `typeName`, `capacity`, `pricePerNight` FROM `RoomTypes`
+
+mappingId	Reservations_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:customerId {customerId} ; p:roomTypeId {roomTypeId} ; p:checkInDate {checkInDate} ; p:checkOutDate {checkOutDate} .
+source		SELECT `id`, `customerId`, `roomTypeId`, `checkInDate`, `checkOutDate` FROM `Reservations`
+
+mappingId	Reservations_roomTypeId_fk
+target		ex:Reservations/{id} p:hasRoomTypes ex:RoomTypes/{roomTypeId} .
+source		SELECT `id`, `roomTypeId` FROM `Reservations` WHERE `roomTypeId` IS NOT NULL
+
+mappingId	Payments_base
+target		ex:Payments/{id} a :Payments ; p:id {id} ; p:reservationId {reservationId} ; p:amountPaid {amountPaid} ; p:paymentMethod {paymentMethod} ; p:transactionTime {transactionTime} .
+source		SELECT `id`, `reservationId`, `amountPaid`, `paymentMethod`, `transactionTime` FROM `Payments`
+
+mappingId	Payments_reservationId_fk
+target		ex:Payments/{id} p:hasReservations ex:Reservations/{reservationId} .
+source		SELECT `id`, `reservationId` FROM `Payments` WHERE `reservationId` IS NOT NULL
+
+mappingId	CruiseShips_base
+target		ex:Cruise_Ships/{_amb_rowid} a :Cruise_Ships ; p:port {port} ; p:city {city} ; p:shipName {shipName} ; p:maxCapacity {maxCapacity} .
+source		SELECT `_amb_rowid`, `port`, `city`, `shipName`, `maxCapacity` FROM `CruiseShips`
+
+mappingId	CruiseShips_city_fk
+target		ex:Cruise_Ships/{_amb_rowid} p:hasCity ex:City/{city} .
+source		SELECT `_amb_rowid`, `city` FROM `CruiseShips` WHERE `city` IS NOT NULL
+
+mappingId	CruiseShips_port_fk
+target		ex:Cruise_Ships/{_amb_rowid} p:hasPorts ex:Ports/{port} .
+source		SELECT `_amb_rowid`, `port` FROM `CruiseShips` WHERE `port` IS NOT NULL
+
+mappingId	Ports_base
+target		ex:Ports/{_amb_rowid} a :Ports ; p:name {name} ; p:country {country} .
+source		SELECT `_amb_rowid`, `name`, `country` FROM `Ports`
+
+mappingId	Cities_base
+target		ex:City/{_amb_rowid} a :City ; p:name {name} ; p:country {country} .
+source		SELECT `_amb_rowid`, `name`, `country` FROM `Cities`
+
+]]

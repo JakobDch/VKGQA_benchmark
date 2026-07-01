@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Studio_base
+target		ex:Studio/{id} a :Studio ; p:id {id} ; p:name {name} ; p:address_line1 {address_line1} ; p:address_line2 {address_line2} ; p:phone_number {phone_number} .
+source		SELECT `id`, `name`, `address_line1`, `address_line2`, `phone_number` FROM `Studio`
+
+mappingId	Producer_base
+target		ex:Producers/{id} a :Producers ; p:id {id} ; p:email {email} ; p:birthdate {birthdate} ; p:name {full_name} .
+source		SELECT `id`, `email`, `birthdate`, `full_name` FROM `Producer`
+
+mappingId	Movie_base
+target		ex:Movies/{id} a :Movies ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:genre {genre} ; p:studio_id {studio_id} ; p:producer_id {producer_id} .
+source		SELECT `id`, `title`, `release_year`, `genre`, `studio_id`, `producer_id` FROM `Movie`
+
+mappingId	Movie_producer_id_fk
+target		ex:Movies/{id} p:hasProducers ex:Producers/{producer_id} .
+source		SELECT `id`, `producer_id` FROM `Movie` WHERE `producer_id` IS NOT NULL
+
+mappingId	Movie_studio_id_fk
+target		ex:Movies/{id} p:hasStudio ex:Studio/{studio_id} .
+source		SELECT `id`, `studio_id` FROM `Movie` WHERE `studio_id` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:gender {gender} .
+source		SELECT `id`, `first_name`, `last_name`, `date_of_birth`, `gender` FROM `Actor`
+
+mappingId	Character_base
+target		ex:Character/{id} a :Character ; p:id {id} ; p:movie_id {movie_id} ; p:actor_id {actor_id} ; p:character_name {character_name} .
+source		SELECT `id`, `movie_id`, `actor_id`, `character_name` FROM `Character`
+
+mappingId	Character_actor_id_fk
+target		ex:Character/{id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `id`, `actor_id` FROM `Character` WHERE `actor_id` IS NOT NULL
+
+mappingId	Character_movie_id_fk
+target		ex:Character/{id} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `id`, `movie_id` FROM `Character` WHERE `movie_id` IS NOT NULL
+
+mappingId	Review_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:movie_id {movie_id} ; p:reviewer_id {reviewer_id} ; p:rating {rating} ; p:comments {comments} ; p:review_date {review_date} .
+source		SELECT `id`, `movie_id`, `reviewer_id`, `rating`, `comments`, `review_date` FROM `Review`
+
+mappingId	Review_reviewer_id_fk
+target		ex:Review/{id} p:hasActors ex:Actors/{reviewer_id} .
+source		SELECT `id`, `reviewer_id` FROM `Review` WHERE `reviewer_id` IS NOT NULL
+
+mappingId	Review_movie_id_fk
+target		ex:Review/{id} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `id`, `movie_id` FROM `Review` WHERE `movie_id` IS NOT NULL
+
+]]

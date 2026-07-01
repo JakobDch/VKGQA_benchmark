@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_personal_computing_devices",
+  "schema": "amb_attachment_1tab_val_personal_computing_devices",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the students who use either a tablet or laptop, where either runs on Windows 10.",
+      "qtype": "unambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE (Students.Personal_Computing_Devices = \"Tablet\" OR Students.Personal_Computing_Devices = \"Laptop\") AND Students.Operating_System = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w2 .\n  ?students p:Operating_System ?operating_system_w .\n  FILTER((((STR(?personal_computing_devices_w) = \"Tablet\" || STR(?personal_computing_devices_w2) = \"Laptop\")) && STR(?operating_system_w) = \"Windows 10\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all of the students who use a tablet, also show the students who use a latop running Windows 10.",
+      "qtype": "unambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE Students.Personal_Computing_Devices = \"Tablet\" OR Students.Personal_Computing_Devices = \"Laptop\" AND Students.Operating_System = \"Windows 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w2 .\n  ?students p:Operating_System ?operating_system_w .\n  FILTER((STR(?personal_computing_devices_w) = \"Tablet\" || (STR(?personal_computing_devices_w2) = \"Laptop\" && STR(?operating_system_w) = \"Windows 10\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who has tablets and laptops with Windows 10?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w2 .\n  ?students p:Operating_System ?operating_system_w .\n  FILTER((((STR(?personal_computing_devices_w) = \"Tablet\" || STR(?personal_computing_devices_w2) = \"Laptop\")) && STR(?operating_system_w) = \"Windows 10\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w .\n  ?students p:Personal_Computing_Devices ?personal_computing_devices_w2 .\n  ?students p:Operating_System ?operating_system_w .\n  FILTER((STR(?personal_computing_devices_w) = \"Tablet\" || (STR(?personal_computing_devices_w2) = \"Laptop\" && STR(?operating_system_w) = \"Windows 10\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

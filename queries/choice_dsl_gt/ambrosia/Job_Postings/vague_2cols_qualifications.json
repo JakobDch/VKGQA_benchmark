@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_qualifications",
+  "schema": "amb_vague_2cols_qualifications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the vacancies and the required degrees and certifications for them.",
+      "qtype": "unambig",
+      "sql": "SELECT degree_level, certification, job_post FROM Degrees",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?degree_level ?certification ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What is the required degree level for AI Researcher?",
+      "qtype": "unambig",
+      "sql": "SELECT degree_level FROM Degrees WHERE job_post = 'AI Researcher'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?degree_level WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the required certification for AI Researcher?",
+      "qtype": "unambig",
+      "sql": "SELECT certification FROM Degrees WHERE job_post = 'AI Researcher'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?certification WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the required degree level and certification for AI Researcher?",
+      "qtype": "unambig",
+      "sql": "SELECT degree_level, certification FROM Degrees WHERE job_post = 'AI Researcher'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?degree_level ?certification WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "List all the vacancies and the required educational degrees.",
+      "qtype": "unambig",
+      "sql": "SELECT degree_level, job_post FROM Degrees",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?degree_level ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:job_post ?job_post .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show all vacancies and required qualifications",
+      "qtype": "ambig",
+      "sql": "SELECT certification, job_post FROM Degrees",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?certification ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all vacancies and required qualifications",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?degree_level ?certification ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post .\n} }\n  component: { SELECT ?degree_level ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:job_post ?job_post .\n} }\n  component_2: { SELECT ?certification ?job_post WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the required qualifications for AI Researcher?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?degree_level WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n} }\n  component_2: { SELECT ?certification WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n} }\n  full: { SELECT ?degree_level ?certification WHERE {\n  ?degrees a :Degrees .\n  ?degrees p:degree_level ?degree_level .\n  ?degrees p:certification ?certification .\n  ?degrees p:job_post ?job_post_f .\n  FILTER(STR(?job_post_f) = \"AI Researcher\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:Origin {Origin} ; p:Destination {Destination} ; p:AircraftType {AircraftType} ; p:SeatsAvailable {SeatsAvailable} .
+source		SELECT `FlightID`, `DepartureTime`, `ArrivalTime`, `Origin`, `Destination`, `AircraftType`, `SeatsAvailable` FROM `Flights`
+
+mappingId	Airlines_base
+target		ex:Airlines/{AirlineID} a :Airlines ; p:AirlineID {AirlineID} ; p:name {Name} ; p:Headquarters {Headquarters} .
+source		SELECT `AirlineID`, `Name`, `Headquarters` FROM `Airlines`
+
+mappingId	Pilots_base
+target		ex:Pilots/{PilotID} a :Pilots ; p:PilotID {PilotID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:LicenseNumber {LicenseNumber} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `PilotID`, `FirstName`, `LastName`, `LicenseNumber`, `DateOfBirth` FROM `Pilots`
+
+mappingId	AssignPilotToFlight_base
+target		ex:AssignsPilotToFlight/{FlightID}/{PilotID} a :AssignsPilotToFlight ; p:FlightID {FlightID} ; p:PilotID {PilotID} .
+source		SELECT `FlightID`, `PilotID` FROM `AssignPilotToFlight`
+
+mappingId	AssignPilotToFlight_PilotID_fk
+target		ex:AssignsPilotToFlight/{FlightID}/{PilotID} p:hasPilots ex:Pilots/{PilotID} .
+source		SELECT `FlightID`, `PilotID` FROM `AssignPilotToFlight` WHERE `PilotID` IS NOT NULL
+
+mappingId	AssignPilotToFlight_FlightID_fk
+target		ex:AssignsPilotToFlight/{FlightID}/{PilotID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `FlightID`, `PilotID` FROM `AssignPilotToFlight` WHERE `FlightID` IS NOT NULL
+
+mappingId	Hotels_base
+target		ex:Hotels/{HotelID} a :Hotels ; p:HotelID {HotelID} ; p:name {Name} ; p:location {Location} ; p:Price {Price} ; p:AccomodationType {AccomodationType} .
+source		SELECT `HotelID`, `Name`, `Location`, `Price`, `AccomodationType` FROM `Hotels`
+
+]]

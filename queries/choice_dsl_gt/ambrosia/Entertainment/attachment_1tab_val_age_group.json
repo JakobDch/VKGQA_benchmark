@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_age_group",
+  "schema": "amb_attachment_1tab_val_age_group",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me children's books and young adult books illustrated by Jane Smith.",
+      "qtype": "ambig",
+      "sql": "SELECT Book.title \nFROM Book\nWHERE (Book.age_group = \"Children's Book\" OR Book.age_group = \"Young Adult Book\") AND Book.illustrator = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?book a :Book .\n  ?book p:title ?title .\n  ?book p:age_group ?age_group_w .\n  ?book p:age_group ?age_group_w2 .\n  ?book p:illustrator ?illustrator_w .\n  FILTER((((STR(?age_group_w) = \"Children's Book\" || STR(?age_group_w2) = \"Young Adult Book\")) && STR(?illustrator_w) = \"Jane Smith\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me children's books and young adult books illustrated by Jane Smith.",
+      "qtype": "ambig",
+      "sql": "SELECT Book.title \nFROM Book\nWHERE Book.age_group = \"Children's Book\" OR Book.age_group = \"Young Adult Book\" AND Book.illustrator = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?book a :Book .\n  ?book p:title ?title .\n  ?book p:age_group ?age_group_w .\n  ?book p:age_group ?age_group_w2 .\n  ?book p:illustrator ?illustrator_w .\n  FILTER((STR(?age_group_w) = \"Children's Book\" || (STR(?age_group_w2) = \"Young Adult Book\" && STR(?illustrator_w) = \"Jane Smith\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me children's books and young adult books illustrated by Jane Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?book a :Book .\n  ?book p:title ?title .\n  ?book p:age_group ?age_group_w .\n  ?book p:age_group ?age_group_w2 .\n  ?book p:illustrator ?illustrator_w .\n  FILTER((((STR(?age_group_w) = \"Children's Book\" || STR(?age_group_w2) = \"Young Adult Book\")) && STR(?illustrator_w) = \"Jane Smith\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?book a :Book .\n  ?book p:title ?title .\n  ?book p:age_group ?age_group_w .\n  ?book p:age_group ?age_group_w2 .\n  ?book p:illustrator ?illustrator_w .\n  FILTER((STR(?age_group_w) = \"Children's Book\" || (STR(?age_group_w2) = \"Young Adult Book\" && STR(?illustrator_w) = \"Jane Smith\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_ref_educational_materials",
+  "schema": "amb_attachment_2tab_ref_educational_materials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What textbooks are published by McGraw-Hill and what ebooks are also published by them?",
+      "qtype": "unambig",
+      "sql": "SELECT Textbooks.title\nFROM Publisher JOIN Textbooks ON Publisher.id = Textbooks.publisherId\nWHERE Publisher.name = \"McGraw-Hill\"\nUNION\nSELECT EBooks.title\nFROM Publisher JOIN EBooks ON Publisher.id = EBooks.publisherId\nWHERE Publisher.name = \"McGraw-Hill\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?publisher a :Publishers .\n    ?textbooks a :Textbooks .\n    ?textbooks p:hasPublisher ?publisher .\n    ?textbooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?publisher a :Publishers .\n    ?ebooks a :EBooks .\n    ?ebooks p:hasPublisher ?publisher .\n    ?ebooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show textbooks and ebooks that are published by McGraw-Hill.",
+      "qtype": "ambig",
+      "sql": "SELECT Textbooks.title\nFROM Publisher JOIN Textbooks ON Publisher.id = Textbooks.publisherId\nUNION\nSELECT EBooks.title\nFROM Publisher JOIN EBooks ON Publisher.id = EBooks.publisherId\nWHERE Publisher.name = \"McGraw-Hill\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?publisher a :Publishers .\n    ?textbooks a :Textbooks .\n    ?textbooks p:hasPublisher ?publisher .\n    ?textbooks p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?publisher a :Publishers .\n    ?ebooks a :EBooks .\n    ?ebooks p:hasPublisher ?publisher .\n    ?ebooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show textbooks and ebooks that are published by McGraw-Hill.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?publisher a :Publishers .\n    ?textbooks a :Textbooks .\n    ?textbooks p:hasPublisher ?publisher .\n    ?textbooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?publisher a :Publishers .\n    ?ebooks a :EBooks .\n    ?ebooks p:hasPublisher ?publisher .\n    ?ebooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?publisher a :Publishers .\n    ?textbooks a :Textbooks .\n    ?textbooks p:hasPublisher ?publisher .\n    ?textbooks p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?publisher a :Publishers .\n    ?ebooks a :EBooks .\n    ?ebooks p:hasPublisher ?publisher .\n    ?ebooks p:title ?title .\n    ?publisher p:name ?name_f .\n    FILTER(STR(?name_f) = \"McGraw-Hill\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

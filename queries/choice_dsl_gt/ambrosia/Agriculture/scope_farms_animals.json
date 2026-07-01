@@ -1,0 +1,108 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_farms_animals",
+  "schema": "amb_scope_farms_animals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each farm, list the animals they use and their count.",
+      "qtype": "unambig",
+      "sql": "select farms.name , animals.type , animals.quantity from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?quantity WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:type ?type .\n  ?animals p:quantity ?quantity .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the farms and the types of animals they offer.",
+      "qtype": "unambig",
+      "sql": "select farms.name , animals.type from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What is the common type of animal for all farms?",
+      "qtype": "unambig",
+      "sql": "SELECT Animals.Type  from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID   GROUP BY Farms_Animals.AnimalID HAVING COUNT(DISTINCT Farms_Animals.FarmID) = (SELECT COUNT(*) FROM  Farms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the animals that are the same on all farms and their count.",
+      "qtype": "unambig",
+      "sql": "SELECT Animals.Type, Animals.Quantity  from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID   GROUP BY Farms_Animals.AnimalID HAVING COUNT(DISTINCT Farms_Animals.FarmID) = (SELECT COUNT(*) FROM  Farms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What is the quantity of animals all farms have?",
+      "qtype": "unambig",
+      "sql": "SELECT Animals.Quantity  from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID   GROUP BY Farms_Animals.AnimalID HAVING COUNT(DISTINCT Farms_Animals.FarmID) = (SELECT COUNT(*) FROM  Farms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every farm, list the quantity of animals they have.",
+      "qtype": "unambig",
+      "sql": "select farms.name , animals.quantity from Farms_Animals join Animals on Farms_Animals.AnimalID = Animals.AnimalID join Farms on Farms_Animals.FarmID = Farms.FarmID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?quantity WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:quantity ?quantity .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the animals each farm uses and their count.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?quantity WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:type ?type .\n  ?animals p:quantity ?quantity .\n} }\n  collective: { SELECT ?type ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the type of animal for each farm?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the quantity of animals each farm has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAnimals ?child ; p:hasFarm ?parent . } GROUP BY ?child }\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?quantity WHERE {\n  ?farms_animals a :Farms_Animals .\n  ?animals a :Animals .\n  ?farms_animals p:hasAnimals ?animals .\n  ?farms a :Farm .\n  ?farms_animals p:hasFarm ?farms .\n  ?farms p:name ?name .\n  ?animals p:quantity ?quantity .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

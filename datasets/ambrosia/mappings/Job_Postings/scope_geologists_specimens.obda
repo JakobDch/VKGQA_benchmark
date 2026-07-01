@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Geologists_base
+target		ex:Geologists/{id} a :Geologists ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Geologists`
+
+mappingId	Specimens_base
+target		ex:Specimens/{id} a :Specimens ; p:id {id} ; p:type {type} ; p:description {description} .
+source		SELECT `id`, `type`, `description` FROM `Specimens`
+
+mappingId	Geologists_Specimens_base
+target		ex:Geologists_Specimens/{_amb_rowid} a :Geologists_Specimens ; p:geologistId {geologistId} ; p:specimenType {specimenType} .
+source		SELECT `_amb_rowid`, `geologistId`, `specimenType` FROM `Geologists_Specimens`
+
+mappingId	Geologists_Specimens_specimenType_fk
+target		ex:Geologists_Specimens/{_amb_rowid} p:hasSpecimens ex:Specimens/{specimenType} .
+source		SELECT `_amb_rowid`, `specimenType` FROM `Geologists_Specimens` WHERE `specimenType` IS NOT NULL
+
+mappingId	Geologists_Specimens_geologistId_fk
+target		ex:Geologists_Specimens/{_amb_rowid} p:hasGeologists ex:Geologists/{geologistId} .
+source		SELECT `_amb_rowid`, `geologistId` FROM `Geologists_Specimens` WHERE `geologistId` IS NOT NULL
+
+]]

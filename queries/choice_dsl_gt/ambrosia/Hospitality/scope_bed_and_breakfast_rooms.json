@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_bed_and_breakfast_rooms",
+  "schema": "amb_scope_bed_and_breakfast_rooms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every bed and breakfast, show me the types and prices of rooms",
+      "qtype": "unambig",
+      "sql": "select bed_and_breakfast.name , rooms.room_type , rooms.price from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?room_type ?price WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:room_type ?room_type .\n  ?rooms p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "What are the room types for every B&B listed?",
+      "qtype": "ambig",
+      "sql": "SELECT Rooms.room_type  from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id   GROUP BY Bed_and_breakfast_rooms.room_id HAVING COUNT(DISTINCT Bed_and_breakfast_rooms.bed_id) = (SELECT COUNT(*) FROM  Bed_and_breakfast)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?room_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:room_type ?room_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 2,
+      "question": "What are the room types for every B&B listed?",
+      "qtype": "ambig",
+      "sql": "select bed_and_breakfast.name , rooms.room_type from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?room_type WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:room_type ?room_type .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 3,
+      "question": "For every bed and breakfast, list the pricing of rooms they have.",
+      "qtype": "unambig",
+      "sql": "select bed_and_breakfast.name , rooms.price from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?price WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the price of rooms each bed and breakfast has.",
+      "qtype": "ambig",
+      "sql": "SELECT Rooms.price  from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id   GROUP BY Bed_and_breakfast_rooms.room_id HAVING COUNT(DISTINCT Bed_and_breakfast_rooms.bed_id) = (SELECT COUNT(*) FROM  Bed_and_breakfast)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 5,
+      "question": "What room type and price is common to all bed and breakfasts?",
+      "qtype": "unambig",
+      "sql": "SELECT Rooms.room_type, Rooms.price  from Bed_and_breakfast_rooms join Rooms on Bed_and_breakfast_rooms.room_id = Rooms.room_type join Bed_and_breakfast on Bed_and_breakfast_rooms.bed_id = Bed_and_breakfast.id   GROUP BY Bed_and_breakfast_rooms.room_id HAVING COUNT(DISTINCT Bed_and_breakfast_rooms.bed_id) = (SELECT COUNT(*) FROM  Bed_and_breakfast)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?room_type ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:room_type ?room_type .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What room type and price do we have for every bed and breakfast",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?room_type ?price WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:room_type ?room_type .\n  ?rooms p:price ?price .\n} }\n  collective: { SELECT ?room_type ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:room_type ?room_type .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the room types for every B&B listed?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?room_type WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:room_type ?room_type .\n} }\n  collective: { SELECT ?room_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:room_type ?room_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the price of rooms each bed and breakfast has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?price WHERE {\n  ?bed_and_breakfast_rooms a :Bed_and_breakfast_rooms .\n  ?rooms a :Rooms .\n  ?bed_and_breakfast_rooms p:hasRooms ?rooms .\n  ?bed_and_breakfast a :Bed_and_breakfast .\n  ?bed_and_breakfast_rooms p:hasBed_and_breakfast ?bed_and_breakfast .\n  ?bed_and_breakfast p:name ?name .\n  ?rooms p:price ?price .\n} }\n  collective: { SELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasBed_and_breakfast ?parent . } GROUP BY ?child }\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bed_and_breakfast } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

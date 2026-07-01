@@ -1,0 +1,97 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2cols_awards",
+  "schema": "amb_vague_2cols_awards",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the award names that Zack Snyder presented and for what films?",
+      "qtype": "unambig",
+      "sql": "select Award_Name, film from award where presenter = 'Zack Snyder'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?award_name ?film WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the category of the award that Toy Story 4 won?",
+      "qtype": "unambig",
+      "sql": "select Winning_Category from award where film = 'Toy Story 4'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?winning_category WHERE {\n  ?award a :Award .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What award did Toy Story 4 win?",
+      "qtype": "ambig",
+      "sql": "select Award_Name from award where film = 'Toy Story 4'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?award_name WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What award did Toy Story 4 win?",
+      "qtype": "ambig",
+      "sql": "select Award_Name, Winning_Category from award where film = 'Toy Story 4'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?award_name ?winning_category WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What awards and for what films did Zack Snyder present?",
+      "qtype": "ambig",
+      "sql": "select Winning_Category, film from award where presenter = 'Zack Snyder'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?winning_category ?film WHERE {\n  ?award a :Award .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What awards and for what films did Zack Snyder present?",
+      "qtype": "ambig",
+      "sql": "select Award_Name, Winning_Category, film from award where presenter = 'Zack Snyder'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?award_name ?winning_category ?film WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What awards and for what films did Zack Snyder present?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?award_name ?film WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n} }\n  full: { SELECT ?award_name ?winning_category ?film WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n} }\n  component_2: { SELECT ?winning_category ?film WHERE {\n  ?award a :Award .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film .\n  ?award p:Presenter ?presenter_f .\n  FILTER(STR(?presenter_f) = STR(\"Zack Snyder\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What award did Toy Story 4 win?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?winning_category WHERE {\n  ?award a :Award .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n} }\n  full: { SELECT ?award_name ?winning_category WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Winning_Category ?winning_category .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n} }\n  component_2: { SELECT ?award_name WHERE {\n  ?award a :Award .\n  ?award p:Award_Name ?award_name .\n  ?award p:Film ?film_f .\n  FILTER(STR(?film_f) = STR(\"Toy Story 4\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

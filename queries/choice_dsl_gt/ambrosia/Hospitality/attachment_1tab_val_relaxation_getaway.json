@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_relaxation_getaway",
+  "schema": "amb_attachment_1tab_val_relaxation_getaway",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all day spas and also provide a list of wellness retreats that cost 150.0.",
+      "qtype": "unambig",
+      "sql": "SELECT Relaxation_spot.Name \nFROM Relaxation_spot\nWHERE Relaxation_spot.type = \"Day Spa\" OR Relaxation_spot.type = \"Wellness Retreat\" AND Relaxation_spot.price = 150.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?relaxation_spot a :Relaxation_spot .\n  ?relaxation_spot p:name ?name .\n  ?relaxation_spot p:type ?type_w .\n  ?relaxation_spot p:type ?type_w2 .\n  ?relaxation_spot p:price ?price_w .\n  FILTER((STR(?type_w) = \"Day Spa\" || (STR(?type_w2) = \"Wellness Retreat\" && (STR(?price_w) = \"150\" || STR(?price_w) = \"150.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which day spas cost 150.0 and which wellness retreats cost the same amount?",
+      "qtype": "unambig",
+      "sql": "SELECT Relaxation_spot.Name \nFROM Relaxation_spot\nWHERE (Relaxation_spot.type = \"Day Spa\" OR Relaxation_spot.type = \"Wellness Retreat\") AND Relaxation_spot.price = 150.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?relaxation_spot a :Relaxation_spot .\n  ?relaxation_spot p:name ?name .\n  ?relaxation_spot p:type ?type_w .\n  ?relaxation_spot p:type ?type_w2 .\n  ?relaxation_spot p:price ?price_w .\n  FILTER((((STR(?type_w) = \"Day Spa\" || STR(?type_w2) = \"Wellness Retreat\")) && (STR(?price_w) = \"150\" || STR(?price_w) = \"150.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display day spas and wellness retreats that cost 150.0.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?relaxation_spot a :Relaxation_spot .\n  ?relaxation_spot p:name ?name .\n  ?relaxation_spot p:type ?type_w .\n  ?relaxation_spot p:type ?type_w2 .\n  ?relaxation_spot p:price ?price_w .\n  FILTER((STR(?type_w) = \"Day Spa\" || (STR(?type_w2) = \"Wellness Retreat\" && (STR(?price_w) = \"150\" || STR(?price_w) = \"150.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?relaxation_spot a :Relaxation_spot .\n  ?relaxation_spot p:name ?name .\n  ?relaxation_spot p:type ?type_w .\n  ?relaxation_spot p:type ?type_w2 .\n  ?relaxation_spot p:price ?price_w .\n  FILTER((((STR(?type_w) = \"Day Spa\" || STR(?type_w2) = \"Wellness Retreat\")) && (STR(?price_w) = \"150\" || STR(?price_w) = \"150.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

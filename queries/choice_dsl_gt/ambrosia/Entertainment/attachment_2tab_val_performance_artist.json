@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_performance_artist",
+  "schema": "amb_attachment_2tab_val_performance_artist",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What comedians perform for 60 minutes and what magicians perform for same duration?",
+      "qtype": "unambig",
+      "sql": "SELECT standupcomedians.name\nFROM standupcomedians\nWHERE standupcomedians.duration_of_performance = 60\nUNION\nSELECT magicians.name\nFROM magicians\nWHERE magicians.duration_of_performance = 60",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?standupcomedians a :standupcomedians .\n    ?standupcomedians p:name ?name .\n    ?standupcomedians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show comedians and magicians who perform for 60 minutes.",
+      "qtype": "ambig",
+      "sql": "SELECT standupcomedians.name\nFROM standupcomedians\nUNION\nSELECT magicians.name\nFROM magicians\nWHERE magicians.duration_of_performance = 60",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?standupcomedians a :standupcomedians .\n    ?standupcomedians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show comedians and magicians who perform for 60 minutes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?standupcomedians a :standupcomedians .\n    ?standupcomedians p:name ?name .\n    ?standupcomedians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?standupcomedians a :standupcomedians .\n    ?standupcomedians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:duration_of_performance ?duration_of_performance_f .\n    FILTER((STR(?duration_of_performance_f) = \"60\" || STR(?duration_of_performance_f) = \"60.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

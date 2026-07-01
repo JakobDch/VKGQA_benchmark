@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_monetization_model",
+  "schema": "amb_scope_streaming_service_monetization_model",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every streaming service, list the monetization models they use.",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , monetization_model.model_name from Streaming_Service_Monetization_Model join Monetization_Model on Streaming_Service_Monetization_Model.monetization_model_id = Monetization_Model.id join Streaming_Service on Streaming_Service_Monetization_Model.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?model_name WHERE {\n  ?streaming_service_monetization_model a :Streaming_Service_Monetization_Model .\n  ?monetization_model a :Monetization_Model .\n  ?streaming_service_monetization_model p:hasMonetization_Model ?monetization_model .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_monetization_model p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?monetization_model p:model_name ?model_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What monetization model is common to all streaming services?",
+      "qtype": "unambig",
+      "sql": "SELECT Monetization_Model.model_name  from Streaming_Service_Monetization_Model join Monetization_Model on Streaming_Service_Monetization_Model.monetization_model_id = Monetization_Model.id join Streaming_Service on Streaming_Service_Monetization_Model.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Monetization_Model.monetization_model_id HAVING COUNT(DISTINCT Streaming_Service_Monetization_Model.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?model_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMonetization_Model ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:model_name ?model_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the monetization models that each streaming service uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?model_name WHERE {\n  ?streaming_service_monetization_model a :Streaming_Service_Monetization_Model .\n  ?monetization_model a :Monetization_Model .\n  ?streaming_service_monetization_model p:hasMonetization_Model ?monetization_model .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_monetization_model p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?monetization_model p:model_name ?model_name .\n} }\n  collective: { SELECT ?model_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMonetization_Model ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:model_name ?model_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

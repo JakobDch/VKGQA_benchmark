@@ -1,0 +1,69 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:AccountType {AccountType} ; p:Balance {Balance} .
+source		SELECT `AccountID`, `CustomerID`, `AccountType`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:Amount {Amount} ; p:InterestRate {InterestRate} ; p:TermYears {TermYears} .
+source		SELECT `LoanID`, `CustomerID`, `Amount`, `InterestRate`, `TermYears` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Deposits_base
+target		ex:Deposits/{DepositID} a :Deposits ; p:DepositID {DepositID} ; p:AccountID {AccountID} ; p:Amount {Amount} ; p:Date {Date} .
+source		SELECT `DepositID`, `AccountID`, `Amount`, `Date` FROM `Deposits`
+
+mappingId	Deposits_AccountID_fk
+target		ex:Deposits/{DepositID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `DepositID`, `AccountID` FROM `Deposits` WHERE `AccountID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountID {AccountID} ; p:Type {Type} ; p:Amount {Amount} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountID`, `Type`, `Amount`, `Date` FROM `Transactions`
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+mappingId	Bank_base
+target		ex:Banks/{BankName} a :Banks ; p:BankName {BankName} ; p:HeadquarterLocation {HeadquarterLocation} ; p:FoundedYear {FoundedYear} ; p:TotalAssets {TotalAssets} ; p:NumberOfBranches {NumberOfBranches} ; p:WebsiteURL {WebsiteURL} .
+source		SELECT `BankName`, `HeadquarterLocation`, `FoundedYear`, `TotalAssets`, `NumberOfBranches`, `WebsiteURL` FROM `Bank`
+
+mappingId	Branch_base
+target		ex:Branches/{BranchID} a :Branches ; p:BranchID {BranchID} ; p:BankName {BankName} ; p:BranchName {BranchName} ; p:Address {Address} ; p:City {City} ; p:State {State} ; p:ZipCode {ZipCode} .
+source		SELECT `BranchID`, `BankName`, `BranchName`, `Address`, `City`, `State`, `ZipCode` FROM `Branch`
+
+mappingId	Branch_BankName_fk
+target		ex:Branches/{BranchID} p:hasBanks ex:Banks/{BankName} .
+source		SELECT `BranchID`, `BankName` FROM `Branch` WHERE `BankName` IS NOT NULL
+
+mappingId	BankingProducts_base
+target		ex:BankingProducts/{ProductID} a :BankingProducts ; p:ProductID {ProductID} ; p:BankName {BankName} ; p:ProductName {ProductName} ; p:Description {Description} ; p:AnnualInterestRate {AnnualInterestRate} ; p:MinimumDepositAmount {MinimumDepositAmount} ; p:MaximumDepositAmount {MaximumDepositAmount} ; p:BranchName {BranchName} .
+source		SELECT `ProductID`, `BankName`, `ProductName`, `Description`, `AnnualInterestRate`, `MinimumDepositAmount`, `MaximumDepositAmount`, `BranchName` FROM `BankingProducts`
+
+mappingId	BankingProducts_BankName_fk
+target		ex:BankingProducts/{ProductID} p:hasBanks ex:Banks/{BankName} .
+source		SELECT `ProductID`, `BankName` FROM `BankingProducts` WHERE `BankName` IS NOT NULL
+
+mappingId	BankingProducts_BranchName_fk
+target		ex:BankingProducts/{ProductID} p:hasBranches ex:Branches/{BranchName} .
+source		SELECT `ProductID`, `BranchName` FROM `BankingProducts` WHERE `BranchName` IS NOT NULL
+
+]]

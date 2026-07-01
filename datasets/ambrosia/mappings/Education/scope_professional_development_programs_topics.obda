@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Topics_base
+target		ex:Topics/{id} a :Topics ; p:id {id} ; p:topic_name {topic_name} .
+source		SELECT `id`, `topic_name` FROM `Topics`
+
+mappingId	Professional_Development_Programs_base
+target		ex:Professional_Development_Programs/{program_id} a :Professional_Development_Programs ; p:program_id {program_id} ; p:program_name {program_name} ; p:duration {duration} ; p:cost {cost} .
+source		SELECT `program_id`, `program_name`, `duration`, `cost` FROM `Professional_Development_Programs`
+
+mappingId	Professional_Development_Programs_Topics_base
+target		ex:Professional_Development_Programs_Topics/{_amb_rowid} a :Professional_Development_Programs_Topics ; p:pdp_topics_id {pdp_topics_id} ; p:topics_id {topics_id} .
+source		SELECT `_amb_rowid`, `pdp_topics_id`, `topics_id` FROM `Professional_Development_Programs_Topics`
+
+mappingId	Professional_Development_Programs_Topics_topics_id_fk
+target		ex:Professional_Development_Programs_Topics/{_amb_rowid} p:hasTopics ex:Topics/{topics_id} .
+source		SELECT `_amb_rowid`, `topics_id` FROM `Professional_Development_Programs_Topics` WHERE `topics_id` IS NOT NULL
+
+mappingId	Professional_Development_Programs_Topics_pdp_topics_id_fk
+target		ex:Professional_Development_Programs_Topics/{_amb_rowid} p:hasProfessional_Development_Programs ex:Professional_Development_Programs/{pdp_topics_id} .
+source		SELECT `_amb_rowid`, `pdp_topics_id` FROM `Professional_Development_Programs_Topics` WHERE `pdp_topics_id` IS NOT NULL
+
+]]

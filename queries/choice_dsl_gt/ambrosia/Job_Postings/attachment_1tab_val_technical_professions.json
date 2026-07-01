@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_technical_professions",
+  "schema": "amb_attachment_1tab_val_technical_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all engineer jobs and architect jobs that have a salary of 80000",
+      "qtype": "ambig",
+      "sql": "SELECT Jobs.title \nFROM Jobs\nWHERE (Jobs.technicalProfession = \"Engineer\" OR Jobs.technicalProfession = \"Architect\") AND Jobs.salary = 80000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobs a :Jobs .\n  ?jobs p:title ?title .\n  ?jobs p:technicalProfession ?technicalprofession_w .\n  ?jobs p:technicalProfession ?technicalprofession_w2 .\n  ?jobs p:salary ?salary_w .\n  FILTER((((STR(?technicalprofession_w) = \"Engineer\" || STR(?technicalprofession_w2) = \"Architect\")) && (STR(?salary_w) = \"80000\" || STR(?salary_w) = \"80000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all engineer jobs and architect jobs that have a salary of 80000",
+      "qtype": "ambig",
+      "sql": "SELECT Jobs.title \nFROM Jobs\nWHERE Jobs.technicalProfession = \"Engineer\" OR Jobs.technicalProfession = \"Architect\" AND Jobs.salary = 80000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobs a :Jobs .\n  ?jobs p:title ?title .\n  ?jobs p:technicalProfession ?technicalprofession_w .\n  ?jobs p:technicalProfession ?technicalprofession_w2 .\n  ?jobs p:salary ?salary_w .\n  FILTER((STR(?technicalprofession_w) = \"Engineer\" || (STR(?technicalprofession_w2) = \"Architect\" && (STR(?salary_w) = \"80000\" || STR(?salary_w) = \"80000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all engineer jobs and architect jobs that have a salary of 80000",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?jobs a :Jobs .\n  ?jobs p:title ?title .\n  ?jobs p:technicalProfession ?technicalprofession_w .\n  ?jobs p:technicalProfession ?technicalprofession_w2 .\n  ?jobs p:salary ?salary_w .\n  FILTER((((STR(?technicalprofession_w) = \"Engineer\" || STR(?technicalprofession_w2) = \"Architect\")) && (STR(?salary_w) = \"80000\" || STR(?salary_w) = \"80000.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?jobs a :Jobs .\n  ?jobs p:title ?title .\n  ?jobs p:technicalProfession ?technicalprofession_w .\n  ?jobs p:technicalProfession ?technicalprofession_w2 .\n  ?jobs p:salary ?salary_w .\n  FILTER((STR(?technicalprofession_w) = \"Engineer\" || (STR(?technicalprofession_w2) = \"Architect\" && (STR(?salary_w) = \"80000\" || STR(?salary_w) = \"80000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

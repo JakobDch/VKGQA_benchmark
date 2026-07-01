@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_research_institutes_projects",
+  "schema": "amb_scope_research_institutes_projects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each research institute, what are the respective names of their projects?",
+      "qtype": "unambig",
+      "sql": "select research_institutes.name , projects.name from Research_Institutes_Projects join Projects on Research_Institutes_Projects.ProjectID = Projects.ProjectID join Research_Institutes on Research_Institutes_Projects.InstituteID = Research_Institutes.InstituteID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?research_institutes_projects a :Research_Institutes_Projects .\n  ?projects a :Projects .\n  ?research_institutes_projects p:hasProjects ?projects .\n  ?research_institutes a :Research_Institutes .\n  ?research_institutes_projects p:hasResearch_Institutes ?research_institutes .\n  ?research_institutes p:name ?name .\n  ?projects p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 1,
+      "question": "which project name is shared by all research institutes?",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.Name  from Research_Institutes_Projects join Projects on Research_Institutes_Projects.ProjectID = Projects.ProjectID join Research_Institutes on Research_Institutes_Projects.InstituteID = Research_Institutes.InstituteID   GROUP BY Research_Institutes_Projects.ProjectID HAVING COUNT(DISTINCT Research_Institutes_Projects.InstituteID) = (SELECT COUNT(*) FROM  Research_Institutes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasResearch_Institutes ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Research_Institutes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What project names are associated with each research institute?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?research_institutes_projects a :Research_Institutes_Projects .\n  ?projects a :Projects .\n  ?research_institutes_projects p:hasProjects ?projects .\n  ?research_institutes a :Research_Institutes .\n  ?research_institutes_projects p:hasResearch_Institutes ?research_institutes .\n  ?research_institutes p:name ?name .\n  ?projects p:name ?name2 .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasResearch_Institutes ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Research_Institutes } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

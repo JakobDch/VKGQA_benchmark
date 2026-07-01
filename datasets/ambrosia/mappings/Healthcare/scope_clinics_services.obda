@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clinics_base
+target		ex:Clinics/{clinic_id} a :Clinics ; p:clinic_id {clinic_id} ; p:name {name} ; p:address {address} .
+source		SELECT `clinic_id`, `name`, `address` FROM `Clinics`
+
+mappingId	Services_base
+target		ex:Services/{service_id} a :Services ; p:service_id {service_id} ; p:service_name {service_name} .
+source		SELECT `service_id`, `service_name` FROM `Services`
+
+mappingId	Clinics_Services_base
+target		ex:Clinics_Services/{clinics_services_id} a :Clinics_Services ; p:clinics_services_id {clinics_services_id} ; p:clinic_id {clinic_id} ; p:service_id {service_id} .
+source		SELECT `clinics_services_id`, `clinic_id`, `service_id` FROM `Clinics_Services`
+
+mappingId	Clinics_Services_service_id_fk
+target		ex:Clinics_Services/{clinics_services_id} p:hasServices ex:Services/{service_id} .
+source		SELECT `clinics_services_id`, `service_id` FROM `Clinics_Services` WHERE `service_id` IS NOT NULL
+
+mappingId	Clinics_Services_clinic_id_fk
+target		ex:Clinics_Services/{clinics_services_id} p:hasClinics ex:Clinics/{clinic_id} .
+source		SELECT `clinics_services_id`, `clinic_id` FROM `Clinics_Services` WHERE `clinic_id` IS NOT NULL
+
+mappingId	Patients_base
+target		ex:Patients/{patient_id} a :Patients ; p:patient_id {patient_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:phone_number {phone_number} .
+source		SELECT `patient_id`, `first_name`, `last_name`, `date_of_birth`, `phone_number` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{appointment_id} a :Appointments ; p:appointment_id {appointment_id} ; p:patient_id {patient_id} ; p:clinic_id {clinic_id} ; p:service_id {service_id} ; p:appointment_date {appointment_date} .
+source		SELECT `appointment_id`, `patient_id`, `clinic_id`, `service_id`, `appointment_date` FROM `Appointments`
+
+mappingId	Appointments_service_id_fk
+target		ex:Appointments/{appointment_id} p:hasServices ex:Services/{service_id} .
+source		SELECT `appointment_id`, `service_id` FROM `Appointments` WHERE `service_id` IS NOT NULL
+
+mappingId	Appointments_clinic_id_fk
+target		ex:Appointments/{appointment_id} p:hasClinics ex:Clinics/{clinic_id} .
+source		SELECT `appointment_id`, `clinic_id` FROM `Appointments` WHERE `clinic_id` IS NOT NULL
+
+mappingId	Appointments_patient_id_fk
+target		ex:Appointments/{appointment_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `appointment_id`, `patient_id` FROM `Appointments` WHERE `patient_id` IS NOT NULL
+
+]]

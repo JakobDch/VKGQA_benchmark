@@ -1,0 +1,108 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_laboratory_equipment",
+  "schema": "amb_scope_laboratory_equipment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the description of the equipment that we have for every laboratory",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.description  from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id   GROUP BY Laboratory_Equipment.equipment_type_id HAVING COUNT(DISTINCT Laboratory_Equipment.laboratory_id) = (SELECT COUNT(*) FROM  Laboratory)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the description of the equipment that we have for every laboratory",
+      "qtype": "ambig",
+      "sql": "select laboratory.name , equipment.description from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What is the type of equipment in common for all laboratories?",
+      "qtype": "unambig",
+      "sql": "SELECT Equipment.type  from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id   GROUP BY Laboratory_Equipment.equipment_type_id HAVING COUNT(DISTINCT Laboratory_Equipment.laboratory_id) = (SELECT COUNT(*) FROM  Laboratory)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For every laboratory, list the type and description of equipment they have.",
+      "qtype": "unambig",
+      "sql": "select laboratory.name , equipment.type , equipment.description from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:type ?type .\n  ?equipment p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What type of equipment corresponds to each laboratory?",
+      "qtype": "ambig",
+      "sql": "select laboratory.name , equipment.type from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the type and description of equipment each laboratory has.",
+      "qtype": "ambig",
+      "sql": "SELECT Equipment.type, Equipment.description  from Laboratory_Equipment join Equipment on Laboratory_Equipment.equipment_type_id = Equipment.id join Laboratory on Laboratory_Equipment.laboratory_id = Laboratory.id   GROUP BY Laboratory_Equipment.equipment_type_id HAVING COUNT(DISTINCT Laboratory_Equipment.laboratory_id) = (SELECT COUNT(*) FROM  Laboratory)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of equipment corresponds to each laboratory?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:type ?type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the type and description of equipment each laboratory has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:type ?type .\n  ?equipment p:description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the description of the equipment that we have for every laboratory",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?laboratory_equipment a :Laboratory_Equipment .\n  ?equipment a :Equipment .\n  ?laboratory_equipment p:hasEquipment ?equipment .\n  ?laboratory a :Laboratory .\n  ?laboratory_equipment p:hasLaboratory ?laboratory .\n  ?laboratory p:name ?name .\n  ?equipment p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasLaboratory ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Laboratory } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

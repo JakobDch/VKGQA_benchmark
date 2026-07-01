@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	newsrooms_base
+target		ex:newsrooms/{id} a :newsrooms ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `newsrooms`
+
+mappingId	reporters_base
+target		ex:Reporters/{id} a :Reporters ; p:id {id} ; p:name {name} ; p:role {role} ; p:deadline {deadline} ; p:assigned_newsroom {assigned_newsroom} .
+source		SELECT `id`, `name`, `role`, `deadline`, `assigned_newsroom` FROM `reporters`
+
+mappingId	reporters_assigned_newsroom_fk
+target		ex:Reporters/{id} p:hasnewsrooms ex:newsrooms/{assigned_newsroom} .
+source		SELECT `id`, `assigned_newsroom` FROM `reporters` WHERE `assigned_newsroom` IS NOT NULL
+
+mappingId	storyIdeas_base
+target		ex:storyIdeas/{id} a :storyIdeas ; p:id {id} ; p:title {title} ; p:description {description} ; p:pitchDate {pitchDate} ; p:assignedTo {assignedTo} ; p:status {status} .
+source		SELECT `id`, `title`, `description`, `pitchDate`, `assignedTo`, `status` FROM `storyIdeas`
+
+mappingId	storyIdeas_assignedTo_fk
+target		ex:storyIdeas/{id} p:hasReporters ex:Reporters/{assignedTo} .
+source		SELECT `id`, `assignedTo` FROM `storyIdeas` WHERE `assignedTo` IS NOT NULL
+
+mappingId	publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:title {title} ; p:content {content} ; p:publishDate {publishDate} ; p:associatedStoryId {associatedStoryId} .
+source		SELECT `id`, `title`, `content`, `publishDate`, `associatedStoryId` FROM `publications`
+
+mappingId	publications_associatedStoryId_fk
+target		ex:Publications/{id} p:hasstoryIdeas ex:storyIdeas/{associatedStoryId} .
+source		SELECT `id`, `associatedStoryId` FROM `publications` WHERE `associatedStoryId` IS NOT NULL
+
+mappingId	readershipStats_base
+target		ex:readershipStats/{id} a :readershipStats ; p:id {id} ; p:publicationId {publicationId} ; p:numPageViews {numPageViews} ; p:avgTimeSpentReading {avgTimeSpentReading} .
+source		SELECT `id`, `publicationId`, `numPageViews`, `avgTimeSpentReading` FROM `readershipStats`
+
+mappingId	readershipStats_publicationId_fk
+target		ex:readershipStats/{id} p:hasPublications ex:Publications/{publicationId} .
+source		SELECT `id`, `publicationId` FROM `readershipStats` WHERE `publicationId` IS NOT NULL
+
+]]

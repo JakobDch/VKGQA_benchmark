@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_hospitality_staff",
+  "schema": "amb_attachment_1tab_val_hospitality_staff",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all chefs and also provide a list of servers who speak English.",
+      "qtype": "unambig",
+      "sql": "SELECT Staff.Name \nFROM Staff\nWHERE Staff.Role = \"Chef\" OR Staff.Role = \"Server\" AND Staff.Language = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?staff a :Staff .\n  ?staff p:name ?name .\n  ?staff p:Role ?role_w .\n  ?staff p:Role ?role_w2 .\n  ?staff p:Language ?language_w .\n  FILTER((STR(?role_w) = \"Chef\" || (STR(?role_w2) = \"Server\" && STR(?language_w) = \"English\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show me chefs and servers who speak English.",
+      "qtype": "ambig",
+      "sql": "SELECT Staff.Name \nFROM Staff\nWHERE (Staff.Role = \"Chef\" OR Staff.Role = \"Server\") AND Staff.Language = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?staff a :Staff .\n  ?staff p:name ?name .\n  ?staff p:Role ?role_w .\n  ?staff p:Role ?role_w2 .\n  ?staff p:Language ?language_w .\n  FILTER((((STR(?role_w) = \"Chef\" || STR(?role_w2) = \"Server\")) && STR(?language_w) = \"English\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me chefs and servers who speak English.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?staff a :Staff .\n  ?staff p:name ?name .\n  ?staff p:Role ?role_w .\n  ?staff p:Role ?role_w2 .\n  ?staff p:Language ?language_w .\n  FILTER((STR(?role_w) = \"Chef\" || (STR(?role_w2) = \"Server\" && STR(?language_w) = \"English\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?staff a :Staff .\n  ?staff p:name ?name .\n  ?staff p:Role ?role_w .\n  ?staff p:Role ?role_w2 .\n  ?staff p:Language ?language_w .\n  FILTER((((STR(?role_w) = \"Chef\" || STR(?role_w2) = \"Server\")) && STR(?language_w) = \"English\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

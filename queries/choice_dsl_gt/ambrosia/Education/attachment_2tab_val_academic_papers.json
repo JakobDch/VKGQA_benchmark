@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_academic_papers",
+  "schema": "amb_attachment_2tab_val_academic_papers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What research papers and review articles follow the APA citation style?",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Papers.title\nFROM Research_Papers\nWHERE Research_Papers.citation_style = \"APA\"\nUNION\nSELECT Review_Articles.title\nFROM Review_Articles\nWHERE Review_Articles.citation_style = \"APA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_papers a :Research_Papers .\n    ?research_papers p:title ?title .\n    ?research_papers p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?review_articles a :Review_Articles .\n    ?review_articles p:title ?title .\n    ?review_articles p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all research papers and also show review articles formatted according to APA citation style.",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Papers.title\nFROM Research_Papers\nUNION\nSELECT Review_Articles.title\nFROM Review_Articles\nWHERE Review_Articles.citation_style = \"APA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_papers a :Research_Papers .\n    ?research_papers p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?review_articles a :Review_Articles .\n    ?review_articles p:title ?title .\n    ?review_articles p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display research papers and review articles formatted in APA citation style.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_papers a :Research_Papers .\n    ?research_papers p:title ?title .\n    ?research_papers p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?review_articles a :Review_Articles .\n    ?review_articles p:title ?title .\n    ?review_articles p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_papers a :Research_Papers .\n    ?research_papers p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?review_articles a :Review_Articles .\n    ?review_articles p:title ?title .\n    ?review_articles p:citation_style ?citation_style_f .\n    FILTER(STR(?citation_style_f) = \"APA\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

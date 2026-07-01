@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Aircraft_base
+target		ex:Aircraft/{id} a :Aircraft ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Aircraft`
+
+mappingId	Onboard_Services_base
+target		ex:OnboardServices/{id} a :OnboardServices ; p:id {id} ; p:Service_name {Service_name} ; p:Aircraft_id {Aircraft_id} .
+source		SELECT `id`, `Service_name`, `Aircraft_id` FROM `Onboard_Services`
+
+mappingId	Onboard_Services_Aircraft_id_fk
+target		ex:OnboardServices/{id} p:hasAircraft ex:Aircraft/{Aircraft_id} .
+source		SELECT `id`, `Aircraft_id` FROM `Onboard_Services` WHERE `Aircraft_id` IS NOT NULL
+
+mappingId	Inflight_Entertainments_base
+target		ex:InflightEntertainments/{id} a :InflightEntertainments ; p:id {id} ; p:Entertainment_name {Entertainment_name} ; p:Aircraft_id {Aircraft_id} .
+source		SELECT `id`, `Entertainment_name`, `Aircraft_id` FROM `Inflight_Entertainments`
+
+mappingId	Inflight_Entertainments_Aircraft_id_fk
+target		ex:InflightEntertainments/{id} p:hasAircraft ex:Aircraft/{Aircraft_id} .
+source		SELECT `id`, `Aircraft_id` FROM `Inflight_Entertainments` WHERE `Aircraft_id` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{id} a :Passengers ; p:id {id} ; p:First_name {First_name} ; p:Last_name {Last_name} ; p:Age {Age} ; p:Flight_number {Flight_number} .
+source		SELECT `id`, `First_name`, `Last_name`, `Age`, `Flight_number` FROM `Passengers`
+
+mappingId	Passengers_Flight_number_fk
+target		ex:Passengers/{id} p:hasFlights ex:Flights/{Flight_number} .
+source		SELECT `id`, `Flight_number` FROM `Passengers` WHERE `Flight_number` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:Departure_time {Departure_time} ; p:Arrival_time {Arrival_time} ; p:Origin_airport {Origin_airport} ; p:Destination_airport {Destination_airport} ; p:Aircraft_id {Aircraft_id} .
+source		SELECT `id`, `Departure_time`, `Arrival_time`, `Origin_airport`, `Destination_airport`, `Aircraft_id` FROM `Flights`
+
+mappingId	Flights_Aircraft_id_fk
+target		ex:Flights/{id} p:hasAircraft ex:Aircraft/{Aircraft_id} .
+source		SELECT `id`, `Aircraft_id` FROM `Flights` WHERE `Aircraft_id` IS NOT NULL
+
+mappingId	Baggage_base
+target		ex:Baggage/{id} a :Baggage ; p:id {id} ; p:Weight_kg {Weight_kg} ; p:Type {Type} ; p:Flight_number {Flight_number} .
+source		SELECT `id`, `Weight_kg`, `Type`, `Flight_number` FROM `Baggage`
+
+mappingId	Baggage_Flight_number_fk
+target		ex:Baggage/{id} p:hasFlights ex:Flights/{Flight_number} .
+source		SELECT `id`, `Flight_number` FROM `Baggage` WHERE `Flight_number` IS NOT NULL
+
+]]

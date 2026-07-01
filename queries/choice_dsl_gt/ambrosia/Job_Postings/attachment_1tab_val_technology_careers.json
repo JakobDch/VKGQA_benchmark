@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_technology_careers",
+  "schema": "amb_attachment_1tab_val_technology_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all software developer roles and also provide a list of all data analyst roles with a entry level grade.",
+      "qtype": "unambig",
+      "sql": "SELECT Roles.title \nFROM Roles\nWHERE Roles.Technology_Career = \"Software Developer\" OR Roles.Technology_Career = \"Data Analyst\" AND Roles.Grade = \"Entry\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?roles a :Roles .\n  ?roles p:title ?title .\n  ?roles p:Technology_Career ?technology_career_w .\n  ?roles p:Technology_Career ?technology_career_w2 .\n  ?roles p:Grade ?grade_w .\n  FILTER((STR(?technology_career_w) = \"Software Developer\" || (STR(?technology_career_w2) = \"Data Analyst\" && STR(?grade_w) = \"Entry\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "What are the software developer roles and data analyst roles that are entry level?",
+      "qtype": "ambig",
+      "sql": "SELECT Roles.title \nFROM Roles\nWHERE (Roles.Technology_Career = \"Software Developer\" OR Roles.Technology_Career = \"Data Analyst\") AND Roles.Grade = \"Entry\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?roles a :Roles .\n  ?roles p:title ?title .\n  ?roles p:Technology_Career ?technology_career_w .\n  ?roles p:Technology_Career ?technology_career_w2 .\n  ?roles p:Grade ?grade_w .\n  FILTER((((STR(?technology_career_w) = \"Software Developer\" || STR(?technology_career_w2) = \"Data Analyst\")) && STR(?grade_w) = \"Entry\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the software developer roles and data analyst roles that are entry level?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?roles a :Roles .\n  ?roles p:title ?title .\n  ?roles p:Technology_Career ?technology_career_w .\n  ?roles p:Technology_Career ?technology_career_w2 .\n  ?roles p:Grade ?grade_w .\n  FILTER((STR(?technology_career_w) = \"Software Developer\" || (STR(?technology_career_w2) = \"Data Analyst\" && STR(?grade_w) = \"Entry\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?roles a :Roles .\n  ?roles p:title ?title .\n  ?roles p:Technology_Career ?technology_career_w .\n  ?roles p:Technology_Career ?technology_career_w2 .\n  ?roles p:Grade ?grade_w .\n  FILTER((((STR(?technology_career_w) = \"Software Developer\" || STR(?technology_career_w2) = \"Data Analyst\")) && STR(?grade_w) = \"Entry\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

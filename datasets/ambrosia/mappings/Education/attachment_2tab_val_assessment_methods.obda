@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:Major {Major} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `BirthDate`, `Major` FROM `Students`
+
+mappingId	Assessors_base
+target		ex:Assessors/{AssessorID} a :Assessors ; p:AssessorID {AssessorID} ; p:name {Name} ; p:Title {Title} ; p:Department {Department} .
+source		SELECT `AssessorID`, `Name`, `Title`, `Department` FROM `Assessors`
+
+mappingId	Exams_base
+target		ex:Exams/{ExamID} a :Exams ; p:ExamID {ExamID} ; p:CourseTitle {CourseTitle} ; p:TotalMarks {TotalMarks} ; p:PassingMark {PassingMark} ; p:AssessorId {AssessorId} .
+source		SELECT `ExamID`, `CourseTitle`, `TotalMarks`, `PassingMark`, `AssessorId` FROM `Exams`
+
+mappingId	Exams_AssessorId_fk
+target		ex:Exams/{ExamID} p:hasAssessors ex:Assessors/{AssessorId} .
+source		SELECT `ExamID`, `AssessorId` FROM `Exams` WHERE `AssessorId` IS NOT NULL
+
+mappingId	Quizzes_base
+target		ex:Quizzes/{QuizID} a :Quizzes ; p:QuizID {QuizID} ; p:Description {Description} ; p:MaxScore {MaxScore} ; p:MinPassingScore {MinPassingScore} ; p:AssessorId {AssessorId} .
+source		SELECT `QuizID`, `Description`, `MaxScore`, `MinPassingScore`, `AssessorId` FROM `Quizzes`
+
+mappingId	Quizzes_AssessorId_fk
+target		ex:Quizzes/{QuizID} p:hasAssessors ex:Assessors/{AssessorId} .
+source		SELECT `QuizID`, `AssessorId` FROM `Quizzes` WHERE `AssessorId` IS NOT NULL
+
+]]

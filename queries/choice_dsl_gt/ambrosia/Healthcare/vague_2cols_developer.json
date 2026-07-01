@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2cols_developer",
+  "schema": "amb_vague_2cols_developer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all the medical devices and their makers.",
+      "qtype": "ambig",
+      "sql": "SELECT MedicalDevices.deviceName,  Scientists.fullname  FROM DeviceDevelopment JOIN  Scientists ON Scientists.id = DeviceDevelopment.scientistId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?devicename ?fullname WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?medicaldevices p:deviceName ?devicename .\n  ?scientists p:name ?fullname .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all the medical devices and their makers.",
+      "qtype": "ambig",
+      "sql": "SELECT MedicalDevices.deviceName,  Companies.name  FROM DeviceDevelopment JOIN  Companies ON Companies.id = DeviceDevelopment.companyId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?devicename ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?medicaldevices p:deviceName ?devicename .\n  ?companies p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Show me all the medical devices and their makers.",
+      "qtype": "ambig",
+      "sql": "SELECT MedicalDevices.deviceName,  Scientists.fullname, Companies.name  FROM DeviceDevelopment JOIN  Scientists ON Scientists.id = DeviceDevelopment.scientistId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId  JOIN  Companies ON Companies.id = DeviceDevelopment.companyId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?devicename ?fullname ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices p:deviceName ?devicename .\n  ?scientists p:name ?fullname .\n  ?companies p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Which scientist and company made the cheapest device?",
+      "qtype": "unambig",
+      "sql": "SELECT Scientists.fullname, Companies.name FROM DeviceDevelopment JOIN  Scientists ON Scientists.id = DeviceDevelopment.scientistId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId  JOIN  Companies ON Companies.id = DeviceDevelopment.companyId ORDER BY price ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?scientists p:name ?fullname .\n  ?companies p:name ?name .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which scientist made the cheapest device?",
+      "qtype": "unambig",
+      "sql": "SELECT Scientists.fullname FROM DeviceDevelopment JOIN  Scientists ON Scientists.id = DeviceDevelopment.scientistId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId ORDER BY price ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?scientists p:name ?fullname .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who made the cheapest device?",
+      "qtype": "ambig",
+      "sql": "SELECT Companies.name FROM DeviceDevelopment JOIN  Companies ON Companies.id = DeviceDevelopment.companyId JOIN MedicalDevices ON MedicalDevices.id = DeviceDevelopment.medicalDeviceId ORDER BY price ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies p:name ?name .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all the medical devices and their makers.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        0
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?devicename ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?medicaldevices p:deviceName ?devicename .\n  ?companies p:name ?name .\n} }\n  full: { SELECT ?devicename ?fullname ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices p:deviceName ?devicename .\n  ?scientists p:name ?fullname .\n  ?companies p:name ?name .\n} }\n  component_2: { SELECT ?devicename ?fullname WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?medicaldevices p:deviceName ?devicename .\n  ?scientists p:name ?fullname .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who made the cheapest device?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?fullname ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?scientists p:name ?fullname .\n  ?companies p:name ?name .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  component: { SELECT ?fullname WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?scientists a :Scientists .\n  ?devicedevelopment p:hasScientists ?scientists .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?scientists p:name ?fullname .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n  component_2: { SELECT ?name WHERE {\n  ?devicedevelopment a :DeviceDevelopment .\n  ?companies a :Companies .\n  ?devicedevelopment p:hasCompanies ?companies .\n  ?medicaldevices a :MedicalDevices .\n  ?devicedevelopment p:hasMedicalDevices ?medicaldevices .\n  ?companies p:name ?name .\n  ?medicaldevices p:price ?price_o .\n}\nORDER BY ASC(?price_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

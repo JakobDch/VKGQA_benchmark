@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Streaming_Services`
+
+mappingId	Third_Party_Apps_base
+target		ex:Third_Party_Apps/{app_id} a :Third_Party_Apps ; p:app_id {app_id} ; p:app_name {app_name} ; p:is_active {is_active} .
+source		SELECT `app_id`, `app_name`, `is_active` FROM `Third_Party_Apps`
+
+mappingId	Streaming_Services_Third_Party_Apps_base
+target		ex:Streaming_Services_Third_Party_Apps/{streaming_service_id}/{third_party_app_id} a :Streaming_Services_Third_Party_Apps ; p:streaming_service_id {streaming_service_id} ; p:third_party_app_id {third_party_app_id} .
+source		SELECT `streaming_service_id`, `third_party_app_id` FROM `Streaming_Services_Third_Party_Apps`
+
+mappingId	Streaming_Services_Third_Party_Apps_third_party_app_id_fk
+target		ex:Streaming_Services_Third_Party_Apps/{streaming_service_id}/{third_party_app_id} p:hasThird_Party_Apps ex:Third_Party_Apps/{third_party_app_id} .
+source		SELECT `streaming_service_id`, `third_party_app_id` FROM `Streaming_Services_Third_Party_Apps` WHERE `third_party_app_id` IS NOT NULL
+
+mappingId	Streaming_Services_Third_Party_Apps_streaming_service_id_fk
+target		ex:Streaming_Services_Third_Party_Apps/{streaming_service_id}/{third_party_app_id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `streaming_service_id`, `third_party_app_id` FROM `Streaming_Services_Third_Party_Apps` WHERE `streaming_service_id` IS NOT NULL
+
+]]

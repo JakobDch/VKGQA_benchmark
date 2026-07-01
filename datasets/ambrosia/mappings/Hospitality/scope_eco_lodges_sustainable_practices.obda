@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Eco_Lodges_base
+target		ex:Eco_Lodges/{id} a :Eco_Lodges ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Eco_Lodges`
+
+mappingId	Sustainable_Practices_base
+target		ex:Sustainable_Practices/{practice_id} a :Sustainable_Practices ; p:practice_id {practice_id} ; p:practice_name {practice_name} .
+source		SELECT `practice_id`, `practice_name` FROM `Sustainable_Practices`
+
+mappingId	Eco_Lodges_Sustainable_Practices_base
+target		ex:Eco_Lodges_Sustainable_Practices/{_amb_rowid} a :Eco_Lodges_Sustainable_Practices ; p:eco_lodge_id {eco_lodge_id} ; p:practice_id {practice_id} .
+source		SELECT `_amb_rowid`, `eco_lodge_id`, `practice_id` FROM `Eco_Lodges_Sustainable_Practices`
+
+mappingId	Eco_Lodges_Sustainable_Practices_practice_id_fk
+target		ex:Eco_Lodges_Sustainable_Practices/{_amb_rowid} p:hasSustainable_Practices ex:Sustainable_Practices/{practice_id} .
+source		SELECT `_amb_rowid`, `practice_id` FROM `Eco_Lodges_Sustainable_Practices` WHERE `practice_id` IS NOT NULL
+
+mappingId	Eco_Lodges_Sustainable_Practices_eco_lodge_id_fk
+target		ex:Eco_Lodges_Sustainable_Practices/{_amb_rowid} p:hasEco_Lodges ex:Eco_Lodges/{eco_lodge_id} .
+source		SELECT `_amb_rowid`, `eco_lodge_id` FROM `Eco_Lodges_Sustainable_Practices` WHERE `eco_lodge_id` IS NOT NULL
+
+]]

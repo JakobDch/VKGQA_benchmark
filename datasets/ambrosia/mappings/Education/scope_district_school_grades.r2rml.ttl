@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_district_school_grades_0_District_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"District\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Districts/{id}" ; rr:class :Districts ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_district_school_grades_1_School_Grades_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"grade\", \"description\" FROM \"School_Grades\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/School_Grades/{id}" ; rr:class :School_Grades ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:grade ; rr:objectMap [ rr:column "grade" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_district_school_grades_2_District_School_Grades_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"district_id\", \"school_grade_id\" FROM \"District_School_Grades\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/District_School_Grades/{_amb_rowid}" ; rr:class :District_School_Grades ] ;
+  rr:predicateObjectMap [ rr:predicate p:district_id ; rr:objectMap [ rr:column "district_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:school_grade_id ; rr:objectMap [ rr:column "school_grade_id" ] ] .
+
+<#tm_scope_district_school_grades_3_District_School_Grades_school_grade_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"school_grade_id\" FROM \"District_School_Grades\" WHERE \"school_grade_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/District_School_Grades/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSchool_Grades ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/School_Grades/{school_grade_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_district_school_grades_4_District_School_Grades_district_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"district_id\" FROM \"District_School_Grades\" WHERE \"district_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/District_School_Grades/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDistricts ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Districts/{district_id}" ; rr:termType rr:IRI ] ] .
+

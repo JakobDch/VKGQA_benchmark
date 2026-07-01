@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_editorial_teams_roles_0_Editorial_Teams_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TeamID\", \"TeamName\", \"TeamDescription\" FROM \"Editorial_Teams\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Editorial_Teams/{TeamID}" ; rr:class :Editorial_Teams ] ;
+  rr:predicateObjectMap [ rr:predicate p:TeamID ; rr:objectMap [ rr:column "TeamID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TeamName ; rr:objectMap [ rr:column "TeamName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TeamDescription ; rr:objectMap [ rr:column "TeamDescription" ] ] .
+
+<#tm_scope_editorial_teams_roles_1_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"RoleName\" FROM \"Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Roles/{RoleID}" ; rr:class :Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleName ; rr:objectMap [ rr:column "RoleName" ] ] .
+
+<#tm_scope_editorial_teams_roles_2_Editorial_Teams_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TeamID\", \"RoleID\" FROM \"Editorial_Teams_Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Editorial_Teams_Roles/{TeamID}/{RoleID}" ; rr:class :Editorial_Teams_Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:TeamID ; rr:objectMap [ rr:column "TeamID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] .
+
+<#tm_scope_editorial_teams_roles_3_Editorial_Teams_Roles_RoleID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TeamID\", \"RoleID\" FROM \"Editorial_Teams_Roles\" WHERE \"RoleID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Editorial_Teams_Roles/{TeamID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRoles ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Roles/{RoleID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_editorial_teams_roles_4_Editorial_Teams_Roles_TeamID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TeamID\", \"RoleID\" FROM \"Editorial_Teams_Roles\" WHERE \"TeamID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Editorial_Teams_Roles/{TeamID}/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEditorial_Teams ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Editorial_Teams/{TeamID}" ; rr:termType rr:IRI ] ] .
+

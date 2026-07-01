@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Devices_Compatibility_base
+target		ex:Devices_Compatibility/{id} a :Devices_Compatibility ; p:id {id} ; p:deviceName {deviceName} ; p:isActive {isActive} .
+source		SELECT `id`, `deviceName`, `isActive` FROM `Devices_Compatibility`
+
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:serviceName {serviceName} ; p:subscriptionPrice {subscriptionPrice} .
+source		SELECT `id`, `serviceName`, `subscriptionPrice` FROM `Streaming_Services`
+
+mappingId	SubscriptionPlans_base
+target		ex:Subscription_Plan/{id} a :Subscription_Plan ; p:id {id} ; p:planName {planName} ; p:price {price} .
+source		SELECT `id`, `planName`, `price` FROM `SubscriptionPlans`
+
+mappingId	Users_base
+target		ex:Users/{id} a :Users ; p:id {id} ; p:userName {userName} ; p:email {emailAddress} .
+source		SELECT `id`, `userName`, `emailAddress` FROM `Users`
+
+mappingId	UserSubscriptions_base
+target		ex:UserSubscriptions/{_amb_rowid} a :UserSubscriptions ; p:userId {userId} ; p:streamingServiceId {streamingServiceId} ; p:subscriptionPlanId {subscriptionPlanId} .
+source		SELECT `_amb_rowid`, `userId`, `streamingServiceId`, `subscriptionPlanId` FROM `UserSubscriptions`
+
+mappingId	UserSubscriptions_subscriptionPlanId_fk
+target		ex:UserSubscriptions/{_amb_rowid} p:hasSubscription_Plan ex:Subscription_Plan/{subscriptionPlanId} .
+source		SELECT `_amb_rowid`, `subscriptionPlanId` FROM `UserSubscriptions` WHERE `subscriptionPlanId` IS NOT NULL
+
+mappingId	UserSubscriptions_streamingServiceId_fk
+target		ex:UserSubscriptions/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streamingServiceId} .
+source		SELECT `_amb_rowid`, `streamingServiceId` FROM `UserSubscriptions` WHERE `streamingServiceId` IS NOT NULL
+
+mappingId	UserSubscriptions_userId_fk
+target		ex:UserSubscriptions/{_amb_rowid} p:hasUsers ex:Users/{userId} .
+source		SELECT `_amb_rowid`, `userId` FROM `UserSubscriptions` WHERE `userId` IS NOT NULL
+
+mappingId	DeviceUsers_base
+target		ex:DeviceUsers/{_amb_rowid} a :DeviceUsers ; p:deviceId {deviceId} ; p:userId {userId} .
+source		SELECT `_amb_rowid`, `deviceId`, `userId` FROM `DeviceUsers`
+
+mappingId	DeviceUsers_userId_fk
+target		ex:DeviceUsers/{_amb_rowid} p:hasUsers ex:Users/{userId} .
+source		SELECT `_amb_rowid`, `userId` FROM `DeviceUsers` WHERE `userId` IS NOT NULL
+
+mappingId	DeviceUsers_deviceId_fk
+target		ex:DeviceUsers/{_amb_rowid} p:hasDevices_Compatibility ex:Devices_Compatibility/{deviceId} .
+source		SELECT `_amb_rowid`, `deviceId` FROM `DeviceUsers` WHERE `deviceId` IS NOT NULL
+
+mappingId	Streaming_Service_Devices_Compatibility_base
+target		ex:Streaming_Service_Devices_Compatibility/{_amb_rowid} a :Streaming_Service_Devices_Compatibility ; p:streamingServiceId {streamingServiceId} ; p:deviceTypeId {deviceTypeId} .
+source		SELECT `_amb_rowid`, `streamingServiceId`, `deviceTypeId` FROM `Streaming_Service_Devices_Compatibility`
+
+mappingId	Streaming_Service_Devices_Compatibility_deviceTypeId_fk
+target		ex:Streaming_Service_Devices_Compatibility/{_amb_rowid} p:hasDevices_Compatibility ex:Devices_Compatibility/{deviceTypeId} .
+source		SELECT `_amb_rowid`, `deviceTypeId` FROM `Streaming_Service_Devices_Compatibility` WHERE `deviceTypeId` IS NOT NULL
+
+mappingId	Streaming_Service_Devices_Compatibility_streamingServiceId_fk
+target		ex:Streaming_Service_Devices_Compatibility/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streamingServiceId} .
+source		SELECT `_amb_rowid`, `streamingServiceId` FROM `Streaming_Service_Devices_Compatibility` WHERE `streamingServiceId` IS NOT NULL
+
+]]

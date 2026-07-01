@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2tabs_designer",
+  "schema": "amb_vague_2tabs_designer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "the hospital was designed by which architect?",
+      "qtype": "unambig",
+      "sql": "SELECT name\nFROM Architect JOIN Building ON Building.architect_id = Architect.id\nWHERE building_name = 'Hospital'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?architect p:name ?name .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show all firms.",
+      "qtype": "unambig",
+      "sql": "SELECT name\nFROM Firm;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?firm a :Firm .\n  ?firm p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "Show all architects.",
+      "qtype": "unambig",
+      "sql": "SELECT name\nFROM Architect;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?architect a :Architect .\n  ?architect p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show all architects and firms.",
+      "qtype": "unambig",
+      "sql": "SELECT Firm.name, Architect.name\nFROM Architect JOIN Building ON Building.architect_id = Architect.id  JOIN Firm ON Building.firm_id = Firm.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?firm a :Firm .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?architect p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Which firm designed the hospital?",
+      "qtype": "unambig",
+      "sql": "SELECT name\nFROM Firm JOIN Building ON Building.firm_id = Firm.id\nWHERE building_name = 'Hospital'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?firm a :Firm .\n  ?building a :Building .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who designed the hospital?",
+      "qtype": "ambig",
+      "sql": "SELECT Firm.name, Architect.name\nFROM Architect JOIN Building ON Building.architect_id = Architect.id  JOIN Firm ON Building.firm_id = Firm.id\nWHERE building_name = 'Hospital'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?firm a :Firm .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?architect p:name ?name2 .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who designed the hospital?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?architect p:name ?name .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?firm a :Firm .\n  ?building a :Building .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?firm a :Firm .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?architect p:name ?name2 .\n  ?building p:building_name ?building_name_f .\n  FILTER(?building_name_f = \"Hospital\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show all designers",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?firm a :Firm .\n  ?firm p:name ?name .\n} }\n  component_2: { SELECT ?name WHERE {\n  ?architect a :Architect .\n  ?architect p:name ?name .\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?architect a :Architect .\n  ?building a :Building .\n  ?building p:hasArchitect ?architect .\n  ?firm a :Firm .\n  ?building p:hasFirm ?firm .\n  ?firm p:name ?name .\n  ?architect p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

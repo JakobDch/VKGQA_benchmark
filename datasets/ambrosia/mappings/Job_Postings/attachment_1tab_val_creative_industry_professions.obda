@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:address {address} ; p:website {website} .
+source		SELECT `id`, `name`, `address`, `website` FROM `Company`
+
+mappingId	Department_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:company_id {company_id} ; p:name {name} .
+source		SELECT `id`, `company_id`, `name` FROM `Department`
+
+mappingId	Department_company_id_fk
+target		ex:Departments/{id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `id`, `company_id` FROM `Department` WHERE `company_id` IS NOT NULL
+
+mappingId	Position_base
+target		ex:Position/{id} a :Position ; p:id {id} ; p:department_id {department_id} ; p:title {title} ; p:creative_industry_profession {creative_industry_profession} ; p:office {office} ; p:salary {salary} .
+source		SELECT `id`, `department_id`, `title`, `creative_industry_profession`, `office`, `salary` FROM `Position`
+
+mappingId	Position_department_id_fk
+target		ex:Position/{id} p:hasDepartments ex:Departments/{department_id} .
+source		SELECT `id`, `department_id` FROM `Position` WHERE `department_id` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:position_id {position_id} ; p:employee_name {employee_name} ; p:hire_date {hire_date} .
+source		SELECT `id`, `position_id`, `employee_name`, `hire_date` FROM `Employee`
+
+mappingId	Employee_position_id_fk
+target		ex:Employees/{id} p:hasPosition ex:Position/{position_id} .
+source		SELECT `id`, `position_id` FROM `Employee` WHERE `position_id` IS NOT NULL
+
+]]

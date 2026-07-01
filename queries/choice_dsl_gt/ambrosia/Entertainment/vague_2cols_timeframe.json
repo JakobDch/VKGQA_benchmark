@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_timeframe",
+  "schema": "amb_vague_2cols_timeframe",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which album has the longest song and what month and year was it released?",
+      "qtype": "unambig",
+      "sql": "SELECT AlbumName, Year, Month FROM Albums JOIN Songs ON Albums.AlbumID = Songs.AlbumID ORDER By duration DESC LIMIT 1 ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?albumname ?year ?month WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?albums p:Month ?month .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each singer, show me the album, its release year and month, and concert venue.",
+      "qtype": "unambig",
+      "sql": "SELECT artistname, AlbumName, Year, Month, Venue FROM Albums JOIN Artists on Albums.ArtistID = Artists.ArtistID JOIN Concerts ON Concerts.HeadlinerID = Artists.ArtistID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artistname ?albumname ?year ?month ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?albums p:Month ?month .\n  ?concerts p:Venue ?venue .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "For each singer, show me the album, its release month and concert venue.",
+      "qtype": "unambig",
+      "sql": "SELECT artistname, AlbumName, Month, Venue FROM Albums JOIN Artists on Albums.ArtistID = Artists.ArtistID JOIN Concerts ON Concerts.HeadlinerID = Artists.ArtistID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artistname ?albumname ?month ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Month ?month .\n  ?concerts p:Venue ?venue .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Which album has the longest song and when was it released?",
+      "qtype": "ambig",
+      "sql": "SELECT AlbumName, Year FROM Albums JOIN Songs ON Albums.AlbumID = Songs.AlbumID ORDER By duration DESC LIMIT 1 ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?albumname ?year WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which album has the longest song and when was it released?",
+      "qtype": "ambig",
+      "sql": "SELECT AlbumName, Month FROM Albums JOIN Songs ON Albums.AlbumID = Songs.AlbumID ORDER By duration DESC LIMIT 1 ;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?albumname ?month WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Month ?month .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each singer, show me the album, its release year and concert venue.",
+      "qtype": "unambig",
+      "sql": "SELECT artistname, AlbumName, Year, Venue FROM Albums JOIN Artists on Albums.ArtistID = Artists.ArtistID JOIN Concerts ON Concerts.HeadlinerID = Artists.ArtistID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artistname ?albumname ?year ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?concerts p:Venue ?venue .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which album has the longest song and when was it released?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?albumname ?year ?month WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?albums p:Month ?month .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n  component: { SELECT ?albumname ?month WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Month ?month .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n  component_2: { SELECT ?albumname ?year WHERE {\n  ?albums a :Album .\n  ?songs a :Song .\n  ?songs p:hasAlbums ?albums .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?songs p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "For each singer, show me the album and its release timeframe and concert venue.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?artistname ?albumname ?year ?month ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?albums p:Month ?month .\n  ?concerts p:Venue ?venue .\n} }\n  component: { SELECT ?artistname ?albumname ?month ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Month ?month .\n  ?concerts p:Venue ?venue .\n} }\n  component_2: { SELECT ?artistname ?albumname ?year ?venue WHERE {\n  ?albums a :Album .\n  ?artists a :Artist .\n  ?albums p:hasArtists ?artists .\n  ?concerts a :Concert .\n  ?concerts p:hasArtists_HeadlinerID ?artists .\n  ?artists p:ArtistName ?artistname .\n  ?albums p:AlbumName ?albumname .\n  ?albums p:Year ?year .\n  ?concerts p:Venue ?venue .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

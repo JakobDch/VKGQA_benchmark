@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_val_investment_company",
+  "schema": "amb_attachment_2tab_val_investment_company",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all growth equity firms and also list venture capital trusts with 5 million in funding.",
+      "qtype": "unambig",
+      "sql": "SELECT growth_equity.firm_name as name\nFROM growth_equity\nUNION\nSELECT venture_capital.trust_name as name\nFROM venture_capital\nWHERE venture_capital.funding_amount = 5000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?growth_equity a :growth_equity .\n    ?growth_equity p:firm_name ?firm_name .\n    BIND(?firm_name AS ?o0)\n  }\n  UNION\n  {\n    ?venture_capital a :venture_capital .\n    ?venture_capital p:trust_name ?trust_name .\n    ?venture_capital p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?trust_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What growth equity firms have 5 million in funding and venture capital trusts have the same funding?",
+      "qtype": "unambig",
+      "sql": "SELECT growth_equity.firm_name as name\nFROM growth_equity\nWHERE growth_equity.funding_amount = 5000000.0\nUNION\nSELECT venture_capital.trust_name as name\nFROM venture_capital\nWHERE venture_capital.funding_amount = 5000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?growth_equity a :growth_equity .\n    ?growth_equity p:firm_name ?firm_name .\n    ?growth_equity p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?firm_name AS ?o0)\n  }\n  UNION\n  {\n    ?venture_capital a :venture_capital .\n    ?venture_capital p:trust_name ?trust_name .\n    ?venture_capital p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?trust_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show growth equity firms and venture capital trusts with funding of 5 million.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?growth_equity a :growth_equity .\n    ?growth_equity p:firm_name ?firm_name .\n    BIND(?firm_name AS ?o0)\n  }\n  UNION\n  {\n    ?venture_capital a :venture_capital .\n    ?venture_capital p:trust_name ?trust_name .\n    ?venture_capital p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?trust_name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?growth_equity a :growth_equity .\n    ?growth_equity p:firm_name ?firm_name .\n    ?growth_equity p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?firm_name AS ?o0)\n  }\n  UNION\n  {\n    ?venture_capital a :venture_capital .\n    ?venture_capital p:trust_name ?trust_name .\n    ?venture_capital p:funding_amount ?funding_amount_f .\n    FILTER((STR(?funding_amount_f) = \"5000000\" || STR(?funding_amount_f) = \"5000000.0\"))\n    BIND(?trust_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

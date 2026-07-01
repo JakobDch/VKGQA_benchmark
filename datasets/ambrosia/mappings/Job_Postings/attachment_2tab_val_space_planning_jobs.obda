@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Interior_Designers_base
+target		ex:Interior_Designers/{ID} a :Interior_Designers ; p:ID {ID} ; p:name {Name} ; p:Address {Address} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:Style {Style} .
+source		SELECT `ID`, `Name`, `Address`, `Email`, `PhoneNumber`, `Style` FROM `Interior_Designers`
+
+mappingId	Landscape_Architects_base
+target		ex:Landscape_Architects/{ID} a :Landscape_Architects ; p:ID {ID} ; p:name {Name} ; p:Address {Address} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:Style {Style} .
+source		SELECT `ID`, `Name`, `Address`, `Email`, `PhoneNumber`, `Style` FROM `Landscape_Architects`
+
+mappingId	Projects_base
+target		ex:Project/{ID} a :Project ; p:ID {ID} ; p:DesignerID {DesignerID} ; p:ArchitectID {ArchitectID} ; p:Title {Title} ; p:location {Location} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:Budget {Budget} ; p:Status {Status} .
+source		SELECT `ID`, `DesignerID`, `ArchitectID`, `Title`, `Location`, `StartDate`, `EndDate`, `Budget`, `Status` FROM `Projects`
+
+mappingId	Projects_ArchitectID_fk
+target		ex:Project/{ID} p:hasLandscape_Architects ex:Landscape_Architects/{ArchitectID} .
+source		SELECT `ID`, `ArchitectID` FROM `Projects` WHERE `ArchitectID` IS NOT NULL
+
+mappingId	Projects_DesignerID_fk
+target		ex:Project/{ID} p:hasInterior_Designers ex:Interior_Designers/{DesignerID} .
+source		SELECT `ID`, `DesignerID` FROM `Projects` WHERE `DesignerID` IS NOT NULL
+
+mappingId	Materials_base
+target		ex:Materials/{ID} a :Materials ; p:ID {ID} ; p:ProjectID {ProjectID} ; p:MaterialName {MaterialName} ; p:Quantity {Quantity} ; p:UnitPrice {UnitPrice} .
+source		SELECT `ID`, `ProjectID`, `MaterialName`, `Quantity`, `UnitPrice` FROM `Materials`
+
+mappingId	Materials_ProjectID_fk
+target		ex:Materials/{ID} p:hasProject ex:Project/{ProjectID} .
+source		SELECT `ID`, `ProjectID` FROM `Materials` WHERE `ProjectID` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{ID} a :Employees ; p:ID {ID} ; p:name {Name} ; p:Role {Role} ; p:ContactInfo {ContactInfo} .
+source		SELECT `ID`, `Name`, `Role`, `ContactInfo` FROM `Employees`
+
+mappingId	Staffing_base
+target		ex:Staffing/{ID} a :Staffing ; p:ID {ID} ; p:ProjectID {ProjectID} ; p:EmployeeID {EmployeeID} ; p:HoursWorked {HoursWorked} ; p:PayRate {PayRate} .
+source		SELECT `ID`, `ProjectID`, `EmployeeID`, `HoursWorked`, `PayRate` FROM `Staffing`
+
+mappingId	Staffing_EmployeeID_fk
+target		ex:Staffing/{ID} p:hasEmployees ex:Employees/{EmployeeID} .
+source		SELECT `ID`, `EmployeeID` FROM `Staffing` WHERE `EmployeeID` IS NOT NULL
+
+mappingId	Staffing_ProjectID_fk
+target		ex:Staffing/{ID} p:hasProject ex:Project/{ProjectID} .
+source		SELECT `ID`, `ProjectID` FROM `Staffing` WHERE `ProjectID` IS NOT NULL
+
+]]

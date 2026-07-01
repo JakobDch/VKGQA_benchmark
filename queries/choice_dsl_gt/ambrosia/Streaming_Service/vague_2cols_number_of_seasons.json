@@ -1,0 +1,80 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2cols_number_of_seasons",
+  "schema": "amb_vague_2cols_number_of_seasons",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "How many released and planned seasons of mystery sci-fi are there?",
+      "qtype": "unambig",
+      "sql": "Select Released_Seasons, Planned_Seasons From TV_Shows Where Series = 'Mystery Sci-Fi'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?released_seasons ?planned_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Released_Seasons ?released_seasons .\n  ?tv_shows p:Planned_Seasons ?planned_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who has the highest number of tv seasons ordered by most to least",
+      "qtype": "ambig",
+      "sql": "Select * From TV_Shows Order by Released_Seasons DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nSELECT ?id ?title ?rs ?ps ?series ?gid ?pid ?rid WHERE { ?x a :TV_Shows ; p:id ?id ; p:Title ?title ; p:Released_Seasons ?rs ; p:Planned_Seasons ?ps ; p:Series ?series ; p:GenreID ?gid ; p:PlatformID ?pid ; p:RatingID ?rid }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT * expanded to TV_Shows columns (no LIMIT -> ORDER BY irrelevant to row-se"
+    },
+    {
+      "qid": 2,
+      "question": "Who has the highest number of tv seasons ordered by most to least",
+      "qtype": "ambig",
+      "sql": "Select * From TV_Shows Order by Planned_Seasons DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nSELECT ?id ?title ?rs ?ps ?series ?gid ?pid ?rid WHERE { ?x a :TV_Shows ; p:id ?id ; p:Title ?title ; p:Released_Seasons ?rs ; p:Planned_Seasons ?ps ; p:Series ?series ; p:GenreID ?gid ; p:PlatformID ?pid ; p:RatingID ?rid }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT * expanded (TV_Shows)"
+    },
+    {
+      "qid": 3,
+      "question": "Who has the highest number of tv seasons ordered by most to least",
+      "qtype": "ambig",
+      "sql": "Select * From TV_Shows Order by Released_Seasons, Planned_Seasons DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nSELECT ?id ?title ?rs ?ps ?series ?gid ?pid ?rid WHERE { ?x a :TV_Shows ; p:id ?id ; p:Title ?title ; p:Released_Seasons ?rs ; p:Planned_Seasons ?ps ; p:Series ?series ; p:GenreID ?gid ; p:PlatformID ?pid ; p:RatingID ?rid }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT * expanded (TV_Shows)"
+    },
+    {
+      "qid": 4,
+      "question": "For mystery sci-fi, how many seasons were planned?",
+      "qtype": "unambig",
+      "sql": "Select Planned_Seasons From TV_Shows Where Series = 'Mystery Sci-Fi'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?planned_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Planned_Seasons ?planned_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For mystery sci-fi, how many seasons were released?",
+      "qtype": "unambig",
+      "sql": "Select Released_Seasons From TV_Shows Where Series = 'Mystery Sci-Fi'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?released_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Released_Seasons ?released_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "How many seasons are in mystery sci-fi?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?released_seasons ?planned_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Released_Seasons ?released_seasons .\n  ?tv_shows p:Planned_Seasons ?planned_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n} }\n  component: { SELECT ?planned_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Planned_Seasons ?planned_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n} }\n  component_2: { SELECT ?released_seasons WHERE {\n  ?tv_shows a :TV_Shows .\n  ?tv_shows p:Released_Seasons ?released_seasons .\n  ?tv_shows p:Series ?series_f .\n  FILTER(STR(?series_f) = STR(\"Mystery Sci-Fi\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

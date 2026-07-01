@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_boarding_types",
+  "schema": "amb_attachment_1tab_ref_boarding_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which passengers use priority boarding and family boarding on United Airlines flights?",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.Name \nFROM Passengers JOIN Flights ON Passengers.FlightID = Flights.FlightID JOIN Airlines ON Flights.AirlineID = Airlines.AirlineID\nWHERE (Passengers.BoardingType = \"Priority Boarding\" OR Passengers.BoardingType = \"Family Boarding\") AND Airlines.Name = \"United Airlines\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?passengers a :Passengers .\n  ?flights a :Flights .\n  ?passengers p:hasFlights ?flights .\n  ?airlines a :Airlines .\n  ?flights p:hasAirlines ?airlines .\n  ?passengers p:name ?name .\n  ?passengers p:BoardingType ?boardingtype_w .\n  ?passengers p:BoardingType ?boardingtype_w2 .\n  ?airlines p:name ?name_w .\n  FILTER((((STR(?boardingtype_w) = \"Priority Boarding\" || STR(?boardingtype_w2) = \"Family Boarding\")) && STR(?name_w) = \"United Airlines\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Which passengers use priority boarding and family boarding on United Airlines flights?",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.Name \nFROM Passengers JOIN Flights ON Passengers.FlightID = Flights.FlightID JOIN Airlines ON Flights.AirlineID = Airlines.AirlineID\nWHERE Passengers.BoardingType = \"Priority Boarding\" OR Passengers.BoardingType = \"Family Boarding\" AND Airlines.Name = \"United Airlines\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?passengers a :Passengers .\n  ?flights a :Flights .\n  ?passengers p:hasFlights ?flights .\n  ?airlines a :Airlines .\n  ?flights p:hasAirlines ?airlines .\n  ?passengers p:name ?name .\n  ?passengers p:BoardingType ?boardingtype_w .\n  ?passengers p:BoardingType ?boardingtype_w2 .\n  ?airlines p:name ?name_w .\n  FILTER((STR(?boardingtype_w) = \"Priority Boarding\" || (STR(?boardingtype_w2) = \"Family Boarding\" && STR(?name_w) = \"United Airlines\")))\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which passengers use priority boarding and family boarding on United Airlines flights?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?passengers a :Passengers .\n  ?flights a :Flights .\n  ?passengers p:hasFlights ?flights .\n  ?airlines a :Airlines .\n  ?flights p:hasAirlines ?airlines .\n  ?passengers p:name ?name .\n  ?passengers p:BoardingType ?boardingtype_w .\n  ?passengers p:BoardingType ?boardingtype_w2 .\n  ?airlines p:name ?name_w .\n  FILTER((((STR(?boardingtype_w) = \"Priority Boarding\" || STR(?boardingtype_w2) = \"Family Boarding\")) && STR(?name_w) = \"United Airlines\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?passengers a :Passengers .\n  ?flights a :Flights .\n  ?passengers p:hasFlights ?flights .\n  ?airlines a :Airlines .\n  ?flights p:hasAirlines ?airlines .\n  ?passengers p:name ?name .\n  ?passengers p:BoardingType ?boardingtype_w .\n  ?passengers p:BoardingType ?boardingtype_w2 .\n  ?airlines p:name ?name_w .\n  FILTER((STR(?boardingtype_w) = \"Priority Boarding\" || (STR(?boardingtype_w2) = \"Family Boarding\" && STR(?name_w) = \"United Airlines\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

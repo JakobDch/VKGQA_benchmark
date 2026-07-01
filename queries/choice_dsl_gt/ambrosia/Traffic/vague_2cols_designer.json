@@ -1,0 +1,97 @@
+{
+  "domain": "Traffic",
+  "db_base": "vague_2cols_designer",
+  "schema": "amb_vague_2cols_designer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What engineering firm(s) are located at the intersection of Elm Street and Pine Avenue, and which civil engineers work there?",
+      "qtype": "unambig",
+      "sql": "SELECT Civil_Engineer, Engineering_Firm FROM CivilEngineers WHERE Intersection = 'Elm St & Pine Ave';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?civil_engineer ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which civil engineer(s) work at the intersection of Elm Street and Pine Avenue?",
+      "qtype": "unambig",
+      "sql": "SELECT Civil_Engineer FROM CivilEngineers WHERE Intersection = 'Elm St & Pine Ave';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?civil_engineer WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which engineering firm has the biggest budget?",
+      "qtype": "unambig",
+      "sql": "SELECT Engineering_Firm FROM CivilEngineers ORDER BY Budget DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who works at the intersection of Elm Street and Pine Avenue?",
+      "qtype": "ambig",
+      "sql": "SELECT Engineering_Firm FROM CivilEngineers WHERE Intersection = 'Elm St & Pine Ave';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which civil engineer works in the company with the biggest budget?",
+      "qtype": "unambig",
+      "sql": "SELECT Civil_Engineer FROM CivilEngineers ORDER BY Budget DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?civil_engineer WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which civil engineer works for the company with the biggest budget and which company is it?",
+      "qtype": "unambig",
+      "sql": "SELECT Civil_Engineer, Engineering_Firm FROM CivilEngineers ORDER BY Budget DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?civil_engineer ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who works at the intersection of Elm Street and Pine Avenue?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?civil_engineer ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n} }\n  component: { SELECT ?civil_engineer WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n} }\n  component_2: { SELECT ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Intersection ?intersection_f .\n  FILTER(?intersection_f = \"Elm St & Pine Ave\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who has the biggest budget?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n  component_2: { SELECT ?civil_engineer WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n  full: { SELECT ?civil_engineer ?engineering_firm WHERE {\n  ?civilengineers a :CivilEngineers .\n  ?civilengineers p:Civil_Engineer ?civil_engineer .\n  ?civilengineers p:Engineering_Firm ?engineering_firm .\n  ?civilengineers p:Budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

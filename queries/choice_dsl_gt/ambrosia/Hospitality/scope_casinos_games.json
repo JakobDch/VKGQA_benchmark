@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_casinos_games",
+  "schema": "amb_scope_casinos_games",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the description of the game that is common to all casinos.",
+      "qtype": "unambig",
+      "sql": "SELECT Games.description  from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id   GROUP BY Casinos_Games.game_id HAVING COUNT(DISTINCT Casinos_Games.casino_id) = (SELECT COUNT(*) FROM  Casinos)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the games that are popular in all casinos.",
+      "qtype": "unambig",
+      "sql": "SELECT Games.game_name  from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id   GROUP BY Casinos_Games.game_id HAVING COUNT(DISTINCT Casinos_Games.casino_id) = (SELECT COUNT(*) FROM  Casinos)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?game_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:game_name ?game_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the names of the games along with their descriptions that are offered by every casino.",
+      "qtype": "ambig",
+      "sql": "SELECT Games.game_name, Games.description  from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id   GROUP BY Casinos_Games.game_id HAVING COUNT(DISTINCT Casinos_Games.casino_id) = (SELECT COUNT(*) FROM  Casinos)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?game_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:game_name ?game_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the names of the games along with their descriptions that are offered by every casino.",
+      "qtype": "ambig",
+      "sql": "select casinos.name , games.game_name , games.description from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?game_name ?description WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:game_name ?game_name .\n  ?games p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=25"
+    },
+    {
+      "qid": 4,
+      "question": "For each casino, show me the corresponding game description.",
+      "qtype": "unambig",
+      "sql": "select casinos.name , games.description from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=25"
+    },
+    {
+      "qid": 5,
+      "question": "What game does each casino have?",
+      "qtype": "ambig",
+      "sql": "select casinos.name , games.game_name from Casinos_Games join Games on Casinos_Games.game_id = Games.id join Casinos on Casinos_Games.casino_id = Casinos.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?game_name WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:game_name ?game_name .\n}",
+      "status": "pass",
+      "note": "n=25"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the descriptions of the games offered in each casino.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What game does each casino have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?game_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:game_name ?game_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?game_name WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:game_name ?game_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the names of the games along with their descriptions that are offered by every casino.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?game_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGames ?child ; p:hasCasinos ?parent . } GROUP BY ?child }\n  ?child p:game_name ?game_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Casinos } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?game_name ?description WHERE {\n  ?casinos_games a :Casinos_Games .\n  ?games a :Games .\n  ?casinos_games p:hasGames ?games .\n  ?casinos a :Casinos .\n  ?casinos_games p:hasCasinos ?casinos .\n  ?casinos p:name ?name .\n  ?games p:game_name ?game_name .\n  ?games p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

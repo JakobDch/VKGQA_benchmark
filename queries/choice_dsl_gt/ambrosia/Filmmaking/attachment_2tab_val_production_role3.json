@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_production_role3",
+  "schema": "amb_attachment_2tab_val_production_role3",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which stunt and fight scene coordinators have ten years of experience?",
+      "qtype": "unambig",
+      "sql": "SELECT Stunts.Coordinator as name\nFROM Stunts\nWHERE Stunts.Experience = \"10 years\"\nUNION\nSELECT FightScenes.Choreographer as name\nFROM FightScenes\nWHERE FightScenes.Experience = \"10 years\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stunts a :Stunts .\n    ?stunts p:Coordinator ?coordinator .\n    ?stunts p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?coordinator AS ?o0)\n  }\n  UNION\n  {\n    ?fightscenes a :FightScenes .\n    ?fightscenes p:Choreographer ?choreographer .\n    ?fightscenes p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?choreographer AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all stunt coordinators and also display fight scene coordinators with ten years of experience.",
+      "qtype": "unambig",
+      "sql": "SELECT Stunts.Coordinator as name\nFROM Stunts\nUNION\nSELECT FightScenes.Choreographer as name\nFROM FightScenes\nWHERE FightScenes.Experience = \"10 years\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stunts a :Stunts .\n    ?stunts p:Coordinator ?coordinator .\n    BIND(?coordinator AS ?o0)\n  }\n  UNION\n  {\n    ?fightscenes a :FightScenes .\n    ?fightscenes p:Choreographer ?choreographer .\n    ?fightscenes p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?choreographer AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display stunt coordinators and fight scene coordinators with ten years of experience.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stunts a :Stunts .\n    ?stunts p:Coordinator ?coordinator .\n    ?stunts p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?coordinator AS ?o0)\n  }\n  UNION\n  {\n    ?fightscenes a :FightScenes .\n    ?fightscenes p:Choreographer ?choreographer .\n    ?fightscenes p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?choreographer AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stunts a :Stunts .\n    ?stunts p:Coordinator ?coordinator .\n    BIND(?coordinator AS ?o0)\n  }\n  UNION\n  {\n    ?fightscenes a :FightScenes .\n    ?fightscenes p:Choreographer ?choreographer .\n    ?fightscenes p:Experience ?experience_f .\n    FILTER(STR(?experience_f) = \"10 years\")\n    BIND(?choreographer AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_lighting_technicians_fixtures",
+  "schema": "amb_scope_lighting_technicians_fixtures",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me descriptions of fixtures each technician uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Fixtures.description  from Lighting_Technicians_Fixtures join Fixtures on Lighting_Technicians_Fixtures.fixtureType = Fixtures.fixtureType join Lighting_Technicians on Lighting_Technicians_Fixtures.technicianID = Lighting_Technicians.technicianID   GROUP BY Lighting_Technicians_Fixtures.fixtureType HAVING COUNT(DISTINCT Lighting_Technicians_Fixtures.technicianID) = (SELECT COUNT(*) FROM  Lighting_Technicians)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:fixtureType ?cg . ?child a :Fixtures ; p:fixtureType ?cg . ?l p:technicianID ?pg . ?parent a :Lighting_Technicians ; p:technicianID ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lighting_Technicians } }\n  FILTER(?nf = ?total)\n}",
+      "status": "exception",
+      "note": "broken gold SQL: references Lighting_Technicians.id but the column is technicianID (no such column) -> fails on SQLite too; not executable"
+    },
+    {
+      "qid": 1,
+      "question": "Give me descriptions of fixtures each technician uses.",
+      "qtype": "ambig",
+      "sql": "select lighting_technicians.name , fixtures.description from Lighting_Technicians_Fixtures join Fixtures on Lighting_Technicians_Fixtures.fixtureType = Fixtures.fixtureType join Lighting_Technicians on Lighting_Technicians_Fixtures.technicianID = Lighting_Technicians.technicianID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?lighting_technicians_fixtures a :Lighting_Technicians_Fixtures .\n  ?fixtures a :Fixtures .\n  ?lighting_technicians_fixtures p:hasFixtures ?fixtures .\n  ?lighting_technicians a :Lighting_Technicians .\n  ?lighting_technicians_fixtures p:hasLighting_Technicians ?lighting_technicians .\n  OPTIONAL { ?lighting_technicians p:name ?name . }\n  OPTIONAL { ?fixtures p:description ?description . }\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ]
+}

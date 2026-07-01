@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_live_performance",
+  "schema": "amb_attachment_2tab_ref_live_performance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Please display concerts and theater plays held at a venue with a capacity of 700.",
+      "qtype": "ambig",
+      "sql": "SELECT Concert.title\nFROM Venue JOIN Concert ON Venue.id = Concert.venue_id\nWHERE Venue.venue_capacity = 700\nUNION\nSELECT Theater_Play.title\nFROM Venue JOIN Theater_Play ON Venue.id = Theater_Play.venue_id\nWHERE Venue.venue_capacity = 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?venue a :Venue .\n    ?concert a :Concert .\n    ?concert p:hasVenue ?venue .\n    ?concert p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?venue a :Venue .\n    ?theater_play a :Theater_Play .\n    ?theater_play p:hasVenue ?venue .\n    ?theater_play p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Please display concerts and theater plays held at a venue with a capacity of 700.",
+      "qtype": "ambig",
+      "sql": "SELECT Concert.title\nFROM Venue JOIN Concert ON Venue.id = Concert.venue_id\nUNION\nSELECT Theater_Play.title\nFROM Venue JOIN Theater_Play ON Venue.id = Theater_Play.venue_id\nWHERE Venue.venue_capacity = 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?venue a :Venue .\n    ?concert a :Concert .\n    ?concert p:hasVenue ?venue .\n    ?concert p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?venue a :Venue .\n    ?theater_play a :Theater_Play .\n    ?theater_play p:hasVenue ?venue .\n    ?theater_play p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Please display concerts and theater plays held at a venue with a capacity of 700.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?venue a :Venue .\n    ?concert a :Concert .\n    ?concert p:hasVenue ?venue .\n    ?concert p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?venue a :Venue .\n    ?theater_play a :Theater_Play .\n    ?theater_play p:hasVenue ?venue .\n    ?theater_play p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?venue a :Venue .\n    ?concert a :Concert .\n    ?concert p:hasVenue ?venue .\n    ?concert p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?venue a :Venue .\n    ?theater_play a :Theater_Play .\n    ?theater_play p:hasVenue ?venue .\n    ?theater_play p:title ?title .\n    ?venue p:venue_capacity ?venue_capacity_f .\n    FILTER((STR(?venue_capacity_f) = \"700\" || STR(?venue_capacity_f) = \"700.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

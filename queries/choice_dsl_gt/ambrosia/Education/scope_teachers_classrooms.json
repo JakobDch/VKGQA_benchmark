@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_teachers_classrooms",
+  "schema": "amb_scope_teachers_classrooms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which room number is shared by all the teachers and what is its capacity?",
+      "qtype": "unambig",
+      "sql": "SELECT Classrooms.room_number, Classrooms.capacity  from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id   GROUP BY Teachers_Classrooms.classroom_id HAVING COUNT(DISTINCT Teachers_Classrooms.teacher_id) = (SELECT COUNT(*) FROM  Teachers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?room_number ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:room_number ?room_number .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What are the capacities of the classrooms that are common for all teachers?",
+      "qtype": "unambig",
+      "sql": "SELECT Classrooms.capacity  from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id   GROUP BY Teachers_Classrooms.classroom_id HAVING COUNT(DISTINCT Teachers_Classrooms.teacher_id) = (SELECT COUNT(*) FROM  Teachers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What are the room numbers and capacities that every teacher uses?",
+      "qtype": "ambig",
+      "sql": "select teachers.full_name , classrooms.room_number , classrooms.capacity from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?room_number ?capacity WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:room_number ?room_number .\n  ?classrooms p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "What are the room numbers used by all the teachers?",
+      "qtype": "unambig",
+      "sql": "SELECT Classrooms.room_number  from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id   GROUP BY Teachers_Classrooms.classroom_id HAVING COUNT(DISTINCT Teachers_Classrooms.teacher_id) = (SELECT COUNT(*) FROM  Teachers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?room_number WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:room_number ?room_number .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the capacities of the classrooms that every teacher uses?",
+      "qtype": "ambig",
+      "sql": "select teachers.full_name , classrooms.capacity from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?capacity WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "For every teacher, list all the room numbers booked by each.",
+      "qtype": "unambig",
+      "sql": "select teachers.full_name , classrooms.room_number from Teachers_Classrooms join Classrooms on Teachers_Classrooms.classroom_id = Classrooms.classroom_id join Teachers on Teachers_Classrooms.teacher_id = Teachers.teacher_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?room_number WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:room_number ?room_number .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the room numbers and capacities that every teacher uses?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?room_number ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:room_number ?room_number .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?room_number ?capacity WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:room_number ?room_number .\n  ?classrooms p:capacity ?capacity .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the capacities of the classrooms that every teacher uses?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?capacity WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:capacity ?capacity .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What classroom numbers are used by each teacher?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?room_number WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClassrooms ?child ; p:hasTeachers ?parent . } GROUP BY ?child }\n  ?child p:room_number ?room_number .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Teachers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?room_number WHERE {\n  ?teachers_classrooms a :Teachers_Classrooms .\n  ?classrooms a :Classrooms .\n  ?teachers_classrooms p:hasClassrooms ?classrooms .\n  ?teachers a :Teachers .\n  ?teachers_classrooms p:hasTeachers ?teachers .\n  ?teachers p:name ?full_name .\n  ?classrooms p:room_number ?room_number .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

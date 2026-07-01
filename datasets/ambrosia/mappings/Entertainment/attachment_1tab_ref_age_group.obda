@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genre_base
+target		ex:Genre/{ID} a :Genre ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Genre`
+
+mappingId	AgeGroup_base
+target		ex:AgeGroup/{ID} a :AgeGroup ; p:ID {ID} ; p:GroupName {GroupName} .
+source		SELECT `ID`, `GroupName` FROM `AgeGroup`
+
+mappingId	Author_base
+target		ex:Author/{ID} a :Author ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Biography {Biography} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Biography` FROM `Author`
+
+mappingId	Illustrator_base
+target		ex:Illustrator/{ID} a :Illustrator ; p:ID {ID} ; p:name {Fullname} .
+source		SELECT `ID`, `Fullname` FROM `Illustrator`
+
+mappingId	Publisher_base
+target		ex:Publisher/{ID} a :Publisher ; p:ID {ID} ; p:CompanyName {CompanyName} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ID`, `CompanyName`, `Address`, `PhoneNumber` FROM `Publisher`
+
+mappingId	Books_base
+target		ex:Book/{ID} a :Book ; p:ID {ID} ; p:Title {Title} ; p:Summary {Summary} ; p:ReleaseDate {ReleaseDate} ; p:Price {Price} ; p:GenreID {GenreID} ; p:AgeGroupID {AgeGroupID} ; p:AuthorID {AuthorID} ; p:IllustratorID {IllustratorID} ; p:PublisherID {PublisherID} .
+source		SELECT `ID`, `Title`, `Summary`, `ReleaseDate`, `Price`, `GenreID`, `AgeGroupID`, `AuthorID`, `IllustratorID`, `PublisherID` FROM `Books`
+
+mappingId	Books_PublisherID_fk
+target		ex:Book/{ID} p:hasPublisher ex:Publisher/{PublisherID} .
+source		SELECT `ID`, `PublisherID` FROM `Books` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Books_IllustratorID_fk
+target		ex:Book/{ID} p:hasIllustrator ex:Illustrator/{IllustratorID} .
+source		SELECT `ID`, `IllustratorID` FROM `Books` WHERE `IllustratorID` IS NOT NULL
+
+mappingId	Books_AuthorID_fk
+target		ex:Book/{ID} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `ID`, `AuthorID` FROM `Books` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Books_AgeGroupID_fk
+target		ex:Book/{ID} p:hasAgeGroup ex:AgeGroup/{AgeGroupID} .
+source		SELECT `ID`, `AgeGroupID` FROM `Books` WHERE `AgeGroupID` IS NOT NULL
+
+mappingId	Books_GenreID_fk
+target		ex:Book/{ID} p:hasGenre ex:Genre/{GenreID} .
+source		SELECT `ID`, `GenreID` FROM `Books` WHERE `GenreID` IS NOT NULL
+
+]]

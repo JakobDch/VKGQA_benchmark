@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_customer_facing_roles",
+  "schema": "amb_attachment_2tab_ref_customer_facing_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What customer service advisors speak Chinese and what IT support technicians also speak it?",
+      "qtype": "unambig",
+      "sql": "SELECT Customer_Service_Advisors.advisor_name AS name\nFROM Languages JOIN Customer_Service_Advisors ON Languages.id = Customer_Service_Advisors.language_id\nWHERE Languages.name = \"Chinese\"\nUNION\nSELECT IT_Support_Technicians.technician_name AS name\nFROM Languages JOIN IT_Support_Technicians ON Languages.id = IT_Support_Technicians.language_id\nWHERE Languages.name = \"Chinese\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?customer_service_advisors a :Customer_Service_Advisors .\n    ?customer_service_advisors p:hasLanguages ?languages .\n    ?customer_service_advisors p:advisor_name ?advisor_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?advisor_name AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?it_support_technicians a :IT_Support_Technicians .\n    ?it_support_technicians p:hasLanguages ?languages .\n    ?it_support_technicians p:technician_name ?technician_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?technician_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me customer service advisors and IT support technicians who speak Chinese.",
+      "qtype": "ambig",
+      "sql": "SELECT Customer_Service_Advisors.advisor_name AS name\nFROM Languages JOIN Customer_Service_Advisors ON Languages.id = Customer_Service_Advisors.language_id\nUNION\nSELECT IT_Support_Technicians.technician_name AS name\nFROM Languages JOIN IT_Support_Technicians ON Languages.id = IT_Support_Technicians.language_id\nWHERE Languages.name = \"Chinese\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?customer_service_advisors a :Customer_Service_Advisors .\n    ?customer_service_advisors p:hasLanguages ?languages .\n    ?customer_service_advisors p:advisor_name ?advisor_name .\n    BIND(?advisor_name AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?it_support_technicians a :IT_Support_Technicians .\n    ?it_support_technicians p:hasLanguages ?languages .\n    ?it_support_technicians p:technician_name ?technician_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?technician_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me customer service advisors and IT support technicians who speak Chinese.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?customer_service_advisors a :Customer_Service_Advisors .\n    ?customer_service_advisors p:hasLanguages ?languages .\n    ?customer_service_advisors p:advisor_name ?advisor_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?advisor_name AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?it_support_technicians a :IT_Support_Technicians .\n    ?it_support_technicians p:hasLanguages ?languages .\n    ?it_support_technicians p:technician_name ?technician_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?technician_name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?customer_service_advisors a :Customer_Service_Advisors .\n    ?customer_service_advisors p:hasLanguages ?languages .\n    ?customer_service_advisors p:advisor_name ?advisor_name .\n    BIND(?advisor_name AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?it_support_technicians a :IT_Support_Technicians .\n    ?it_support_technicians p:hasLanguages ?languages .\n    ?it_support_technicians p:technician_name ?technician_name .\n    ?languages p:name ?name_f .\n    FILTER(STR(?name_f) = \"Chinese\")\n    BIND(?technician_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

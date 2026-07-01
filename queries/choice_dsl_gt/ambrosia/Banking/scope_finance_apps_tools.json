@@ -1,0 +1,108 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_finance_apps_tools",
+  "schema": "amb_scope_finance_apps_tools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every finance app, show the tools and their respective categories.",
+      "qtype": "unambig",
+      "sql": "select finance_apps.name , tools.tool_name , tools.category from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name ?category WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:tool_name ?tool_name .\n  ?tools p:category ?category .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Which tool is common to every finance app and what is its category?",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.tool_name, Tools.category  from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id   GROUP BY Finance_Apps_Tools.tool_id HAVING COUNT(DISTINCT Finance_Apps_Tools.finance_app_id) = (SELECT COUNT(*) FROM  Finance_Apps)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For each app, show me the category of tools they offer",
+      "qtype": "unambig",
+      "sql": "select finance_apps.name , tools.category from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?category WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:category ?category .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "For every finance app, show the tools that they have.",
+      "qtype": "unambig",
+      "sql": "select finance_apps.name , tools.tool_name from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:tool_name ?tool_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "What category of tools does each app offer",
+      "qtype": "ambig",
+      "sql": "SELECT Tools.category  from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id   GROUP BY Finance_Apps_Tools.tool_id HAVING COUNT(DISTINCT Finance_Apps_Tools.finance_app_id) = (SELECT COUNT(*) FROM  Finance_Apps)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which tools do all finance apps have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.tool_name  from Finance_Apps_Tools join Tools on Finance_Apps_Tools.tool_id = Tools.id join Finance_Apps on Finance_Apps_Tools.finance_app_id = Finance_Apps.id   GROUP BY Finance_Apps_Tools.tool_id HAVING COUNT(DISTINCT Finance_Apps_Tools.finance_app_id) = (SELECT COUNT(*) FROM  Finance_Apps)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the tools and their categories that every finance app offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?tool_name ?category WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:tool_name ?tool_name .\n  ?tools p:category ?category .\n} }\n  collective: { SELECT ?tool_name ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What category of tools does each app offer",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?category WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:category ?category .\n} }\n  collective: { SELECT ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the tools that all the finance apps have.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?tool_name WHERE {\n  ?finance_apps_tools a :Finance_Apps_Tools .\n  ?tools a :Tools .\n  ?finance_apps_tools p:hasTools ?tools .\n  ?finance_apps a :Finance_Apps .\n  ?finance_apps_tools p:hasFinance_Apps ?finance_apps .\n  ?finance_apps p:name ?name .\n  ?tools p:tool_name ?tool_name .\n} }\n  collective: { SELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasFinance_Apps ?parent . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Finance_Apps } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Healthcare_Centers_base
+target		ex:Healthcare_Centers/{CenterID} a :Healthcare_Centers ; p:CenterID {CenterID} ; p:CenterName {CenterName} ; p:Address {Address} .
+source		SELECT `CenterID`, `CenterName`, `Address` FROM `Healthcare_Centers`
+
+mappingId	Programs_base
+target		ex:Programs/{ProgramID} a :Programs ; p:ProgramID {ProgramID} ; p:ProgramType {ProgramType} .
+source		SELECT `ProgramID`, `ProgramType` FROM `Programs`
+
+mappingId	Patients_base
+target		ex:Patients/{PatientID} a :Patients ; p:PatientID {PatientID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:CenterID {CenterID} .
+source		SELECT `PatientID`, `FirstName`, `LastName`, `Age`, `CenterID` FROM `Patients`
+
+mappingId	Patients_CenterID_fk
+target		ex:Patients/{PatientID} p:hasHealthcare_Centers ex:Healthcare_Centers/{CenterID} .
+source		SELECT `PatientID`, `CenterID` FROM `Patients` WHERE `CenterID` IS NOT NULL
+
+mappingId	Doctors_base
+target		ex:Doctors/{DoctorID} a :Doctors ; p:DoctorID {DoctorID} ; p:name {Name} ; p:Specialization {Specialization} ; p:CenterID {CenterID} .
+source		SELECT `DoctorID`, `Name`, `Specialization`, `CenterID` FROM `Doctors`
+
+mappingId	Doctors_CenterID_fk
+target		ex:Doctors/{DoctorID} p:hasHealthcare_Centers ex:Healthcare_Centers/{CenterID} .
+source		SELECT `DoctorID`, `CenterID` FROM `Doctors` WHERE `CenterID` IS NOT NULL
+
+mappingId	Appointments_base
+target		ex:Appointments/{AppointmentID} a :Appointments ; p:AppointmentID {AppointmentID} ; p:PatientID {PatientID} ; p:DoctorID {DoctorID} ; p:Date {Date} .
+source		SELECT `AppointmentID`, `PatientID`, `DoctorID`, `Date` FROM `Appointments`
+
+mappingId	Appointments_DoctorID_fk
+target		ex:Appointments/{AppointmentID} p:hasDoctors ex:Doctors/{DoctorID} .
+source		SELECT `AppointmentID`, `DoctorID` FROM `Appointments` WHERE `DoctorID` IS NOT NULL
+
+mappingId	Appointments_PatientID_fk
+target		ex:Appointments/{AppointmentID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `AppointmentID`, `PatientID` FROM `Appointments` WHERE `PatientID` IS NOT NULL
+
+mappingId	MedicalHistory_base
+target		ex:MedicalHistory/{HistoryID} a :MedicalHistory ; p:HistoryID {HistoryID} ; p:PatientID {PatientID} ; p:Diagnosis {Diagnosis} ; p:Treatment {Treatment} .
+source		SELECT `HistoryID`, `PatientID`, `Diagnosis`, `Treatment` FROM `MedicalHistory`
+
+mappingId	MedicalHistory_PatientID_fk
+target		ex:MedicalHistory/{HistoryID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `HistoryID`, `PatientID` FROM `MedicalHistory` WHERE `PatientID` IS NOT NULL
+
+mappingId	Healthcare_Centers_Programs_base
+target		ex:Healthcare_Centers_Programs/{_amb_rowid} a :Healthcare_Centers_Programs ; p:CenterID {CenterID} ; p:ProgramID {ProgramID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `_amb_rowid`, `CenterID`, `ProgramID`, `StartDate`, `EndDate` FROM `Healthcare_Centers_Programs`
+
+mappingId	Healthcare_Centers_Programs_ProgramID_fk
+target		ex:Healthcare_Centers_Programs/{_amb_rowid} p:hasPrograms ex:Programs/{ProgramID} .
+source		SELECT `_amb_rowid`, `ProgramID` FROM `Healthcare_Centers_Programs` WHERE `ProgramID` IS NOT NULL
+
+mappingId	Healthcare_Centers_Programs_CenterID_fk
+target		ex:Healthcare_Centers_Programs/{_amb_rowid} p:hasHealthcare_Centers ex:Healthcare_Centers/{CenterID} .
+source		SELECT `_amb_rowid`, `CenterID` FROM `Healthcare_Centers_Programs` WHERE `CenterID` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Countries_base
+target		ex:Countries/{id} a :Countries ; p:id {id} ; p:country_name {country_name} .
+source		SELECT `id`, `country_name` FROM `Countries`
+
+mappingId	Regions_base
+target		ex:Regions/{region_id} a :Regions ; p:region_id {region_id} ; p:region_name {region_name} .
+source		SELECT `region_id`, `region_name` FROM `Regions`
+
+mappingId	Immigrants_base
+target		ex:Immigrants/{immigrant_id} a :Immigrants ; p:immigrant_id {immigrant_id} ; p:country_of_origin {country_of_origin} ; p:region_of_origin {region_of_origin} ; p:age {age} ; p:gender {gender} .
+source		SELECT `immigrant_id`, `country_of_origin`, `region_of_origin`, `age`, `gender` FROM `Immigrants`
+
+mappingId	Immigrants_region_of_origin_fk
+target		ex:Immigrants/{immigrant_id} p:hasRegions ex:Regions/{region_of_origin} .
+source		SELECT `immigrant_id`, `region_of_origin` FROM `Immigrants` WHERE `region_of_origin` IS NOT NULL
+
+mappingId	Immigrants_country_of_origin_fk
+target		ex:Immigrants/{immigrant_id} p:hasCountries ex:Countries/{country_of_origin} .
+source		SELECT `immigrant_id`, `country_of_origin` FROM `Immigrants` WHERE `country_of_origin` IS NOT NULL
+
+mappingId	Occupations_base
+target		ex:Occupations/{occupation_id} a :Occupations ; p:occupation_id {occupation_id} ; p:occupation_title {occupation_title} .
+source		SELECT `occupation_id`, `occupation_title` FROM `Occupations`
+
+mappingId	Education_Levels_base
+target		ex:EducationLevel/{education_level_id} a :EducationLevel ; p:education_level_id {education_level_id} ; p:level_description {level_description} .
+source		SELECT `education_level_id`, `level_description` FROM `Education_Levels`
+
+mappingId	Employment_base
+target		ex:Employment/{employment_id} a :Employment ; p:employment_id {employment_id} ; p:immigrant_id {immigrant_id} ; p:occupation_id {occupation_id} ; p:education_level_id {education_level_id} ; p:salary {salary} .
+source		SELECT `employment_id`, `immigrant_id`, `occupation_id`, `education_level_id`, `salary` FROM `Employment`
+
+mappingId	Employment_education_level_id_fk
+target		ex:Employment/{employment_id} p:hasEducationLevel ex:EducationLevel/{education_level_id} .
+source		SELECT `employment_id`, `education_level_id` FROM `Employment` WHERE `education_level_id` IS NOT NULL
+
+mappingId	Employment_occupation_id_fk
+target		ex:Employment/{employment_id} p:hasOccupations ex:Occupations/{occupation_id} .
+source		SELECT `employment_id`, `occupation_id` FROM `Employment` WHERE `occupation_id` IS NOT NULL
+
+mappingId	Employment_immigrant_id_fk
+target		ex:Employment/{employment_id} p:hasImmigrants ex:Immigrants/{immigrant_id} .
+source		SELECT `employment_id`, `immigrant_id` FROM `Employment` WHERE `immigrant_id` IS NOT NULL
+
+]]

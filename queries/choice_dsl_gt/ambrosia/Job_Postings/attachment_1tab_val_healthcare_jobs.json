@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_healthcare_jobs",
+  "schema": "amb_attachment_1tab_val_healthcare_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all day shift job postings for nurses and physical therapists.",
+      "qtype": "unambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings\nWHERE (JobPostings.healthcare = \"Nurse\" OR JobPostings.healthcare = \"Physical Therapist\") AND JobPostings.shift = \"Day Shift\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:healthcare ?healthcare_w .\n  ?jobpostings p:healthcare ?healthcare_w2 .\n  ?jobpostings p:shift ?shift_w .\n  FILTER((((STR(?healthcare_w) = \"Nurse\" || STR(?healthcare_w2) = \"Physical Therapist\")) && STR(?shift_w) = \"Day Shift\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the job postings for nurses, and just the day shift job postings for physical therapists.",
+      "qtype": "unambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings\nWHERE JobPostings.healthcare = \"Nurse\" OR JobPostings.healthcare = \"Physical Therapist\" AND JobPostings.shift = \"Day Shift\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:healthcare ?healthcare_w .\n  ?jobpostings p:healthcare ?healthcare_w2 .\n  ?jobpostings p:shift ?shift_w .\n  FILTER((STR(?healthcare_w) = \"Nurse\" || (STR(?healthcare_w2) = \"Physical Therapist\" && STR(?shift_w) = \"Day Shift\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all job postings for nurses and physical therapists which are on the day shift.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:healthcare ?healthcare_w .\n  ?jobpostings p:healthcare ?healthcare_w2 .\n  ?jobpostings p:shift ?shift_w .\n  FILTER((((STR(?healthcare_w) = \"Nurse\" || STR(?healthcare_w2) = \"Physical Therapist\")) && STR(?shift_w) = \"Day Shift\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:healthcare ?healthcare_w .\n  ?jobpostings p:healthcare ?healthcare_w2 .\n  ?jobpostings p:shift ?shift_w .\n  FILTER((STR(?healthcare_w) = \"Nurse\" || (STR(?healthcare_w2) = \"Physical Therapist\" && STR(?shift_w) = \"Day Shift\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

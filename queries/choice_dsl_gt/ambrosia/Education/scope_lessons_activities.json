@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_lessons_activities",
+  "schema": "amb_scope_lessons_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What activities are common to all lessons",
+      "qtype": "unambig",
+      "sql": "SELECT Activities.description  from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id   GROUP BY Lessons_Activities.activitiesType HAVING COUNT(DISTINCT Lessons_Activities.lessonsId) = (SELECT COUNT(*) FROM  Lessons)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What activities do all lessons have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Activities.activityType  from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id   GROUP BY Lessons_Activities.activitiesType HAVING COUNT(DISTINCT Lessons_Activities.lessonsId) = (SELECT COUNT(*) FROM  Lessons)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activitytype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:activityType ?activitytype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which activity type and description of activities are shared by all lessons?",
+      "qtype": "unambig",
+      "sql": "SELECT Activities.activityType, Activities.description  from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id   GROUP BY Lessons_Activities.activitiesType HAVING COUNT(DISTINCT Lessons_Activities.lessonsId) = (SELECT COUNT(*) FROM  Lessons)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activitytype ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:activityType ?activitytype .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each lesson, show me the description of activities on offer",
+      "qtype": "unambig",
+      "sql": "select lessons.lessonname , activities.description from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?lessonname ?description WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 4,
+      "question": "What activity types and descriptions are associated with each lesson?",
+      "qtype": "ambig",
+      "sql": "select lessons.lessonname , activities.activitytype , activities.description from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?lessonname ?activitytype ?description WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:activityType ?activitytype .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 5,
+      "question": "For each lesson, list the activities they have.",
+      "qtype": "unambig",
+      "sql": "select lessons.lessonname , activities.activitytype from Lessons_Activities join Activities on Lessons_Activities.activitiesType = Activities.activityType join Lessons on Lessons_Activities.lessonsId = Lessons.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?lessonname ?activitytype WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:activityType ?activitytype .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the descriptions for each activity for all lessons",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?lessonname ?description WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the activities every lesson has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?activitytype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:activityType ?activitytype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?lessonname ?activitytype WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:activityType ?activitytype .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What activity types and descriptions are associated with each lesson?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?activitytype ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasLessons ?parent . } GROUP BY ?child }\n  ?child p:activityType ?activitytype .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lessons } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?lessonname ?activitytype ?description WHERE {\n  ?lessons_activities a :Lessons_Activities .\n  ?activities a :Activities .\n  ?lessons_activities p:hasActivities ?activities .\n  ?lessons a :Lessons .\n  ?lessons_activities p:hasLessons ?lessons .\n  ?lessons p:lessonName ?lessonname .\n  ?activities p:activityType ?activitytype .\n  ?activities p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Classroom_base
+target		ex:Classrooms/{id} a :Classrooms ; p:id {id} ; p:name {name} ; p:capacity {capacity} .
+source		SELECT `id`, `name`, `capacity` FROM `Classroom`
+
+mappingId	Equipment_base
+target		ex:Equipment/{id} a :Equipment ; p:id {id} ; p:equipmentName {equipmentName} ; p:quantity {quantity} .
+source		SELECT `id`, `equipmentName`, `quantity` FROM `Equipment`
+
+mappingId	Classroom_Equipment_base
+target		ex:Classroom_Equipment/{_amb_rowid} a :Classroom_Equipment ; p:classroomId {classroomId} ; p:equipmentId {equipmentId} .
+source		SELECT `_amb_rowid`, `classroomId`, `equipmentId` FROM `Classroom_Equipment`
+
+mappingId	Classroom_Equipment_equipmentId_fk
+target		ex:Classroom_Equipment/{_amb_rowid} p:hasEquipment ex:Equipment/{equipmentId} .
+source		SELECT `_amb_rowid`, `equipmentId` FROM `Classroom_Equipment` WHERE `equipmentId` IS NOT NULL
+
+mappingId	Classroom_Equipment_classroomId_fk
+target		ex:Classroom_Equipment/{_amb_rowid} p:hasClassrooms ex:Classrooms/{classroomId} .
+source		SELECT `_amb_rowid`, `classroomId` FROM `Classroom_Equipment` WHERE `classroomId` IS NOT NULL
+
+]]

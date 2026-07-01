@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Sponsors_base
+target		ex:Sponsors/{id} a :Sponsors ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Sponsors`
+
+mappingId	Tennis_Players_base
+target		ex:Tennis_Players/{id} a :Tennis_Players ; p:id {id} ; p:playerName {playerName} ; p:tennisTournaments {tennisTournaments} .
+source		SELECT `id`, `playerName`, `tennisTournaments` FROM `Tennis_Players`
+
+mappingId	Tennis_Players_tennisTournaments_fk
+target		ex:Tennis_Players/{id} p:hasTennis_Tournaments ex:Tennis_Tournaments/{tennisTournaments} .
+source		SELECT `id`, `tennisTournaments` FROM `Tennis_Players` WHERE `tennisTournaments` IS NOT NULL
+
+mappingId	Golf_Players_base
+target		ex:Golf_Players/{id} a :Golf_Players ; p:id {id} ; p:playerName {playerName} ; p:golfTournaments {golfTournaments} .
+source		SELECT `id`, `playerName`, `golfTournaments` FROM `Golf_Players`
+
+mappingId	Golf_Players_golfTournaments_fk
+target		ex:Golf_Players/{id} p:hasGolf_Tournaments ex:Golf_Tournaments/{golfTournaments} .
+source		SELECT `id`, `golfTournaments` FROM `Golf_Players` WHERE `golfTournaments` IS NOT NULL
+
+mappingId	Tennis_Tournaments_base
+target		ex:Tennis_Tournaments/{id} a :Tennis_Tournaments ; p:id {id} ; p:tournamentName {tournamentName} ; p:sponsorID {sponsorID} .
+source		SELECT `id`, `tournamentName`, `sponsorID` FROM `Tennis_Tournaments`
+
+mappingId	Tennis_Tournaments_sponsorID_fk
+target		ex:Tennis_Tournaments/{id} p:hasSponsors ex:Sponsors/{sponsorID} .
+source		SELECT `id`, `sponsorID` FROM `Tennis_Tournaments` WHERE `sponsorID` IS NOT NULL
+
+mappingId	Golf_Tournaments_base
+target		ex:Golf_Tournaments/{id} a :Golf_Tournaments ; p:id {id} ; p:tournamentName {tournamentName} ; p:sponsorID {sponsorID} .
+source		SELECT `id`, `tournamentName`, `sponsorID` FROM `Golf_Tournaments`
+
+mappingId	Golf_Tournaments_sponsorID_fk
+target		ex:Golf_Tournaments/{id} p:hasSponsors ex:Sponsors/{sponsorID} .
+source		SELECT `id`, `sponsorID` FROM `Golf_Tournaments` WHERE `sponsorID` IS NOT NULL
+
+mappingId	Matches_base
+target		ex:Matches/{matchId} a :Matches ; p:matchId {matchId} ; p:tennisPlayerID {tennisPlayerID} ; p:golferID {golferID} ; p:score {score} ; p:date {date} .
+source		SELECT `matchId`, `tennisPlayerID`, `golferID`, `score`, `date` FROM `Matches`
+
+mappingId	Matches_golferID_fk
+target		ex:Matches/{matchId} p:hasGolf_Players ex:Golf_Players/{golferID} .
+source		SELECT `matchId`, `golferID` FROM `Matches` WHERE `golferID` IS NOT NULL
+
+mappingId	Matches_tennisPlayerID_fk
+target		ex:Matches/{matchId} p:hasTennis_Players ex:Tennis_Players/{tennisPlayerID} .
+source		SELECT `matchId`, `tennisPlayerID` FROM `Matches` WHERE `tennisPlayerID` IS NOT NULL
+
+]]

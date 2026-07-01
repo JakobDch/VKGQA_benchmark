@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Tech_Startups_base
+target		ex:Tech_Startups/{id} a :Tech_Startups ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Tech_Startups`
+
+mappingId	Tech_Jobs_base
+target		ex:TechJob/{id} a :TechJob ; p:id {id} ; p:job_title {job_title} ; p:description {description} .
+source		SELECT `id`, `job_title`, `description` FROM `Tech_Jobs`
+
+mappingId	Tech_Startups_Tech_Jobs_base
+target		ex:Tech_Startups_Tech_Jobs/{tech_startup_id}/{tech_job_id} a :Tech_Startups_Tech_Jobs ; p:tech_startup_id {tech_startup_id} ; p:tech_job_id {tech_job_id} .
+source		SELECT `tech_startup_id`, `tech_job_id` FROM `Tech_Startups_Tech_Jobs`
+
+mappingId	Tech_Startups_Tech_Jobs_tech_job_id_fk
+target		ex:Tech_Startups_Tech_Jobs/{tech_startup_id}/{tech_job_id} p:hasTechJob ex:TechJob/{tech_job_id} .
+source		SELECT `tech_startup_id`, `tech_job_id` FROM `Tech_Startups_Tech_Jobs` WHERE `tech_job_id` IS NOT NULL
+
+mappingId	Tech_Startups_Tech_Jobs_tech_startup_id_fk
+target		ex:Tech_Startups_Tech_Jobs/{tech_startup_id}/{tech_job_id} p:hasTech_Startups ex:Tech_Startups/{tech_startup_id} .
+source		SELECT `tech_startup_id`, `tech_job_id` FROM `Tech_Startups_Tech_Jobs` WHERE `tech_startup_id` IS NOT NULL
+
+]]

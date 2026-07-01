@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2tabs_side_effect_profile",
+  "schema": "amb_vague_2tabs_side_effect_profile",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all of the medications for Mr. Smith and their common and serious side effects ?",
+      "qtype": "unambig",
+      "sql": "select name, Common_Side_Effects.description,Serious_Side_Effects.description from Common_Side_Effects join Antibiotic on Antibiotic.commonSideEffects = Common_Side_Effects.sideEffectID join Prescription on Prescription.antibioticID = Antibiotic.antibioticID join Patient on Patient.patientID = Prescription.patientID join Serious_Side_Effects on Antibiotic.SeriousSideEffects = Serious_Side_Effects.SeriousSideEffectID where  Patient.lastName = 'Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description ?description2 WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?antibiotic p:name ?name .\n  ?common_side_effects p:description ?description .\n  ?serious_side_effects p:description ?description2 .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "show me the medicine and its side effects for mr. Smith",
+      "qtype": "ambig",
+      "sql": "select name, description from Common_Side_Effects join Antibiotic on Antibiotic.commonSideEffects = Common_Side_Effects.sideEffectID join Prescription on Prescription.antibioticID = Antibiotic.antibioticID join Patient on Patient.patientID = Prescription.patientID where  Patient.lastName = 'Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?antibiotic p:name ?name .\n  ?common_side_effects p:description ?description .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "show me the medicine and its side effects for mr. Smith",
+      "qtype": "ambig",
+      "sql": "select name, description from Serious_Side_Effects join Antibiotic on Antibiotic.SeriousSideEffects = Serious_Side_Effects.SeriousSideEffectID join Prescription on Prescription.antibioticID = Antibiotic.antibioticID join Patient on Patient.patientID = Prescription.patientID where  Patient.lastName = 'Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?antibiotic p:name ?name .\n  ?serious_side_effects p:description ?description .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "show me the description of the common side effects for the antibiotic Azithromycin",
+      "qtype": "unambig",
+      "sql": "select description from Common_Side_Effects join Antibiotic on Antibiotic.commonSideEffects = Common_Side_Effects.sideEffectID where Antibiotic.name = 'Azithromycin'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?common_side_effects p:description ?description .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "show me the description of the serious side effects for the antibiotic Azithromycin",
+      "qtype": "unambig",
+      "sql": "select description from Serious_Side_Effects join Antibiotic on Antibiotic.SeriousSideEffects = Serious_Side_Effects.SeriousSideEffectID where Antibiotic.name = 'Azithromycin'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?serious_side_effects p:description ?description .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "show me the descriptions of the common and serious side effects for the antibiotic Azithromycin",
+      "qtype": "unambig",
+      "sql": "select Common_Side_Effects.description,Serious_Side_Effects.description from Common_Side_Effects join Antibiotic on Antibiotic.commonSideEffects = Common_Side_Effects.sideEffectID join Serious_Side_Effects on Antibiotic.SeriousSideEffects = Serious_Side_Effects.SeriousSideEffectID  where Antibiotic.name = 'Azithromycin'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?description2 WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?common_side_effects p:description ?description .\n  ?serious_side_effects p:description ?description2 .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me the medicine and its side effects for mr. Smith",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?description ?description2 WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?antibiotic p:name ?name .\n  ?common_side_effects p:description ?description .\n  ?serious_side_effects p:description ?description2 .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n} }\n  component: { SELECT ?name ?description WHERE {\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?antibiotic p:name ?name .\n  ?serious_side_effects p:description ?description .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n} }\n  component_2: { SELECT ?name ?description WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?prescription a :Prescriptions .\n  ?prescription p:hasAntibiotic ?antibiotic .\n  ?patient a :Patients .\n  ?prescription p:hasPatient ?patient .\n  ?antibiotic p:name ?name .\n  ?common_side_effects p:description ?description .\n  ?patient p:lastName ?lastname_f .\n  FILTER(STR(?lastname_f) = STR(\"Smith\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "show me the possible side effects for Azithromycin",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?description WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?common_side_effects p:description ?description .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n} }\n  component_2: { SELECT ?description WHERE {\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?serious_side_effects p:description ?description .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n} }\n  full: { SELECT ?description ?description2 WHERE {\n  ?common_side_effects a :Common_Side_Effects .\n  ?antibiotic a :Antibiotic .\n  ?antibiotic p:hasCommon_Side_Effects ?common_side_effects .\n  ?serious_side_effects a :Serious_Side_Effects .\n  ?antibiotic p:hasSerious_Side_Effects ?serious_side_effects .\n  ?common_side_effects p:description ?description .\n  ?serious_side_effects p:description ?description2 .\n  ?antibiotic p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Azithromycin\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

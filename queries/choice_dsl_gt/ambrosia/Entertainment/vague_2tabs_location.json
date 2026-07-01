@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_location",
+  "schema": "amb_vague_2tabs_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you provide the artist name, date, city and country of each concert?",
+      "qtype": "unambig",
+      "sql": "SELECT a.name, c.concert_date, cn.name, l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"City\" l ON c.city_id = l.id JOIN \"Country\"  cn ON c.country_id = cn.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?concert_date ?name2 ?name3 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?cn a :Country .\n  ?c p:hasCountry ?cn .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?cn p:name ?name2 .\n  ?l p:name ?name3 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Can you provide the artist name, date and concert location of each concert?",
+      "qtype": "ambig",
+      "sql": "SELECT a.name, c.concert_date, l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"City\" l ON c.city_id = l.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?concert_date ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?l p:name ?name2 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Can you provide the artist name, date and concert location of each concert?",
+      "qtype": "ambig",
+      "sql": "SELECT a.name, c.concert_date, l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"Country\" l ON c.country_id = l.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?concert_date ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :Country .\n  ?c p:hasCountry ?l .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?l p:name ?name2 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Where did Dua Lipa's concert take place?",
+      "qtype": "ambig",
+      "sql": "SELECT l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"City\" l ON c.city_id = l.id WHERE a.name = 'Dua Lipa';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?l p:name ?name .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Where did Dua Lipa's concert take place?",
+      "qtype": "ambig",
+      "sql": "SELECT l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"Country\" l ON c.country_id = l.id WHERE a.name = 'Dua Lipa';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :Country .\n  ?c p:hasCountry ?l .\n  ?l p:name ?name .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Where did Dua Lipa's concert take place?",
+      "qtype": "ambig",
+      "sql": "SELECT cn.name, l.name FROM \"Concert\" c JOIN \"Artist\" a ON c.artist_name = a.name JOIN \"City\" l ON c.city_id = l.id JOIN \"Country\"  cn ON c.country_id = cn.id WHERE a.name = 'Dua Lipa';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?cn a :Country .\n  ?c p:hasCountry ?cn .\n  ?cn p:name ?name .\n  ?l p:name ?name2 .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Can you provide the artist name, date and concert location of each concert?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?concert_date ?name2 ?name3 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?cn a :Country .\n  ?c p:hasCountry ?cn .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?cn p:name ?name2 .\n  ?l p:name ?name3 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n} }\n  component: { SELECT ?name ?concert_date ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :Country .\n  ?c p:hasCountry ?l .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?l p:name ?name2 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n} }\n  component_2: { SELECT ?name ?concert_date ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?a p:name ?name .\n  ?c p:concert_date ?concert_date .\n  ?l p:name ?name2 .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where did Dua Lipa's concert take place?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        5,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?name2 WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?cn a :Country .\n  ?c p:hasCountry ?cn .\n  ?cn p:name ?name .\n  ?l p:name ?name2 .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n} }\n  component: { SELECT ?name WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :City .\n  ?c p:hasCity ?l .\n  ?l p:name ?name .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?c a :Concert .\n  ?a a :Artist .\n  ?c p:artist_name ?artist_name_l .\n  ?a p:name ?name_r .\n  ?l a :Country .\n  ?c p:hasCountry ?l .\n  ?l p:name ?name .\n  ?a p:name ?name_f .\n  FILTER(STR(?artist_name_l) = STR(?name_r))\n  FILTER(STR(?name_f) = \"Dua Lipa\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

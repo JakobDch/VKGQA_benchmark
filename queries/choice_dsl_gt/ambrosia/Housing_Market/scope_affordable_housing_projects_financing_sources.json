@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_affordable_housing_projects_financing_sources",
+  "schema": "amb_scope_affordable_housing_projects_financing_sources",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What source value of financing sources is common for all affordable housing projects?",
+      "qtype": "unambig",
+      "sql": "SELECT Financing_Sources.source_value  from Affordable_Housing_Projects_Financing_Sources join Financing_Sources on Affordable_Housing_Projects_Financing_Sources.financing_source_id = Financing_Sources.source_id join Affordable_Housing_Projects on Affordable_Housing_Projects_Financing_Sources.housing_project_id = Affordable_Housing_Projects.project_id   GROUP BY Affordable_Housing_Projects_Financing_Sources.financing_source_id HAVING COUNT(DISTINCT Affordable_Housing_Projects_Financing_Sources.housing_project_id) = (SELECT COUNT(*) FROM  Affordable_Housing_Projects)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?source_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFinancing_Sources ?child ; p:hasAffordable_Housing_Projects ?parent . } GROUP BY ?child }\n  ?child p:source_value ?source_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Affordable_Housing_Projects } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What source value of financing sources do we have for every affordable housing project?",
+      "qtype": "ambig",
+      "sql": "select affordable_housing_projects.project_name , financing_sources.source_value from Affordable_Housing_Projects_Financing_Sources join Financing_Sources on Affordable_Housing_Projects_Financing_Sources.financing_source_id = Financing_Sources.source_id join Affordable_Housing_Projects on Affordable_Housing_Projects_Financing_Sources.housing_project_id = Affordable_Housing_Projects.project_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name ?source_value WHERE {\n  ?affordable_housing_projects_financing_sources a :Affordable_Housing_Projects_Financing_Sources .\n  ?financing_sources a :Financing_Sources .\n  ?affordable_housing_projects_financing_sources p:hasFinancing_Sources ?financing_sources .\n  ?affordable_housing_projects a :Affordable_Housing_Projects .\n  ?affordable_housing_projects_financing_sources p:hasAffordable_Housing_Projects ?affordable_housing_projects .\n  ?affordable_housing_projects p:project_name ?project_name .\n  ?financing_sources p:source_value ?source_value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What source value of financing sources do we have for every affordable housing project?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?source_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFinancing_Sources ?child ; p:hasAffordable_Housing_Projects ?parent . } GROUP BY ?child }\n  ?child p:source_value ?source_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Affordable_Housing_Projects } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?project_name ?source_value WHERE {\n  ?affordable_housing_projects_financing_sources a :Affordable_Housing_Projects_Financing_Sources .\n  ?financing_sources a :Financing_Sources .\n  ?affordable_housing_projects_financing_sources p:hasFinancing_Sources ?financing_sources .\n  ?affordable_housing_projects a :Affordable_Housing_Projects .\n  ?affordable_housing_projects_financing_sources p:hasAffordable_Housing_Projects ?affordable_housing_projects .\n  ?affordable_housing_projects p:project_name ?project_name .\n  ?financing_sources p:source_value ?source_value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

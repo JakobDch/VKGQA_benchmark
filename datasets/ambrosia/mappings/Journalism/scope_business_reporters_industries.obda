@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Industries_base
+target		ex:Industries/{industryID} a :Industries ; p:industryID {industryID} ; p:name {name} .
+source		SELECT `industryID`, `name` FROM `Industries`
+
+mappingId	Business_Reporters_base
+target		ex:Business_Reporters/{reporterID} a :Business_Reporters ; p:reporterID {reporterID} ; p:name {fullName} .
+source		SELECT `reporterID`, `fullName` FROM `Business_Reporters`
+
+mappingId	Articles_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:title {title} ; p:content {content} .
+source		SELECT `articleID`, `title`, `content` FROM `Articles`
+
+mappingId	Business_Reporters_Articles_base
+target		ex:Business_Reporters_Articles/{_amb_rowid} a :Business_Reporters_Articles ; p:businessReporterID {businessReporterID} ; p:articleID {articleID} .
+source		SELECT `_amb_rowid`, `businessReporterID`, `articleID` FROM `Business_Reporters_Articles`
+
+mappingId	Business_Reporters_Articles_articleID_fk
+target		ex:Business_Reporters_Articles/{_amb_rowid} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `_amb_rowid`, `articleID` FROM `Business_Reporters_Articles` WHERE `articleID` IS NOT NULL
+
+mappingId	Business_Reporters_Articles_businessReporterID_fk
+target		ex:Business_Reporters_Articles/{_amb_rowid} p:hasBusiness_Reporters ex:Business_Reporters/{businessReporterID} .
+source		SELECT `_amb_rowid`, `businessReporterID` FROM `Business_Reporters_Articles` WHERE `businessReporterID` IS NOT NULL
+
+mappingId	Reporters_Industries_base
+target		ex:Reporters_Industries/{_amb_rowid} a :Reporters_Industries ; p:businessReporterID {businessReporterID} ; p:industryID {industryID} .
+source		SELECT `_amb_rowid`, `businessReporterID`, `industryID` FROM `Reporters_Industries`
+
+mappingId	Reporters_Industries_industryID_fk
+target		ex:Reporters_Industries/{_amb_rowid} p:hasIndustries ex:Industries/{industryID} .
+source		SELECT `_amb_rowid`, `industryID` FROM `Reporters_Industries` WHERE `industryID` IS NOT NULL
+
+mappingId	Reporters_Industries_businessReporterID_fk
+target		ex:Reporters_Industries/{_amb_rowid} p:hasBusiness_Reporters ex:Business_Reporters/{businessReporterID} .
+source		SELECT `_amb_rowid`, `businessReporterID` FROM `Reporters_Industries` WHERE `businessReporterID` IS NOT NULL
+
+mappingId	Business_Reporters_Industries_base
+target		ex:Reporters_Industries/{_amb_rowid} a :Reporters_Industries ; p:businessReporterID {businessReporterID} ; p:industryID {industryID} .
+source		SELECT `_amb_rowid`, `businessReporterID`, `industryID` FROM `Business_Reporters_Industries`
+
+mappingId	Business_Reporters_Industries_industryID_fk
+target		ex:Reporters_Industries/{_amb_rowid} p:hasReporters_Industries_industryID ex:Reporters_Industries/{industryID} .
+source		SELECT `_amb_rowid`, `industryID` FROM `Business_Reporters_Industries` WHERE `industryID` IS NOT NULL
+
+mappingId	Business_Reporters_Industries_businessReporterID_fk
+target		ex:Reporters_Industries/{_amb_rowid} p:hasReporters_Industries_businessReporterID ex:Reporters_Industries/{businessReporterID} .
+source		SELECT `_amb_rowid`, `businessReporterID` FROM `Business_Reporters_Industries` WHERE `businessReporterID` IS NOT NULL
+
+]]

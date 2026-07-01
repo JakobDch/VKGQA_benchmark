@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_context",
+  "schema": "amb_vague_2tabs_context",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me information about the time period in which Hamlet was written",
+      "qtype": "unambig",
+      "sql": "SELECT name, description FROM Epoch JOIN Play ON Epoch.id = Play.epoch_id WHERE title = \"Hamlet\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?epoch p:name ?name .\n  ?epoch p:description ?description .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me information about the time period in which Hamlet was written and the society in which it was written.",
+      "qtype": "unambig",
+      "sql": "SELECT Epoch.name, Epoch.description, Society.name, Society.culture FROM Epoch JOIN Play ON Epoch.id = Play.epoch_id JOIN Society ON Society.id = Play.Society_id WHERE title = \"Hamlet\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description ?name2 ?culture WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?society a :Society .\n  ?play p:hasSociety ?society .\n  ?epoch p:name ?name .\n  ?epoch p:description ?description .\n  ?society p:name ?name2 .\n  ?society p:culture ?culture .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which context has the most plays set in it, and how many?",
+      "qtype": "ambig",
+      "sql": "SELECT Epoch.name, COUNT(Play.id) AS number_of_plays FROM Epoch JOIN Play ON Epoch.id = Play.epoch_id GROUP BY Epoch.id ORDER BY number_of_plays DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name (COUNT(?id_a) AS ?agg) WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?epoch p:id ?id_g .\n  ?epoch p:name ?name .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name\nORDER BY DESC(?agg)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which context has the most plays set in it, and how many?",
+      "qtype": "ambig",
+      "sql": "SELECT Society.name, COUNT(Play.id) AS number_of_plays FROM Society JOIN Play ON Society.id = Play.Society_id GROUP BY Society.id ORDER BY number_of_plays DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name (COUNT(?id_a) AS ?agg) WHERE {\n  ?society a :Society .\n  ?play a :Play .\n  ?play p:hasSociety ?society .\n  ?society p:id ?id_g .\n  ?society p:name ?name .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name\nORDER BY DESC(?agg)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which context has the most plays set in it, and how many?",
+      "qtype": "ambig",
+      "sql": "SELECT Epoch.name, Society.name, COUNT(Play.id) AS number_of_plays FROM Epoch JOIN Play ON Epoch.id = Play.epoch_id JOIN Society ON Society.id = Play.Society_id  GROUP BY Epoch.id ORDER BY number_of_plays DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 (COUNT(?id_a) AS ?agg) WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?society a :Society .\n  ?play p:hasSociety ?society .\n  ?epoch p:id ?id_g .\n  ?epoch p:name ?name .\n  ?society p:name ?name2 .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name ?name2\nORDER BY DESC(?agg)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What was society like at the time Hamlet was written",
+      "qtype": "unambig",
+      "sql": "SELECT name, culture FROM Society JOIN Play ON Society.id = Play.Society_id WHERE title = \"Hamlet\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?culture WHERE {\n  ?society a :Society .\n  ?play a :Play .\n  ?play p:hasSociety ?society .\n  ?society p:name ?name .\n  ?society p:culture ?culture .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me information about the context in which Hamlet was written.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?description WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?epoch p:name ?name .\n  ?epoch p:description ?description .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n  full: { SELECT ?name ?description ?name2 ?culture WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?society a :Society .\n  ?play p:hasSociety ?society .\n  ?epoch p:name ?name .\n  ?epoch p:description ?description .\n  ?society p:name ?name2 .\n  ?society p:culture ?culture .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n  component_2: { SELECT ?name ?culture WHERE {\n  ?society a :Society .\n  ?play a :Play .\n  ?play p:hasSociety ?society .\n  ?society p:name ?name .\n  ?society p:culture ?culture .\n  ?play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which context has the most plays set in it, and how many?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        4,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?name2 (COUNT(?id_a) AS ?agg) WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?society a :Society .\n  ?play p:hasSociety ?society .\n  ?epoch p:id ?id_g .\n  ?epoch p:name ?name .\n  ?society p:name ?name2 .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name ?name2\nORDER BY DESC(?agg)\nLIMIT 1 }\n  component: { SELECT ?name (COUNT(?id_a) AS ?agg) WHERE {\n  ?epoch a :Epoch .\n  ?play a :Play .\n  ?play p:hasEpoch ?epoch .\n  ?epoch p:id ?id_g .\n  ?epoch p:name ?name .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name\nORDER BY DESC(?agg)\nLIMIT 1 }\n  component_2: { SELECT ?name (COUNT(?id_a) AS ?agg) WHERE {\n  ?society a :Society .\n  ?play a :Play .\n  ?play p:hasSociety ?society .\n  ?society p:id ?id_g .\n  ?society p:name ?name .\n  ?play p:id ?id_a .\n}\nGROUP BY ?id_g ?name\nORDER BY DESC(?agg)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

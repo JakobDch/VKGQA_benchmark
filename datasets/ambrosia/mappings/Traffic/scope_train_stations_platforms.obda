@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Train_Stations_base
+target		ex:Train_Stations/{StationID} a :Train_Stations ; p:StationID {StationID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `StationID`, `Name`, `Location` FROM `Train_Stations`
+
+mappingId	Platforms_base
+target		ex:Platforms/{PlatformID} a :Platforms ; p:PlatformID {PlatformID} ; p:name {Name} .
+source		SELECT `PlatformID`, `Name` FROM `Platforms`
+
+mappingId	Train_Stations_Platforms_base
+target		ex:Train_Stations_Platforms/{PlatformID}/{StationID} a :Train_Stations_Platforms .
+source		SELECT `StationID`, `PlatformID` FROM `Train_Stations_Platforms`
+
+mappingId	Train_Stations_Platforms_PlatformID_fk
+target		ex:Train_Stations_Platforms/{PlatformID}/{StationID} p:hasPlatforms ex:Platforms/{PlatformID} .
+source		SELECT `PlatformID`, `StationID` FROM `Train_Stations_Platforms` WHERE `PlatformID` IS NOT NULL
+
+mappingId	Train_Stations_Platforms_StationID_fk
+target		ex:Train_Stations_Platforms/{PlatformID}/{StationID} p:hasTrain_Stations ex:Train_Stations/{StationID} .
+source		SELECT `PlatformID`, `StationID` FROM `Train_Stations_Platforms` WHERE `StationID` IS NOT NULL
+
+]]

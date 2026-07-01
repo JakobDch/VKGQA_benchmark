@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_academic_writing",
+  "schema": "amb_attachment_1tab_val_academic_writing",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the dissertations, also show the thesis proposals supervised by Dr. Jane Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE Students.Academic_Writing = \"Dissertation\" OR Students.Academic_Writing = \"Thesis Proposal\" AND Students.Academic_Supervisor = \"Dr. Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Academic_Writing ?academic_writing_w .\n  ?students p:Academic_Writing ?academic_writing_w2 .\n  ?students p:Academic_Supervisor ?academic_supervisor_w .\n  FILTER((STR(?academic_writing_w) = \"Dissertation\" || (STR(?academic_writing_w2) = \"Thesis Proposal\" && STR(?academic_supervisor_w) = \"Dr. Jane Smith\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all dissertations and thesis proposals supervised by Dr. Jane Smith.",
+      "qtype": "ambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE (Students.Academic_Writing = \"Dissertation\" OR Students.Academic_Writing = \"Thesis Proposal\") AND Students.Academic_Supervisor = \"Dr. Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Academic_Writing ?academic_writing_w .\n  ?students p:Academic_Writing ?academic_writing_w2 .\n  ?students p:Academic_Supervisor ?academic_supervisor_w .\n  FILTER((((STR(?academic_writing_w) = \"Dissertation\" || STR(?academic_writing_w2) = \"Thesis Proposal\")) && STR(?academic_supervisor_w) = \"Dr. Jane Smith\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all dissertations and thesis proposals supervised by Dr. Jane Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Academic_Writing ?academic_writing_w .\n  ?students p:Academic_Writing ?academic_writing_w2 .\n  ?students p:Academic_Supervisor ?academic_supervisor_w .\n  FILTER((STR(?academic_writing_w) = \"Dissertation\" || (STR(?academic_writing_w2) = \"Thesis Proposal\" && STR(?academic_supervisor_w) = \"Dr. Jane Smith\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Academic_Writing ?academic_writing_w .\n  ?students p:Academic_Writing ?academic_writing_w2 .\n  ?students p:Academic_Supervisor ?academic_supervisor_w .\n  FILTER((((STR(?academic_writing_w) = \"Dissertation\" || STR(?academic_writing_w2) = \"Thesis Proposal\")) && STR(?academic_supervisor_w) = \"Dr. Jane Smith\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_seating_area",
+  "schema": "amb_attachment_1tab_ref_seating_area",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show bookings for both patios and verandas that seat 40 people.",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.FullName\nFROM Tables JOIN FloorPlan ON Tables.TableID = FloorPlan.TableId JOIN Reservations ON Reservations.TableId = Tables.TableID JOIN Customers ON Customers.CustomerID = Reservations.CustomerID\nWHERE (Tables.SeatingArea = \"Patio\" OR Tables.SeatingArea = \"Veranda\") AND FloorPlan.NumberOfSeats = 40",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?tables a :Tables .\n  ?floorplan a :FloorPlan .\n  ?floorplan p:hasTables ?tables .\n  ?reservations a :Reservations .\n  ?reservations p:hasTables ?tables .\n  ?customers a :Customers .\n  ?reservations p:hasCustomers ?customers .\n  ?customers p:name ?fullname .\n  ?tables p:SeatingArea ?seatingarea_w .\n  ?tables p:SeatingArea ?seatingarea_w2 .\n  ?floorplan p:NumberOfSeats ?numberofseats_w .\n  FILTER((((STR(?seatingarea_w) = \"Patio\" || STR(?seatingarea_w2) = \"Veranda\")) && (STR(?numberofseats_w) = \"40\" || STR(?numberofseats_w) = \"40.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display bookings for the patios and verandas where 40 people can be seated.",
+      "qtype": "ambig",
+      "sql": "SELECT Customers.FullName\nFROM Tables JOIN FloorPlan ON Tables.TableID = FloorPlan.TableId JOIN Reservations ON Reservations.TableId = Tables.TableID JOIN Customers ON Customers.CustomerID = Reservations.CustomerID\nWHERE Tables.SeatingArea = \"Patio\" OR Tables.SeatingArea = \"Veranda\" AND FloorPlan.NumberOfSeats = 40",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?tables a :Tables .\n  ?floorplan a :FloorPlan .\n  ?floorplan p:hasTables ?tables .\n  ?reservations a :Reservations .\n  ?reservations p:hasTables ?tables .\n  ?customers a :Customers .\n  ?reservations p:hasCustomers ?customers .\n  ?customers p:name ?fullname .\n  ?tables p:SeatingArea ?seatingarea_w .\n  ?tables p:SeatingArea ?seatingarea_w2 .\n  ?floorplan p:NumberOfSeats ?numberofseats_w .\n  FILTER((STR(?seatingarea_w) = \"Patio\" || (STR(?seatingarea_w2) = \"Veranda\" && (STR(?numberofseats_w) = \"40\" || STR(?numberofseats_w) = \"40.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display bookings for the patios and verandas where 40 people can be seated.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?tables a :Tables .\n  ?floorplan a :FloorPlan .\n  ?floorplan p:hasTables ?tables .\n  ?reservations a :Reservations .\n  ?reservations p:hasTables ?tables .\n  ?customers a :Customers .\n  ?reservations p:hasCustomers ?customers .\n  ?customers p:name ?fullname .\n  ?tables p:SeatingArea ?seatingarea_w .\n  ?tables p:SeatingArea ?seatingarea_w2 .\n  ?floorplan p:NumberOfSeats ?numberofseats_w .\n  FILTER((((STR(?seatingarea_w) = \"Patio\" || STR(?seatingarea_w2) = \"Veranda\")) && (STR(?numberofseats_w) = \"40\" || STR(?numberofseats_w) = \"40.0\")))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?tables a :Tables .\n  ?floorplan a :FloorPlan .\n  ?floorplan p:hasTables ?tables .\n  ?reservations a :Reservations .\n  ?reservations p:hasTables ?tables .\n  ?customers a :Customers .\n  ?reservations p:hasCustomers ?customers .\n  ?customers p:name ?fullname .\n  ?tables p:SeatingArea ?seatingarea_w .\n  ?tables p:SeatingArea ?seatingarea_w2 .\n  ?floorplan p:NumberOfSeats ?numberofseats_w .\n  FILTER((STR(?seatingarea_w) = \"Patio\" || (STR(?seatingarea_w2) = \"Veranda\" && (STR(?numberofseats_w) = \"40\" || STR(?numberofseats_w) = \"40.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

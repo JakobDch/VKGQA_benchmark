@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	ArtType_base
+target		ex:ArtType/{id} a :ArtType ; p:id {id} ; p:TypeName {TypeName} .
+source		SELECT `id`, `TypeName` FROM `ArtType`
+
+mappingId	VisualArt_base
+target		ex:VisualArt/{id} a :VisualArt ; p:id {id} ; p:ArtTypeId {ArtTypeId} ; p:Title {Title} ; p:Description {Description} .
+source		SELECT `id`, `ArtTypeId`, `Title`, `Description` FROM `VisualArt`
+
+mappingId	VisualArt_ArtTypeId_fk
+target		ex:VisualArt/{id} p:hasArtType ex:ArtType/{ArtTypeId} .
+source		SELECT `id`, `ArtTypeId` FROM `VisualArt` WHERE `ArtTypeId` IS NOT NULL
+
+mappingId	Gallery_base
+target		ex:Gallery/{id} a :Gallery ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Gallery`
+
+mappingId	Exhibit_base
+target		ex:Exhibition/{id} a :Exhibition ; p:id {id} ; p:GalleryId {GalleryId} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `id`, `GalleryId`, `StartDate`, `EndDate` FROM `Exhibit`
+
+mappingId	Exhibit_GalleryId_fk
+target		ex:Exhibition/{id} p:hasGallery ex:Gallery/{GalleryId} .
+source		SELECT `id`, `GalleryId` FROM `Exhibit` WHERE `GalleryId` IS NOT NULL
+
+mappingId	ArtworkInExhibition_base
+target		ex:ArtworkInExhibition/{id} a :ArtworkInExhibition ; p:id {id} ; p:ExhibitId {ExhibitId} ; p:VisualArtId {VisualArtId} .
+source		SELECT `id`, `ExhibitId`, `VisualArtId` FROM `ArtworkInExhibition`
+
+mappingId	ArtworkInExhibition_VisualArtId_fk
+target		ex:ArtworkInExhibition/{id} p:hasVisualArt ex:VisualArt/{VisualArtId} .
+source		SELECT `id`, `VisualArtId` FROM `ArtworkInExhibition` WHERE `VisualArtId` IS NOT NULL
+
+mappingId	ArtworkInExhibition_ExhibitId_fk
+target		ex:ArtworkInExhibition/{id} p:hasExhibition ex:Exhibition/{ExhibitId} .
+source		SELECT `id`, `ExhibitId` FROM `ArtworkInExhibition` WHERE `ExhibitId` IS NOT NULL
+
+mappingId	Artist_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {Name} ; p:BirthYear {BirthYear} ; p:DeathYear {DeathYear} .
+source		SELECT `id`, `Name`, `BirthYear`, `DeathYear` FROM `Artist`
+
+]]

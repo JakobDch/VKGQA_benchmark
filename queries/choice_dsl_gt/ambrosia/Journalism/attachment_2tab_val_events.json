@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_events",
+  "schema": "amb_attachment_2tab_val_events",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the topics of the press conference with Jack Layton and what are the topics of media scrums with him?",
+      "qtype": "unambig",
+      "sql": "SELECT Press_Conferences.topic\nFROM Press_Conferences\nWHERE Press_Conferences.person = \"Jack Layton\"\nUNION\nSELECT Media_Scrums.topic\nFROM Media_Scrums\nWHERE Media_Scrums.person = \"Jack Layton\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?press_conferences a :Press_Conferences .\n    ?press_conferences p:topic ?topic .\n    ?press_conferences p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n  UNION\n  {\n    ?media_scrums a :Media_Scrums .\n    ?media_scrums p:topic ?topic .\n    ?media_scrums p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all press conference topics and also display the topics of media scrums involving Jack Layton.",
+      "qtype": "unambig",
+      "sql": "SELECT Press_Conferences.topic\nFROM Press_Conferences\nUNION\nSELECT Media_Scrums.topic\nFROM Media_Scrums\nWHERE Media_Scrums.person = \"Jack Layton\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?press_conferences a :Press_Conferences .\n    ?press_conferences p:topic ?topic .\n    BIND(?topic AS ?o0)\n  }\n  UNION\n  {\n    ?media_scrums a :Media_Scrums .\n    ?media_scrums p:topic ?topic .\n    ?media_scrums p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the topics of all press conferences and media scrums with Jack Layton?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?press_conferences a :Press_Conferences .\n    ?press_conferences p:topic ?topic .\n    ?press_conferences p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n  UNION\n  {\n    ?media_scrums a :Media_Scrums .\n    ?media_scrums p:topic ?topic .\n    ?media_scrums p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?press_conferences a :Press_Conferences .\n    ?press_conferences p:topic ?topic .\n    BIND(?topic AS ?o0)\n  }\n  UNION\n  {\n    ?media_scrums a :Media_Scrums .\n    ?media_scrums p:topic ?topic .\n    ?media_scrums p:person ?person_f .\n    FILTER(STR(?person_f) = \"Jack Layton\")\n    BIND(?topic AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

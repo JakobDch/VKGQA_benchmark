@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_cultural_centers_performances",
+  "schema": "amb_scope_cultural_centers_performances",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the performance types for each cultural center.",
+      "qtype": "ambig",
+      "sql": "SELECT Performances.type  from Cultural_Centers_Performances join Performances on Cultural_Centers_Performances.performanceID = Performances.performanceID join Cultural_Centers on Cultural_Centers_Performances.culturalCenterID = Cultural_Centers.centerID   GROUP BY Cultural_Centers_Performances.performanceID HAVING COUNT(DISTINCT Cultural_Centers_Performances.culturalCenterID) = (SELECT COUNT(*) FROM  Cultural_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPerformances ?child ; p:hasCultural_Centers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cultural_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the performance types for each cultural center.",
+      "qtype": "ambig",
+      "sql": "select cultural_centers.name , performances.type from Cultural_Centers_Performances join Performances on Cultural_Centers_Performances.performanceID = Performances.performanceID join Cultural_Centers on Cultural_Centers_Performances.culturalCenterID = Cultural_Centers.centerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?cultural_centers_performances a :Cultural_Centers_Performances .\n  ?performances a :Performances .\n  ?cultural_centers_performances p:hasPerformances ?performances .\n  ?cultural_centers a :Cultural_Centers .\n  ?cultural_centers_performances p:hasCultural_Centers ?cultural_centers .\n  ?cultural_centers p:name ?name .\n  ?performances p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the performance types for each cultural center.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?cultural_centers_performances a :Cultural_Centers_Performances .\n  ?performances a :Performances .\n  ?cultural_centers_performances p:hasPerformances ?performances .\n  ?cultural_centers a :Cultural_Centers .\n  ?cultural_centers_performances p:hasCultural_Centers ?cultural_centers .\n  ?cultural_centers p:name ?name .\n  ?performances p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPerformances ?child ; p:hasCultural_Centers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cultural_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

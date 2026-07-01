@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_agricultural_research_institutes_focus_areas",
+  "schema": "amb_scope_agricultural_research_institutes_focus_areas",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the focus area in common for all agricultural research institutes.",
+      "qtype": "unambig",
+      "sql": "SELECT Focus_Areas.area_name  from Agricultural_Research_Institutes_Focus_Areas join Focus_Areas on Agricultural_Research_Institutes_Focus_Areas.focus_area_id = Focus_Areas.id join Agricultural_Research_Institutes on Agricultural_Research_Institutes_Focus_Areas.institute_id = Agricultural_Research_Institutes.id   GROUP BY Agricultural_Research_Institutes_Focus_Areas.focus_area_id HAVING COUNT(DISTINCT Agricultural_Research_Institutes_Focus_Areas.institute_id) = (SELECT COUNT(*) FROM  Agricultural_Research_Institutes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?area_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFocus_Areas ?child ; p:hasAgricultural_Research_Institutes ?parent . } GROUP BY ?child }\n  ?child p:name ?area_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agricultural_Research_Institutes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each agricultural research institute, what is the corresponding focus area?",
+      "qtype": "unambig",
+      "sql": "select agricultural_research_institutes.name , focus_areas.area_name from Agricultural_Research_Institutes_Focus_Areas join Focus_Areas on Agricultural_Research_Institutes_Focus_Areas.focus_area_id = Focus_Areas.id join Agricultural_Research_Institutes on Agricultural_Research_Institutes_Focus_Areas.institute_id = Agricultural_Research_Institutes.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?area_name WHERE {\n  ?agricultural_research_institutes_focus_areas a :Agricultural_Research_Institutes_Focus_Areas .\n  ?focus_areas a :Focus_Areas .\n  ?agricultural_research_institutes_focus_areas p:hasFocus_Areas ?focus_areas .\n  ?agricultural_research_institutes a :Agricultural_Research_Institutes .\n  ?agricultural_research_institutes_focus_areas p:hasAgricultural_Research_Institutes ?agricultural_research_institutes .\n  ?agricultural_research_institutes p:name ?name .\n  ?focus_areas p:name ?area_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the focus area of each agricultural research institute.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?area_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFocus_Areas ?child ; p:hasAgricultural_Research_Institutes ?parent . } GROUP BY ?child }\n  ?child p:name ?area_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agricultural_Research_Institutes } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?area_name WHERE {\n  ?agricultural_research_institutes_focus_areas a :Agricultural_Research_Institutes_Focus_Areas .\n  ?focus_areas a :Focus_Areas .\n  ?agricultural_research_institutes_focus_areas p:hasFocus_Areas ?focus_areas .\n  ?agricultural_research_institutes a :Agricultural_Research_Institutes .\n  ?agricultural_research_institutes_focus_areas p:hasAgricultural_Research_Institutes ?agricultural_research_institutes .\n  ?agricultural_research_institutes p:name ?name .\n  ?focus_areas p:name ?area_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

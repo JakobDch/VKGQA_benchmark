@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_cruise_ships_facilities",
+  "schema": "amb_scope_cruise_ships_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What facilities are found on all of the cruise ships?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.facilityName  from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id   GROUP BY Cruise_Ships_Facilities.facilityId HAVING COUNT(DISTINCT Cruise_Ships_Facilities.cruiseShipId) = (SELECT COUNT(*) FROM  Cruise_Ships)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which facilities are common to among all cruise ships and what are their statuses?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.facilityName, Facilities.isAvailable  from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id   GROUP BY Cruise_Ships_Facilities.facilityId HAVING COUNT(DISTINCT Cruise_Ships_Facilities.cruiseShipId) = (SELECT COUNT(*) FROM  Cruise_Ships)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilityname ?isavailable WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  ?child p:isAvailable ?isavailable .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List the availability status of the facilities that are common to all cruise ships.",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.isAvailable  from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id   GROUP BY Cruise_Ships_Facilities.facilityId HAVING COUNT(DISTINCT Cruise_Ships_Facilities.cruiseShipId) = (SELECT COUNT(*) FROM  Cruise_Ships)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?isavailable WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:isAvailable ?isavailable .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each cruise shop, list the facilities it has",
+      "qtype": "unambig",
+      "sql": "select cruise_ships.name , facilities.facilityname from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?facilityname WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For each cruise ship, list the availability status of the facilities.",
+      "qtype": "unambig",
+      "sql": "select cruise_ships.name , facilities.isavailable from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?isavailable WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:isAvailable ?isavailable .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "For each cruise ship, show the facilities and their statuses.",
+      "qtype": "unambig",
+      "sql": "select cruise_ships.name , facilities.facilityname , facilities.isavailable from Cruise_Ships_Facilities join Facilities on Cruise_Ships_Facilities.facilityId = Facilities.id join Cruise_Ships on Cruise_Ships_Facilities.cruiseShipId = Cruise_Ships.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?facilityname ?isavailable WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n  ?facilities p:isAvailable ?isavailable .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What facilities do we have for each cruise ship?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?facilityname WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the facilities and their statuses on all cruise ships.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilityname ?isavailable WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  ?child p:isAvailable ?isavailable .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?facilityname ?isavailable WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n  ?facilities p:isAvailable ?isavailable .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the availability status of the facilities built on every cruise ship.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?isavailable WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasCruise_Ships ?parent . } GROUP BY ?child }\n  ?child p:isAvailable ?isavailable .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cruise_Ships } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?isavailable WHERE {\n  ?cruise_ships_facilities a :Cruise_Ships_Facilities .\n  ?facilities a :Facilities .\n  ?cruise_ships_facilities p:hasFacilities ?facilities .\n  ?cruise_ships a :Cruise_Ships .\n  ?cruise_ships_facilities p:hasCruise_Ships ?cruise_ships .\n  ?cruise_ships p:name ?name .\n  ?facilities p:isAvailable ?isavailable .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

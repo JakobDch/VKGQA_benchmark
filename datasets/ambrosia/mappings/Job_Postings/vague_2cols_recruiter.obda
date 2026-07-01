@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employees_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:hireDate {hireDate} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `phoneNumber`, `hireDate` FROM `Employees`
+
+mappingId	Departments_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:name {name} ; p:managerId {managerId} .
+source		SELECT `id`, `name`, `managerId` FROM `Departments`
+
+mappingId	Departments_managerId_fk
+target		ex:Departments/{id} p:hasEmployees ex:Employees/{managerId} .
+source		SELECT `id`, `managerId` FROM `Departments` WHERE `managerId` IS NOT NULL
+
+mappingId	Salaries_base
+target		ex:Salaries/{_amb_rowid} a :Salaries ; p:employeeId {employeeId} ; p:salary {salary} ; p:effectiveDate {effectiveDate} .
+source		SELECT `_amb_rowid`, `employeeId`, `salary`, `effectiveDate` FROM `Salaries`
+
+mappingId	Salaries_employeeId_fk
+target		ex:Salaries/{_amb_rowid} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `_amb_rowid`, `employeeId` FROM `Salaries` WHERE `employeeId` IS NOT NULL
+
+mappingId	Positions_base
+target		ex:Position/{company}/{recruitment_agency}/{position} a :Position ; p:company {company} ; p:recruitment_agency {recruitment_agency} ; p:position {position} ; p:description {description} .
+source		SELECT `company`, `recruitment_agency`, `position`, `description` FROM `Positions`
+
+mappingId	Applications_base
+target		ex:Application/{applicationId} a :Application ; p:applicationId {applicationId} ; p:applicantId {applicantId} ; p:jobId {jobId} ; p:resumePath {resumePath} ; p:coverLetterPath {coverLetterPath} ; p:status {status} .
+source		SELECT `applicationId`, `applicantId`, `jobId`, `resumePath`, `coverLetterPath`, `status` FROM `Applications`
+
+mappingId	Applications_applicantId_fk
+target		ex:Application/{applicationId} p:hasEmployees ex:Employees/{applicantId} .
+source		SELECT `applicationId`, `applicantId` FROM `Applications` WHERE `applicantId` IS NOT NULL
+
+]]

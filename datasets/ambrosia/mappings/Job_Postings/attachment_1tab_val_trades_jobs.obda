@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Trade_Jobs_base
+target		ex:Trade_Jobs/{id} a :Trade_Jobs ; p:id {id} ; p:trade_job {trade_job} ; p:company_owner {company_owner} ; p:posted_date {posted_date} ; p:salary {salary} .
+source		SELECT `id`, `trade_job`, `company_owner`, `posted_date`, `salary` FROM `Trade_Jobs`
+
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:contact_number {contact_number} ; p:address {address} .
+source		SELECT `id`, `name`, `contact_number`, `address` FROM `Company`
+
+mappingId	Company_id_fk
+target		ex:Companies/{id} p:hasTrade_Jobs ex:Trade_Jobs/{id} .
+source		SELECT `id` FROM `Company` WHERE `id` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:employee_name {employee_name} ; p:position {position} ; p:hire_date {hire_date} .
+source		SELECT `id`, `employee_name`, `position`, `hire_date` FROM `Employee`
+
+mappingId	Employee_employee_name_fk
+target		ex:Employees/{id} p:hasTrade_Jobs ex:Trade_Jobs/{employee_name} .
+source		SELECT `id`, `employee_name` FROM `Employee` WHERE `employee_name` IS NOT NULL
+
+mappingId	Education_base
+target		ex:Education/{id} a :Education ; p:id {id} ; p:degree {degree} ; p:major {major} ; p:institution {institution} ; p:completion_year {completion_year} .
+source		SELECT `id`, `degree`, `major`, `institution`, `completion_year` FROM `Education`
+
+mappingId	Education_degree_fk
+target		ex:Education/{id} p:hasEmployees ex:Employees/{degree} .
+source		SELECT `id`, `degree` FROM `Education` WHERE `degree` IS NOT NULL
+
+]]

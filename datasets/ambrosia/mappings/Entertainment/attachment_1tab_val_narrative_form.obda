@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{AuthorID} a :Author ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:Nationality {Nationality} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `BirthDate`, `Nationality` FROM `Authors`
+
+mappingId	Genres_base
+target		ex:Genre/{GenreID} a :Genre ; p:GenreID {GenreID} ; p:name {Name} .
+source		SELECT `GenreID`, `Name` FROM `Genres`
+
+mappingId	Publishers_base
+target		ex:Publisher/{PublisherID} a :Publisher ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} ; p:YearEstablished {YearEstablished} .
+source		SELECT `PublisherID`, `Name`, `Address`, `YearEstablished` FROM `Publishers`
+
+mappingId	Books_base
+target		ex:Book/{BookID} a :Book ; p:BookID {BookID} ; p:Title {Title} ; p:Narrative_Form {Narrative_Form} ; p:Epoch {Epoch} ; p:PageCount {PageCount} ; p:PublicationYear {PublicationYear} ; p:AuthorID {AuthorID} ; p:GenreID {GenreID} .
+source		SELECT `BookID`, `Title`, `Narrative_Form`, `Epoch`, `PageCount`, `PublicationYear`, `AuthorID`, `GenreID` FROM `Books`
+
+mappingId	Books_GenreID_fk
+target		ex:Book/{BookID} p:hasGenre ex:Genre/{GenreID} .
+source		SELECT `BookID`, `GenreID` FROM `Books` WHERE `GenreID` IS NOT NULL
+
+mappingId	Books_AuthorID_fk
+target		ex:Book/{BookID} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `BookID`, `AuthorID` FROM `Books` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Published_Works_base
+target		ex:Published_Works/{WorkID} a :Published_Works ; p:WorkID {WorkID} ; p:BookID {BookID} ; p:PublisherID {PublisherID} ; p:ReleaseDate {ReleaseDate} ; p:SalesAmount {SalesAmount} .
+source		SELECT `WorkID`, `BookID`, `PublisherID`, `ReleaseDate`, `SalesAmount` FROM `Published_Works`
+
+mappingId	Published_Works_PublisherID_fk
+target		ex:Published_Works/{WorkID} p:hasPublisher ex:Publisher/{PublisherID} .
+source		SELECT `WorkID`, `PublisherID` FROM `Published_Works` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Published_Works_BookID_fk
+target		ex:Published_Works/{WorkID} p:hasBook ex:Book/{BookID} .
+source		SELECT `WorkID`, `BookID` FROM `Published_Works` WHERE `BookID` IS NOT NULL
+
+]]

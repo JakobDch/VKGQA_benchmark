@@ -1,0 +1,108 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_greenhouse_plant",
+  "schema": "amb_scope_greenhouse_plant",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each greenhouse, provide me the their plant names and types",
+      "qtype": "unambig",
+      "sql": "select greenhouse.name , plant.name , plant.type from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?type WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:name ?name2 .\n  ?plant p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the names of the plants that are common to all greenhouses",
+      "qtype": "unambig",
+      "sql": "SELECT Plant.name  from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id   GROUP BY Greenhouse_Plant.plant_id HAVING COUNT(DISTINCT Greenhouse_Plant.greenhouse_id) = (SELECT COUNT(*) FROM  Greenhouse)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the plant type for each greenhouse.",
+      "qtype": "ambig",
+      "sql": "SELECT Plant.type  from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id   GROUP BY Greenhouse_Plant.plant_id HAVING COUNT(DISTINCT Greenhouse_Plant.greenhouse_id) = (SELECT COUNT(*) FROM  Greenhouse)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the plant type for each greenhouse.",
+      "qtype": "ambig",
+      "sql": "select greenhouse.name , plant.type from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What plant name do we have for every greenhouse?",
+      "qtype": "ambig",
+      "sql": "select greenhouse.name , plant.name from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What plant names and types do we have for every greenhouse",
+      "qtype": "ambig",
+      "sql": "SELECT Plant.name, Plant.type  from Greenhouse_Plant join Plant on Greenhouse_Plant.plant_id = Plant.id join Greenhouse on Greenhouse_Plant.greenhouse_id = Greenhouse.id   GROUP BY Greenhouse_Plant.plant_id HAVING COUNT(DISTINCT Greenhouse_Plant.greenhouse_id) = (SELECT COUNT(*) FROM  Greenhouse)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What plant names and types do we have for every greenhouse",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 ?type WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:name ?name2 .\n  ?plant p:type ?type .\n} }\n  collective: { SELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What plant name do we have for every greenhouse?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:name ?name2 .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the plant type for each greenhouse.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?greenhouse_plant a :Greenhouse_Plant .\n  ?plant a :Plant .\n  ?greenhouse_plant p:hasPlant ?plant .\n  ?greenhouse a :Greenhouse .\n  ?greenhouse_plant p:hasGreenhouse ?greenhouse .\n  ?greenhouse p:name ?name .\n  ?plant p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPlant ?child ; p:hasGreenhouse ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Greenhouse } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

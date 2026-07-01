@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hotels_base
+target		ex:Hotels/{id} a :Hotels ; p:id {id} ; p:name {name} ; p:address {address} ; p:phoneNumber {phoneNumber} .
+source		SELECT `id`, `name`, `address`, `phoneNumber` FROM `Hotels`
+
+mappingId	HouseKeepers_base
+target		ex:HouseKeepers/{id} a :HouseKeepers ; p:id {id} ; p:email {email} ; p:hireDate {hireDate} ; p:salary {salary} ; p:hotelId {hotelId} ; p:name {FullName} .
+source		SELECT `id`, `email`, `hireDate`, `salary`, `hotelId`, `FullName` FROM `HouseKeepers`
+
+mappingId	HouseKeepers_hotelId_fk
+target		ex:HouseKeepers/{id} p:hasHotels ex:Hotels/{hotelId} .
+source		SELECT `id`, `hotelId` FROM `HouseKeepers` WHERE `hotelId` IS NOT NULL
+
+mappingId	LaundryAttendants_base
+target		ex:LaundryAttendants/{id} a :LaundryAttendants ; p:id {id} ; p:email {email} ; p:hireDate {hireDate} ; p:salary {salary} ; p:hotelId {hotelId} ; p:name {FullName} .
+source		SELECT `id`, `email`, `hireDate`, `salary`, `hotelId`, `FullName` FROM `LaundryAttendants`
+
+mappingId	LaundryAttendants_hotelId_fk
+target		ex:LaundryAttendants/{id} p:hasHotels ex:Hotels/{hotelId} .
+source		SELECT `id`, `hotelId` FROM `LaundryAttendants` WHERE `hotelId` IS NOT NULL
+
+mappingId	Rooms_base
+target		ex:Rooms/{id} a :Rooms ; p:id {id} ; p:number {number} ; p:hotelId {hotelId} ; p:houseKeeperId {houseKeeperId} ; p:laundryAttendantId {laundryAttendantId} .
+source		SELECT `id`, `number`, `hotelId`, `houseKeeperId`, `laundryAttendantId` FROM `Rooms`
+
+mappingId	Rooms_laundryAttendantId_fk
+target		ex:Rooms/{id} p:hasLaundryAttendants ex:LaundryAttendants/{laundryAttendantId} .
+source		SELECT `id`, `laundryAttendantId` FROM `Rooms` WHERE `laundryAttendantId` IS NOT NULL
+
+mappingId	Rooms_houseKeeperId_fk
+target		ex:Rooms/{id} p:hasHouseKeepers ex:HouseKeepers/{houseKeeperId} .
+source		SELECT `id`, `houseKeeperId` FROM `Rooms` WHERE `houseKeeperId` IS NOT NULL
+
+mappingId	Rooms_hotelId_fk
+target		ex:Rooms/{id} p:hasHotels ex:Hotels/{hotelId} .
+source		SELECT `id`, `hotelId` FROM `Rooms` WHERE `hotelId` IS NOT NULL
+
+]]

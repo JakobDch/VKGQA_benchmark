@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Press_Conferences_base
+target		ex:Press_Conferences/{id} a :Press_Conferences ; p:id {id} ; p:name {name} ; p:date {date} .
+source		SELECT `id`, `name`, `date` FROM `Press_Conferences`
+
+mappingId	Participants_base
+target		ex:Participants/{id} a :Participants ; p:id {id} ; p:role {role} ; p:name {name} .
+source		SELECT `id`, `role`, `name` FROM `Participants`
+
+mappingId	Press_Conferences_Participants_base
+target		ex:Press_Conferences_Participants/{_amb_rowid} a :Press_Conferences_Participants ; p:press_conference_id {press_conference_id} ; p:participant_id {participant_id} .
+source		SELECT `_amb_rowid`, `press_conference_id`, `participant_id` FROM `Press_Conferences_Participants`
+
+mappingId	Press_Conferences_Participants_participant_id_fk
+target		ex:Press_Conferences_Participants/{_amb_rowid} p:hasParticipants ex:Participants/{participant_id} .
+source		SELECT `_amb_rowid`, `participant_id` FROM `Press_Conferences_Participants` WHERE `participant_id` IS NOT NULL
+
+mappingId	Press_Conferences_Participants_press_conference_id_fk
+target		ex:Press_Conferences_Participants/{_amb_rowid} p:hasPress_Conferences ex:Press_Conferences/{press_conference_id} .
+source		SELECT `_amb_rowid`, `press_conference_id` FROM `Press_Conferences_Participants` WHERE `press_conference_id` IS NOT NULL
+
+]]

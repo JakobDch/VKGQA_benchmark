@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_restaurant",
+  "schema": "amb_attachment_1tab_val_restaurant",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the steakhouses, then show the seafood restaurants which have been open since 1980.",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurants.Name \nFROM Restaurants\nWHERE Restaurants.Type = \"Steakhouse\" OR Restaurants.Type = \"Seafood Restaurant\" AND Restaurants.Year_of_Establishment = 1980",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Type ?type_w .\n  ?restaurants p:Type ?type_w2 .\n  ?restaurants p:Year_of_Establishment ?year_of_establishment_w .\n  FILTER((STR(?type_w) = \"Steakhouse\" || (STR(?type_w2) = \"Seafood Restaurant\" && (STR(?year_of_establishment_w) = \"1980\" || STR(?year_of_establishment_w) = \"1980.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show all steakhouses and seafood restaurants which were established in 1980.",
+      "qtype": "ambig",
+      "sql": "SELECT Restaurants.Name \nFROM Restaurants\nWHERE (Restaurants.Type = \"Steakhouse\" OR Restaurants.Type = \"Seafood Restaurant\") AND Restaurants.Year_of_Establishment = 1980",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Type ?type_w .\n  ?restaurants p:Type ?type_w2 .\n  ?restaurants p:Year_of_Establishment ?year_of_establishment_w .\n  FILTER((((STR(?type_w) = \"Steakhouse\" || STR(?type_w2) = \"Seafood Restaurant\")) && (STR(?year_of_establishment_w) = \"1980\" || STR(?year_of_establishment_w) = \"1980.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all steakhouses and seafood restaurants which were established in 1980.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Type ?type_w .\n  ?restaurants p:Type ?type_w2 .\n  ?restaurants p:Year_of_Establishment ?year_of_establishment_w .\n  FILTER((STR(?type_w) = \"Steakhouse\" || (STR(?type_w2) = \"Seafood Restaurant\" && (STR(?year_of_establishment_w) = \"1980\" || STR(?year_of_establishment_w) = \"1980.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:name ?name .\n  ?restaurants p:Type ?type_w .\n  ?restaurants p:Type ?type_w2 .\n  ?restaurants p:Year_of_Establishment ?year_of_establishment_w .\n  FILTER((((STR(?type_w) = \"Steakhouse\" || STR(?type_w2) = \"Seafood Restaurant\")) && (STR(?year_of_establishment_w) = \"1980\" || STR(?year_of_establishment_w) = \"1980.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

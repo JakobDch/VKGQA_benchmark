@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Country_base
+target		ex:Country/{id} a :Country ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Country`
+
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:name {name} ; p:country_id {country_id} .
+source		SELECT `id`, `name`, `country_id` FROM `City`
+
+mappingId	City_country_id_fk
+target		ex:City/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `City` WHERE `country_id` IS NOT NULL
+
+mappingId	Artist_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {name} ; p:city_id {city_id} ; p:country_id {country_id} ; p:genre {genre} .
+source		SELECT `id`, `name`, `city_id`, `country_id`, `genre` FROM `Artist`
+
+mappingId	Artist_country_id_fk
+target		ex:Artist/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Artist` WHERE `country_id` IS NOT NULL
+
+mappingId	Artist_city_id_fk
+target		ex:Artist/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Artist` WHERE `city_id` IS NOT NULL
+
+mappingId	Concert_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:artist_name {artist_name} ; p:artist_genre {artist_genre} ; p:concert_date {concert_date} ; p:city_id {city_id} ; p:country_id {country_id} .
+source		SELECT `id`, `artist_name`, `artist_genre`, `concert_date`, `city_id`, `country_id` FROM `Concert`
+
+mappingId	Concert_country_id_fk
+target		ex:Concert/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Concert` WHERE `country_id` IS NOT NULL
+
+mappingId	Concert_city_id_fk
+target		ex:Concert/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Concert` WHERE `city_id` IS NOT NULL
+
+mappingId	Concert_artist_name_fk
+target		ex:Concert/{id} p:hasArtist ex:Artist/{artist_name} .
+source		SELECT `id`, `artist_name` FROM `Concert` WHERE `artist_name` IS NOT NULL
+
+]]

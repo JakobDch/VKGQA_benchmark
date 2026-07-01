@@ -1,0 +1,81 @@
+@prefix : <http://ambrosia.example.org/entertainment#> .
+@prefix p: <http://ambrosia.example.org/entertainment/prop#> .
+@prefix ex: <http://ambrosia.example.org/entertainment/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_book_genre_0_Authors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AuthorID\", \"Name\", \"Country\" FROM \"Authors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Author/{AuthorID}" ; rr:class :Author ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Country ; rr:objectMap [ rr:column "Country" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_1_Books_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ISBN\", \"Title\", \"YearOfPublication\", \"Genre\", \"AuthorID\" FROM \"Books\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Book/{ISBN}" ; rr:class :Book ] ;
+  rr:predicateObjectMap [ rr:predicate p:ISBN ; rr:objectMap [ rr:column "ISBN" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:YearOfPublication ; rr:objectMap [ rr:column "YearOfPublication" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Genre ; rr:objectMap [ rr:column "Genre" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_2_Books_AuthorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ISBN\", \"AuthorID\" FROM \"Books\" WHERE \"AuthorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Book/{ISBN}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAuthor ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Author/{AuthorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_3_Publishers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublisherID\", \"Name\", \"Location\" FROM \"Publishers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Publisher/{PublisherID}" ; rr:class :Publisher ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublisherID ; rr:objectMap [ rr:column "PublisherID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_4_BookPublishingHistory_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishingID\", \"ISBN\", \"PublisherID\", \"YearOfPublication\" FROM \"BookPublishingHistory\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/BookPublishingHistory/{PublishingID}" ; rr:class :BookPublishingHistory ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublishingID ; rr:objectMap [ rr:column "PublishingID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ISBN ; rr:objectMap [ rr:column "ISBN" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublisherID ; rr:objectMap [ rr:column "PublisherID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:YearOfPublication ; rr:objectMap [ rr:column "YearOfPublication" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_5_BookPublishingHistory_PublisherID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishingID\", \"PublisherID\" FROM \"BookPublishingHistory\" WHERE \"PublisherID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/BookPublishingHistory/{PublishingID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPublisher ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Publisher/{PublisherID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_6_BookPublishingHistory_ISBN_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishingID\", \"ISBN\" FROM \"BookPublishingHistory\" WHERE \"ISBN\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/BookPublishingHistory/{PublishingID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBook ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Book/{ISBN}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_7_SalesData_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"SaleID\", \"ISBN\", \"QuantitySold\", \"Revenue\", \"DateOfSale\" FROM \"SalesData\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Books_Sales/{SaleID}" ; rr:class :Books_Sales ] ;
+  rr:predicateObjectMap [ rr:predicate p:SaleID ; rr:objectMap [ rr:column "SaleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ISBN ; rr:objectMap [ rr:column "ISBN" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:QuantitySold ; rr:objectMap [ rr:column "QuantitySold" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Revenue ; rr:objectMap [ rr:column "Revenue" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DateOfSale ; rr:objectMap [ rr:column "DateOfSale" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_8_SalesData_ISBN_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"SaleID\", \"ISBN\" FROM \"SalesData\" WHERE \"ISBN\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Books_Sales/{SaleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBook ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Book/{ISBN}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_9_Reviews_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReviewID\", \"ISBN\", \"Rating\", \"Comment\", \"DatePosted\" FROM \"Reviews\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Review/{ReviewID}" ; rr:class :Review ] ;
+  rr:predicateObjectMap [ rr:predicate p:ReviewID ; rr:objectMap [ rr:column "ReviewID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ISBN ; rr:objectMap [ rr:column "ISBN" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Rating ; rr:objectMap [ rr:column "Rating" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Comment ; rr:objectMap [ rr:column "Comment" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DatePosted ; rr:objectMap [ rr:column "DatePosted" ] ] .
+
+<#tm_attachment_1tab_ref_book_genre_10_Reviews_ISBN_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ReviewID\", \"ISBN\" FROM \"Reviews\" WHERE \"ISBN\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Review/{ReviewID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBook ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Book/{ISBN}" ; rr:termType rr:IRI ] ] .
+

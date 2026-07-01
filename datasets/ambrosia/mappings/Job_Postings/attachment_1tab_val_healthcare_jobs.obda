@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employers_base
+target		ex:Employers/{id} a :Employers ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Employers`
+
+mappingId	Locations_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:city {city} ; p:state {state} .
+source		SELECT `id`, `city`, `state` FROM `Locations`
+
+mappingId	Skills_base
+target		ex:Skill/{id} a :Skill ; p:id {id} ; p:skillName {skillName} .
+source		SELECT `id`, `skillName` FROM `Skills`
+
+mappingId	Requirements_base
+target		ex:Requirements/{id} a :Requirements ; p:id {id} ; p:requirement {requirement} .
+source		SELECT `id`, `requirement` FROM `Requirements`
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:healthcare {healthcare} ; p:shift {shift} ; p:employerId {employerId} ; p:locationId {locationId} ; p:skillsIds {skillsIds} ; p:requirementsIds {requirementsIds} .
+source		SELECT `id`, `title`, `description`, `healthcare`, `shift`, `employerId`, `locationId`, `skillsIds`, `requirementsIds` FROM `JobPostings`
+
+mappingId	JobPostings_locationId_fk
+target		ex:JobPostings/{id} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `id`, `locationId` FROM `JobPostings` WHERE `locationId` IS NOT NULL
+
+mappingId	JobPostings_employerId_fk
+target		ex:JobPostings/{id} p:hasEmployers ex:Employers/{employerId} .
+source		SELECT `id`, `employerId` FROM `JobPostings` WHERE `employerId` IS NOT NULL
+
+]]

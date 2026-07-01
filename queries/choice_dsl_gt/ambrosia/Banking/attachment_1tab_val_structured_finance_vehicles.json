@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_structured_finance_vehicles",
+  "schema": "amb_attachment_1tab_val_structured_finance_vehicles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What debt obligations have a price of 1000 and what mortgage obligations have the same price?",
+      "qtype": "unambig",
+      "sql": "SELECT Structured_Financial_Products.Name \nFROM Structured_Financial_Products\nWHERE (Structured_Financial_Products.Type = \"Collateralized Debt Obligation\" OR Structured_Financial_Products.Type = \"Collateralized Mortgage Obligation\") AND Structured_Financial_Products.Price = 1000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?structured_financial_products a :Structured_Financial_Products .\n  ?structured_financial_products p:name ?name .\n  ?structured_financial_products p:Type ?type_w .\n  ?structured_financial_products p:Type ?type_w2 .\n  ?structured_financial_products p:Price ?price_w .\n  FILTER((((STR(?type_w) = \"Collateralized Debt Obligation\" || STR(?type_w2) = \"Collateralized Mortgage Obligation\")) && (STR(?price_w) = \"1000\" || STR(?price_w) = \"1000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show debt obligations and mortgage obligations with a price of 1000.",
+      "qtype": "ambig",
+      "sql": "SELECT Structured_Financial_Products.Name \nFROM Structured_Financial_Products\nWHERE Structured_Financial_Products.Type = \"Collateralized Debt Obligation\" OR Structured_Financial_Products.Type = \"Collateralized Mortgage Obligation\" AND Structured_Financial_Products.Price = 1000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?structured_financial_products a :Structured_Financial_Products .\n  ?structured_financial_products p:name ?name .\n  ?structured_financial_products p:Type ?type_w .\n  ?structured_financial_products p:Type ?type_w2 .\n  ?structured_financial_products p:Price ?price_w .\n  FILTER((STR(?type_w) = \"Collateralized Debt Obligation\" || (STR(?type_w2) = \"Collateralized Mortgage Obligation\" && (STR(?price_w) = \"1000\" || STR(?price_w) = \"1000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show debt obligations and mortgage obligations with a price of 1000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?structured_financial_products a :Structured_Financial_Products .\n  ?structured_financial_products p:name ?name .\n  ?structured_financial_products p:Type ?type_w .\n  ?structured_financial_products p:Type ?type_w2 .\n  ?structured_financial_products p:Price ?price_w .\n  FILTER((((STR(?type_w) = \"Collateralized Debt Obligation\" || STR(?type_w2) = \"Collateralized Mortgage Obligation\")) && (STR(?price_w) = \"1000\" || STR(?price_w) = \"1000.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?structured_financial_products a :Structured_Financial_Products .\n  ?structured_financial_products p:name ?name .\n  ?structured_financial_products p:Type ?type_w .\n  ?structured_financial_products p:Type ?type_w2 .\n  ?structured_financial_products p:Price ?price_w .\n  FILTER((STR(?type_w) = \"Collateralized Debt Obligation\" || (STR(?type_w2) = \"Collateralized Mortgage Obligation\" && (STR(?price_w) = \"1000\" || STR(?price_w) = \"1000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

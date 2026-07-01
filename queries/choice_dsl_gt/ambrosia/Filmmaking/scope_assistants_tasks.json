@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_assistants_tasks",
+  "schema": "amb_scope_assistants_tasks",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each assistant, list descriptions of tasks they do.",
+      "qtype": "unambig",
+      "sql": "select assistants.name , tasks.description from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "For each assistant, give me the corresponding task name.",
+      "qtype": "unambig",
+      "sql": "select assistants.name , tasks.task_name from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?task_name WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:task_name ?task_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What is the task name for each assistant?",
+      "qtype": "ambig",
+      "sql": "SELECT Tasks.task_name  from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id   GROUP BY Assistants_Tasks.task_id HAVING COUNT(DISTINCT Assistants_Tasks.assistant_id) = (SELECT COUNT(*) FROM  Assistants)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?task_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:task_name ?task_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are the names and descriptions of the tasks that are shared among all assistants?",
+      "qtype": "unambig",
+      "sql": "SELECT Tasks.task_name, Tasks.description  from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id   GROUP BY Assistants_Tasks.task_id HAVING COUNT(DISTINCT Assistants_Tasks.assistant_id) = (SELECT COUNT(*) FROM  Assistants)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?task_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:task_name ?task_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For every assistant, show the names and descriptions of the tasks that they are responsible for.",
+      "qtype": "unambig",
+      "sql": "select assistants.name , tasks.task_name , tasks.description from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?task_name ?description WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:task_name ?task_name .\n  ?tasks p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me descriptions of tasks every assistant does.",
+      "qtype": "ambig",
+      "sql": "SELECT Tasks.description  from Assistants_Tasks join Tasks on Assistants_Tasks.task_id = Tasks.id join Assistants on Assistants_Tasks.assistant_id = Assistants.id   GROUP BY Assistants_Tasks.task_id HAVING COUNT(DISTINCT Assistants_Tasks.assistant_id) = (SELECT COUNT(*) FROM  Assistants)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me descriptions of tasks every assistant does.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the task name for each assistant?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?task_name WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:task_name ?task_name .\n} }\n  collective: { SELECT ?task_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:task_name ?task_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the names and descriptions of the tasks that each assistant is responsible for.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?task_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTasks ?child ; p:hasAssistants ?parent . } GROUP BY ?child }\n  ?child p:task_name ?task_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Assistants } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?task_name ?description WHERE {\n  ?assistants_tasks a :Assistants_Tasks .\n  ?tasks a :Tasks .\n  ?assistants_tasks p:hasTasks ?tasks .\n  ?assistants a :Assistants .\n  ?assistants_tasks p:hasAssistants ?assistants .\n  ?assistants p:name ?name .\n  ?tasks p:task_name ?task_name .\n  ?tasks p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

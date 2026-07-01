@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Graphic_Designers_base
+target		ex:Graphic_Designers/{id} a :Graphic_Designers ; p:id {id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `id`, `name`, `experience` FROM `Graphic_Designers`
+
+mappingId	Programs_base
+target		ex:Programs/{id} a :Programs ; p:id {id} ; p:programName {programName} .
+source		SELECT `id`, `programName` FROM `Programs`
+
+mappingId	Graphic_Designers_Programs_base
+target		ex:Graphic_Designers_Programs/{_amb_rowid} a :Graphic_Designers_Programs ; p:graphicDesignerId {graphicDesignerId} ; p:programId {programId} .
+source		SELECT `_amb_rowid`, `graphicDesignerId`, `programId` FROM `Graphic_Designers_Programs`
+
+mappingId	Graphic_Designers_Programs_programId_fk
+target		ex:Graphic_Designers_Programs/{_amb_rowid} p:hasPrograms ex:Programs/{programId} .
+source		SELECT `_amb_rowid`, `programId` FROM `Graphic_Designers_Programs` WHERE `programId` IS NOT NULL
+
+mappingId	Graphic_Designers_Programs_graphicDesignerId_fk
+target		ex:Graphic_Designers_Programs/{_amb_rowid} p:hasGraphic_Designers ex:Graphic_Designers/{graphicDesignerId} .
+source		SELECT `_amb_rowid`, `graphicDesignerId` FROM `Graphic_Designers_Programs` WHERE `graphicDesignerId` IS NOT NULL
+
+]]

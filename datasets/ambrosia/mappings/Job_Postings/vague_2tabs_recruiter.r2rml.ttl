@@ -1,0 +1,94 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_recruiter_0_Company_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Company\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Companies/{id}" ; rr:class :Companies ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_vague_2tabs_recruiter_1_Recruitment_Agency_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"agencyName\", \"contactEmail\", \"contactPhone\" FROM \"Recruitment_Agency\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruitment_Agency/{id}" ; rr:class :Recruitment_Agency ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:agencyName ; rr:objectMap [ rr:column "agencyName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:contactEmail ; rr:objectMap [ rr:column "contactEmail" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:contactPhone ; rr:objectMap [ rr:column "contactPhone" ] ] .
+
+<#tm_vague_2tabs_recruiter_2_Position_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"title\", \"description\", \"salary\", \"companyId\", \"recruitmentAgencyId\" FROM \"Position\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{id}" ; rr:class :Position ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:salary ; rr:objectMap [ rr:column "salary" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:companyId ; rr:objectMap [ rr:column "companyId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:recruitmentAgencyId ; rr:objectMap [ rr:column "recruitmentAgencyId" ] ] .
+
+<#tm_vague_2tabs_recruiter_3_Position_recruitmentAgencyId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"recruitmentAgencyId\" FROM \"Position\" WHERE \"recruitmentAgencyId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRecruitment_Agency ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruitment_Agency/{recruitmentAgencyId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_4_Position_companyId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"companyId\" FROM \"Position\" WHERE \"companyId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCompanies ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Companies/{companyId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_5_Applicant_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"firstName\", \"lastName\", \"email\", \"phoneNumber\", \"positionId\" FROM \"Applicant\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Applicants/{id}" ; rr:class :Applicants ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:firstName ; rr:objectMap [ rr:column "firstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lastName ; rr:objectMap [ rr:column "lastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:phoneNumber ; rr:objectMap [ rr:column "phoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:positionId ; rr:objectMap [ rr:column "positionId" ] ] .
+
+<#tm_vague_2tabs_recruiter_6_Applicant_positionId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"positionId\" FROM \"Applicant\" WHERE \"positionId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Applicants/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPosition ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{positionId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_7_Interview_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"date\", \"time\", \"applicantId\", \"interviewerId\", \"positionId\", \"status\" FROM \"Interview\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Interview/{id}" ; rr:class :Interview ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:time ; rr:objectMap [ rr:column "time" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:applicantId ; rr:objectMap [ rr:column "applicantId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:interviewerId ; rr:objectMap [ rr:column "interviewerId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:positionId ; rr:objectMap [ rr:column "positionId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:status ; rr:objectMap [ rr:column "status" ] ] .
+
+<#tm_vague_2tabs_recruiter_8_Interview_positionId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"positionId\" FROM \"Interview\" WHERE \"positionId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Interview/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPosition ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{positionId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_9_Interview_interviewerId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"interviewerId\" FROM \"Interview\" WHERE \"interviewerId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Interview/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEmployees ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Employees/{interviewerId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_10_Interview_applicantId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"applicantId\" FROM \"Interview\" WHERE \"applicantId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Interview/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasApplicants ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Applicants/{applicantId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_recruiter_11_Employee_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"firstName\", \"lastName\", \"email\", \"phoneNumber\", \"role\", \"hireDate\" FROM \"Employee\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Employees/{id}" ; rr:class :Employees ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:firstName ; rr:objectMap [ rr:column "firstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lastName ; rr:objectMap [ rr:column "lastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:phoneNumber ; rr:objectMap [ rr:column "phoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:role ; rr:objectMap [ rr:column "role" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:hireDate ; rr:objectMap [ rr:column "hireDate" ] ] .
+

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Educator_base
+target		ex:Educators/{id} a :Educators ; p:id {id} ; p:name {name} ; p:specialization {specialization} ; p:yearsOfExperience {yearsOfExperience} .
+source		SELECT `id`, `name`, `specialization`, `yearsOfExperience` FROM `Educator`
+
+mappingId	Course_base
+target		ex:Courses/{courseId} a :Courses ; p:courseId {courseId} ; p:title {title} ; p:description {description} ; p:duration {duration} ; p:educatorId {educatorId} .
+source		SELECT `courseId`, `title`, `description`, `duration`, `educatorId` FROM `Course`
+
+mappingId	Course_educatorId_fk
+target		ex:Courses/{courseId} p:hasEducators ex:Educators/{educatorId} .
+source		SELECT `courseId`, `educatorId` FROM `Course` WHERE `educatorId` IS NOT NULL
+
+mappingId	Student_base
+target		ex:Students/{studentId} a :Students ; p:studentId {studentId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} ; p:enrolledCourses {enrolledCourses} .
+source		SELECT `studentId`, `firstName`, `lastName`, `dateOfBirth`, `enrolledCourses` FROM `Student`
+
+mappingId	Venue_base
+target		ex:Venue/{venueId} a :Venue ; p:venueId {venueId} ; p:name {name} ; p:location {location} ; p:educationalVenue {educationalVenue} ; p:ticketPrice {ticketPrice} .
+source		SELECT `venueId`, `name`, `location`, `educationalVenue`, `ticketPrice` FROM `Venue`
+
+]]

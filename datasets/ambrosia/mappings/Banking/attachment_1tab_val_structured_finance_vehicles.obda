@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clients_base
+target		ex:Clients/{ClientID} a :Clients ; p:ClientID {ClientID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ClientID`, `FirstName`, `LastName`, `EmailAddress`, `PhoneNumber` FROM `Clients`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:ClientID {ClientID} ; p:Balance {Balance} ; p:InterestRate {InterestRate} .
+source		SELECT `AccountID`, `ClientID`, `Balance`, `InterestRate` FROM `Accounts`
+
+mappingId	Accounts_ClientID_fk
+target		ex:Accounts/{AccountID} p:hasClients ex:Clients/{ClientID} .
+source		SELECT `AccountID`, `ClientID` FROM `Accounts` WHERE `ClientID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:ClientID {ClientID} ; p:Principal {Principal} ; p:InterestRate {InterestRate} ; p:TermYears {TermYears} ; p:MonthlyPayment {MonthlyPayment} .
+source		SELECT `LoanID`, `ClientID`, `Principal`, `InterestRate`, `TermYears`, `MonthlyPayment` FROM `Loans`
+
+mappingId	Loans_ClientID_fk
+target		ex:Loans/{LoanID} p:hasClients ex:Clients/{ClientID} .
+source		SELECT `LoanID`, `ClientID` FROM `Loans` WHERE `ClientID` IS NOT NULL
+
+mappingId	Structured_Financial_Products_base
+target		ex:Structured_Financial_Products/{ProductID} a :Structured_Financial_Products ; p:ProductID {ProductID} ; p:name {Name} ; p:Type {Type} ; p:Price {Price} ; p:OtherValues {OtherValues} .
+source		SELECT `ProductID`, `Name`, `Type`, `Price`, `OtherValues` FROM `Structured_Financial_Products`
+
+]]

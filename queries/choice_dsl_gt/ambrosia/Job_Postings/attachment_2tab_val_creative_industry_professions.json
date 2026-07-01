@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_creative_industry_professions",
+  "schema": "amb_attachment_2tab_val_creative_industry_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all graphic designers and also list web developers working at 2/7 London Street.",
+      "qtype": "unambig",
+      "sql": "SELECT Graphic_Designers.name\nFROM Graphic_Designers\nUNION\nSELECT Web_Developers.name\nFROM Web_Developers\nWHERE Web_Developers.office = \"2/7 London Street\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?web_developers a :Web_Developers .\n    ?web_developers p:name ?name .\n    ?web_developers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What graphic designers work at 2/7 London Street and what web developers also work there?",
+      "qtype": "unambig",
+      "sql": "SELECT Graphic_Designers.name\nFROM Graphic_Designers\nWHERE Graphic_Designers.office = \"2/7 London Street\"\nUNION\nSELECT Web_Developers.name\nFROM Web_Developers\nWHERE Web_Developers.office = \"2/7 London Street\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:name ?name .\n    ?graphic_designers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?web_developers a :Web_Developers .\n    ?web_developers p:name ?name .\n    ?web_developers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show graphic designers and web developers working at 2/7 London Street.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?web_developers a :Web_Developers .\n    ?web_developers p:name ?name .\n    ?web_developers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:name ?name .\n    ?graphic_designers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?web_developers a :Web_Developers .\n    ?web_developers p:name ?name .\n    ?web_developers p:office ?office_f .\n    FILTER(STR(?office_f) = \"2/7 London Street\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_recruiters_sources",
+  "schema": "amb_scope_recruiters_sources",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you list the sourcing platforms each recruiter uses?",
+      "qtype": "ambig",
+      "sql": "SELECT Sources.source_name  from Recruiters_Sources join Sources on Recruiters_Sources.source_id = Sources.source_id join Recruiters on Recruiters_Sources.recruiter_id = Recruiters.recruiter_id   GROUP BY Recruiters_Sources.source_id HAVING COUNT(DISTINCT Recruiters_Sources.recruiter_id) = (SELECT COUNT(*) FROM  Recruiters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?source_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:source_id ?cg . ?child a :Sources ; p:source_id ?cg . ?l p:recruiter_id ?pg . ?parent a :Recruiters ; p:recruiter_id ?pg . } GROUP BY ?child }\n  ?child p:source_name ?source_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Recruiters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Can you list the sourcing platforms each recruiter uses?",
+      "qtype": "ambig",
+      "sql": "select recruiters.name , sources.source_name from Recruiters_Sources join Sources on Recruiters_Sources.source_id = Sources.source_id join Recruiters on Recruiters_Sources.recruiter_id = Recruiters.recruiter_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?source_name WHERE {\n  ?recruiters_sources a :Recruiters_Sources .\n  ?sources a :Sources .\n  ?recruiters_sources p:hasSources ?sources .\n  ?recruiters a :Recruiters .\n  ?recruiters_sources p:hasRecruiters ?recruiters .\n  ?recruiters p:name ?name .\n  ?sources p:source_name ?source_name .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Can you list the sourcing platforms each recruiter uses?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?source_name WHERE {\n  ?recruiters_sources a :Recruiters_Sources .\n  ?sources a :Sources .\n  ?recruiters_sources p:hasSources ?sources .\n  ?recruiters a :Recruiters .\n  ?recruiters_sources p:hasRecruiters ?recruiters .\n  ?recruiters p:name ?name .\n  ?sources p:source_name ?source_name .\n} }\n  collective: { SELECT ?source_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:source_id ?cg . ?child a :Sources ; p:source_id ?cg . ?l p:recruiter_id ?pg . ?parent a :Recruiters ; p:recruiter_id ?pg . } GROUP BY ?child }\n  ?child p:source_name ?source_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Recruiters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

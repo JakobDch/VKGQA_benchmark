@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airlines_base
+target		ex:Airlines/{Airline_ID} a :Airlines ; p:Airline_ID {Airline_ID} ; p:name {Name} .
+source		SELECT `Airline_ID`, `Name` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{Flight_ID} a :Flights ; p:Flight_ID {Flight_ID} ; p:FlightNumber {FlightNumber} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:SourceAirport {SourceAirport} ; p:DestinationAirport {DestinationAirport} ; p:Airline_ID {Airline_ID} .
+source		SELECT `Flight_ID`, `FlightNumber`, `DepartureTime`, `ArrivalTime`, `SourceAirport`, `DestinationAirport`, `Airline_ID` FROM `Flights`
+
+mappingId	Flights_DestinationAirport_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_DestinationAirport ex:Airports/{DestinationAirport} .
+source		SELECT `Flight_ID`, `DestinationAirport` FROM `Flights` WHERE `DestinationAirport` IS NOT NULL
+
+mappingId	Flights_SourceAirport_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_SourceAirport ex:Airports/{SourceAirport} .
+source		SELECT `Flight_ID`, `SourceAirport` FROM `Flights` WHERE `SourceAirport` IS NOT NULL
+
+mappingId	Airports_base
+target		ex:Airports/{Airport_ID} a :Airports ; p:Airport_ID {Airport_ID} ; p:name {Name} ; p:City {City} ; p:Country {Country} .
+source		SELECT `Airport_ID`, `Name`, `City`, `Country` FROM `Airports`
+
+mappingId	Terminals_base
+target		ex:Terminals/{Terminal_ID} a :Terminals ; p:Terminal_ID {Terminal_ID} ; p:Airport_ID {Airport_ID} ; p:name {Name} .
+source		SELECT `Terminal_ID`, `Airport_ID`, `Name` FROM `Terminals`
+
+mappingId	Terminals_Airport_ID_fk
+target		ex:Terminals/{Terminal_ID} p:hasAirports ex:Airports/{Airport_ID} .
+source		SELECT `Terminal_ID`, `Airport_ID` FROM `Terminals` WHERE `Airport_ID` IS NOT NULL
+
+mappingId	Buildings_base
+target		ex:Buildings/{Building_ID} a :Buildings ; p:Building_ID {Building_ID} ; p:Terminal_ID {Terminal_ID} ; p:Floor_Level {Floor_Level} .
+source		SELECT `Building_ID`, `Terminal_ID`, `Floor_Level` FROM `Buildings`
+
+mappingId	Buildings_Terminal_ID_fk
+target		ex:Buildings/{Building_ID} p:hasTerminals ex:Terminals/{Terminal_ID} .
+source		SELECT `Building_ID`, `Terminal_ID` FROM `Buildings` WHERE `Terminal_ID` IS NOT NULL
+
+mappingId	Shops_base
+target		ex:Shops/{Shop_ID} a :Shops ; p:Shop_ID {Shop_ID} ; p:Building_ID {Building_ID} ; p:Terminal_Building {Terminal_Building} ; p:Floor_Level {Floor_Level} .
+source		SELECT `Shop_ID`, `Building_ID`, `Terminal_Building`, `Floor_Level` FROM `Shops`
+
+mappingId	Shops_Building_ID_fk
+target		ex:Shops/{Shop_ID} p:hasBuildings ex:Buildings/{Building_ID} .
+source		SELECT `Shop_ID`, `Building_ID` FROM `Shops` WHERE `Building_ID` IS NOT NULL
+
+mappingId	ShopItems_base
+target		ex:ShopItems/{Item_ID} a :ShopItems ; p:Item_ID {Item_ID} ; p:Shop_ID {Shop_ID} ; p:ItemName {ItemName} ; p:Price {Price} ; p:Quantity {Quantity} .
+source		SELECT `Item_ID`, `Shop_ID`, `ItemName`, `Price`, `Quantity` FROM `ShopItems`
+
+mappingId	ShopItems_Shop_ID_fk
+target		ex:ShopItems/{Item_ID} p:hasShops ex:Shops/{Shop_ID} .
+source		SELECT `Item_ID`, `Shop_ID` FROM `ShopItems` WHERE `Shop_ID` IS NOT NULL
+
+]]

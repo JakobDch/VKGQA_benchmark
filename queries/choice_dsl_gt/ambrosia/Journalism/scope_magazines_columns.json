@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_magazines_columns",
+  "schema": "amb_scope_magazines_columns",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every magazine, show the columns that they have.",
+      "qtype": "unambig",
+      "sql": "select magazines.name , columns.column_name from Magazines_Columns join Columns on Magazines_Columns.column_id = Columns.id join Magazines on Magazines_Columns.magazine_id = Magazines.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?column_name WHERE {\n  ?magazines_columns a :Magazines_Columns .\n  ?columns a :Columns .\n  ?magazines_columns p:hasColumns ?columns .\n  ?magazines a :Magazines .\n  ?magazines_columns p:hasMagazines ?magazines .\n  ?magazines p:name ?name .\n  ?columns p:column_name ?column_name .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "Which columns do all magazines have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Columns.column_name  from Magazines_Columns join Columns on Magazines_Columns.column_id = Columns.id join Magazines on Magazines_Columns.magazine_id = Magazines.id   GROUP BY Magazines_Columns.column_id HAVING COUNT(DISTINCT Magazines_Columns.magazine_id) = (SELECT COUNT(*) FROM  Magazines)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?column_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasColumns ?child ; p:hasMagazines ?parent . } GROUP BY ?child }\n  ?child p:column_name ?column_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Magazines } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the columns that each magazine has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?column_name WHERE {\n  ?magazines_columns a :Magazines_Columns .\n  ?columns a :Columns .\n  ?magazines_columns p:hasColumns ?columns .\n  ?magazines a :Magazines .\n  ?magazines_columns p:hasMagazines ?magazines .\n  ?magazines p:name ?name .\n  ?columns p:column_name ?column_name .\n} }\n  collective: { SELECT ?column_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasColumns ?child ; p:hasMagazines ?parent . } GROUP BY ?child }\n  ?child p:column_name ?column_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Magazines } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

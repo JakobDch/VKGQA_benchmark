@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_continuity_coordinators_challenges",
+  "schema": "amb_scope_continuity_coordinators_challenges",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which challenges are shared among all continuity coordinators?",
+      "qtype": "unambig",
+      "sql": "SELECT Challenges.ChallengeName  from Continuity_Coordinators_Challenges join Challenges on Continuity_Coordinators_Challenges.ChallengeID = Challenges.ChallengeID join Continuity_Coordinators on Continuity_Coordinators_Challenges.CoordinatorID = Continuity_Coordinators.ID   GROUP BY Continuity_Coordinators_Challenges.ChallengeID HAVING COUNT(DISTINCT Continuity_Coordinators_Challenges.CoordinatorID) = (SELECT COUNT(*) FROM  Continuity_Coordinators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?challengename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChallenges ?child ; p:hasContinuity_Coordinators ?parent . } GROUP BY ?child }\n  ?child p:ChallengeName ?challengename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Continuity_Coordinators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Could you provide the continuity coordinators and the corresponding challenges?",
+      "qtype": "unambig",
+      "sql": "select continuity_coordinators.name , challenges.challengename from Continuity_Coordinators_Challenges join Challenges on Continuity_Coordinators_Challenges.ChallengeID = Challenges.ChallengeID join Continuity_Coordinators on Continuity_Coordinators_Challenges.CoordinatorID = Continuity_Coordinators.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?challengename WHERE {\n  ?continuity_coordinators_challenges a :Continuity_Coordinators_Challenges .\n  ?challenges a :Challenges .\n  ?continuity_coordinators_challenges p:hasChallenges ?challenges .\n  ?continuity_coordinators a :Continuity_Coordinators .\n  ?continuity_coordinators_challenges p:hasContinuity_Coordinators ?continuity_coordinators .\n  ?continuity_coordinators p:name ?name .\n  ?challenges p:ChallengeName ?challengename .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which challenges are associated with each continuity coordinator?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?challengename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChallenges ?child ; p:hasContinuity_Coordinators ?parent . } GROUP BY ?child }\n  ?child p:ChallengeName ?challengename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Continuity_Coordinators } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?challengename WHERE {\n  ?continuity_coordinators_challenges a :Continuity_Coordinators_Challenges .\n  ?challenges a :Challenges .\n  ?continuity_coordinators_challenges p:hasChallenges ?challenges .\n  ?continuity_coordinators a :Continuity_Coordinators .\n  ?continuity_coordinators_challenges p:hasContinuity_Coordinators ?continuity_coordinators .\n  ?continuity_coordinators p:name ?name .\n  ?challenges p:ChallengeName ?challengename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

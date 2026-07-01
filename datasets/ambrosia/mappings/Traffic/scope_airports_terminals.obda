@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Airports`
+
+mappingId	Terminals_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:type {type} .
+source		SELECT `id`, `type`, `airport_id` FROM `Terminals`
+
+mappingId	Terminals_airport_id_fk
+target		ex:Terminals/{id} p:hasAirports ex:Airports/{airport_id} .
+source		SELECT `id`, `airport_id` FROM `Terminals` WHERE `airport_id` IS NOT NULL
+
+mappingId	Airports_Terminals_base
+target		ex:Airports_Terminals/{terminal_id}/{airport_id} a :Airports_Terminals .
+source		SELECT `airport_id`, `terminal_id` FROM `Airports_Terminals`
+
+mappingId	Airports_Terminals_terminal_id_fk
+target		ex:Airports_Terminals/{terminal_id}/{airport_id} p:hasTerminals ex:Terminals/{terminal_id} .
+source		SELECT `terminal_id`, `airport_id` FROM `Airports_Terminals` WHERE `terminal_id` IS NOT NULL
+
+mappingId	Airports_Terminals_airport_id_fk
+target		ex:Airports_Terminals/{terminal_id}/{airport_id} p:hasAirports ex:Airports/{airport_id} .
+source		SELECT `terminal_id`, `airport_id` FROM `Airports_Terminals` WHERE `airport_id` IS NOT NULL
+
+]]

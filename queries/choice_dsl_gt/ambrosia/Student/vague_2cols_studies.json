@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_studies",
+  "schema": "amb_vague_2cols_studies",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all student emails, along with their field of study and degree program.",
+      "qtype": "unambig",
+      "sql": "SELECT Email, Field_Of_Study, Degree_Program FROM Students",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?email ?field_of_study ?degree_program WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Field_Of_Study ?field_of_study .\n  ?students p:Degree_Program ?degree_program .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "List all student emails, along with their field of study.",
+      "qtype": "unambig",
+      "sql": "SELECT Email, Field_Of_Study FROM Students",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?email ?field_of_study WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Field_Of_Study ?field_of_study .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "List all student emails, along with their degree program.",
+      "qtype": "unambig",
+      "sql": "SELECT Email, Degree_Program FROM Students",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?email ?degree_program WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Degree_Program ?degree_program .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List students born after 1990, along with their field of study.",
+      "qtype": "unambig",
+      "sql": "SELECT fullname, Field_Of_Study FROM Students WHERE CAST(SUBSTR(BirthDate, 1, 4) AS INT)  > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?field_of_study WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Field_Of_Study ?field_of_study . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "List students born after 1990, along with their field of study and degree program.",
+      "qtype": "unambig",
+      "sql": "SELECT fullname, Field_Of_Study, Degree_Program FROM Students WHERE CAST(SUBSTR(BirthDate, 1, 4) AS INT)  > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?field_of_study ?degree_program WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Field_Of_Study ?field_of_study . }\n  OPTIONAL { ?students p:Degree_Program ?degree_program . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "List students born after 1990, along with their degree program.",
+      "qtype": "unambig",
+      "sql": "SELECT fullname, Degree_Program FROM Students WHERE CAST(SUBSTR(BirthDate, 1, 4) AS INT)  > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?degree_program WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Degree_Program ?degree_program . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all student emails and indicate what they are studying.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?email ?field_of_study ?degree_program WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Field_Of_Study ?field_of_study .\n  ?students p:Degree_Program ?degree_program .\n} }\n  component: { SELECT ?email ?field_of_study WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Field_Of_Study ?field_of_study .\n} }\n  component_2: { SELECT ?email ?degree_program WHERE {\n  ?students a :Students .\n  ?students p:email ?email .\n  ?students p:Degree_Program ?degree_program .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all the students that are born after 1990 and what they study.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?fullname ?field_of_study WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Field_Of_Study ?field_of_study . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n} }\n  full: { SELECT ?fullname ?field_of_study ?degree_program WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Field_Of_Study ?field_of_study . }\n  OPTIONAL { ?students p:Degree_Program ?degree_program . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n} }\n  component_2: { SELECT ?fullname ?degree_program WHERE {\n  ?students a :Students .\n  OPTIONAL { ?students p:name ?fullname . }\n  OPTIONAL { ?students p:Degree_Program ?degree_program . }\n  ?students p:BirthDate ?birthdate_s .\n  FILTER(xsd:double(SUBSTR(STR(?birthdate_s), 1, 4)) > 1990)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

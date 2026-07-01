@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_capacity",
+  "schema": "amb_vague_2cols_capacity",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the airports with their geographical coordinates and capacity and show the highest capacity airports at the top.",
+      "qtype": "ambig",
+      "sql": "SELECT\nAirports.City,\nAirportDetails.Passenger_Throughput,\nAirportDetails.Latitude,\nAirportDetails.Longitude\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nORDER BY AirportDetails.Passenger_Throughput DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?passenger_throughput ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput_o .\n}\nORDER BY DESC(?passenger_throughput_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "List all the airports with their geographical coordinates and capacity and show the highest capacity airports at the top.",
+      "qtype": "ambig",
+      "sql": "SELECT\nAirports.City,\nAirportDetails.Number_Of_Aircrafts,\nAirportDetails.Latitude,\nAirportDetails.Longitude\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nORDER BY AirportDetails.Number_Of_Aircrafts DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?number_of_aircrafts ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts_o .\n}\nORDER BY DESC(?number_of_aircrafts_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "List all the airports with their geographical coordinates and capacity and show the highest capacity airports at the top.",
+      "qtype": "ambig",
+      "sql": "SELECT\nAirports.City,\nAirportDetails.Passenger_Throughput, Number_Of_Aircrafts,\nAirportDetails.Latitude,\nAirportDetails.Longitude\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nORDER BY AirportDetails.Passenger_Throughput, Number_Of_Aircrafts DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?passenger_throughput ?number_of_aircrafts ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput_o .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts_o .\n}\nORDER BY ASC(?passenger_throughput_o) DESC(?number_of_aircrafts_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List all the cities and respective countries that have an airport in the western hemisphere and the number of aircrafts at those airports.",
+      "qtype": "unambig",
+      "sql": "SELECT \nAirports.City,\nAirports.Country,\nAirportDetails.Number_Of_Aircrafts\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nWHERE Longitude < 0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?country ?number_of_aircrafts WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Show a list of all the cities and respective countries that have an airport in the western hemisphere and the capacity of those airports.",
+      "qtype": "ambig",
+      "sql": "SELECT \nAirports.City,\nAirports.Country,\nAirportDetails.Passenger_Throughput\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nWHERE Longitude < 0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?country ?passenger_throughput WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Show a list of all the cities and respective countries that have an airport in the western hemisphere and the capacity of those airports.",
+      "qtype": "ambig",
+      "sql": "SELECT \nAirports.City,\nAirports.Country,\nAirportDetails.Passenger_Throughput, Number_Of_Aircrafts\nFROM Airports\nJOIN AirportDetails ON AirportDetails.AirportID = Airports.AirportID\nWHERE Longitude < 0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?country ?passenger_throughput ?number_of_aircrafts WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all the airports with their geographical coordinates and capacity and show the highest capacity airports at the top.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        0
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?city ?number_of_aircrafts ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts_o .\n}\nORDER BY DESC(?number_of_aircrafts_o) }\n  full: { SELECT ?city ?passenger_throughput ?number_of_aircrafts ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput_o .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts_o .\n}\nORDER BY ASC(?passenger_throughput_o) DESC(?number_of_aircrafts_o) }\n  component_2: { SELECT ?city ?passenger_throughput ?latitude ?longitude WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Latitude ?latitude .\n  ?airportdetails p:Longitude ?longitude .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput_o .\n}\nORDER BY DESC(?passenger_throughput_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show a list of all the cities and respective countries that have an airport in the western hemisphere and the capacity of those airports.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?city ?country ?number_of_aircrafts WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n} }\n  component_2: { SELECT ?city ?country ?passenger_throughput WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n} }\n  full: { SELECT ?city ?country ?passenger_throughput ?number_of_aircrafts WHERE {\n  ?airports a :Airports .\n  ?airportdetails a :AirportDetails .\n  ?airportdetails p:hasAirports_AirportID ?airports .\n  ?airports p:City ?city .\n  ?airports p:Country ?country .\n  ?airportdetails p:Passenger_Throughput ?passenger_throughput .\n  ?airportdetails p:Number_Of_Aircrafts ?number_of_aircrafts .\n  ?airportdetails p:Longitude ?longitude_f .\n  FILTER(xsd:double(?longitude_f) < 0)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

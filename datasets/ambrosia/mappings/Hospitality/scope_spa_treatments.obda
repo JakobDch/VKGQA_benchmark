@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Spa_base
+target		ex:Spa/{spa_id} a :Spa ; p:spa_id {spa_id} ; p:name {name} ; p:address {address} ; p:phone_number {phone_number} .
+source		SELECT `spa_id`, `name`, `address`, `phone_number` FROM `Spa`
+
+mappingId	Treatments_base
+target		ex:Treatments/{treatment_id} a :Treatments ; p:treatment_id {treatment_id} ; p:name {name} ; p:description {description} .
+source		SELECT `treatment_id`, `name`, `description` FROM `Treatments`
+
+mappingId	Spa_Treatments_base
+target		ex:Spa_Treatments/{spa_treatment_id} a :Spa_Treatments ; p:spa_treatment_id {spa_treatment_id} ; p:spa_id {spa_id} ; p:treatment_id {treatment_id} .
+source		SELECT `spa_treatment_id`, `spa_id`, `treatment_id` FROM `Spa_Treatments`
+
+mappingId	Spa_Treatments_treatment_id_fk
+target		ex:Spa_Treatments/{spa_treatment_id} p:hasTreatments ex:Treatments/{treatment_id} .
+source		SELECT `spa_treatment_id`, `treatment_id` FROM `Spa_Treatments` WHERE `treatment_id` IS NOT NULL
+
+mappingId	Spa_Treatments_spa_id_fk
+target		ex:Spa_Treatments/{spa_treatment_id} p:hasSpa ex:Spa/{spa_id} .
+source		SELECT `spa_treatment_id`, `spa_id` FROM `Spa_Treatments` WHERE `spa_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email` FROM `Customers`
+
+mappingId	Appointments_base
+target		ex:Appointments/{appointment_id} a :Appointments ; p:appointment_id {appointment_id} ; p:start_time {start_time} ; p:end_time {end_time} ; p:customer_id {customer_id} ; p:spa_id {spa_id} ; p:treatment_id {treatment_id} .
+source		SELECT `appointment_id`, `start_time`, `end_time`, `customer_id`, `spa_id`, `treatment_id` FROM `Appointments`
+
+mappingId	Appointments_treatment_id_fk
+target		ex:Appointments/{appointment_id} p:hasTreatments ex:Treatments/{treatment_id} .
+source		SELECT `appointment_id`, `treatment_id` FROM `Appointments` WHERE `treatment_id` IS NOT NULL
+
+mappingId	Appointments_spa_id_fk
+target		ex:Appointments/{appointment_id} p:hasSpa ex:Spa/{spa_id} .
+source		SELECT `appointment_id`, `spa_id` FROM `Appointments` WHERE `spa_id` IS NOT NULL
+
+mappingId	Appointments_customer_id_fk
+target		ex:Appointments/{appointment_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `appointment_id`, `customer_id` FROM `Appointments` WHERE `customer_id` IS NOT NULL
+
+]]

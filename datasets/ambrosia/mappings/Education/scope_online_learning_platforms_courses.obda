@@ -1,0 +1,73 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Users_base
+target		ex:Users/{userID} a :Users ; p:userID {userID} ; p:username {username} ; p:password {password} .
+source		SELECT `userID`, `username`, `password` FROM `Users`
+
+mappingId	Online_Learning_Platforms_base
+target		ex:Online_Learning_Platforms/{platformID} a :Online_Learning_Platforms ; p:platformID {platformID} ; p:name {name} ; p:website {website} .
+source		SELECT `platformID`, `name`, `website` FROM `Online_Learning_Platforms`
+
+mappingId	Courses_base
+target		ex:Courses/{courseID} a :Courses ; p:courseID {courseID} ; p:title {title} ; p:description {description} .
+source		SELECT `courseID`, `title`, `description` FROM `Courses`
+
+mappingId	Enrolled_Students_base
+target		ex:Enrolled_Students/{_amb_rowid} a :Enrolled_Students ; p:studentID {studentID} ; p:courseID {courseID} ; p:enrollmentDate {enrollmentDate} .
+source		SELECT `_amb_rowid`, `studentID`, `courseID`, `enrollmentDate` FROM `Enrolled_Students`
+
+mappingId	Enrolled_Students_courseID_fk
+target		ex:Enrolled_Students/{_amb_rowid} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `_amb_rowid`, `courseID` FROM `Enrolled_Students` WHERE `courseID` IS NOT NULL
+
+mappingId	Enrolled_Students_studentID_fk
+target		ex:Enrolled_Students/{_amb_rowid} p:hasUsers ex:Users/{studentID} .
+source		SELECT `_amb_rowid`, `studentID` FROM `Enrolled_Students` WHERE `studentID` IS NOT NULL
+
+mappingId	Ratings_base
+target		ex:Ratings/{ratingID} a :Ratings ; p:ratingID {ratingID} ; p:studentID {studentID} ; p:courseID {courseID} ; p:stars {stars} ; p:reviewText {reviewText} ; p:submissionDate {submissionDate} .
+source		SELECT `ratingID`, `studentID`, `courseID`, `stars`, `reviewText`, `submissionDate` FROM `Ratings`
+
+mappingId	Ratings_courseID_fk
+target		ex:Ratings/{ratingID} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `ratingID`, `courseID` FROM `Ratings` WHERE `courseID` IS NOT NULL
+
+mappingId	Ratings_studentID_fk
+target		ex:Ratings/{ratingID} p:hasUsers ex:Users/{studentID} .
+source		SELECT `ratingID`, `studentID` FROM `Ratings` WHERE `studentID` IS NOT NULL
+
+mappingId	Instructors_base
+target		ex:Instructors/{instructorID} a :Instructors ; p:instructorID {instructorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `instructorID`, `firstName`, `lastName`, `email` FROM `Instructors`
+
+mappingId	Course_Instructor_base
+target		ex:Course_Instructor/{_amb_rowid} a :Course_Instructor ; p:courseID {courseID} ; p:instructorID {instructorID} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `_amb_rowid`, `courseID`, `instructorID`, `startDate`, `endDate` FROM `Course_Instructor`
+
+mappingId	Course_Instructor_instructorID_fk
+target		ex:Course_Instructor/{_amb_rowid} p:hasInstructors ex:Instructors/{instructorID} .
+source		SELECT `_amb_rowid`, `instructorID` FROM `Course_Instructor` WHERE `instructorID` IS NOT NULL
+
+mappingId	Course_Instructor_courseID_fk
+target		ex:Course_Instructor/{_amb_rowid} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `_amb_rowid`, `courseID` FROM `Course_Instructor` WHERE `courseID` IS NOT NULL
+
+mappingId	Online_Learning_Platforms_Courses_base
+target		ex:Online_Learning_Platforms_Courses/{_amb_rowid} a :Online_Learning_Platforms_Courses ; p:platformID {platformID} ; p:courseID {courseID} ; p:availabilityStatus {availabilityStatus} .
+source		SELECT `_amb_rowid`, `platformID`, `courseID`, `availabilityStatus` FROM `Online_Learning_Platforms_Courses`
+
+mappingId	Online_Learning_Platforms_Courses_courseID_fk
+target		ex:Online_Learning_Platforms_Courses/{_amb_rowid} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `_amb_rowid`, `courseID` FROM `Online_Learning_Platforms_Courses` WHERE `courseID` IS NOT NULL
+
+mappingId	Online_Learning_Platforms_Courses_platformID_fk
+target		ex:Online_Learning_Platforms_Courses/{_amb_rowid} p:hasOnline_Learning_Platforms ex:Online_Learning_Platforms/{platformID} .
+source		SELECT `_amb_rowid`, `platformID` FROM `Online_Learning_Platforms_Courses` WHERE `platformID` IS NOT NULL
+
+]]

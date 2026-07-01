@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_insurance_plan_coverage",
+  "schema": "amb_scope_insurance_plan_coverage",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each insurance plan, list all of the coverage we offer",
+      "qtype": "unambig",
+      "sql": "select insurance_plan.planname , coverage.description from Insurance_Plan_Coverage join Coverage on Insurance_Plan_Coverage.CoverageID = Coverage.CoverageID join Insurance_Plan on Insurance_Plan_Coverage.PlanID = Insurance_Plan.PlanID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?planname ?description WHERE {\n  ?insurance_plan_coverage a :Insurance_Plan_Coverage .\n  ?coverage a :Coverage .\n  ?insurance_plan_coverage p:hasCoverage ?coverage .\n  ?insurance_plan a :InsurancePlans .\n  ?insurance_plan_coverage p:hasInsurance_Plan ?insurance_plan .\n  ?insurance_plan p:PlanName ?planname .\n  ?coverage p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the coverage that is common for all insurance plans",
+      "qtype": "unambig",
+      "sql": "SELECT Coverage.Description  from Insurance_Plan_Coverage join Coverage on Insurance_Plan_Coverage.CoverageID = Coverage.CoverageID join Insurance_Plan on Insurance_Plan_Coverage.PlanID = Insurance_Plan.PlanID   GROUP BY Insurance_Plan_Coverage.CoverageID HAVING COUNT(DISTINCT Insurance_Plan_Coverage.PlanID) = (SELECT COUNT(*) FROM  Insurance_Plan)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCoverage ?child ; p:hasInsurance_Plan ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :InsurancePlans } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What coverage do we have for each insurance plan?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?planname ?description WHERE {\n  ?insurance_plan_coverage a :Insurance_Plan_Coverage .\n  ?coverage a :Coverage .\n  ?insurance_plan_coverage p:hasCoverage ?coverage .\n  ?insurance_plan a :InsurancePlans .\n  ?insurance_plan_coverage p:hasInsurance_Plan ?insurance_plan .\n  ?insurance_plan p:PlanName ?planname .\n  ?coverage p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCoverage ?child ; p:hasInsurance_Plan ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :InsurancePlans } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Festivals_base
+target		ex:Festivals/{FestivalID} a :Festivals ; p:FestivalID {FestivalID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `FestivalID`, `Name`, `Location` FROM `Festivals`
+
+mappingId	Performances_base
+target		ex:Performance/{PerformanceID} a :Performance ; p:PerformanceID {PerformanceID} ; p:Type {Type} ; p:Description {Description} .
+source		SELECT `PerformanceID`, `Type`, `Description` FROM `Performances`
+
+mappingId	Artists_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:name {Name} ; p:Genre {Genre} .
+source		SELECT `ArtistID`, `Name`, `Genre` FROM `Artists`
+
+mappingId	Festivals_Artists_base
+target		ex:Festivals_Artists/{_amb_rowid} a :Festivals_Artists ; p:FestivalID {FestivalID} ; p:ArtistID {ArtistID} .
+source		SELECT `_amb_rowid`, `FestivalID`, `ArtistID` FROM `Festivals_Artists`
+
+mappingId	Festivals_Artists_ArtistID_fk
+target		ex:Festivals_Artists/{_amb_rowid} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `_amb_rowid`, `ArtistID` FROM `Festivals_Artists` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Festivals_Artists_FestivalID_fk
+target		ex:Festivals_Artists/{_amb_rowid} p:hasFestivals ex:Festivals/{FestivalID} .
+source		SELECT `_amb_rowid`, `FestivalID` FROM `Festivals_Artists` WHERE `FestivalID` IS NOT NULL
+
+mappingId	Festivals_Performances_base
+target		ex:Festivals_Performances/{_amb_rowid} a :Festivals_Performances ; p:FestivalID {FestivalID} ; p:PerformanceID {PerformanceID} ; p:Date {Date} .
+source		SELECT `_amb_rowid`, `FestivalID`, `PerformanceID`, `Date` FROM `Festivals_Performances`
+
+mappingId	Festivals_Performances_PerformanceID_fk
+target		ex:Festivals_Performances/{_amb_rowid} p:hasPerformance ex:Performance/{PerformanceID} .
+source		SELECT `_amb_rowid`, `PerformanceID` FROM `Festivals_Performances` WHERE `PerformanceID` IS NOT NULL
+
+mappingId	Festivals_Performances_FestivalID_fk
+target		ex:Festivals_Performances/{_amb_rowid} p:hasFestivals ex:Festivals/{FestivalID} .
+source		SELECT `_amb_rowid`, `FestivalID` FROM `Festivals_Performances` WHERE `FestivalID` IS NOT NULL
+
+]]

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Apartment_Buildings_base
+target		ex:Apartment_Buildings/{id} a :Apartment_Buildings ; p:id {id} ; p:name {name} ; p:address {address} ; p:city {city} ; p:state {state} ; p:zipcode {zipcode} ; p:num_units {num_units} .
+source		SELECT `id`, `name`, `address`, `city`, `state`, `zipcode`, `num_units` FROM `Apartment_Buildings`
+
+mappingId	Units_base
+target		ex:Units/{id} a :Units ; p:id {id} ; p:unit_type {unit_type} ; p:description {description} .
+source		SELECT `id`, `unit_type`, `description` FROM `Units`
+
+mappingId	Apartment_Buildings_Units_base
+target		ex:Apartment_Buildings_Units/{_amb_rowid} a :Apartment_Buildings_Units ; p:building_id {building_id} ; p:unit_id {unit_id} .
+source		SELECT `_amb_rowid`, `building_id`, `unit_id` FROM `Apartment_Buildings_Units`
+
+mappingId	Apartment_Buildings_Units_unit_id_fk
+target		ex:Apartment_Buildings_Units/{_amb_rowid} p:hasUnits ex:Units/{unit_id} .
+source		SELECT `_amb_rowid`, `unit_id` FROM `Apartment_Buildings_Units` WHERE `unit_id` IS NOT NULL
+
+mappingId	Apartment_Buildings_Units_building_id_fk
+target		ex:Apartment_Buildings_Units/{_amb_rowid} p:hasApartment_Buildings ex:Apartment_Buildings/{building_id} .
+source		SELECT `_amb_rowid`, `building_id` FROM `Apartment_Buildings_Units` WHERE `building_id` IS NOT NULL
+
+mappingId	Tenants_base
+target		ex:Tenants/{tenant_id} a :Tenants ; p:tenant_id {tenant_id} ; p:firstname {firstname} ; p:lastname {lastname} ; p:email {email} ; p:phone {phone} .
+source		SELECT `tenant_id`, `firstname`, `lastname`, `email`, `phone` FROM `Tenants`
+
+mappingId	RentPayments_base
+target		ex:RentPayments/{payment_id} a :RentPayments ; p:payment_id {payment_id} ; p:amount {amount} ; p:paid_date {paid_date} ; p:due_date {due_date} ; p:tenant_id {tenant_id} .
+source		SELECT `payment_id`, `amount`, `paid_date`, `due_date`, `tenant_id` FROM `RentPayments`
+
+mappingId	RentPayments_tenant_id_fk
+target		ex:RentPayments/{payment_id} p:hasTenants ex:Tenants/{tenant_id} .
+source		SELECT `payment_id`, `tenant_id` FROM `RentPayments` WHERE `tenant_id` IS NOT NULL
+
+]]

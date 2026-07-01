@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_recruiters_sources_0_Recruiters_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recruiter_id\", \"name\", \"email\" FROM \"Recruiters\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruiters/{recruiter_id}" ; rr:class :Recruiters ] ;
+  rr:predicateObjectMap [ rr:predicate p:recruiter_id ; rr:objectMap [ rr:column "recruiter_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] .
+
+<#tm_scope_recruiters_sources_1_Sources_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"source_id\", \"source_name\" FROM \"Sources\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sources/{source_id}" ; rr:class :Sources ] ;
+  rr:predicateObjectMap [ rr:predicate p:source_id ; rr:objectMap [ rr:column "source_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:source_name ; rr:objectMap [ rr:column "source_name" ] ] .
+
+<#tm_scope_recruiters_sources_2_Recruiters_Sources_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recruiter_source_id\", \"recruiter_id\", \"source_id\" FROM \"Recruiters_Sources\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruiters_Sources/{recruiter_source_id}" ; rr:class :Recruiters_Sources ] ;
+  rr:predicateObjectMap [ rr:predicate p:recruiter_source_id ; rr:objectMap [ rr:column "recruiter_source_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:recruiter_id ; rr:objectMap [ rr:column "recruiter_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:source_id ; rr:objectMap [ rr:column "source_id" ] ] .
+
+<#tm_scope_recruiters_sources_3_Recruiters_Sources_source_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recruiter_source_id\", \"source_id\" FROM \"Recruiters_Sources\" WHERE \"source_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruiters_Sources/{recruiter_source_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSources ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Sources/{source_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_recruiters_sources_4_Recruiters_Sources_recruiter_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recruiter_source_id\", \"recruiter_id\" FROM \"Recruiters_Sources\" WHERE \"recruiter_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruiters_Sources/{recruiter_source_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRecruiters ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Recruiters/{recruiter_id}" ; rr:termType rr:IRI ] ] .
+

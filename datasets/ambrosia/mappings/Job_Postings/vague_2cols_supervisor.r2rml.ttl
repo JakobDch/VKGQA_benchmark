@@ -1,0 +1,79 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_supervisor_0_Companies_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"companyID\", \"name\", \"location\" FROM \"Companies\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Companies/{companyID}" ; rr:class :Companies ] ;
+  rr:predicateObjectMap [ rr:predicate p:companyID ; rr:objectMap [ rr:column "companyID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_vague_2cols_supervisor_1_Departments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"deptID\", \"deptName\", \"companyID\" FROM \"Departments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Departments/{deptID}" ; rr:class :Departments ] ;
+  rr:predicateObjectMap [ rr:predicate p:deptID ; rr:objectMap [ rr:column "deptID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:deptName ; rr:objectMap [ rr:column "deptName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:companyID ; rr:objectMap [ rr:column "companyID" ] ] .
+
+<#tm_vague_2cols_supervisor_2_Departments_companyID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"deptID\", \"companyID\" FROM \"Departments\" WHERE \"companyID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Departments/{deptID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCompanies ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Companies/{companyID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_supervisor_3_Teams_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"teamID\", \"teamName\", \"deptID\" FROM \"Teams\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Teams/{teamID}" ; rr:class :Teams ] ;
+  rr:predicateObjectMap [ rr:predicate p:teamID ; rr:objectMap [ rr:column "teamID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:teamName ; rr:objectMap [ rr:column "teamName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:deptID ; rr:objectMap [ rr:column "deptID" ] ] .
+
+<#tm_vague_2cols_supervisor_4_Teams_deptID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"teamID\", \"deptID\" FROM \"Teams\" WHERE \"deptID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Teams/{teamID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDepartments ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Departments/{deptID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_supervisor_5_Positions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"positionID\", \"title\", \"description\", \"teamID\" FROM \"Positions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{positionID}" ; rr:class :Position ] ;
+  rr:predicateObjectMap [ rr:predicate p:positionID ; rr:objectMap [ rr:column "positionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:teamID ; rr:objectMap [ rr:column "teamID" ] ] .
+
+<#tm_vague_2cols_supervisor_6_Positions_teamID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"positionID\", \"teamID\" FROM \"Positions\" WHERE \"teamID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{positionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTeams ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Teams/{teamID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_supervisor_7_Management_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"roleID\", \"PositionID\", \"Department_Head\", \"Team_Leader\" FROM \"Management\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Management/{roleID}" ; rr:class :Management ] ;
+  rr:predicateObjectMap [ rr:predicate p:roleID ; rr:objectMap [ rr:column "roleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PositionID ; rr:objectMap [ rr:column "PositionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Department_Head ; rr:objectMap [ rr:column "Department_Head" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Team_Leader ; rr:objectMap [ rr:column "Team_Leader" ] ] .
+
+<#tm_vague_2cols_supervisor_8_Management_PositionID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"roleID\", \"PositionID\" FROM \"Management\" WHERE \"PositionID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Management/{roleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPosition ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{PositionID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_supervisor_9_Employees_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employeeID\", \"email\", \"phoneNumber\", \"hireDate\", \"positionID\", \"fullname\" FROM \"Employees\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Employees/{employeeID}" ; rr:class :Employees ] ;
+  rr:predicateObjectMap [ rr:predicate p:employeeID ; rr:objectMap [ rr:column "employeeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:phoneNumber ; rr:objectMap [ rr:column "phoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:hireDate ; rr:objectMap [ rr:column "hireDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:positionID ; rr:objectMap [ rr:column "positionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "fullname" ] ] .
+
+<#tm_vague_2cols_supervisor_10_Employees_positionID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"employeeID\", \"positionID\" FROM \"Employees\" WHERE \"positionID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Employees/{employeeID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPosition ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Position/{positionID}" ; rr:termType rr:IRI ] ] .
+

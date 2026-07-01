@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Students`
+
+mappingId	Academics_base
+target		ex:Academics/{CourseID} a :Academics ; p:CourseID {CourseID} ; p:Discipline {Discipline} ; p:GradeLevel {GradeLevel} ; p:Teacher {Teacher} ; p:RoomNumber {RoomNumber} ; p:Capacity {Capacity} .
+source		SELECT `CourseID`, `Discipline`, `GradeLevel`, `Teacher`, `RoomNumber`, `Capacity` FROM `Academics`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:EnrolDate {EnrolDate} ; p:FinalGrade {FinalGrade} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `EnrolDate`, `FinalGrade` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasAcademics ex:Academics/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Addresses_base
+target		ex:Addresses/{AddressID} a :Addresses ; p:AddressID {AddressID} ; p:StreetAddress {StreetAddress} ; p:City {City} ; p:State {State} ; p:PostalCode {PostalCode} ; p:Country {Country} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `AddressID`, `StreetAddress`, `City`, `State`, `PostalCode`, `Country`, `PhoneNumber` FROM `Addresses`
+
+mappingId	Guardians_base
+target		ex:Guardians/{GuardianID} a :Guardians ; p:GuardianID {GuardianID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Relationship {Relationship} ; p:HomePhone {HomePhone} ; p:WorkPhone {WorkPhone} ; p:email {Email} .
+source		SELECT `GuardianID`, `FirstName`, `LastName`, `Relationship`, `HomePhone`, `WorkPhone`, `Email` FROM `Guardians`
+
+mappingId	EmergencyContacts_base
+target		ex:EmergencyContacts/{ContactID} a :EmergencyContacts ; p:ContactID {ContactID} ; p:GuardianID {GuardianID} ; p:name {Name} ; p:Relationship {Relationship} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ContactID`, `GuardianID`, `Name`, `Relationship`, `PhoneNumber` FROM `EmergencyContacts`
+
+mappingId	EmergencyContacts_GuardianID_fk
+target		ex:EmergencyContacts/{ContactID} p:hasGuardians ex:Guardians/{GuardianID} .
+source		SELECT `ContactID`, `GuardianID` FROM `EmergencyContacts` WHERE `GuardianID` IS NOT NULL
+
+]]

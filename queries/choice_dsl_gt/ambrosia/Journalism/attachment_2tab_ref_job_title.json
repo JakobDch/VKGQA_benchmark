@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_job_title",
+  "schema": "amb_attachment_2tab_ref_job_title",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me public relations positions with any contact and the government communications positions but only in contact with \"Fox News\".",
+      "qtype": "unambig",
+      "sql": "SELECT Public_Relations.role\nFROM Contacts JOIN Public_Relations ON Contacts.public_relations_id = Public_Relations.id\nUNION\nSELECT Government_Communications.role\nFROM Contacts JOIN Government_Communications ON Contacts.government_communications_id = Government_Communications.id\nWHERE Contacts.organization = \"Fox News\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?contacts a :Contacts .\n    ?public_relations a :Public_Relations .\n    ?contacts p:hasPublic_Relations ?public_relations .\n    ?public_relations p:role ?role .\n    BIND(?role AS ?o0)\n  }\n  UNION\n  {\n    ?contacts a :Contacts .\n    ?government_communications a :Government_Communications .\n    ?contacts p:hasGovernment_Communications ?government_communications .\n    ?government_communications p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display public relations positions and government communication positions that are in contact with \"Fox News\".",
+      "qtype": "ambig",
+      "sql": "SELECT Public_Relations.role\nFROM Contacts JOIN Public_Relations ON Contacts.public_relations_id = Public_Relations.id\nWHERE Contacts.organization = \"Fox News\"\nUNION\nSELECT Government_Communications.role\nFROM Contacts JOIN Government_Communications ON Contacts.government_communications_id = Government_Communications.id\nWHERE Contacts.organization = \"Fox News\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?contacts a :Contacts .\n    ?public_relations a :Public_Relations .\n    ?contacts p:hasPublic_Relations ?public_relations .\n    ?public_relations p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n  UNION\n  {\n    ?contacts a :Contacts .\n    ?government_communications a :Government_Communications .\n    ?contacts p:hasGovernment_Communications ?government_communications .\n    ?government_communications p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display public relations positions and government communication positions that are in contact with \"Fox News\".",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?contacts a :Contacts .\n    ?public_relations a :Public_Relations .\n    ?contacts p:hasPublic_Relations ?public_relations .\n    ?public_relations p:role ?role .\n    BIND(?role AS ?o0)\n  }\n  UNION\n  {\n    ?contacts a :Contacts .\n    ?government_communications a :Government_Communications .\n    ?contacts p:hasGovernment_Communications ?government_communications .\n    ?government_communications p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?contacts a :Contacts .\n    ?public_relations a :Public_Relations .\n    ?contacts p:hasPublic_Relations ?public_relations .\n    ?public_relations p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n  UNION\n  {\n    ?contacts a :Contacts .\n    ?government_communications a :Government_Communications .\n    ?contacts p:hasGovernment_Communications ?government_communications .\n    ?government_communications p:role ?role .\n    ?contacts p:organization ?organization_f .\n    FILTER(STR(?organization_f) = \"Fox News\")\n    BIND(?role AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

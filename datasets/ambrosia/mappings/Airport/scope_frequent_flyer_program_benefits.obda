@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{ID} a :Airports ; p:ID {ID} ; p:name {Name} ; p:City {City} ; p:Country {Country} .
+source		SELECT `ID`, `Name`, `City`, `Country` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{ID} a :Airlines ; p:ID {ID} ; p:name {Name} ; p:Code {Code} .
+source		SELECT `ID`, `Name`, `Code` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:AirlineId {AirlineId} ; p:FromAirportId {FromAirportId} ; p:ToAirportId {ToAirportId} .
+source		SELECT `FlightID`, `DepartureTime`, `ArrivalTime`, `AirlineId`, `FromAirportId`, `ToAirportId` FROM `Flights`
+
+mappingId	Flights_ToAirportId_fk
+target		ex:Flights/{FlightID} p:hasAirports_ToAirportId ex:Airports/{ToAirportId} .
+source		SELECT `FlightID`, `ToAirportId` FROM `Flights` WHERE `ToAirportId` IS NOT NULL
+
+mappingId	Flights_FromAirportId_fk
+target		ex:Flights/{FlightID} p:hasAirports_FromAirportId ex:Airports/{FromAirportId} .
+source		SELECT `FlightID`, `FromAirportId` FROM `Flights` WHERE `FromAirportId` IS NOT NULL
+
+mappingId	Flights_AirlineId_fk
+target		ex:Flights/{FlightID} p:hasAirlines ex:Airlines/{AirlineId} .
+source		SELECT `FlightID`, `AirlineId` FROM `Flights` WHERE `AirlineId` IS NOT NULL
+
+mappingId	Frequent_Flyer_Program_base
+target		ex:Frequent_Flyer_Program/{ProgramId} a :Frequent_Flyer_Program ; p:ProgramId {ProgramId} ; p:AirlineId {AirlineId} ; p:MemberName {MemberName} ; p:JoinDate {JoinDate} .
+source		SELECT `ProgramId`, `AirlineId`, `MemberName`, `JoinDate` FROM `Frequent_Flyer_Program`
+
+mappingId	Frequent_Flyer_Program_AirlineId_fk
+target		ex:Frequent_Flyer_Program/{ProgramId} p:hasAirlines ex:Airlines/{AirlineId} .
+source		SELECT `ProgramId`, `AirlineId` FROM `Frequent_Flyer_Program` WHERE `AirlineId` IS NOT NULL
+
+mappingId	Benefits_base
+target		ex:Benefits/{BenefitId} a :Benefits ; p:BenefitId {BenefitId} ; p:Description {Description} .
+source		SELECT `BenefitId`, `Description` FROM `Benefits`
+
+mappingId	Frequent_Flyer_Program_Benefits_base
+target		ex:Frequent_Flyer_Program_Benefits/{ProgramId}/{BenefitId} a :Frequent_Flyer_Program_Benefits ; p:ProgramId {ProgramId} ; p:BenefitId {BenefitId} .
+source		SELECT `ProgramId`, `BenefitId` FROM `Frequent_Flyer_Program_Benefits`
+
+mappingId	Frequent_Flyer_Program_Benefits_BenefitId_fk
+target		ex:Frequent_Flyer_Program_Benefits/{ProgramId}/{BenefitId} p:hasBenefits ex:Benefits/{BenefitId} .
+source		SELECT `ProgramId`, `BenefitId` FROM `Frequent_Flyer_Program_Benefits` WHERE `BenefitId` IS NOT NULL
+
+mappingId	Frequent_Flyer_Program_Benefits_ProgramId_fk
+target		ex:Frequent_Flyer_Program_Benefits/{ProgramId}/{BenefitId} p:hasFrequent_Flyer_Program ex:Frequent_Flyer_Program/{ProgramId} .
+source		SELECT `ProgramId`, `BenefitId` FROM `Frequent_Flyer_Program_Benefits` WHERE `ProgramId` IS NOT NULL
+
+]]

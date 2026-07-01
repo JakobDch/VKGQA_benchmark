@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Waste_Disposal_Method_base
+target		ex:Waste_Disposal_Method/{id} a :Waste_Disposal_Method ; p:id {id} ; p:method_name {method_name} ; p:description {description} .
+source		SELECT `id`, `method_name`, `description` FROM `Waste_Disposal_Method`
+
+mappingId	Recycling_Program_base
+target		ex:Recycling_Program/{id} a :Recycling_Program ; p:id {id} ; p:program_name {program_name} ; p:description {description} .
+source		SELECT `id`, `program_name`, `description` FROM `Recycling_Program`
+
+mappingId	Construction_Material_base
+target		ex:Construction_Material/{id} a :Construction_Material ; p:id {id} ; p:material_type {material_type} ; p:quantity {quantity} .
+source		SELECT `id`, `material_type`, `quantity` FROM `Construction_Material`
+
+mappingId	Construction_Site_base
+target		ex:Construction_Site/{site_id} a :Construction_Site ; p:site_id {site_id} ; p:site_name {site_name} ; p:location {location} ; p:waste_disposal_method_id {waste_disposal_method_id} ; p:recycling_program_id {recycling_program_id} .
+source		SELECT `site_id`, `site_name`, `location`, `waste_disposal_method_id`, `recycling_program_id` FROM `Construction_Site`
+
+mappingId	Construction_Site_recycling_program_id_fk
+target		ex:Construction_Site/{site_id} p:hasRecycling_Program ex:Recycling_Program/{recycling_program_id} .
+source		SELECT `site_id`, `recycling_program_id` FROM `Construction_Site` WHERE `recycling_program_id` IS NOT NULL
+
+mappingId	Construction_Site_waste_disposal_method_id_fk
+target		ex:Construction_Site/{site_id} p:hasWaste_Disposal_Method ex:Waste_Disposal_Method/{waste_disposal_method_id} .
+source		SELECT `site_id`, `waste_disposal_method_id` FROM `Construction_Site` WHERE `waste_disposal_method_id` IS NOT NULL
+
+mappingId	Site_Material_base
+target		ex:Site_Material/{site_material_id} a :Site_Material ; p:site_material_id {site_material_id} ; p:construction_site_id {construction_site_id} ; p:construction_material_id {construction_material_id} ; p:amount {amount} .
+source		SELECT `site_material_id`, `construction_site_id`, `construction_material_id`, `amount` FROM `Site_Material`
+
+mappingId	Site_Material_construction_material_id_fk
+target		ex:Site_Material/{site_material_id} p:hasConstruction_Material ex:Construction_Material/{construction_material_id} .
+source		SELECT `site_material_id`, `construction_material_id` FROM `Site_Material` WHERE `construction_material_id` IS NOT NULL
+
+mappingId	Site_Material_construction_site_id_fk
+target		ex:Site_Material/{site_material_id} p:hasConstruction_Site ex:Construction_Site/{construction_site_id} .
+source		SELECT `site_material_id`, `construction_site_id` FROM `Site_Material` WHERE `construction_site_id` IS NOT NULL
+
+mappingId	Disposed_Waste_base
+target		ex:Disposed_Waste/{disposed_waste_id} a :Disposed_Waste ; p:disposed_waste_id {disposed_waste_id} ; p:site_material_id {site_material_id} ; p:waste_disposal_method_id {waste_disposal_method_id} ; p:disposal_date {disposal_date} .
+source		SELECT `disposed_waste_id`, `site_material_id`, `waste_disposal_method_id`, `disposal_date` FROM `Disposed_Waste`
+
+mappingId	Disposed_Waste_waste_disposal_method_id_fk
+target		ex:Disposed_Waste/{disposed_waste_id} p:hasWaste_Disposal_Method ex:Waste_Disposal_Method/{waste_disposal_method_id} .
+source		SELECT `disposed_waste_id`, `waste_disposal_method_id` FROM `Disposed_Waste` WHERE `waste_disposal_method_id` IS NOT NULL
+
+mappingId	Disposed_Waste_site_material_id_fk
+target		ex:Disposed_Waste/{disposed_waste_id} p:hasSite_Material ex:Site_Material/{site_material_id} .
+source		SELECT `disposed_waste_id`, `site_material_id` FROM `Disposed_Waste` WHERE `site_material_id` IS NOT NULL
+
+]]

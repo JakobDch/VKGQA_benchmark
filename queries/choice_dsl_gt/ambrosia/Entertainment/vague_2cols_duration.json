@@ -1,0 +1,53 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_duration",
+  "schema": "amb_vague_2cols_duration",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who featured in the movie with the most acts?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Movie JOIN Role ON Role.movie_id = Movie.id JOIN Actor ON Actor.id = Role.actor_id ORDER BY Number_of_acts DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Number_of_acts ?number_of_acts_o .\n}\nORDER BY DESC(?number_of_acts_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which actor starred in the film with the highest runtime and most acts?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Movie JOIN Role ON Role.movie_id = Movie.id JOIN Actor ON Actor.id = Role.actor_id ORDER BY Total_length, Number_of_acts DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Total_length ?total_length_o .\n  ?movie p:Number_of_acts ?number_of_acts_o .\n}\nORDER BY ASC(?total_length_o) DESC(?number_of_acts_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which actor starred in the movie which has the longest length?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Movie JOIN Role ON Role.movie_id = Movie.id JOIN Actor ON Actor.id = Role.actor_id ORDER BY Total_length DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Total_length ?total_length_o .\n}\nORDER BY DESC(?total_length_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who played in the longest movie?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Number_of_acts ?number_of_acts_o .\n}\nORDER BY DESC(?number_of_acts_o)\nLIMIT 1 }\n  full: { SELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Total_length ?total_length_o .\n  ?movie p:Number_of_acts ?number_of_acts_o .\n}\nORDER BY ASC(?total_length_o) DESC(?number_of_acts_o)\nLIMIT 1 }\n  component_2: { SELECT ?name WHERE {\n  ?movie a :Movie .\n  ?role a :Role .\n  ?role p:hasMovie ?movie .\n  ?actor a :Actor .\n  ?role p:hasActor ?actor .\n  ?actor p:name ?name .\n  ?movie p:Total_length ?total_length_o .\n}\nORDER BY DESC(?total_length_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	PERFORMERS_base
+target		ex:Performers/{ID} a :Performers ; p:ID {ID} ; p:name {NAME} ; p:AGE {AGE} ; p:GENRE {GENRE} ; p:STREET_PERFORMER {STREET_PERFORMER} ; p:STREET_LOCATION {STREET_LOCATION} .
+source		SELECT `ID`, `NAME`, `AGE`, `GENRE`, `STREET_PERFORMER`, `STREET_LOCATION` FROM `PERFORMERS`
+
+mappingId	SHOWS_base
+target		ex:Show/{ID} a :Show ; p:ID {ID} ; p:TITLE {TITLE} ; p:DURATION {DURATION} .
+source		SELECT `ID`, `TITLE`, `DURATION` FROM `SHOWS`
+
+mappingId	VENUES_base
+target		ex:Venue/{ID} a :Venue ; p:ID {ID} ; p:name {NAME} ; p:location {LOCATION} .
+source		SELECT `ID`, `NAME`, `LOCATION` FROM `VENUES`
+
+mappingId	SHOW_VENUE_MAPPINGS_base
+target		ex:ShowVenues/{_amb_rowid} a :ShowVenues ; p:SHOW_ID {SHOW_ID} ; p:VENUE_ID {VENUE_ID} .
+source		SELECT `_amb_rowid`, `SHOW_ID`, `VENUE_ID` FROM `SHOW_VENUE_MAPPINGS`
+
+mappingId	SHOW_VENUE_MAPPINGS_VENUE_ID_fk
+target		ex:ShowVenues/{_amb_rowid} p:hasVenue ex:Venue/{VENUE_ID} .
+source		SELECT `_amb_rowid`, `VENUE_ID` FROM `SHOW_VENUE_MAPPINGS` WHERE `VENUE_ID` IS NOT NULL
+
+mappingId	SHOW_VENUE_MAPPINGS_SHOW_ID_fk
+target		ex:ShowVenues/{_amb_rowid} p:hasShow ex:Show/{SHOW_ID} .
+source		SELECT `_amb_rowid`, `SHOW_ID` FROM `SHOW_VENUE_MAPPINGS` WHERE `SHOW_ID` IS NOT NULL
+
+mappingId	PERFORMER_SHOW_base
+target		ex:PERFORMER_SHOW/{_amb_rowid} a :PERFORMER_SHOW ; p:PERFORMER_ID {PERFORMER_ID} ; p:SHOW_ID {SHOW_ID} .
+source		SELECT `_amb_rowid`, `PERFORMER_ID`, `SHOW_ID` FROM `PERFORMER_SHOW`
+
+mappingId	PERFORMER_SHOW_SHOW_ID_fk
+target		ex:PERFORMER_SHOW/{_amb_rowid} p:hasShow ex:Show/{SHOW_ID} .
+source		SELECT `_amb_rowid`, `SHOW_ID` FROM `PERFORMER_SHOW` WHERE `SHOW_ID` IS NOT NULL
+
+mappingId	PERFORMER_SHOW_PERFORMER_ID_fk
+target		ex:PERFORMER_SHOW/{_amb_rowid} p:hasPerformers ex:Performers/{PERFORMER_ID} .
+source		SELECT `_amb_rowid`, `PERFORMER_ID` FROM `PERFORMER_SHOW` WHERE `PERFORMER_ID` IS NOT NULL
+
+]]

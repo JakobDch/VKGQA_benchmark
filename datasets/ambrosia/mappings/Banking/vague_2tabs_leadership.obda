@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Ceo_base
+target		ex:Ceo/{ceoID} a :Ceo ; p:ceoID {ceoID} ; p:name {fullname} .
+source		SELECT `ceoID`, `fullname` FROM `Ceo`
+
+mappingId	Board_of_directors_base
+target		ex:Board_of_directors/{boardID} a :Board_of_directors ; p:boardID {boardID} ; p:ceoID {ceoID} ; p:directorfullname {directorfullname} .
+source		SELECT `boardID`, `ceoID`, `directorfullname` FROM `Board_of_directors`
+
+mappingId	Board_of_directors_ceoID_fk
+target		ex:Board_of_directors/{boardID} p:hasCeo ex:Ceo/{ceoID} .
+source		SELECT `boardID`, `ceoID` FROM `Board_of_directors` WHERE `ceoID` IS NOT NULL
+
+mappingId	Banks_base
+target		ex:Banks/{bankID} a :Banks ; p:bankID {bankID} ; p:bankName {bankName} ; p:branchNumber {branchNumber} ; p:ceoID {ceoID} ; p:boardID {boardID} .
+source		SELECT `bankID`, `bankName`, `branchNumber`, `ceoID`, `boardID` FROM `Banks`
+
+mappingId	Banks_boardID_fk
+target		ex:Banks/{bankID} p:hasBoard_of_directors ex:Board_of_directors/{boardID} .
+source		SELECT `bankID`, `boardID` FROM `Banks` WHERE `boardID` IS NOT NULL
+
+mappingId	Banks_ceoID_fk
+target		ex:Banks/{bankID} p:hasCeo ex:Ceo/{ceoID} .
+source		SELECT `bankID`, `ceoID` FROM `Banks` WHERE `ceoID` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{customerID} a :Customers ; p:customerID {customerID} ; p:customerName {customerName} ; p:accountNumber {accountNumber} ; p:bankID {bankID} .
+source		SELECT `customerID`, `customerName`, `accountNumber`, `bankID` FROM `Customers`
+
+mappingId	Customers_bankID_fk
+target		ex:Customers/{customerID} p:hasBanks ex:Banks/{bankID} .
+source		SELECT `customerID`, `bankID` FROM `Customers` WHERE `bankID` IS NOT NULL
+
+mappingId	Accounts_base
+target		ex:Accounts/{accountID} a :Accounts ; p:accountID {accountID} ; p:accountType {accountType} ; p:balance {balance} ; p:customerID {customerID} .
+source		SELECT `accountID`, `accountType`, `balance`, `customerID` FROM `Accounts`
+
+mappingId	Accounts_customerID_fk
+target		ex:Accounts/{accountID} p:hasCustomers ex:Customers/{customerID} .
+source		SELECT `accountID`, `customerID` FROM `Accounts` WHERE `customerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{transactionID} a :Transactions ; p:transactionID {transactionID} ; p:amount {amount} ; p:type {type} ; p:date {date} ; p:accountID {accountID} .
+source		SELECT `transactionID`, `amount`, `type`, `date`, `accountID` FROM `Transactions`
+
+mappingId	Transactions_accountID_fk
+target		ex:Transactions/{transactionID} p:hasAccounts ex:Accounts/{accountID} .
+source		SELECT `transactionID`, `accountID` FROM `Transactions` WHERE `accountID` IS NOT NULL
+
+]]

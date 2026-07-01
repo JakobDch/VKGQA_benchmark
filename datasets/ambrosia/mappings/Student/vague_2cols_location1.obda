@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:First_name {First_name} ; p:Last_name {Last_name} ; p:Date_of_birth {Date_of_birth} ; p:email {Email} .
+source		SELECT `ID`, `First_name`, `Last_name`, `Date_of_birth`, `Email` FROM `Students`
+
+mappingId	Departments_base
+target		ex:Departments/{Department_ID} a :Departments ; p:Department_ID {Department_ID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `Department_ID`, `Name`, `Location` FROM `Departments`
+
+mappingId	Rooms_base
+target		ex:Rooms/{Room_number} a :Rooms ; p:Room_number {Room_number} ; p:Building_name {Building_name} ; p:Capacity {Capacity} ; p:Lectures {Lectures} .
+source		SELECT `Room_number`, `Building_name`, `Capacity`, `Lectures` FROM `Rooms`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:Student_id {Student_id} ; p:Course_id {Course_id} ; p:Semester_year {Semester_year} ; p:Grade {Grade} .
+source		SELECT `_amb_rowid`, `Student_id`, `Course_id`, `Semester_year`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_Course_id_fk
+target		ex:Enrollments/{_amb_rowid} p:hasCourses ex:Courses/{Course_id} .
+source		SELECT `_amb_rowid`, `Course_id` FROM `Enrollments` WHERE `Course_id` IS NOT NULL
+
+mappingId	Enrollments_Student_id_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{Student_id} .
+source		SELECT `_amb_rowid`, `Student_id` FROM `Enrollments` WHERE `Student_id` IS NOT NULL
+
+mappingId	Teachers_base
+target		ex:Teachers/{Teacher_Id} a :Teachers ; p:Teacher_Id {Teacher_Id} ; p:First_name {First_name} ; p:Last_name {Last_name} ; p:Hire_date {Hire_date} ; p:Office_room_number {Office_room_number} .
+source		SELECT `Teacher_Id`, `First_name`, `Last_name`, `Hire_date`, `Office_room_number` FROM `Teachers`
+
+mappingId	Teachers_Office_room_number_fk
+target		ex:Teachers/{Teacher_Id} p:hasRooms ex:Rooms/{Office_room_number} .
+source		SELECT `Teacher_Id`, `Office_room_number` FROM `Teachers` WHERE `Office_room_number` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{Course_id} a :Courses ; p:Course_id {Course_id} ; p:Title {Title} ; p:Description {Description} ; p:Credits {Credits} ; p:Teacher_id {Teacher_id} .
+source		SELECT `Course_id`, `Title`, `Description`, `Credits`, `Teacher_id` FROM `Courses`
+
+mappingId	Courses_Teacher_id_fk
+target		ex:Courses/{Course_id} p:hasTeachers ex:Teachers/{Teacher_id} .
+source		SELECT `Course_id`, `Teacher_id` FROM `Courses` WHERE `Teacher_id` IS NOT NULL
+
+]]

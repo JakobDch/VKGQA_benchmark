@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_medical_professionals",
+  "schema": "amb_attachment_1tab_val_medical_professionals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with all nurses and also with all physician assistants who work with Anne Buche.",
+      "qtype": "unambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE Employees.MedicalProfession = \"Nurse\" OR Employees.MedicalProfession = \"Physician's Assistant\" AND Employees.Patient = \"Anne Buche\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:MedicalProfession ?medicalprofession_w .\n  ?employees p:MedicalProfession ?medicalprofession_w2 .\n  ?employees p:Patient ?patient_w .\n  FILTER((STR(?medicalprofession_w) = \"Nurse\" || (STR(?medicalprofession_w2) = \"Physician's Assistant\" && STR(?patient_w) = \"Anne Buche\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide me with all nurses and physician assistants for Anne Buche.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE (Employees.MedicalProfession = \"Nurse\" OR Employees.MedicalProfession = \"Physician's Assistant\") AND Employees.Patient = \"Anne Buche\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:MedicalProfession ?medicalprofession_w .\n  ?employees p:MedicalProfession ?medicalprofession_w2 .\n  ?employees p:Patient ?patient_w .\n  FILTER((((STR(?medicalprofession_w) = \"Nurse\" || STR(?medicalprofession_w2) = \"Physician's Assistant\")) && STR(?patient_w) = \"Anne Buche\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide me with all nurses and physician assistants for Anne Buche.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:MedicalProfession ?medicalprofession_w .\n  ?employees p:MedicalProfession ?medicalprofession_w2 .\n  ?employees p:Patient ?patient_w .\n  FILTER((STR(?medicalprofession_w) = \"Nurse\" || (STR(?medicalprofession_w2) = \"Physician's Assistant\" && STR(?patient_w) = \"Anne Buche\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:MedicalProfession ?medicalprofession_w .\n  ?employees p:MedicalProfession ?medicalprofession_w2 .\n  ?employees p:Patient ?patient_w .\n  FILTER((((STR(?medicalprofession_w) = \"Nurse\" || STR(?medicalprofession_w2) = \"Physician's Assistant\")) && STR(?patient_w) = \"Anne Buche\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

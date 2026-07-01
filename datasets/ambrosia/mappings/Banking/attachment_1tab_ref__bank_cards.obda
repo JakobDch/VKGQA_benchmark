@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clients_base
+target		ex:Clients/{client_id} a :Clients ; p:client_id {client_id} ; p:name {name} ; p:address {address} ; p:email {email} ; p:phoneNumber {phoneNumber} .
+source		SELECT `client_id`, `name`, `address`, `email`, `phoneNumber` FROM `Clients`
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:client_id {client_id} ; p:account_type {account_type} ; p:balance {balance} .
+source		SELECT `account_id`, `client_id`, `account_type`, `balance` FROM `Accounts`
+
+mappingId	Accounts_client_id_fk
+target		ex:Accounts/{account_id} p:hasClients ex:Clients/{client_id} .
+source		SELECT `account_id`, `client_id` FROM `Accounts` WHERE `client_id` IS NOT NULL
+
+mappingId	Bank_Cards_base
+target		ex:Bank_Cards/{card_id} a :Bank_Cards ; p:card_id {card_id} ; p:account_id {account_id} ; p:card_number {card_number} ; p:card_expiry {card_expiry} ; p:cvv {cvv} ; p:bank_card_type {_bank_card_type} .
+source		SELECT `card_id`, `account_id`, `card_number`, `card_expiry`, `cvv`, `_bank_card_type` FROM `_Bank_Cards`
+
+mappingId	Bank_Cards_account_id_fk
+target		ex:Bank_Cards/{card_id} p:hasAccounts ex:Accounts/{account_id} .
+source		SELECT `card_id`, `account_id` FROM `_Bank_Cards` WHERE `account_id` IS NOT NULL
+
+mappingId	Limits_base
+target		ex:Limits/{limit_id} a :Limits ; p:limit_id {limit_id} ; p:card_id {card_id} ; p:card_limit {card_limit} .
+source		SELECT `limit_id`, `card_id`, `card_limit` FROM `Limits`
+
+mappingId	Limits_card_id_fk
+target		ex:Limits/{limit_id} p:hasBank_Cards ex:Bank_Cards/{card_id} .
+source		SELECT `limit_id`, `card_id` FROM `Limits` WHERE `card_id` IS NOT NULL
+
+]]

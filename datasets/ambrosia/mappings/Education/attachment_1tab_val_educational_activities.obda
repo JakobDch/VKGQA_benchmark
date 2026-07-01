@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Schools_base
+target		ex:Schools/{SchoolID} a :Schools ; p:SchoolID {SchoolID} ; p:name {Name} ; p:Address {Address} ; p:PhoneText {PhoneText} .
+source		SELECT `SchoolID`, `Name`, `Address`, `PhoneText` FROM `Schools`
+
+mappingId	Classes_base
+target		ex:Classes/{ClassID} a :Classes ; p:ClassID {ClassID} ; p:SchoolID {SchoolID} ; p:TeacherName {TeacherName} ; p:Subject {Subject} .
+source		SELECT `ClassID`, `SchoolID`, `TeacherName`, `Subject` FROM `Classes`
+
+mappingId	Classes_SchoolID_fk
+target		ex:Classes/{ClassID} p:hasSchools ex:Schools/{SchoolID} .
+source		SELECT `ClassID`, `SchoolID` FROM `Classes` WHERE `SchoolID` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:EnrollmentDate {EnrollmentDate} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Age`, `EnrollmentDate` FROM `Students`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:ClassID {ClassID} ; p:Educational_Activity {Educational_Activity} ; p:Number_of_students {Number_of_students} .
+source		SELECT `EnrollmentID`, `StudentID`, `ClassID`, `Educational_Activity`, `Number_of_students` FROM `Enrollments`
+
+mappingId	Enrollments_ClassID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `EnrollmentID`, `ClassID` FROM `Enrollments` WHERE `ClassID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+]]

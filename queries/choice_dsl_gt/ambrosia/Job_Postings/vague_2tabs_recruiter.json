@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2tabs_recruiter",
+  "schema": "amb_vague_2tabs_recruiter",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which company has hired a data analyst?",
+      "qtype": "unambig",
+      "sql": "SELECT r.name\nFROM Position p\nJOIN Company r ON p.companyId = r.id\nWHERE p.title = 'Data Analyst'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?r p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What company hired the data analyst and which recruitment agency was used?",
+      "qtype": "unambig",
+      "sql": "SELECT r.name, ag.agencyName\nFROM Position p\nJOIN Company r ON p.companyId = r.id\nJOIN Recruitment_Agency ag ON p.RecruitmentAgencyId = ag.id WHERE p.title = 'Data Analyst'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?ag a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?ag .\n  ?r p:name ?name .\n  ?ag p:agencyName ?agencyname .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who hires a data analyst?",
+      "qtype": "ambig",
+      "sql": "SELECT r.agencyName\nFROM Position p\nJOIN Recruitment_Agency r ON p.RecruitmentAgencyId = r.id\nWHERE p.title = 'Data Analyst'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?r .\n  ?r p:agencyName ?agencyname .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which tech companies and recruitment agencies have already conducted the interviews?",
+      "qtype": "unambig",
+      "sql": "SELECT r.name, ag.agencyName\nFROM Position p\nJOIN Company r ON p.companyId = r.id\nLEFT JOIN Applicant a ON p.id = a.positionId\nLEFT JOIN Interview i ON a.id = i.applicantId\nJOIN Recruitment_Agency ag ON p.RecruitmentAgencyId = ag.id WHERE status = 'Completed'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?ag a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?ag .\n  ?r p:name ?name .\n  ?ag p:agencyName ?agencyname .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which recruitment agencies have already conducted the interviews?",
+      "qtype": "unambig",
+      "sql": "SELECT r.agencyName\nFROM Position p\nJOIN Recruitment_Agency r ON p.RecruitmentAgencyId = r.id\nLEFT JOIN Applicant a ON p.id = a.positionId\nLEFT JOIN Interview i ON a.id = i.applicantId\nWHERE status = 'Completed'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?r p:agencyName ?agencyname .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which tech companies have already conducted the interviews?",
+      "qtype": "unambig",
+      "sql": "SELECT r.name\nFROM Position p\nJOIN Company r ON p.companyId = r.id\nLEFT JOIN Applicant a ON p.id = a.positionId\nLEFT JOIN Interview i ON a.id = i.applicantId\nWHERE status = 'Completed'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?r p:name ?name .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who hires a data analyst?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?r p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n} }\n  full: { SELECT ?name ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?ag a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?ag .\n  ?r p:name ?name .\n  ?ag p:agencyName ?agencyname .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n} }\n  component_2: { SELECT ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?r .\n  ?r p:agencyName ?agencyname .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Data Analyst\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who has already conducted the interview?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?ag a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?ag .\n  ?r p:name ?name .\n  ?ag p:agencyName ?agencyname .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n} }\n  component: { SELECT ?agencyname WHERE {\n  ?p a :Position .\n  ?r a :Recruitment_Agency .\n  ?p p:hasRecruitment_Agency ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?r p:agencyName ?agencyname .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?p a :Position .\n  ?r a :Companies .\n  ?p p:hasCompany ?r .\n  ?a a :Applicants .\n  ?a p:hasPosition ?p .\n  ?i a :Interview .\n  ?i p:hasApplicant ?a .\n  ?r p:name ?name .\n  ?i p:status ?status_f .\n  FILTER(STR(?status_f) = \"Completed\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_creative_industry_professions",
+  "schema": "amb_attachment_1tab_val_creative_industry_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all graphic designer positions and also list web developer positions at 2/7 London Street offices.",
+      "qtype": "unambig",
+      "sql": "SELECT Position.title \nFROM Position\nWHERE Position.creative_industry_profession = \"Graphic Designer\" OR Position.creative_industry_profession = \"Web Developer\" AND Position.office = \"2/7 London Street\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?position a :Position .\n  ?position p:title ?title .\n  ?position p:creative_industry_profession ?creative_industry_profession_w .\n  ?position p:creative_industry_profession ?creative_industry_profession_w2 .\n  ?position p:office ?office_w .\n  FILTER((STR(?creative_industry_profession_w) = \"Graphic Designer\" || (STR(?creative_industry_profession_w2) = \"Web Developer\" && STR(?office_w) = \"2/7 London Street\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show graphic designer positions and web developer positions at 2/7 London Street offices.",
+      "qtype": "ambig",
+      "sql": "SELECT Position.title \nFROM Position\nWHERE (Position.creative_industry_profession = \"Graphic Designer\" OR Position.creative_industry_profession = \"Web Developer\") AND Position.office = \"2/7 London Street\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?position a :Position .\n  ?position p:title ?title .\n  ?position p:creative_industry_profession ?creative_industry_profession_w .\n  ?position p:creative_industry_profession ?creative_industry_profession_w2 .\n  ?position p:office ?office_w .\n  FILTER((((STR(?creative_industry_profession_w) = \"Graphic Designer\" || STR(?creative_industry_profession_w2) = \"Web Developer\")) && STR(?office_w) = \"2/7 London Street\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show graphic designer positions and web developer positions at 2/7 London Street offices.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?position a :Position .\n  ?position p:title ?title .\n  ?position p:creative_industry_profession ?creative_industry_profession_w .\n  ?position p:creative_industry_profession ?creative_industry_profession_w2 .\n  ?position p:office ?office_w .\n  FILTER((STR(?creative_industry_profession_w) = \"Graphic Designer\" || (STR(?creative_industry_profession_w2) = \"Web Developer\" && STR(?office_w) = \"2/7 London Street\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?position a :Position .\n  ?position p:title ?title .\n  ?position p:creative_industry_profession ?creative_industry_profession_w .\n  ?position p:creative_industry_profession ?creative_industry_profession_w2 .\n  ?position p:office ?office_w .\n  FILTER((((STR(?creative_industry_profession_w) = \"Graphic Designer\" || STR(?creative_industry_profession_w2) = \"Web Developer\")) && STR(?office_w) = \"2/7 London Street\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

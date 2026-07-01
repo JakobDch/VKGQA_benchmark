@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_onboard_entertainment_system_features",
+  "schema": "amb_scope_onboard_entertainment_system_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What features are there in common for every onboard entertainment system?",
+      "qtype": "unambig",
+      "sql": "SELECT Features.feature_name  from Onboard_Entertainment_System_Features join Features on Onboard_Entertainment_System_Features.features_feature_id = Features.feature_id join Onboard_Entertainment_System on Onboard_Entertainment_System_Features.onboard_entertainment_system_id = Onboard_Entertainment_System.id   GROUP BY Onboard_Entertainment_System_Features.features_feature_id HAVING COUNT(DISTINCT Onboard_Entertainment_System_Features.onboard_entertainment_system_id) = (SELECT COUNT(*) FROM  Onboard_Entertainment_System)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?feature_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasOnboard_Entertainment_System ?parent . } GROUP BY ?child }\n  ?child p:feature_name ?feature_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Onboard_Entertainment_System } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every onboard entertainment system list all of the features.",
+      "qtype": "unambig",
+      "sql": "select onboard_entertainment_system.airline , features.feature_name from Onboard_Entertainment_System_Features join Features on Onboard_Entertainment_System_Features.features_feature_id = Features.feature_id join Onboard_Entertainment_System on Onboard_Entertainment_System_Features.onboard_entertainment_system_id = Onboard_Entertainment_System.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airline ?feature_name WHERE {\n  ?onboard_entertainment_system_features a :Onboard_Entertainment_System_Features .\n  ?features a :Features .\n  ?onboard_entertainment_system_features p:hasFeatures ?features .\n  ?onboard_entertainment_system a :Onboard_Entertainment_System .\n  ?onboard_entertainment_system_features p:hasOnboard_Entertainment_System ?onboard_entertainment_system .\n  ?onboard_entertainment_system p:airline ?airline .\n  ?features p:feature_name ?feature_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What features are there for every onboard entertainment system?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?feature_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasOnboard_Entertainment_System ?parent . } GROUP BY ?child }\n  ?child p:feature_name ?feature_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Onboard_Entertainment_System } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?airline ?feature_name WHERE {\n  ?onboard_entertainment_system_features a :Onboard_Entertainment_System_Features .\n  ?features a :Features .\n  ?onboard_entertainment_system_features p:hasFeatures ?features .\n  ?onboard_entertainment_system a :Onboard_Entertainment_System .\n  ?onboard_entertainment_system_features p:hasOnboard_Entertainment_System ?onboard_entertainment_system .\n  ?onboard_entertainment_system p:airline ?airline .\n  ?features p:feature_name ?feature_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

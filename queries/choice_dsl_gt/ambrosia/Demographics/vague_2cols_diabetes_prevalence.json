@@ -1,0 +1,53 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_diabetes_prevalence",
+  "schema": "amb_vague_2cols_diabetes_prevalence",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the city with the highest population and its percentage and count of diabetic patients.",
+      "qtype": "unambig",
+      "sql": "SELECT Cities.Name, Percentage_Of_Diabetics, Diabetic_Count FROM DiabetesData INNER JOIN Cities ON DiabetesData.CityId = Cities.CityId ORDER BY population desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?percentage_of_diabetics ?diabetic_count WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Percentage_Of_Diabetics ?percentage_of_diabetics .\n  ?diabetesdata p:Diabetic_Count ?diabetic_count .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the city with the highest population and its count of diabetic patients.",
+      "qtype": "unambig",
+      "sql": "SELECT Cities.Name, Diabetic_Count FROM DiabetesData INNER JOIN Cities ON DiabetesData.CityId = Cities.CityId ORDER BY population desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?diabetic_count WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Diabetic_Count ?diabetic_count .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List the city with the highest population and its percentage of diabetic patients.",
+      "qtype": "unambig",
+      "sql": "SELECT Cities.Name, Percentage_Of_Diabetics FROM DiabetesData INNER JOIN Cities ON DiabetesData.CityId = Cities.CityId ORDER BY population desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?percentage_of_diabetics WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Percentage_Of_Diabetics ?percentage_of_diabetics .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the city with the highest population and its prevalence of diabetes?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?percentage_of_diabetics ?diabetic_count WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Percentage_Of_Diabetics ?percentage_of_diabetics .\n  ?diabetesdata p:Diabetic_Count ?diabetic_count .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1 }\n  component: { SELECT ?name ?diabetic_count WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Diabetic_Count ?diabetic_count .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1 }\n  component_2: { SELECT ?name ?percentage_of_diabetics WHERE {\n  ?diabetesdata a :DiabetesData .\n  ?cities a :Cities .\n  ?diabetesdata p:hasCities ?cities .\n  ?cities p:name ?name .\n  ?diabetesdata p:Percentage_Of_Diabetics ?percentage_of_diabetics .\n  ?diabetesdata p:Population ?population_o .\n}\nORDER BY DESC(?population_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

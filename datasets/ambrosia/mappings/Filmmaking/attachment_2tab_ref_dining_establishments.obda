@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Restaurants_base
+target		ex:Restaurants/{id} a :Restaurants ; p:id {id} ; p:name {name} ; p:location {location} ; p:cuisine {cuisine} .
+source		SELECT `id`, `name`, `location`, `cuisine` FROM `Restaurants`
+
+mappingId	Cafe_base
+target		ex:Cafe/{id} a :Cafe ; p:id {id} ; p:name {name} ; p:location {location} ; p:specialty {specialty} .
+source		SELECT `id`, `name`, `location`, `specialty` FROM `Cafe`
+
+mappingId	Menu_Options_base
+target		ex:Menu_Options/{id} a :Menu_Options ; p:id {id} ; p:option_name {option_name} .
+source		SELECT `id`, `option_name` FROM `Menu_Options`
+
+mappingId	Restaurant_Menus_base
+target		ex:Restaurant_Menus/{restaurant_id}/{menu_option_id} a :Restaurant_Menus ; p:restaurant_id {restaurant_id} ; p:menu_option_id {menu_option_id} .
+source		SELECT `restaurant_id`, `menu_option_id` FROM `Restaurant_Menus`
+
+mappingId	Restaurant_Menus_menu_option_id_fk
+target		ex:Restaurant_Menus/{restaurant_id}/{menu_option_id} p:hasMenu_Options ex:Menu_Options/{menu_option_id} .
+source		SELECT `restaurant_id`, `menu_option_id` FROM `Restaurant_Menus` WHERE `menu_option_id` IS NOT NULL
+
+mappingId	Restaurant_Menus_restaurant_id_fk
+target		ex:Restaurant_Menus/{restaurant_id}/{menu_option_id} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `restaurant_id`, `menu_option_id` FROM `Restaurant_Menus` WHERE `restaurant_id` IS NOT NULL
+
+mappingId	Cafe_Menus_base
+target		ex:Cafe_Menus/{cafe_id}/{menu_option_id} a :Cafe_Menus ; p:cafe_id {cafe_id} ; p:menu_option_id {menu_option_id} .
+source		SELECT `cafe_id`, `menu_option_id` FROM `Cafe_Menus`
+
+mappingId	Cafe_Menus_menu_option_id_fk
+target		ex:Cafe_Menus/{cafe_id}/{menu_option_id} p:hasMenu_Options ex:Menu_Options/{menu_option_id} .
+source		SELECT `cafe_id`, `menu_option_id` FROM `Cafe_Menus` WHERE `menu_option_id` IS NOT NULL
+
+mappingId	Cafe_Menus_cafe_id_fk
+target		ex:Cafe_Menus/{cafe_id}/{menu_option_id} p:hasCafe ex:Cafe/{cafe_id} .
+source		SELECT `cafe_id`, `menu_option_id` FROM `Cafe_Menus` WHERE `cafe_id` IS NOT NULL
+
+]]

@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:address {address} ; p:email {email} .
+source		SELECT `id`, `name`, `address`, `email` FROM `Companies`
+
+mappingId	Technologies_base
+target		ex:Technologies/{id} a :Technologies ; p:id {id} ; p:technologyName {technologyName} .
+source		SELECT `id`, `technologyName` FROM `Technologies`
+
+mappingId	Jobs_base
+target		ex:Jobs/{id} a :Jobs ; p:id {id} ; p:title {title} ; p:description {description} ; p:companyId {companyId} ; p:salary {salary} ; p:technicalProfession {technicalProfession} ; p:skillIds {skillIds} ; p:locationId {locationId} .
+source		SELECT `id`, `title`, `description`, `companyId`, `salary`, `technicalProfession`, `skillIds`, `locationId` FROM `Jobs`
+
+mappingId	Jobs_skillIds_fk
+target		ex:Jobs/{id} p:hasTechnologies ex:Technologies/{skillIds} .
+source		SELECT `id`, `skillIds` FROM `Jobs` WHERE `skillIds` IS NOT NULL
+
+mappingId	Jobs_companyId_fk
+target		ex:Jobs/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Jobs` WHERE `companyId` IS NOT NULL
+
+mappingId	Locations_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `city`, `country` FROM `Locations`
+
+]]

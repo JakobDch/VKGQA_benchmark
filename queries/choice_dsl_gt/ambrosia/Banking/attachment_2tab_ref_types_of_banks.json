@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_ref_types_of_banks",
+  "schema": "amb_attachment_2tab_ref_types_of_banks",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all central banks and commercial banks either of which operate in the USA.",
+      "qtype": "unambig",
+      "sql": "SELECT Central_Bank.central_bank_name AS bank_name\nFROM Country JOIN Central_Bank ON Country.id = Central_Bank.country_id\nWHERE Country.name = \"USA\"\nUNION\nSELECT Commercial_Bank.commercial_bank_name AS bank_name\nFROM Country JOIN Commercial_Bank ON Country.id = Commercial_Bank.country_id\nWHERE Country.name = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?country a :Country .\n    ?central_bank a :Central_Bank .\n    ?central_bank p:hasCountry ?country .\n    ?central_bank p:central_bank_name ?central_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?central_bank_name AS ?o0)\n  }\n  UNION\n  {\n    ?country a :Country .\n    ?commercial_bank a :Commercial_Bank .\n    ?commercial_bank p:hasCountry ?country .\n    ?commercial_bank p:commercial_bank_name ?commercial_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?commercial_bank_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all central banks and commercial banks that operate in the USA.",
+      "qtype": "ambig",
+      "sql": "SELECT Central_Bank.central_bank_name AS bank_name\nFROM Country JOIN Central_Bank ON Country.id = Central_Bank.country_id\nUNION\nSELECT Commercial_Bank.commercial_bank_name AS bank_name\nFROM Country JOIN Commercial_Bank ON Country.id = Commercial_Bank.country_id\nWHERE Country.name = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?country a :Country .\n    ?central_bank a :Central_Bank .\n    ?central_bank p:hasCountry ?country .\n    ?central_bank p:central_bank_name ?central_bank_name .\n    BIND(?central_bank_name AS ?o0)\n  }\n  UNION\n  {\n    ?country a :Country .\n    ?commercial_bank a :Commercial_Bank .\n    ?commercial_bank p:hasCountry ?country .\n    ?commercial_bank p:commercial_bank_name ?commercial_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?commercial_bank_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all central banks and commercial banks that operate in the USA.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?country a :Country .\n    ?central_bank a :Central_Bank .\n    ?central_bank p:hasCountry ?country .\n    ?central_bank p:central_bank_name ?central_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?central_bank_name AS ?o0)\n  }\n  UNION\n  {\n    ?country a :Country .\n    ?commercial_bank a :Commercial_Bank .\n    ?commercial_bank p:hasCountry ?country .\n    ?commercial_bank p:commercial_bank_name ?commercial_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?commercial_bank_name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?country a :Country .\n    ?central_bank a :Central_Bank .\n    ?central_bank p:hasCountry ?country .\n    ?central_bank p:central_bank_name ?central_bank_name .\n    BIND(?central_bank_name AS ?o0)\n  }\n  UNION\n  {\n    ?country a :Country .\n    ?commercial_bank a :Commercial_Bank .\n    ?commercial_bank p:hasCountry ?country .\n    ?commercial_bank p:commercial_bank_name ?commercial_bank_name .\n    ?country p:name ?name_f .\n    FILTER(STR(?name_f) = \"USA\")\n    BIND(?commercial_bank_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

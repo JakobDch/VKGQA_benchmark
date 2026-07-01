@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_airports_facilities",
+  "schema": "amb_scope_airports_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each airport, show the facilities that they offer.",
+      "qtype": "unambig",
+      "sql": "select airports.name , facilities.type from Airports_Facilities join Facilities on Airports_Facilities.FacilityID = Facilities.FacilityID join Airports on Airports_Facilities.AirportID = Airports.AirportID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?airports_facilities a :Airports_Facilities .\n  ?facilities a :Facilities .\n  ?airports_facilities p:hasFacilities ?facilities .\n  ?airports a :Airports .\n  ?airports_facilities p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?facilities p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which facilities are common to all airports?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.Type  from Airports_Facilities join Facilities on Airports_Facilities.FacilityID = Facilities.FacilityID join Airports on Airports_Facilities.AirportID = Airports.AirportID   GROUP BY Airports_Facilities.FacilityID HAVING COUNT(DISTINCT Airports_Facilities.AirportID) = (SELECT COUNT(*) FROM  Airports)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the facilities that all airports offer.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?airports_facilities a :Airports_Facilities .\n  ?facilities a :Facilities .\n  ?airports_facilities p:hasFacilities ?facilities .\n  ?airports a :Airports .\n  ?airports_facilities p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?facilities p:Type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:artist_name {artist_name} .
+source		SELECT `id`, `title`, `release_date`, `artist_name` FROM `Albums`
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:title {title} ; p:length {length} ; p:album_id {album_id} .
+source		SELECT `id`, `title`, `length`, `album_id` FROM `Songs`
+
+mappingId	Songs_album_id_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{album_id} .
+source		SELECT `id`, `album_id` FROM `Songs` WHERE `album_id` IS NOT NULL
+
+mappingId	Artists_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {name} ; p:genre {genre} ; p:country {country} .
+source		SELECT `id`, `name`, `genre`, `country` FROM `Artists`
+
+mappingId	Concerts_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:date {date} ; p:location {location} ; p:headliner_artist_id {headliner_artist_id} ; p:opening_act_artist_id {opening_act_artist_id} .
+source		SELECT `id`, `date`, `location`, `headliner_artist_id`, `opening_act_artist_id` FROM `Concerts`
+
+mappingId	Concerts_opening_act_artist_id_fk
+target		ex:Concert/{id} p:hasArtist_opening_act_artist_id ex:Artist/{opening_act_artist_id} .
+source		SELECT `id`, `opening_act_artist_id` FROM `Concerts` WHERE `opening_act_artist_id` IS NOT NULL
+
+mappingId	Concerts_headliner_artist_id_fk
+target		ex:Concert/{id} p:hasArtist_headliner_artist_id ex:Artist/{headliner_artist_id} .
+source		SELECT `id`, `headliner_artist_id` FROM `Concerts` WHERE `headliner_artist_id` IS NOT NULL
+
+mappingId	Ballets_base
+target		ex:Ballets/{id} a :Ballets ; p:id {id} ; p:name {name} ; p:choreographer {choreographer} ; p:musician {musician} .
+source		SELECT `id`, `name`, `choreographer`, `musician` FROM `Ballets`
+
+mappingId	Performances_base
+target		ex:Performance/{id} a :Performance ; p:id {id} ; p:date {date} ; p:ballet_id {ballet_id} ; p:performers_count {performers_count} .
+source		SELECT `id`, `date`, `ballet_id`, `performers_count` FROM `Performances`
+
+mappingId	Performances_ballet_id_fk
+target		ex:Performance/{id} p:hasBallets ex:Ballets/{ballet_id} .
+source		SELECT `id`, `ballet_id` FROM `Performances` WHERE `ballet_id` IS NOT NULL
+
+]]

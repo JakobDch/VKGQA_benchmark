@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Material_base
+target		ex:Materials/{materialID} a :Materials ; p:materialID {materialID} ; p:name {name} ; p:quantity {quantity} ; p:cost {cost} .
+source		SELECT `materialID`, `name`, `quantity`, `cost` FROM `Material`
+
+mappingId	Employee_base
+target		ex:Employees/{employeeID} a :Employees ; p:employeeID {employeeID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:hireDate {hireDate} ; p:position {position} .
+source		SELECT `employeeID`, `firstName`, `lastName`, `hireDate`, `position` FROM `Employee`
+
+mappingId	Project_base
+target		ex:Projects/{projectID} a :Projects ; p:projectID {projectID} ; p:name {projectName} ; p:startDate {startDate} ; p:endDate {endDate} ; p:budget {budget} .
+source		SELECT `projectID`, `projectName`, `startDate`, `endDate`, `budget` FROM `Project`
+
+mappingId	Inventory_base
+target		ex:Inventory/{inventoryID} a :Inventory ; p:inventoryID {inventoryID} ; p:materialID {materialID} ; p:quantity {quantity} .
+source		SELECT `inventoryID`, `materialID`, `quantity` FROM `Inventory`
+
+mappingId	Inventory_materialID_fk
+target		ex:Inventory/{inventoryID} p:hasMaterials ex:Materials/{materialID} .
+source		SELECT `inventoryID`, `materialID` FROM `Inventory` WHERE `materialID` IS NOT NULL
+
+mappingId	Safety_base
+target		ex:Safety/{safetyID} a :Safety ; p:safetyID {safetyID} ; p:employeeID {employeeID} ; p:personalProtectiveEquipment {personalProtectiveEquipment} ; p:trainingPrograms {trainingPrograms} ; p:constructionWorker {constructionWorker} .
+source		SELECT `safetyID`, `employeeID`, `personalProtectiveEquipment`, `trainingPrograms`, `constructionWorker` FROM `Safety`
+
+mappingId	Safety_employeeID_fk
+target		ex:Safety/{safetyID} p:hasEmployees ex:Employees/{employeeID} .
+source		SELECT `safetyID`, `employeeID` FROM `Safety` WHERE `employeeID` IS NOT NULL
+
+]]

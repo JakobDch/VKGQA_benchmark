@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_street_performer",
+  "schema": "amb_attachment_1tab_val_street_performer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which magicians performed in Times Square street in New York and which mimes performed on the same street?",
+      "qtype": "unambig",
+      "sql": "SELECT PERFORMERS.NAME \nFROM PERFORMERS\nWHERE (PERFORMERS.GENRE = \"Magic\" OR PERFORMERS.GENRE = \"Mime\") AND PERFORMERS.STREET_LOCATION = \"Times Square, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?performers a :Performers .\n  ?performers p:name ?name .\n  ?performers p:GENRE ?genre_w .\n  ?performers p:GENRE ?genre_w2 .\n  ?performers p:STREET_LOCATION ?street_location_w .\n  FILTER((((STR(?genre_w) = \"Magic\" || STR(?genre_w2) = \"Mime\")) && STR(?street_location_w) = \"Times Square, New York\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display magicians and mimes that performed in Times Square street in New York.",
+      "qtype": "ambig",
+      "sql": "SELECT PERFORMERS.NAME \nFROM PERFORMERS\nWHERE PERFORMERS.GENRE = \"Magic\" OR PERFORMERS.GENRE = \"Mime\" AND PERFORMERS.STREET_LOCATION = \"Times Square, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?performers a :Performers .\n  ?performers p:name ?name .\n  ?performers p:GENRE ?genre_w .\n  ?performers p:GENRE ?genre_w2 .\n  ?performers p:STREET_LOCATION ?street_location_w .\n  FILTER((STR(?genre_w) = \"Magic\" || (STR(?genre_w2) = \"Mime\" && STR(?street_location_w) = \"Times Square, New York\")))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display magicians and mimes that performed in Times Square street in New York.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?performers a :Performers .\n  ?performers p:name ?name .\n  ?performers p:GENRE ?genre_w .\n  ?performers p:GENRE ?genre_w2 .\n  ?performers p:STREET_LOCATION ?street_location_w .\n  FILTER((((STR(?genre_w) = \"Magic\" || STR(?genre_w2) = \"Mime\")) && STR(?street_location_w) = \"Times Square, New York\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?performers a :Performers .\n  ?performers p:name ?name .\n  ?performers p:GENRE ?genre_w .\n  ?performers p:GENRE ?genre_w2 .\n  ?performers p:STREET_LOCATION ?street_location_w .\n  FILTER((STR(?genre_w) = \"Magic\" || (STR(?genre_w2) = \"Mime\" && STR(?street_location_w) = \"Times Square, New York\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

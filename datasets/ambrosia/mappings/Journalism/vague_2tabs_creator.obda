@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Producer_base
+target		ex:Producer/{id} a :Producer ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Producer`
+
+mappingId	Director_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:name {name} ; p:birth_date {birth_date} .
+source		SELECT `id`, `name`, `birth_date` FROM `Director`
+
+mappingId	Category_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:category_name {category_name} .
+source		SELECT `id`, `category_name` FROM `Category`
+
+mappingId	Documentary_base
+target		ex:Documentary/{id} a :Documentary ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:producer_id {producer_id} ; p:director_id {director_id} ; p:category_id {category_id} .
+source		SELECT `id`, `title`, `release_year`, `producer_id`, `director_id`, `category_id` FROM `Documentary`
+
+mappingId	Documentary_category_id_fk
+target		ex:Documentary/{id} p:hasCategory ex:Category/{category_id} .
+source		SELECT `id`, `category_id` FROM `Documentary` WHERE `category_id` IS NOT NULL
+
+mappingId	Documentary_director_id_fk
+target		ex:Documentary/{id} p:hasDirector ex:Director/{director_id} .
+source		SELECT `id`, `director_id` FROM `Documentary` WHERE `director_id` IS NOT NULL
+
+mappingId	Documentary_producer_id_fk
+target		ex:Documentary/{id} p:hasProducer ex:Producer/{producer_id} .
+source		SELECT `id`, `producer_id` FROM `Documentary` WHERE `producer_id` IS NOT NULL
+
+mappingId	Journalist_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:journalist_name {journalist_name} ; p:email {email} ; p:documentary_id {documentary_id} ; p:role {role} .
+source		SELECT `id`, `journalist_name`, `email`, `documentary_id`, `role` FROM `Journalist`
+
+mappingId	Journalist_documentary_id_fk
+target		ex:Journalists/{id} p:hasDocumentary ex:Documentary/{documentary_id} .
+source		SELECT `id`, `documentary_id` FROM `Journalist` WHERE `documentary_id` IS NOT NULL
+
+]]

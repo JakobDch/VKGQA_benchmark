@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Neighborhood_base
+target		ex:Neighborhood/{id} a :Neighborhood ; p:id {id} ; p:name {name} ; p:population {population} ; p:meanCommuteTime {mean_commute_time} ; p:medianCommuteTime {median_commute_time} .
+source		SELECT `id`, `name`, `population`, `mean_commute_time`, `median_commute_time` FROM `Neighborhood`
+
+mappingId	VehicleType_base
+target		ex:VehicleType/{id} a :VehicleType ; p:id {id} ; p:name {type_name} ; p:count_passing {count_passing} .
+source		SELECT `id`, `type_name`, `count_passing` FROM `VehicleType`
+
+mappingId	DailyTrafficVolume_base
+target		ex:DailyTrafficVolume/{neighborhood_id} a :DailyTrafficVolume ; p:date {date} ; p:total_traffic {total_traffic} .
+source		SELECT `date`, `neighborhood_id`, `total_traffic` FROM `DailyTrafficVolume`
+
+mappingId	DailyTrafficVolume_neighborhood_id_fk
+target		ex:DailyTrafficVolume/{neighborhood_id} p:hasNeighborhood ex:Neighborhood/{neighborhood_id} .
+source		SELECT `neighborhood_id` FROM `DailyTrafficVolume` WHERE `neighborhood_id` IS NOT NULL
+
+mappingId	Accidents_base
+target		ex:Accidents/{neighborhood_id} a :Accidents ; p:accident_date {accident_date} ; p:num_accident {num_accident} .
+source		SELECT `accident_date`, `neighborhood_id`, `num_accident` FROM `Accidents`
+
+mappingId	Accidents_neighborhood_id_fk
+target		ex:Accidents/{neighborhood_id} p:hasNeighborhood ex:Neighborhood/{neighborhood_id} .
+source		SELECT `neighborhood_id` FROM `Accidents` WHERE `neighborhood_id` IS NOT NULL
+
+mappingId	WeatherConditions_base
+target		ex:WeatherConditions/{neighborhood_id} a :WeatherConditions ; p:condition_datetime {condition_datetime} ; p:rainfall {rainfall} ; p:temperature {temperature} ; p:windspeed {windspeed} .
+source		SELECT `condition_datetime`, `neighborhood_id`, `rainfall`, `temperature`, `windspeed` FROM `WeatherConditions`
+
+mappingId	WeatherConditions_neighborhood_id_fk
+target		ex:WeatherConditions/{neighborhood_id} p:hasNeighborhood ex:Neighborhood/{neighborhood_id} .
+source		SELECT `neighborhood_id` FROM `WeatherConditions` WHERE `neighborhood_id` IS NOT NULL
+
+mappingId	SpeedLimits_base
+target		ex:SpeedLimits/{road_segment_id} a :SpeedLimits ; p:road_segment_id {road_segment_id} ; p:street_name {street_name} ; p:start_point {start_point} ; p:end_point {end_point} ; p:max_limit {max_limit} ; p:min_limit {min_limit} .
+source		SELECT `road_segment_id`, `street_name`, `neighborhood_id`, `start_point`, `end_point`, `max_limit`, `min_limit` FROM `SpeedLimits`
+
+mappingId	SpeedLimits_neighborhood_id_fk
+target		ex:SpeedLimits/{road_segment_id} p:hasNeighborhood ex:Neighborhood/{neighborhood_id} .
+source		SELECT `road_segment_id`, `neighborhood_id` FROM `SpeedLimits` WHERE `neighborhood_id` IS NOT NULL
+
+]]

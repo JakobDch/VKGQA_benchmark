@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_mountain_resorts_winter_sports",
+  "schema": "amb_scope_mountain_resorts_winter_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me the descriptions of sports that are common to all resorts",
+      "qtype": "unambig",
+      "sql": "SELECT Winter_Sports.Description  from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID   GROUP BY Mountain_Resorts_Winter_Sports.SportID HAVING COUNT(DISTINCT Mountain_Resorts_Winter_Sports.ResortID) = (SELECT COUNT(*) FROM  Mountain_Resorts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each mountain resort, provide the corresponding names and descriptions of winter sports.",
+      "qtype": "unambig",
+      "sql": "select mountain_resorts.name , winter_sports.name , winter_sports.description from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?description WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:name ?name2 .\n  ?winter_sports p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "Which winter sports are popular among all mountain resorts?",
+      "qtype": "unambig",
+      "sql": "SELECT Winter_Sports.Name  from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID   GROUP BY Mountain_Resorts_Winter_Sports.SportID HAVING COUNT(DISTINCT Mountain_Resorts_Winter_Sports.ResortID) = (SELECT COUNT(*) FROM  Mountain_Resorts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which names and descriptions of winter sports are associated with every mountain resort?",
+      "qtype": "ambig",
+      "sql": "SELECT Winter_Sports.Name, Winter_Sports.Description  from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID   GROUP BY Mountain_Resorts_Winter_Sports.SportID HAVING COUNT(DISTINCT Mountain_Resorts_Winter_Sports.ResortID) = (SELECT COUNT(*) FROM  Mountain_Resorts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What sport descriptions do we have for every resort",
+      "qtype": "ambig",
+      "sql": "select mountain_resorts.name , winter_sports.description from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "For every mountain resort, show the winter sports they offer.",
+      "qtype": "unambig",
+      "sql": "select mountain_resorts.name , winter_sports.name from Mountain_Resorts_Winter_Sports join Winter_Sports on Mountain_Resorts_Winter_Sports.SportID = Winter_Sports.SportID join Mountain_Resorts on Mountain_Resorts_Winter_Sports.ResortID = Mountain_Resorts.ResortID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What sport descriptions do we have for every resort",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:Description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which names and descriptions of winter sports are associated with every mountain resort?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 ?description WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:name ?name2 .\n  ?winter_sports p:Description ?description .\n} }\n  collective: { SELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the winter sports that each mountain resort offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWinter_Sports ?child ; p:hasMountain_Resorts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Mountain_Resorts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?mountain_resorts_winter_sports a :Mountain_Resorts_Winter_Sports .\n  ?winter_sports a :Winter_Sports .\n  ?mountain_resorts_winter_sports p:hasWinter_Sports ?winter_sports .\n  ?mountain_resorts a :Mountain_Resorts .\n  ?mountain_resorts_winter_sports p:hasMountain_Resorts ?mountain_resorts .\n  ?mountain_resorts p:name ?name .\n  ?winter_sports p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_course_provider",
+  "schema": "amb_vague_2cols_course_provider",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the universities offering courses and the corresponding platforms in alphabetical order of university and platform.",
+      "qtype": "unambig",
+      "sql": "SELECT PlatformName, University FROM Platforms ORDER BY PlatformName, University ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?platformname ?university WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:PlatformName ?platformname .\n  ?platforms p:University ?university .\n  ?platforms p:PlatformName ?platformname_o .\n  ?platforms p:University ?university_o .\n}\nORDER BY ASC(?platformname_o) ASC(?university_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show me universities where id is odd",
+      "qtype": "unambig",
+      "sql": "SELECT University FROM Platforms WHERE PlatformID % 2 = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?u WHERE { ?x a :Platforms ; p:University ?u ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) }",
+      "status": "pass",
+      "note": "override OK (gold-SQL): modulo (PlatformID%2=1) -> SPARQL FILTER(i - 2*FLOOR(i/2) = 1)"
+    },
+    {
+      "qid": 2,
+      "question": "List the universities offering courses in alphabetical order of university.",
+      "qtype": "unambig",
+      "sql": "SELECT University FROM Platforms ORDER BY University ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?university WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:University ?university .\n  ?platforms p:University ?university_o .\n}\nORDER BY ASC(?university_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show me platforms where id is odd",
+      "qtype": "unambig",
+      "sql": "SELECT PlatformName FROM Platforms WHERE PlatformID % 2 = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?pn WHERE { ?x a :Platforms ; p:PlatformName ?pn ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) }",
+      "status": "pass",
+      "note": "override OK (gold-SQL): modulo (PlatformID%2=1) -> FLOOR arithmetic"
+    },
+    {
+      "qid": 4,
+      "question": "Show me course providers where id is odd",
+      "qtype": "ambig",
+      "sql": "SELECT PlatformName, University FROM Platforms WHERE PlatformID % 2 = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?pn ?u WHERE { ?x a :Platforms ; p:PlatformName ?pn ; p:University ?u ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) }",
+      "status": "pass",
+      "note": "override OK (gold-SQL): modulo (PlatformID%2=1) -> FLOOR arithmetic"
+    },
+    {
+      "qid": 5,
+      "question": "List the course platforms in alphabetical order.",
+      "qtype": "unambig",
+      "sql": "SELECT PlatformName FROM Platforms ORDER BY PlatformName ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?platformname WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:PlatformName ?platformname .\n  ?platforms p:PlatformName ?platformname_o .\n}\nORDER BY ASC(?platformname_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me course providers in alphabetical order",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?platformname ?university WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:PlatformName ?platformname .\n  ?platforms p:University ?university .\n  ?platforms p:PlatformName ?platformname_o .\n  ?platforms p:University ?university_o .\n}\nORDER BY ASC(?platformname_o) ASC(?university_o) }\n  component: { SELECT ?university WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:University ?university .\n  ?platforms p:University ?university_o .\n}\nORDER BY ASC(?university_o) }\n  component_2: { SELECT ?platformname WHERE {\n  ?platforms a :Platforms .\n  ?platforms p:PlatformName ?platformname .\n  ?platforms p:PlatformName ?platformname_o .\n}\nORDER BY ASC(?platformname_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me course providers where id is odd",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?u WHERE { ?x a :Platforms ; p:University ?u ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) } }\n  component_2: { SELECT ?pn WHERE { ?x a :Platforms ; p:PlatformName ?pn ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) } }\n  full: { SELECT ?pn ?u WHERE { ?x a :Platforms ; p:PlatformName ?pn ; p:University ?u ; p:PlatformID ?id . BIND(xsd:integer(?id) AS ?i) FILTER(?i - 2*FLOOR(?i/2) = 1) } }\n}",
+      "verified": true
+    }
+  ]
+}

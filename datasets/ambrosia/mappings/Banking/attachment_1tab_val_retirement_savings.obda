@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clients_base
+target		ex:Clients/{ClientID} a :Clients ; p:ClientID {ClientID} ; p:email {Email} ; p:name {FullName} .
+source		SELECT `ClientID`, `Email`, `FullName` FROM `Clients`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:ClientID {ClientID} ; p:AccountType {AccountType} ; p:Balance {Balance} .
+source		SELECT `AccountID`, `ClientID`, `AccountType`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_ClientID_fk
+target		ex:Accounts/{AccountID} p:hasClients ex:Clients/{ClientID} .
+source		SELECT `AccountID`, `ClientID` FROM `Accounts` WHERE `ClientID` IS NOT NULL
+
+mappingId	Pensions_base
+target		ex:Pensions/{PensionID} a :Pensions ; p:PensionID {PensionID} ; p:ClientID {ClientID} ; p:Retirement_Savings {Retirement_Savings} ; p:Rate_of_return {Rate_of_return} ; p:ContributionAmount {ContributionAmount} .
+source		SELECT `PensionID`, `ClientID`, `Retirement_Savings`, `Rate_of_return`, `ContributionAmount` FROM `Pensions`
+
+mappingId	Pensions_ClientID_fk
+target		ex:Pensions/{PensionID} p:hasClients ex:Clients/{ClientID} .
+source		SELECT `PensionID`, `ClientID` FROM `Pensions` WHERE `ClientID` IS NOT NULL
+
+mappingId	Investments_base
+target		ex:Investments/{InvestmentID} a :Investments ; p:InvestmentID {InvestmentID} ; p:AccountID {AccountID} ; p:Ticker {Ticker} ; p:Shares {Shares} ; p:PricePerShare {PricePerShare} ; p:TotalInvestment {TotalInvestment} .
+source		SELECT `InvestmentID`, `AccountID`, `Ticker`, `Shares`, `PricePerShare`, `TotalInvestment` FROM `Investments`
+
+mappingId	Investments_AccountID_fk
+target		ex:Investments/{InvestmentID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `InvestmentID`, `AccountID` FROM `Investments` WHERE `AccountID` IS NOT NULL
+
+]]

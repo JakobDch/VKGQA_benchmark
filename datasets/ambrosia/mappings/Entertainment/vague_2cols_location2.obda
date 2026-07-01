@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Artists_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:name {Name} ; p:Genre {Genre} .
+source		SELECT `ArtistID`, `Name`, `Genre` FROM `Artists`
+
+mappingId	Albums_base
+target		ex:Album/{AlbumID} a :Album ; p:AlbumID {AlbumID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:ArtistID {ArtistID} .
+source		SELECT `AlbumID`, `Title`, `ReleaseYear`, `ArtistID` FROM `Albums`
+
+mappingId	Albums_ArtistID_fk
+target		ex:Album/{AlbumID} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `AlbumID`, `ArtistID` FROM `Albums` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Concerts_base
+target		ex:Concert/{ConcertID} a :Concert ; p:ConcertID {ConcertID} ; p:Date {Date} ; p:City {City} ; p:Country {Country} ; p:VenueName {VenueName} ; p:HeadlineArtistID {HeadlineArtistID} .
+source		SELECT `ConcertID`, `Date`, `City`, `Country`, `VenueName`, `HeadlineArtistID` FROM `Concerts`
+
+mappingId	Concerts_HeadlineArtistID_fk
+target		ex:Concert/{ConcertID} p:hasArtist ex:Artist/{HeadlineArtistID} .
+source		SELECT `ConcertID`, `HeadlineArtistID` FROM `Concerts` WHERE `HeadlineArtistID` IS NOT NULL
+
+mappingId	Tickets_base
+target		ex:Tickets/{TicketID} a :Tickets ; p:TicketID {TicketID} ; p:PurchaseDate {PurchaseDate} ; p:SeatNumber {SeatNumber} ; p:CustomerID {CustomerID} ; p:ConcertID {ConcertID} ; p:Price {Price} .
+source		SELECT `TicketID`, `PurchaseDate`, `SeatNumber`, `CustomerID`, `ConcertID`, `Price` FROM `Tickets`
+
+mappingId	Tickets_ConcertID_fk
+target		ex:Tickets/{TicketID} p:hasConcert ex:Concert/{ConcertID} .
+source		SELECT `TicketID`, `ConcertID` FROM `Tickets` WHERE `ConcertID` IS NOT NULL
+
+mappingId	Tickets_CustomerID_fk
+target		ex:Tickets/{TicketID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `TicketID`, `CustomerID` FROM `Tickets` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:AddressLine {AddressLine} ; p:PostalCode {PostalCode} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `AddressLine`, `PostalCode` FROM `Customers`
+
+]]

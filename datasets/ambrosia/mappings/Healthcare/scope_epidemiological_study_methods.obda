@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Epidemiological_Study_base
+target		ex:Epidemiological_Study/{study_id} a :Epidemiological_Study ; p:study_id {study_id} ; p:name {name} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `study_id`, `name`, `start_date`, `end_date` FROM `Epidemiological_Study`
+
+mappingId	Methods_base
+target		ex:Methods/{method_id} a :Methods ; p:method_id {method_id} ; p:method_name {method_name} .
+source		SELECT `method_id`, `method_name` FROM `Methods`
+
+mappingId	Study_Participants_base
+target		ex:Study_Participants/{participant_id} a :Study_Participants ; p:participant_id {participant_id} ; p:epidemiological_study_id {epidemiological_study_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:age {age} .
+source		SELECT `participant_id`, `epidemiological_study_id`, `first_name`, `last_name`, `age` FROM `Study_Participants`
+
+mappingId	Study_Participants_epidemiological_study_id_fk
+target		ex:Study_Participants/{participant_id} p:hasEpidemiological_Study ex:Epidemiological_Study/{epidemiological_study_id} .
+source		SELECT `participant_id`, `epidemiological_study_id` FROM `Study_Participants` WHERE `epidemiological_study_id` IS NOT NULL
+
+mappingId	Diseases_base
+target		ex:Diseases/{disease_id} a :Diseases ; p:disease_id {disease_id} ; p:disease_name {disease_name} .
+source		SELECT `disease_id`, `disease_name` FROM `Diseases`
+
+mappingId	Diagnoses_base
+target		ex:Diagnoses/{diagnosis_id} a :Diagnoses ; p:diagnosis_id {diagnosis_id} ; p:participant_id {participant_id} ; p:disease_id {disease_id} ; p:date_of_diagnosis {date_of_diagnosis} .
+source		SELECT `diagnosis_id`, `participant_id`, `disease_id`, `date_of_diagnosis` FROM `Diagnoses`
+
+mappingId	Diagnoses_disease_id_fk
+target		ex:Diagnoses/{diagnosis_id} p:hasDiseases ex:Diseases/{disease_id} .
+source		SELECT `diagnosis_id`, `disease_id` FROM `Diagnoses` WHERE `disease_id` IS NOT NULL
+
+mappingId	Diagnoses_participant_id_fk
+target		ex:Diagnoses/{diagnosis_id} p:hasStudy_Participants ex:Study_Participants/{participant_id} .
+source		SELECT `diagnosis_id`, `participant_id` FROM `Diagnoses` WHERE `participant_id` IS NOT NULL
+
+mappingId	Epidemiological_Study_Methods_base
+target		ex:Epidemiological_Study_Methods/{_amb_rowid} a :Epidemiological_Study_Methods ; p:epidemiological_study_id {epidemiological_study_id} ; p:method_id {method_id} .
+source		SELECT `_amb_rowid`, `epidemiological_study_id`, `method_id` FROM `Epidemiological_Study_Methods`
+
+mappingId	Epidemiological_Study_Methods_method_id_fk
+target		ex:Epidemiological_Study_Methods/{_amb_rowid} p:hasMethods ex:Methods/{method_id} .
+source		SELECT `_amb_rowid`, `method_id` FROM `Epidemiological_Study_Methods` WHERE `method_id` IS NOT NULL
+
+mappingId	Epidemiological_Study_Methods_epidemiological_study_id_fk
+target		ex:Epidemiological_Study_Methods/{_amb_rowid} p:hasEpidemiological_Study ex:Epidemiological_Study/{epidemiological_study_id} .
+source		SELECT `_amb_rowid`, `epidemiological_study_id` FROM `Epidemiological_Study_Methods` WHERE `epidemiological_study_id` IS NOT NULL
+
+]]

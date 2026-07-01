@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_communities_features2",
+  "schema": "amb_scope_communities_features2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each community, list the features they have.",
+      "qtype": "unambig",
+      "sql": "select communities.name , features.feature_name from Communities_Features join Features on Communities_Features.feature_id = Features.id join Communities on Communities_Features.community_id = Communities.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?feature_name WHERE {\n  ?communities_features a :Communities_Features .\n  ?features a :Features .\n  ?communities_features p:hasFeatures ?features .\n  ?communities a :Communities .\n  ?communities_features p:hasCommunities ?communities .\n  ?communities p:name ?name .\n  ?features p:feature_name ?feature_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What features do all communities have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Features.feature_name  from Communities_Features join Features on Communities_Features.feature_id = Features.id join Communities on Communities_Features.community_id = Communities.id   GROUP BY Communities_Features.feature_id HAVING COUNT(DISTINCT Communities_Features.community_id) = (SELECT COUNT(*) FROM  Communities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?feature_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasCommunities ?parent . } GROUP BY ?child }\n  ?child p:feature_name ?feature_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Communities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the features every community has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?feature_name WHERE {\n  ?communities_features a :Communities_Features .\n  ?features a :Features .\n  ?communities_features p:hasFeatures ?features .\n  ?communities a :Communities .\n  ?communities_features p:hasCommunities ?communities .\n  ?communities p:name ?name .\n  ?features p:feature_name ?feature_name .\n} }\n  collective: { SELECT ?feature_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasCommunities ?parent . } GROUP BY ?child }\n  ?child p:feature_name ?feature_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Communities } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

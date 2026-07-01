@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_scholarships_criteria",
+  "schema": "amb_scope_scholarships_criteria",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every scholarship, provide me its criteria",
+      "qtype": "unambig",
+      "sql": "select scholarships.name , criteria.value from Scholarship_Criteria join Criteria on Scholarship_Criteria.criterion_id = Criteria.id join Scholarships on Scholarship_Criteria.scholarship_id = Scholarships.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?value WHERE {\n  ?scholarship_criteria a :Scholarship_Criteria .\n  ?criteria a :Criteria .\n  ?scholarship_criteria p:hasCriteria ?criteria .\n  ?scholarships a :Scholarships .\n  ?scholarship_criteria p:hasScholarships ?scholarships .\n  ?scholarships p:name ?name .\n  ?criteria p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the criteria that are common to all scholarships",
+      "qtype": "unambig",
+      "sql": "SELECT Criteria.value  from Scholarship_Criteria join Criteria on Scholarship_Criteria.criterion_id = Criteria.id join Scholarships on Scholarship_Criteria.scholarship_id = Scholarships.id   GROUP BY Scholarship_Criteria.criterion_id HAVING COUNT(DISTINCT Scholarship_Criteria.scholarship_id) = (SELECT COUNT(*) FROM  Scholarships)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCriteria ?child ; p:hasScholarships ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Scholarships } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What criteria do we have for every scholarship?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?value WHERE {\n  ?scholarship_criteria a :Scholarship_Criteria .\n  ?criteria a :Criteria .\n  ?scholarship_criteria p:hasCriteria ?criteria .\n  ?scholarships a :Scholarships .\n  ?scholarship_criteria p:hasScholarships ?scholarships .\n  ?scholarships p:name ?name .\n  ?criteria p:value ?value .\n} }\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCriteria ?child ; p:hasScholarships ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Scholarships } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

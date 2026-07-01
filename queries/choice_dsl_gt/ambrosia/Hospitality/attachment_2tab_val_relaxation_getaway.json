@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_relaxation_getaway",
+  "schema": "amb_attachment_2tab_val_relaxation_getaway",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me $150 wellness programs and $150 day spas.",
+      "qtype": "unambig",
+      "sql": "SELECT Day_Spa.name\nFROM Day_Spa\nWHERE Day_Spa.Price = 150\nUNION\nSELECT Wellness_Retreat.name\nFROM Wellness_Retreat\nWHERE Wellness_Retreat.Price = 150",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?day_spa a :Day_Spa .\n    ?day_spa p:name ?name .\n    ?day_spa p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?wellness_retreat a :Wellness_Retreat .\n    ?wellness_retreat p:name ?name .\n    ?wellness_retreat p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show $150 wellness programs and day spas.",
+      "qtype": "ambig",
+      "sql": "SELECT Day_Spa.name\nFROM Day_Spa\nUNION\nSELECT Wellness_Retreat.name\nFROM Wellness_Retreat\nWHERE Wellness_Retreat.Price = 150",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?day_spa a :Day_Spa .\n    ?day_spa p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?wellness_retreat a :Wellness_Retreat .\n    ?wellness_retreat p:name ?name .\n    ?wellness_retreat p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show $150 wellness programs and day spas.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?day_spa a :Day_Spa .\n    ?day_spa p:name ?name .\n    ?day_spa p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?wellness_retreat a :Wellness_Retreat .\n    ?wellness_retreat p:name ?name .\n    ?wellness_retreat p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?day_spa a :Day_Spa .\n    ?day_spa p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?wellness_retreat a :Wellness_Retreat .\n    ?wellness_retreat p:name ?name .\n    ?wellness_retreat p:Price ?price_f .\n    FILTER((STR(?price_f) = \"150\" || STR(?price_f) = \"150.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Student_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:GradeLevel {GradeLevel} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Age`, `GradeLevel` FROM `Student`
+
+mappingId	Course_base
+target		ex:Courses/{ID} a :Courses ; p:ID {ID} ; p:Title {Title} ; p:Subject {Subject} ; p:TeacherID {TeacherID} .
+source		SELECT `ID`, `Title`, `Subject`, `TeacherID` FROM `Course`
+
+mappingId	Course_TeacherID_fk
+target		ex:Courses/{ID} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `ID`, `TeacherID` FROM `Course` WHERE `TeacherID` IS NOT NULL
+
+mappingId	LearningActivity_base
+target		ex:LearningActivities/{ID} a :LearningActivities ; p:ID {ID} ; p:Description {Description} ; p:ActivityType {ActivityType} ; p:PurposeID {PurposeID} .
+source		SELECT `ID`, `Description`, `ActivityType`, `PurposeID` FROM `LearningActivity`
+
+mappingId	LearningActivity_PurposeID_fk
+target		ex:LearningActivities/{ID} p:hasPurpose ex:Purpose/{PurposeID} .
+source		SELECT `ID`, `PurposeID` FROM `LearningActivity` WHERE `PurposeID` IS NOT NULL
+
+mappingId	Purpose_base
+target		ex:Purpose/{ID} a :Purpose ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Purpose`
+
+mappingId	Teacher_base
+target		ex:Teachers/{ID} a :Teachers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Department {Department} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Department` FROM `Teacher`
+
+mappingId	Enrollment_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:DateEnrolled {DateEnrolled} ; p:Grades {Grades} .
+source		SELECT `_amb_rowid`, `StudentID`, `CourseID`, `DateEnrolled`, `Grades` FROM `Enrollment`
+
+mappingId	Enrollment_CourseID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `_amb_rowid`, `CourseID` FROM `Enrollment` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollment_StudentID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `Enrollment` WHERE `StudentID` IS NOT NULL
+
+]]

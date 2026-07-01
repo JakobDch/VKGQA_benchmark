@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Categories_base
+target		ex:Categories/{id} a :Categories ; p:id {id} ; p:categoryName {categoryName} .
+source		SELECT `id`, `categoryName` FROM `Categories`
+
+mappingId	Films_base
+target		ex:Film/{id} a :Film ; p:id {id} ; p:title {title} ; p:budget {budget} ; p:categoryId {categoryId} .
+source		SELECT `id`, `title`, `budget`, `categoryId` FROM `Films`
+
+mappingId	Films_categoryId_fk
+target		ex:Film/{id} p:hasCategories ex:Categories/{categoryId} .
+source		SELECT `id`, `categoryId` FROM `Films` WHERE `categoryId` IS NOT NULL
+
+mappingId	Actors_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Actors`
+
+mappingId	Directors_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:directorName {directorName} .
+source		SELECT `id`, `directorName` FROM `Directors`
+
+mappingId	Roles_base
+target		ex:Role/{filmId}/{actorId}/{roleType}/{directorId} a :Role ; p:filmId {filmId} ; p:actorId {actorId} ; p:roleType {roleType} ; p:directorId {directorId} .
+source		SELECT `filmId`, `actorId`, `roleType`, `directorId` FROM `Roles`
+
+mappingId	Roles_directorId_fk
+target		ex:Role/{filmId}/{actorId}/{roleType}/{directorId} p:hasDirector ex:Director/{directorId} .
+source		SELECT `filmId`, `actorId`, `roleType`, `directorId` FROM `Roles` WHERE `directorId` IS NOT NULL
+
+mappingId	Roles_actorId_fk
+target		ex:Role/{filmId}/{actorId}/{roleType}/{directorId} p:hasActor ex:Actor/{actorId} .
+source		SELECT `filmId`, `actorId`, `roleType`, `directorId` FROM `Roles` WHERE `actorId` IS NOT NULL
+
+mappingId	Roles_filmId_fk
+target		ex:Role/{filmId}/{actorId}/{roleType}/{directorId} p:hasFilm ex:Film/{filmId} .
+source		SELECT `filmId`, `actorId`, `roleType`, `directorId` FROM `Roles` WHERE `filmId` IS NOT NULL
+
+]]

@@ -1,0 +1,64 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_credit_cards_benefits_0_Customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"email\" FROM \"Customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{id}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] .
+
+<#tm_scope_credit_cards_benefits_1_Accounts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"customerId\", \"balance\" FROM \"Accounts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{id}" ; rr:class :Accounts ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:customerId ; rr:objectMap [ rr:column "customerId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:balance ; rr:objectMap [ rr:column "balance" ] ] .
+
+<#tm_scope_credit_cards_benefits_2_Accounts_customerId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"customerId\" FROM \"Accounts\" WHERE \"customerId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{customerId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_credit_cards_benefits_3_Credit_Cards_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"accountId\", \"cardNumber\", \"expiryDate\", \"securityCode\", \"creditLimit\" FROM \"Credit_Cards\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Cards/{id}" ; rr:class :Credit_Cards ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:accountId ; rr:objectMap [ rr:column "accountId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:cardNumber ; rr:objectMap [ rr:column "cardNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:expiryDate ; rr:objectMap [ rr:column "expiryDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:securityCode ; rr:objectMap [ rr:column "securityCode" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:creditLimit ; rr:objectMap [ rr:column "creditLimit" ] ] .
+
+<#tm_scope_credit_cards_benefits_4_Credit_Cards_accountId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"accountId\" FROM \"Credit_Cards\" WHERE \"accountId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Cards/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAccounts ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{accountId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_credit_cards_benefits_5_Benefits_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"benefitName\" FROM \"Benefits\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Benefits/{id}" ; rr:class :Benefits ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:benefitName ; rr:objectMap [ rr:column "benefitName" ] ] .
+
+<#tm_scope_credit_cards_benefits_6_Credit_Card_Benefits_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"creditCardId\", \"benefitId\" FROM \"Credit_Card_Benefits\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Card_Benefits/{id}" ; rr:class :Credit_Card_Benefits ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:creditCardId ; rr:objectMap [ rr:column "creditCardId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:benefitId ; rr:objectMap [ rr:column "benefitId" ] ] .
+
+<#tm_scope_credit_cards_benefits_7_Credit_Card_Benefits_benefitId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"benefitId\" FROM \"Credit_Card_Benefits\" WHERE \"benefitId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Card_Benefits/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBenefits ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Benefits/{benefitId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_credit_cards_benefits_8_Credit_Card_Benefits_creditCardId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"creditCardId\" FROM \"Credit_Card_Benefits\" WHERE \"creditCardId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Card_Benefits/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCredit_Cards ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Credit_Cards/{creditCardId}" ; rr:termType rr:IRI ] ] .
+

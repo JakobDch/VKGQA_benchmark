@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Tourists_base
+target		ex:Tourists/{ID} a :Tourists ; p:ID {ID} ; p:name {Name} ; p:Activity {Activity} ; p:location {Location} .
+source		SELECT `ID`, `Name`, `Activity`, `Location` FROM `Tourists`
+
+mappingId	Markets_base
+target		ex:Markets/{ID} a :Markets ; p:ID {ID} ; p:name {Name} ; p:Activity {Activity} ; p:location {Location} .
+source		SELECT `ID`, `Name`, `Activity`, `Location` FROM `Markets`
+
+mappingId	Activities_base
+target		ex:Activities/{ID} a :Activities ; p:ID {ID} ; p:ActivityName {ActivityName} .
+source		SELECT `ID`, `ActivityName` FROM `Activities`
+
+mappingId	Locations_base
+target		ex:Locations/{ID} a :Locations ; p:ID {ID} ; p:LocationName {LocationName} .
+source		SELECT `ID`, `LocationName` FROM `Locations`
+
+mappingId	Visitors_base
+target		ex:Visitors/{ID} a :Visitors ; p:ID {ID} ; p:name {Name} ; p:DateOfVisit {DateOfVisit} .
+source		SELECT `ID`, `Name`, `DateOfVisit` FROM `Visitors`
+
+mappingId	VisitRecords_base
+target		ex:VisitRecords/{ID} a :VisitRecords ; p:ID {ID} ; p:VisitorID {VisitorID} ; p:TouristAttractionID {TouristAttractionID} ; p:LocalMarketID {LocalMarketID} .
+source		SELECT `ID`, `VisitorID`, `TouristAttractionID`, `LocalMarketID` FROM `VisitRecords`
+
+mappingId	VisitRecords_LocalMarketID_fk
+target		ex:VisitRecords/{ID} p:hasMarkets ex:Markets/{LocalMarketID} .
+source		SELECT `ID`, `LocalMarketID` FROM `VisitRecords` WHERE `LocalMarketID` IS NOT NULL
+
+mappingId	VisitRecords_TouristAttractionID_fk
+target		ex:VisitRecords/{ID} p:hasTourists ex:Tourists/{TouristAttractionID} .
+source		SELECT `ID`, `TouristAttractionID` FROM `VisitRecords` WHERE `TouristAttractionID` IS NOT NULL
+
+mappingId	VisitRecords_VisitorID_fk
+target		ex:VisitRecords/{ID} p:hasVisitors ex:Visitors/{VisitorID} .
+source		SELECT `ID`, `VisitorID` FROM `VisitRecords` WHERE `VisitorID` IS NOT NULL
+
+]]

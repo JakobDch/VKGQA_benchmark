@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_photographers_styles",
+  "schema": "amb_scope_photographers_styles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the style each photographer uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Styles.styleName  from Photographers_Styles join Styles on Photographers_Styles.styleId = Styles.id join Photographers on Photographers_Styles.photographerId = Photographers.id   GROUP BY Photographers_Styles.styleId HAVING COUNT(DISTINCT Photographers_Styles.photographerId) = (SELECT COUNT(*) FROM  Photographers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stylename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:styleId ?cg . ?child a :Styles ; p:id ?cg . ?l p:photographerId ?pg . ?parent a :Photographers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:styleName ?stylename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photographers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the style each photographer uses.",
+      "qtype": "ambig",
+      "sql": "select photographers.name , styles.stylename from Photographers_Styles join Styles on Photographers_Styles.styleId = Styles.id join Photographers on Photographers_Styles.photographerId = Photographers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?stylename WHERE {\n  ?photographers_styles a :Photographers_Styles .\n  ?styles a :Styles .\n  ?photographers_styles p:hasStyles ?styles .\n  ?photographers a :Photographers .\n  ?photographers_styles p:hasPhotographers ?photographers .\n  ?photographers p:name ?name .\n  ?styles p:styleName ?stylename .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the style each photographer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?stylename WHERE {\n  ?photographers_styles a :Photographers_Styles .\n  ?styles a :Styles .\n  ?photographers_styles p:hasStyles ?styles .\n  ?photographers a :Photographers .\n  ?photographers_styles p:hasPhotographers ?photographers .\n  ?photographers p:name ?name .\n  ?styles p:styleName ?stylename .\n} }\n  collective: { SELECT ?stylename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:styleId ?cg . ?child a :Styles ; p:id ?cg . ?l p:photographerId ?pg . ?parent a :Photographers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:styleName ?stylename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photographers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

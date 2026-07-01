@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_exclusive_areas",
+  "schema": "amb_attachment_1tab_val_exclusive_areas",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which frequent flyer lounges have complimentary Wi-Fi and which VIP lounges have the same amenity?",
+      "qtype": "unambig",
+      "sql": "SELECT Lounge.Name \nFROM Lounge\nWHERE (Lounge.exclusiveArea = \"Frequent Flyer Lounge\" OR Lounge.exclusiveArea = \"VIP Lounge\") AND Lounge.amenities = \"Complimentary Wi-Fi\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?lounge a :Lounge .\n  ?lounge p:name ?name .\n  ?lounge p:exclusiveArea ?exclusivearea_w .\n  ?lounge p:exclusiveArea ?exclusivearea_w2 .\n  ?lounge p:amenities ?amenities_w .\n  FILTER((((STR(?exclusivearea_w) = \"Frequent Flyer Lounge\" || STR(?exclusivearea_w2) = \"VIP Lounge\")) && STR(?amenities_w) = \"Complimentary Wi-Fi\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me frequent flyer lounges and VIP lounges with complimentary Wi-Fi.",
+      "qtype": "ambig",
+      "sql": "SELECT Lounge.Name \nFROM Lounge\nWHERE Lounge.exclusiveArea = \"Frequent Flyer Lounge\" OR Lounge.exclusiveArea = \"VIP Lounge\" AND Lounge.amenities = \"Complimentary Wi-Fi\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?lounge a :Lounge .\n  ?lounge p:name ?name .\n  ?lounge p:exclusiveArea ?exclusivearea_w .\n  ?lounge p:exclusiveArea ?exclusivearea_w2 .\n  ?lounge p:amenities ?amenities_w .\n  FILTER((STR(?exclusivearea_w) = \"Frequent Flyer Lounge\" || (STR(?exclusivearea_w2) = \"VIP Lounge\" && STR(?amenities_w) = \"Complimentary Wi-Fi\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me frequent flyer lounges and VIP lounges with complimentary Wi-Fi.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?lounge a :Lounge .\n  ?lounge p:name ?name .\n  ?lounge p:exclusiveArea ?exclusivearea_w .\n  ?lounge p:exclusiveArea ?exclusivearea_w2 .\n  ?lounge p:amenities ?amenities_w .\n  FILTER((((STR(?exclusivearea_w) = \"Frequent Flyer Lounge\" || STR(?exclusivearea_w2) = \"VIP Lounge\")) && STR(?amenities_w) = \"Complimentary Wi-Fi\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?lounge a :Lounge .\n  ?lounge p:name ?name .\n  ?lounge p:exclusiveArea ?exclusivearea_w .\n  ?lounge p:exclusiveArea ?exclusivearea_w2 .\n  ?lounge p:amenities ?amenities_w .\n  FILTER((STR(?exclusivearea_w) = \"Frequent Flyer Lounge\" || (STR(?exclusivearea_w2) = \"VIP Lounge\" && STR(?amenities_w) = \"Complimentary Wi-Fi\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2cols_location",
+  "schema": "amb_vague_2cols_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What're the locations of all hospitals?",
+      "qtype": "ambig",
+      "sql": "SELECT Hospitals.city FROM Hospitals;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What're the locations of all hospitals?",
+      "qtype": "ambig",
+      "sql": "SELECT Hospitals.state FROM Hospitals;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:state ?state .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "What're the locations of all hospitals?",
+      "qtype": "ambig",
+      "sql": "SELECT Hospitals.city, state FROM Hospitals;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:state ?state .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show me what city and state St. Mary's General hospital is in.",
+      "qtype": "unambig",
+      "sql": "SELECT city, state FROM Hospitals WHERE NAME = \"St. Mary's General\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:state ?state .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me what state St. Mary's General hospital is in.",
+      "qtype": "unambig",
+      "sql": "SELECT state FROM Hospitals WHERE NAME = \"St. Mary's General\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:state ?state .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the location of St. Mary's General",
+      "qtype": "ambig",
+      "sql": "SELECT city FROM Hospitals WHERE NAME = \"St. Mary's General\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What're the locations of all hospitals?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?city ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:state ?state .\n} }\n  component: { SELECT ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:state ?state .\n} }\n  component_2: { SELECT ?city WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the location of St. Mary's General",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?city ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:state ?state .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n} }\n  component: { SELECT ?state WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:state ?state .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n} }\n  component_2: { SELECT ?city WHERE {\n  ?hospitals a :Hospitals .\n  ?hospitals p:city ?city .\n  ?hospitals p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"St. Mary's General\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

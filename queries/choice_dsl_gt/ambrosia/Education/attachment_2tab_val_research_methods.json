@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_research_methods",
+  "schema": "amb_attachment_2tab_val_research_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Describe all case studies and also describe interviews focused on Environmental science.",
+      "qtype": "unambig",
+      "sql": "SELECT Case_Studies.description\nFROM Case_Studies\nUNION\nSELECT Interviews.description\nFROM Interviews\nWHERE Interviews.Topic = \"Environmental Science\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?case_studies a :Case_Studies .\n    ?case_studies p:Description ?description .\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?interviews p:Description ?description .\n    ?interviews p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Describe case studies and interviews focused on Environmental Science.",
+      "qtype": "ambig",
+      "sql": "SELECT Case_Studies.description\nFROM Case_Studies\nWHERE Case_Studies.Topic = \"Environmental Science\"\nUNION\nSELECT Interviews.description\nFROM Interviews\nWHERE Interviews.Topic = \"Environmental Science\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?case_studies a :Case_Studies .\n    ?case_studies p:Description ?description .\n    ?case_studies p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?interviews p:Description ?description .\n    ?interviews p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Describe case studies and interviews focused on Environmental Science.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?case_studies a :Case_Studies .\n    ?case_studies p:Description ?description .\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?interviews p:Description ?description .\n    ?interviews p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?case_studies a :Case_Studies .\n    ?case_studies p:Description ?description .\n    ?case_studies p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?interviews a :Interviews .\n    ?interviews p:Description ?description .\n    ?interviews p:Topic ?topic_f .\n    FILTER(STR(?topic_f) = \"Environmental Science\")\n    BIND(?description AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

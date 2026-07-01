@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_animation_studio",
+  "schema": "amb_attachment_1tab_ref_animation_studio",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all the Oscar-winning DreamWorks cartoons and Pixar cartoons.",
+      "qtype": "ambig",
+      "sql": "SELECT MovieDetails.movieTitle \nFROM AnimationStudios JOIN MovieDetails ON AnimationStudios.id = MovieDetails.animationStudioId JOIN MovieAwards ON MovieDetails.id = MovieAwards.movieId JOIN Awards ON MovieAwards.awardId = Awards.id\nWHERE AnimationStudios.studioName = \"Pixar\" AND Awards.awardName = \"Oscar\"\nUNION\nSELECT MovieDetails.movieTitle \nFROM AnimationStudios JOIN MovieDetails ON AnimationStudios.id = MovieDetails.animationStudioId JOIN MovieAwards ON MovieDetails.id = MovieAwards.movieId JOIN Awards ON MovieAwards.awardId = Awards.id\nWHERE AnimationStudios.studioName = \"DreamWorks\" AND Awards.awardName = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"Pixar\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n  UNION\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"DreamWorks\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all the Oscar-winning DreamWorks cartoons and Pixar cartoons.",
+      "qtype": "ambig",
+      "sql": "SELECT MovieDetails.movieTitle \nFROM MovieDetails JOIN AnimationStudios ON MovieDetails.animationStudioId = AnimationStudios.id WHERE AnimationStudios.studioName = \"Pixar\"\nUNION\nSELECT MovieDetails.movieTitle \nFROM AnimationStudios JOIN MovieDetails ON AnimationStudios.id = MovieDetails.animationStudioId JOIN MovieAwards ON MovieDetails.id = MovieAwards.movieId JOIN Awards ON MovieAwards.awardId = Awards.id\nWHERE AnimationStudios.studioName = \"DreamWorks\" AND Awards.awardName = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?moviedetails a :MovieDetails .\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    FILTER(STR(?studioname_f) = \"Pixar\")\n    BIND(?movietitle AS ?o0)\n  }\n  UNION\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"DreamWorks\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all the Oscar-winning DreamWorks cartoons and Pixar cartoons.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"Pixar\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n  UNION\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"DreamWorks\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?moviedetails a :MovieDetails .\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    FILTER(STR(?studioname_f) = \"Pixar\")\n    BIND(?movietitle AS ?o0)\n  }\n  UNION\n  {\n    ?animationstudios a :AnimationStudios .\n    ?moviedetails a :MovieDetails .\n    ?moviedetails p:hasAnimationStudios ?animationstudios .\n    ?movieawards a :MovieAwards .\n    ?movieawards p:hasMovieDetails ?moviedetails .\n    ?awards a :Awards .\n    ?movieawards p:hasAwards ?awards .\n    ?moviedetails p:movieTitle ?movietitle .\n    ?animationstudios p:studioName ?studioname_f .\n    ?awards p:awardName ?awardname_f .\n    FILTER(STR(?studioname_f) = \"DreamWorks\")\n    FILTER(STR(?awardname_f) = \"Oscar\")\n    BIND(?movietitle AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

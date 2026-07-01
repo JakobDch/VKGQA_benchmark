@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `EmailAddress` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:ViewCount {ViewCount} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `ViewCount` FROM `Articles`
+
+mappingId	Publications_base
+target		ex:Publications/{PublisherID} a :Publications ; p:PublisherID {PublisherID} ; p:name {Name} ; p:WebsiteURL {WebsiteURL} ; p:FoundedYear {FoundedYear} .
+source		SELECT `PublisherID`, `Name`, `WebsiteURL`, `FoundedYear` FROM `Publications`
+
+mappingId	Operations_base
+target		ex:Operations/{OperationID} a :Operations ; p:OperationID {OperationID} ; p:OperationYears {OperationYears} ; p:OperationMonths {OperationMonths} ; p:MediaOutlet {MediaOutlet} ; p:Revenue {Revenue} ; p:Expenses {Expenses} ; p:ProfitMargin {ProfitMargin} .
+source		SELECT `OperationID`, `OperationYears`, `OperationMonths`, `MediaOutlet`, `Revenue`, `Expenses`, `ProfitMargin` FROM `Operations`
+
+mappingId	Readers_base
+target		ex:Readers/{ReaderID} a :Readers ; p:ReaderID {ReaderID} ; p:name {FullName} ; p:email {EmailAddress} ; p:RegistrationDate {RegistrationDate} .
+source		SELECT `ReaderID`, `FullName`, `EmailAddress`, `RegistrationDate` FROM `Readers`
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{SubscriptionID} a :Subscriptions ; p:SubscriptionID {SubscriptionID} ; p:ReaderID {ReaderID} ; p:PublisherID {PublisherID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:Price {Price} .
+source		SELECT `SubscriptionID`, `ReaderID`, `PublisherID`, `StartDate`, `EndDate`, `Price` FROM `Subscriptions`
+
+mappingId	Subscriptions_PublisherID_fk
+target		ex:Subscriptions/{SubscriptionID} p:hasPublications ex:Publications/{PublisherID} .
+source		SELECT `SubscriptionID`, `PublisherID` FROM `Subscriptions` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Subscriptions_ReaderID_fk
+target		ex:Subscriptions/{SubscriptionID} p:hasReaders ex:Readers/{ReaderID} .
+source		SELECT `SubscriptionID`, `ReaderID` FROM `Subscriptions` WHERE `ReaderID` IS NOT NULL
+
+]]

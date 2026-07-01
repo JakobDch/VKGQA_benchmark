@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Nature_Reserves_base
+target		ex:Nature_Reserves/{ReserveID} a :Nature_Reserves ; p:ReserveID {ReserveID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `ReserveID`, `Name`, `Location` FROM `Nature_Reserves`
+
+mappingId	Flora_and_fauna_base
+target		ex:Flora_and_fauna/{FaunaID} a :Flora_and_fauna ; p:FaunaID {FaunaID} ; p:SpeciesName {SpeciesName} .
+source		SELECT `FaunaID`, `SpeciesName` FROM `Flora_and_fauna`
+
+mappingId	Nature_reserves_flora_and_fauna_base
+target		ex:Nature_reserves_flora_and_fauna/{ID} a :Nature_reserves_flora_and_fauna ; p:ID {ID} ; p:NatureReserveId {NatureReserveId} ; p:FaunaId {FaunaId} .
+source		SELECT `ID`, `NatureReserveId`, `FaunaId` FROM `Nature_reserves_flora_and_fauna`
+
+mappingId	Nature_reserves_flora_and_fauna_FaunaId_fk
+target		ex:Nature_reserves_flora_and_fauna/{ID} p:hasFlora_and_fauna ex:Flora_and_fauna/{FaunaId} .
+source		SELECT `ID`, `FaunaId` FROM `Nature_reserves_flora_and_fauna` WHERE `FaunaId` IS NOT NULL
+
+mappingId	Nature_reserves_flora_and_fauna_NatureReserveId_fk
+target		ex:Nature_reserves_flora_and_fauna/{ID} p:hasNature_Reserves ex:Nature_Reserves/{NatureReserveId} .
+source		SELECT `ID`, `NatureReserveId` FROM `Nature_reserves_flora_and_fauna` WHERE `NatureReserveId` IS NOT NULL
+
+]]

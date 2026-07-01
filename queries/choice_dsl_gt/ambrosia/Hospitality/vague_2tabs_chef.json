@@ -1,0 +1,97 @@
+{
+  "domain": "Hospitality",
+  "db_base": "vague_2tabs_chef",
+  "schema": "amb_vague_2tabs_chef",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the sous chef who cooks pizza?",
+      "qtype": "unambig",
+      "sql": "Select \nc.Full_name\nFROM Sous_chef C \nJOIN Restaurant R ON c.Sous_id = r.Sous_chef_id\nJOIN Orders O ON R.restaurant_id = O.restaurant_id\nJOIN Order_details OD ON O.order_id = OD.order_id\nJOIN Menu_items m ON OD.menu_item_id = m.menu_item_id\nWHERE  m.item_name = 'Pizza'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?c a :Sous_chef .\n  ?r a :Restaurants .\n  ?r p:hasSous_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?c p:name ?full_name .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the executive and sous chefs who cook pizza?",
+      "qtype": "unambig",
+      "sql": "Select \nc.Full_name, C.full_name \nFROM Executive_chef C \nJOIN Restaurant R ON c.chef_id = r.executive_chef_id\nJOIN Orders O ON R.restaurant_id = O.restaurant_id\nJOIN Order_details OD ON O.order_id = OD.order_id\nJOIN Menu_items m ON OD.menu_item_id = m.menu_item_id\n JOIN Sous_chef SC ON SC.Sous_id = r.Sous_chef_id WHERE  m.item_name = 'Pizza'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?full_name2 WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?sc a :Sous_chef .\n  ?r p:hasSous_chef ?sc .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name2 .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Please list all the chefs in alphabetical order by their name",
+      "qtype": "ambig",
+      "sql": "SELECT c.Full_name \nFROM Executive_chef C ORDER BY Full_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?c a :Executive_chef .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name_o .\n}\nORDER BY ASC(?full_name_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "Please list all the chefs in alphabetical order by their name",
+      "qtype": "ambig",
+      "sql": "SELECT c.Full_name\nFROM Sous_chef C ORDER BY Full_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?c a :Sous_chef .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name_o .\n}\nORDER BY ASC(?full_name_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "Please list all the chefs in alphabetical order by their name",
+      "qtype": "ambig",
+      "sql": "SELECT c.Full_name, C.full_name \nFROM Executive_chef C JOIN Restaurant R ON c.chef_id = r.executive_chef_id JOIN Sous_chef SC ON SC.Sous_id = r.Sous_chef_id ORDER BY C.Full_name, SC.Full_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?full_name2 WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?sc a :Sous_chef .\n  ?r p:hasSous_chef ?sc .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name2 .\n  ?c p:name ?full_name_o .\n  ?sc p:name ?full_name_o2 .\n}\nORDER BY ASC(?full_name_o) ASC(?full_name_o2)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "Show me any chef who cooks pizza",
+      "qtype": "ambig",
+      "sql": "Select \nc.Full_name\nFROM Executive_chef C \nJOIN Restaurant R ON c.chef_id = r.executive_chef_id\nJOIN Orders O ON R.restaurant_id = O.restaurant_id\nJOIN Order_details OD ON O.order_id = OD.order_id\nJOIN Menu_items m ON OD.menu_item_id = m.menu_item_id\nWHERE  m.item_name = 'Pizza'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?c p:name ?full_name .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me any chef who cooks pizza",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?full_name WHERE {\n  ?c a :Sous_chef .\n  ?r a :Restaurants .\n  ?r p:hasSous_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?c p:name ?full_name .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n} }\n  full: { SELECT ?full_name ?full_name2 WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?sc a :Sous_chef .\n  ?r p:hasSous_chef ?sc .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name2 .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n} }\n  component_2: { SELECT ?full_name WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?o a :Orders .\n  ?o p:hasRestaurant ?r .\n  ?od a :Order_details .\n  ?od p:hasOrders ?o .\n  ?m a :MenuItems .\n  ?od p:hasMenu_items ?m .\n  ?c p:name ?full_name .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Pizza\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Please list all the chefs in alphabetical order by their name",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?full_name WHERE {\n  ?c a :Executive_chef .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name_o .\n}\nORDER BY ASC(?full_name_o) }\n  component_2: { SELECT ?full_name WHERE {\n  ?c a :Sous_chef .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name_o .\n}\nORDER BY ASC(?full_name_o) }\n  full: { SELECT ?full_name ?full_name2 WHERE {\n  ?c a :Executive_chef .\n  ?r a :Restaurants .\n  ?r p:hasExecutive_chef ?c .\n  ?sc a :Sous_chef .\n  ?r p:hasSous_chef ?sc .\n  ?c p:name ?full_name .\n  ?c p:name ?full_name2 .\n  ?c p:name ?full_name_o .\n  ?sc p:name ?full_name_o2 .\n}\nORDER BY ASC(?full_name_o) ASC(?full_name_o2) }\n}",
+      "verified": true
+    }
+  ]
+}

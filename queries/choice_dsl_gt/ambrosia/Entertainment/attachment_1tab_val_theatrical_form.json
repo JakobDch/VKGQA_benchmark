@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_theatrical_form",
+  "schema": "amb_attachment_1tab_val_theatrical_form",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all the comedies, also show the Shakespeare tragedies.",
+      "qtype": "unambig",
+      "sql": "SELECT Play.Title \nFROM Play\nWHERE Play.Theatrical_Form = \"Comedy\" OR Play.Theatrical_Form = \"Tragedy\" AND Play.Author = \"William Shakespeare\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?play a :Play .\n  ?play p:Title ?title .\n  ?play p:Theatrical_Form ?theatrical_form_w .\n  ?play p:Theatrical_Form ?theatrical_form_w2 .\n  ?play p:Author ?author_w .\n  FILTER((STR(?theatrical_form_w) = \"Comedy\" || (STR(?theatrical_form_w2) = \"Tragedy\" && STR(?author_w) = \"William Shakespeare\")))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show all comedies and tragedies written by William Shakespeare.",
+      "qtype": "ambig",
+      "sql": "SELECT Play.Title \nFROM Play\nWHERE (Play.Theatrical_Form = \"Comedy\" OR Play.Theatrical_Form = \"Tragedy\") AND Play.Author = \"William Shakespeare\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?play a :Play .\n  ?play p:Title ?title .\n  ?play p:Theatrical_Form ?theatrical_form_w .\n  ?play p:Theatrical_Form ?theatrical_form_w2 .\n  ?play p:Author ?author_w .\n  FILTER((((STR(?theatrical_form_w) = \"Comedy\" || STR(?theatrical_form_w2) = \"Tragedy\")) && STR(?author_w) = \"William Shakespeare\"))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all comedies and tragedies written by William Shakespeare.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?play a :Play .\n  ?play p:Title ?title .\n  ?play p:Theatrical_Form ?theatrical_form_w .\n  ?play p:Theatrical_Form ?theatrical_form_w2 .\n  ?play p:Author ?author_w .\n  FILTER((STR(?theatrical_form_w) = \"Comedy\" || (STR(?theatrical_form_w2) = \"Tragedy\" && STR(?author_w) = \"William Shakespeare\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?play a :Play .\n  ?play p:Title ?title .\n  ?play p:Theatrical_Form ?theatrical_form_w .\n  ?play p:Theatrical_Form ?theatrical_form_w2 .\n  ?play p:Author ?author_w .\n  FILTER((((STR(?theatrical_form_w) = \"Comedy\" || STR(?theatrical_form_w2) = \"Tragedy\")) && STR(?author_w) = \"William Shakespeare\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_nutritionists_diets",
+  "schema": "amb_scope_nutritionists_diets",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What diets do all the nutritionists cover together?",
+      "qtype": "unambig",
+      "sql": "SELECT Diets.diet_type_value  from Nutritionists_Diets join Diets on Nutritionists_Diets.diet_type_id = Diets.diet_type_id join Nutritionists on Nutritionists_Diets.nutritionist_id = Nutritionists.nutritionist_id   GROUP BY Nutritionists_Diets.diet_type_id HAVING COUNT(DISTINCT Nutritionists_Diets.nutritionist_id) = (SELECT COUNT(*) FROM  Nutritionists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?diet_type_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:diet_type_id ?cg . ?child a :Diets ; p:diet_type_id ?cg . ?l p:nutritionist_id ?pg . ?parent a :Nutritionists ; p:nutritionist_id ?pg . } GROUP BY ?child }\n  ?child p:diet_type_value ?diet_type_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Nutritionists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the diets that every nutritionist covers.",
+      "qtype": "ambig",
+      "sql": "select nutritionists.email , diets.diet_type_value from Nutritionists_Diets join Diets on Nutritionists_Diets.diet_type_id = Diets.diet_type_id join Nutritionists on Nutritionists_Diets.nutritionist_id = Nutritionists.nutritionist_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?email ?diet_type_value WHERE {\n  ?nutritionists_diets a :Nutritionists_Diets .\n  ?diets a :Diets .\n  ?nutritionists_diets p:hasDiets ?diets .\n  ?nutritionists a :Nutritionists .\n  ?nutritionists_diets p:hasNutritionists ?nutritionists .\n  ?nutritionists p:email ?email .\n  ?diets p:diet_type_value ?diet_type_value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the diets that every nutritionist covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?diet_type_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:diet_type_id ?cg . ?child a :Diets ; p:diet_type_id ?cg . ?l p:nutritionist_id ?pg . ?parent a :Nutritionists ; p:nutritionist_id ?pg . } GROUP BY ?child }\n  ?child p:diet_type_value ?diet_type_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Nutritionists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?email ?diet_type_value WHERE {\n  ?nutritionists_diets a :Nutritionists_Diets .\n  ?diets a :Diets .\n  ?nutritionists_diets p:hasDiets ?diets .\n  ?nutritionists a :Nutritionists .\n  ?nutritionists_diets p:hasNutritionists ?nutritionists .\n  ?nutritionists p:email ?email .\n  ?diets p:diet_type_value ?diet_type_value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

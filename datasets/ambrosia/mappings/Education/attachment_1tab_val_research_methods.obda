@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:name {name} ; p:age {age} ; p:major {major} .
+source		SELECT `id`, `name`, `age`, `major` FROM `Students`
+
+mappingId	Instructors_base
+target		ex:Instructors/{id} a :Instructors ; p:id {id} ; p:name {name} ; p:department {department} .
+source		SELECT `id`, `name`, `department` FROM `Instructors`
+
+mappingId	Courses_base
+target		ex:Courses/{id} a :Courses ; p:id {id} ; p:courseName {courseName} ; p:instructorId {instructorId} .
+source		SELECT `id`, `courseName`, `instructorId` FROM `Courses`
+
+mappingId	Courses_instructorId_fk
+target		ex:Courses/{id} p:hasInstructors ex:Instructors/{instructorId} .
+source		SELECT `id`, `instructorId` FROM `Courses` WHERE `instructorId` IS NOT NULL
+
+mappingId	Projects_base
+target		ex:Projects/{id} a :Projects ; p:id {id} ; p:title {title} ; p:researchMethod {researchMethod} ; p:topic {topic} ; p:studentId {studentId} ; p:courseId {courseId} .
+source		SELECT `id`, `title`, `researchMethod`, `topic`, `studentId`, `courseId` FROM `Projects`
+
+mappingId	Projects_courseId_fk
+target		ex:Projects/{id} p:hasCourses ex:Courses/{courseId} .
+source		SELECT `id`, `courseId` FROM `Projects` WHERE `courseId` IS NOT NULL
+
+mappingId	Projects_studentId_fk
+target		ex:Projects/{id} p:hasStudents ex:Students/{studentId} .
+source		SELECT `id`, `studentId` FROM `Projects` WHERE `studentId` IS NOT NULL
+
+]]

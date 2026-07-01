@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cars_base
+target		ex:Cars/{id} a :Cars ; p:id {id} ; p:make {make} ; p:model {model} .
+source		SELECT `id`, `make`, `model` FROM `Cars`
+
+mappingId	Safety_Features_base
+target		ex:Safety_Features/{featureId} a :Safety_Features ; p:featureId {featureId} ; p:name {name} .
+source		SELECT `featureId`, `name` FROM `Safety_Features`
+
+mappingId	Cars_Safety_Features_base
+target		ex:Cars_Safety_Features/{featureId}/{carId} a :Cars_Safety_Features .
+source		SELECT `carId`, `featureId` FROM `Cars_Safety_Features`
+
+mappingId	Cars_Safety_Features_featureId_fk
+target		ex:Cars_Safety_Features/{featureId}/{carId} p:hasSafety_Features ex:Safety_Features/{featureId} .
+source		SELECT `featureId`, `carId` FROM `Cars_Safety_Features` WHERE `featureId` IS NOT NULL
+
+mappingId	Cars_Safety_Features_carId_fk
+target		ex:Cars_Safety_Features/{featureId}/{carId} p:hasCars ex:Cars/{carId} .
+source		SELECT `featureId`, `carId` FROM `Cars_Safety_Features` WHERE `carId` IS NOT NULL
+
+]]

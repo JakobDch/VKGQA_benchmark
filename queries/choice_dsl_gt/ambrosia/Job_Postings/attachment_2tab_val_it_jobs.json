@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_it_jobs",
+  "schema": "amb_attachment_2tab_val_it_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display network admins and IT consultants whose salary is $70,000.",
+      "qtype": "ambig",
+      "sql": "SELECT Network_Admin.Position as Position\nFROM Network_Admin\nWHERE Network_Admin.Salary = \"$70,000\"\nUNION\nSELECT IT_Consultant.Type as Position\nFROM IT_Consultant\nWHERE IT_Consultant.Salary = \"$70,000\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?network_admin a :Network_Admin .\n    ?network_admin p:Position ?position .\n    ?network_admin p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?it_consultant a :IT_Consultant .\n    ?it_consultant p:Type ?type .\n    ?it_consultant p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?type AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display network admins and IT consultants whose salary is $70,000.",
+      "qtype": "ambig",
+      "sql": "SELECT Network_Admin.Position as Position\nFROM Network_Admin\nUNION\nSELECT IT_Consultant.Type as Position\nFROM IT_Consultant\nWHERE IT_Consultant.Salary = \"$70,000\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?network_admin a :Network_Admin .\n    ?network_admin p:Position ?position .\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?it_consultant a :IT_Consultant .\n    ?it_consultant p:Type ?type .\n    ?it_consultant p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?type AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display network admins and IT consultants whose salary is $70,000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?network_admin a :Network_Admin .\n    ?network_admin p:Position ?position .\n    ?network_admin p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?it_consultant a :IT_Consultant .\n    ?it_consultant p:Type ?type .\n    ?it_consultant p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?type AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?network_admin a :Network_Admin .\n    ?network_admin p:Position ?position .\n    BIND(?position AS ?o0)\n  }\n  UNION\n  {\n    ?it_consultant a :IT_Consultant .\n    ?it_consultant p:Type ?type .\n    ?it_consultant p:Salary ?salary_f .\n    FILTER(STR(?salary_f) = \"$70,000\")\n    BIND(?type AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

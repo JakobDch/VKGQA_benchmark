@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_genre4",
+  "schema": "amb_attachment_1tab_val_genre4",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all blockbusters and also list indie films that were screened at Sundance.",
+      "qtype": "unambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE Movies.Genre = \"Blockbuster\" OR Movies.Genre = \"Indie Film\" AND Movies.FilmFestival = \"Sundance Film Festival\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:FilmFestival ?filmfestival_w .\n  FILTER((STR(?genre_w) = \"Blockbuster\" || (STR(?genre_w2) = \"Indie Film\" && STR(?filmfestival_w) = \"Sundance Film Festival\")))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What blockbusters were screened at Sundance and what indie films were also screened there?",
+      "qtype": "unambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE (Movies.Genre = \"Blockbuster\" OR Movies.Genre = \"Indie Film\") AND Movies.FilmFestival = \"Sundance Film Festival\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:FilmFestival ?filmfestival_w .\n  FILTER((((STR(?genre_w) = \"Blockbuster\" || STR(?genre_w2) = \"Indie Film\")) && STR(?filmfestival_w) = \"Sundance Film Festival\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show blockbusters and indie films that were screened at Sundance.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:FilmFestival ?filmfestival_w .\n  FILTER((STR(?genre_w) = \"Blockbuster\" || (STR(?genre_w2) = \"Indie Film\" && STR(?filmfestival_w) = \"Sundance Film Festival\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:FilmFestival ?filmfestival_w .\n  FILTER((((STR(?genre_w) = \"Blockbuster\" || STR(?genre_w2) = \"Indie Film\")) && STR(?filmfestival_w) = \"Sundance Film Festival\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

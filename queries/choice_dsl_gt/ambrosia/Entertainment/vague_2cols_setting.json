@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_setting",
+  "schema": "amb_vague_2cols_setting",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In what historical era is the longest opera set in?",
+      "qtype": "unambig",
+      "sql": "SELECT Historical_Era FROM Operas ORDER BY Duration DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?historical_era WHERE {\n  ?operas a :Operas .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which setting has the longest opera?",
+      "qtype": "ambig",
+      "sql": "SELECT Location FROM Operas ORDER BY Duration DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?location WHERE {\n  ?operas a :Operas .\n  ?operas p:location ?location .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which setting has the longest opera?",
+      "qtype": "ambig",
+      "sql": "SELECT Historical_Era, Location FROM Operas ORDER BY Duration DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?historical_era ?location WHERE {\n  ?operas a :Operas .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:location ?location .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the title and setting of the opera composed by Mozart?",
+      "qtype": "ambig",
+      "sql": "SELECT title, Historical_Era FROM Operas  JOIN Composers ON Composers.composerId = Operas.composerId  WHERE name like \"%Mozart%\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?historical_era WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:Historical_Era ?historical_era .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What is the title and setting of the opera composed by Mozart?",
+      "qtype": "ambig",
+      "sql": "SELECT title, Location FROM Operas  JOIN Composers ON Composers.composerId = Operas.composerId  WHERE name like \"%Mozart%\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?location WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:location ?location .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the title and setting of the opera composed by Mozart?",
+      "qtype": "ambig",
+      "sql": "SELECT title, Historical_Era, Location FROM Operas  JOIN Composers ON Composers.composerId = Operas.composerId  WHERE name like \"%Mozart%\";",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?historical_era ?location WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:location ?location .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which setting has the longest opera?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?historical_era WHERE {\n  ?operas a :Operas .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n  component_2: { SELECT ?location WHERE {\n  ?operas a :Operas .\n  ?operas p:location ?location .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n  full: { SELECT ?historical_era ?location WHERE {\n  ?operas a :Operas .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:location ?location .\n  ?operas p:Duration ?duration_o .\n}\nORDER BY DESC(?duration_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the title and setting of the opera composed by Mozart?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?historical_era WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:Historical_Era ?historical_era .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n} }\n  component_2: { SELECT ?title ?location WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:location ?location .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n} }\n  full: { SELECT ?title ?historical_era ?location WHERE {\n  ?operas a :Operas .\n  ?composers a :Composers .\n  ?operas p:hasComposers ?composers .\n  ?operas p:title ?title .\n  ?operas p:Historical_Era ?historical_era .\n  ?operas p:location ?location .\n  ?composers p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^.*Mozart.*$\", \"i\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

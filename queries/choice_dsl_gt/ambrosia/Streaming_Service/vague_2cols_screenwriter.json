@@ -1,0 +1,97 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2cols_screenwriter",
+  "schema": "amb_vague_2cols_screenwriter",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a count of movies for each writer",
+      "qtype": "ambig",
+      "sql": "SELECT novelist, COUNT(*) AS Movie_Count\nFROM Movies\nGROUP BY novelist;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?novelist_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist_g .\n}\nGROUP BY ?novelist_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a count of movies for each writer",
+      "qtype": "ambig",
+      "sql": "SELECT playwright, COUNT(*) AS Movie_Count\nFROM Movies\nGROUP BY playwright;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?playwright_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:playwright ?playwright_g .\n}\nGROUP BY ?playwright_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Provide a count of movies for each writer",
+      "qtype": "ambig",
+      "sql": "SELECT novelist, playwright, COUNT(*) AS Movie_Count\nFROM Movies\nGROUP BY novelist, playwright;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?novelist_g ?playwright_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist_g .\n  ?movies p:playwright ?playwright_g .\n}\nGROUP BY ?novelist_g ?playwright_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List the movies and their release years, sort by their novelist, then playwright.",
+      "qtype": "unambig",
+      "sql": "SELECT novelist, playwright, title, release_year\nFROM Movies\nORDER BY novelist, playwright, release_year;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?novelist ?playwright ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist .\n  ?movies p:playwright ?playwright .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:novelist ?novelist_o .\n  ?movies p:playwright ?playwright_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?novelist_o) ASC(?playwright_o) ASC(?release_year_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "List the movies and their release years, sort by their playwright.",
+      "qtype": "unambig",
+      "sql": "SELECT playwright, title, release_year\nFROM Movies\nORDER BY playwright, release_year;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?playwright ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:playwright ?playwright .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:playwright ?playwright_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?playwright_o) ASC(?release_year_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "List the movies and their release years, sort by their novelist.",
+      "qtype": "unambig",
+      "sql": "SELECT novelist, title, release_year\nFROM Movies\nORDER BY novelist, release_year;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?novelist ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:novelist ?novelist_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?novelist_o) ASC(?release_year_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide a count of movies for each writer",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?playwright_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:playwright ?playwright_g .\n}\nGROUP BY ?playwright_g }\n  component_2: { SELECT ?novelist_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist_g .\n}\nGROUP BY ?novelist_g }\n  full: { SELECT ?novelist_g ?playwright_g (COUNT(*) AS ?agg) WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist_g .\n  ?movies p:playwright ?playwright_g .\n}\nGROUP BY ?novelist_g ?playwright_g }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the movies along with their release years, sorted by writer",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?novelist ?playwright ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist .\n  ?movies p:playwright ?playwright .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:novelist ?novelist_o .\n  ?movies p:playwright ?playwright_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?novelist_o) ASC(?playwright_o) ASC(?release_year_o) }\n  component: { SELECT ?playwright ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:playwright ?playwright .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:playwright ?playwright_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?playwright_o) ASC(?release_year_o) }\n  component_2: { SELECT ?novelist ?title ?release_year WHERE {\n  ?movies a :Movies .\n  ?movies p:novelist ?novelist .\n  ?movies p:title ?title .\n  ?movies p:release_year ?release_year .\n  ?movies p:novelist ?novelist_o .\n  ?movies p:release_year ?release_year_o .\n}\nORDER BY ASC(?novelist_o) ASC(?release_year_o) }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Banks`
+
+mappingId	Employees_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:bank_id {bank_id} .
+source		SELECT `id`, `first_name`, `last_name`, `bank_id` FROM `Employees`
+
+mappingId	Employees_bank_id_fk
+target		ex:Employees/{id} p:hasBanks ex:Banks/{bank_id} .
+source		SELECT `id`, `bank_id` FROM `Employees` WHERE `bank_id` IS NOT NULL
+
+mappingId	TrainingSessions_base
+target		ex:TrainingSessions/{session_id} a :TrainingSessions ; p:session_id {session_id} ; p:date {date} ; p:trainer_id {trainer_id} ; p:topic_id {topic_id} .
+source		SELECT `session_id`, `date`, `trainer_id`, `topic_id` FROM `TrainingSessions`
+
+mappingId	TrainingSessions_topic_id_fk
+target		ex:TrainingSessions/{session_id} p:hasTopics ex:Topics/{topic_id} .
+source		SELECT `session_id`, `topic_id` FROM `TrainingSessions` WHERE `topic_id` IS NOT NULL
+
+mappingId	TrainingSessions_trainer_id_fk
+target		ex:TrainingSessions/{session_id} p:hasEmployees ex:Employees/{trainer_id} .
+source		SELECT `session_id`, `trainer_id` FROM `TrainingSessions` WHERE `trainer_id` IS NOT NULL
+
+mappingId	Topics_base
+target		ex:Topics/{id} a :Topics ; p:id {id} ; p:value {value} .
+source		SELECT `id`, `value` FROM `Topics`
+
+mappingId	Bank_Training_base
+target		ex:Bank_Training/{training_id} a :Bank_Training ; p:training_id {training_id} ; p:bank_id {bank_id} ; p:employee_id {employee_id} .
+source		SELECT `training_id`, `bank_id`, `employee_id` FROM `Bank_Training`
+
+mappingId	Bank_Training_employee_id_fk
+target		ex:Bank_Training/{training_id} p:hasEmployees ex:Employees/{employee_id} .
+source		SELECT `training_id`, `employee_id` FROM `Bank_Training` WHERE `employee_id` IS NOT NULL
+
+mappingId	Bank_Training_bank_id_fk
+target		ex:Bank_Training/{training_id} p:hasBanks ex:Banks/{bank_id} .
+source		SELECT `training_id`, `bank_id` FROM `Bank_Training` WHERE `bank_id` IS NOT NULL
+
+mappingId	Bank_Training_Topics_base
+target		ex:Bank_Training_Topics/{bank_training_id}/{topic_id} a :Bank_Training_Topics ; p:bank_training_id {bank_training_id} ; p:topic_id {topic_id} .
+source		SELECT `bank_training_id`, `topic_id` FROM `Bank_Training_Topics`
+
+mappingId	Bank_Training_Topics_topic_id_fk
+target		ex:Bank_Training_Topics/{bank_training_id}/{topic_id} p:hasTopics ex:Topics/{topic_id} .
+source		SELECT `bank_training_id`, `topic_id` FROM `Bank_Training_Topics` WHERE `topic_id` IS NOT NULL
+
+mappingId	Bank_Training_Topics_bank_training_id_fk
+target		ex:Bank_Training_Topics/{bank_training_id}/{topic_id} p:hasBank_Training ex:Bank_Training/{bank_training_id} .
+source		SELECT `bank_training_id`, `topic_id` FROM `Bank_Training_Topics` WHERE `bank_training_id` IS NOT NULL
+
+]]

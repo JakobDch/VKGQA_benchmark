@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_nature_reserves_flora_and_fauna",
+  "schema": "amb_scope_nature_reserves_flora_and_fauna",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each nature reserve, show the species of flora and fauna that they have.",
+      "qtype": "unambig",
+      "sql": "select nature_reserves.name , flora_and_fauna.speciesname from Nature_reserves_flora_and_fauna join Flora_and_fauna on Nature_reserves_flora_and_fauna.FaunaId = Flora_and_fauna.FaunaID join Nature_Reserves on Nature_reserves_flora_and_fauna.NatureReserveId = Nature_Reserves.ReserveID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?speciesname WHERE {\n  ?nature_reserves_flora_and_fauna a :Nature_reserves_flora_and_fauna .\n  ?flora_and_fauna a :Flora_and_fauna .\n  ?nature_reserves_flora_and_fauna p:hasFlora_and_fauna ?flora_and_fauna .\n  ?nature_reserves a :Nature_Reserves .\n  ?nature_reserves_flora_and_fauna p:hasNature_Reserves ?nature_reserves .\n  ?nature_reserves p:name ?name .\n  ?flora_and_fauna p:SpeciesName ?speciesname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which species of flora and fauna do all nature reserves have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Flora_and_fauna.SpeciesName  from Nature_reserves_flora_and_fauna join Flora_and_fauna on Nature_reserves_flora_and_fauna.FaunaId = Flora_and_fauna.FaunaID join Nature_Reserves on Nature_reserves_flora_and_fauna.NatureReserveId = Nature_Reserves.ReserveID   GROUP BY Nature_reserves_flora_and_fauna.FaunaId HAVING COUNT(DISTINCT Nature_reserves_flora_and_fauna.NatureReserveId) = (SELECT COUNT(*) FROM  Nature_Reserves)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?speciesname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFlora_and_fauna ?child ; p:hasNature_Reserves ?parent . } GROUP BY ?child }\n  ?child p:SpeciesName ?speciesname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Nature_Reserves } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the species of flora and fauna that every nature reserve has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?speciesname WHERE {\n  ?nature_reserves_flora_and_fauna a :Nature_reserves_flora_and_fauna .\n  ?flora_and_fauna a :Flora_and_fauna .\n  ?nature_reserves_flora_and_fauna p:hasFlora_and_fauna ?flora_and_fauna .\n  ?nature_reserves a :Nature_Reserves .\n  ?nature_reserves_flora_and_fauna p:hasNature_Reserves ?nature_reserves .\n  ?nature_reserves p:name ?name .\n  ?flora_and_fauna p:SpeciesName ?speciesname .\n} }\n  collective: { SELECT ?speciesname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFlora_and_fauna ?child ; p:hasNature_Reserves ?parent . } GROUP BY ?child }\n  ?child p:SpeciesName ?speciesname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Nature_Reserves } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

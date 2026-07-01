@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_street_performer",
+  "schema": "amb_attachment_2tab_ref_street_performer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What magicians are located in Central Park, New York and what mimes are in the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Magicians.name\nFROM Locations JOIN Magicians ON Locations.id = Magicians.Street_Location\nWHERE Locations.LocationName = \"Central Park, New York\"\nUNION\nSELECT Mimes.name\nFROM Locations JOIN Mimes ON Locations.id = Mimes.Street_Location\nWHERE Locations.LocationName = \"Central Park, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?locations a :Location .\n    ?magicians a :Magicians .\n    ?magicians p:hasLocations ?locations .\n    ?magicians p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?locations a :Location .\n    ?mimes a :Mimes .\n    ?mimes p:hasLocations ?locations .\n    ?mimes p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all magicians and also provide a list of mimes located in Central Park, New York.",
+      "qtype": "unambig",
+      "sql": "SELECT Magicians.name\nFROM Locations JOIN Magicians ON Locations.id = Magicians.Street_Location\nUNION\nSELECT Mimes.name\nFROM Locations JOIN Mimes ON Locations.id = Mimes.Street_Location\nWHERE Locations.LocationName = \"Central Park, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?locations a :Location .\n    ?magicians a :Magicians .\n    ?magicians p:hasLocations ?locations .\n    ?magicians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?locations a :Location .\n    ?mimes a :Mimes .\n    ?mimes p:hasLocations ?locations .\n    ?mimes p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List magicians and mimes in Central Park, New York.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?locations a :Location .\n    ?magicians a :Magicians .\n    ?magicians p:hasLocations ?locations .\n    ?magicians p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?locations a :Location .\n    ?mimes a :Mimes .\n    ?mimes p:hasLocations ?locations .\n    ?mimes p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?locations a :Location .\n    ?magicians a :Magicians .\n    ?magicians p:hasLocations ?locations .\n    ?magicians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?locations a :Location .\n    ?mimes a :Mimes .\n    ?mimes p:hasLocations ?locations .\n    ?mimes p:name ?name .\n    ?locations p:LocationName ?locationname_f .\n    FILTER(STR(?locationname_f) = \"Central Park, New York\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

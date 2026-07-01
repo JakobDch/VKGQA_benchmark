@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:name {name} ; p:country_id {country_id} .
+source		SELECT `id`, `name`, `country_id` FROM `City`
+
+mappingId	Country_base
+target		ex:Country/{id} a :Country ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Country`
+
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:bank_name {bank_name} ; p:city_id {city_id} ; p:country_id {country_id} .
+source		SELECT `id`, `bank_name`, `city_id`, `country_id` FROM `Banks`
+
+mappingId	Banks_country_id_fk
+target		ex:Banks/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Banks` WHERE `country_id` IS NOT NULL
+
+mappingId	Banks_city_id_fk
+target		ex:Banks/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Banks` WHERE `city_id` IS NOT NULL
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_number} a :Accounts ; p:account_number {account_number} ; p:balance {balance} ; p:owner_id {owner_id} .
+source		SELECT `account_number`, `balance`, `owner_id` FROM `Accounts`
+
+mappingId	Accounts_owner_id_fk
+target		ex:Accounts/{account_number} p:hasBanks ex:Banks/{owner_id} .
+source		SELECT `account_number`, `owner_id` FROM `Accounts` WHERE `owner_id` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:date {date} ; p:amount {amount} ; p:debit_account_id {debit_account_id} ; p:credit_account_id {credit_account_id} .
+source		SELECT `transaction_id`, `date`, `amount`, `debit_account_id`, `credit_account_id` FROM `Transactions`
+
+mappingId	Transactions_credit_account_id_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts_credit_account_id ex:Accounts/{credit_account_id} .
+source		SELECT `transaction_id`, `credit_account_id` FROM `Transactions` WHERE `credit_account_id` IS NOT NULL
+
+mappingId	Transactions_debit_account_id_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts_debit_account_id ex:Accounts/{debit_account_id} .
+source		SELECT `transaction_id`, `debit_account_id` FROM `Transactions` WHERE `debit_account_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birth_date {birth_date} ; p:address {address} ; p:phone {phone} ; p:email {email} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `birth_date`, `address`, `phone`, `email` FROM `Customers`
+
+mappingId	Customers_customer_id_fk
+target		ex:Customers/{customer_id} p:hasAccounts ex:Accounts/{customer_id} .
+source		SELECT `customer_id` FROM `Customers` WHERE `customer_id` IS NOT NULL
+
+]]

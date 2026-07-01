@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_learning_activities",
+  "schema": "amb_attachment_1tab_val_learning_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all field trip and study group classes where either is for a real-world application.",
+      "qtype": "unambig",
+      "sql": "SELECT Classes.Name \nFROM LearningActivities JOIN Classes ON Classes.ClassID = LearningActivities.ClassID\nWHERE (LearningActivities.ActivityType = \"Field Trip\" OR LearningActivities.ActivityType = \"Study Group\") AND LearningActivities.Purpose = \"Real-world Application\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learningactivities a :LearningActivities .\n  ?classes a :Classes .\n  ?learningactivities p:hasClasses ?classes .\n  ?classes p:name ?name .\n  ?learningactivities p:ActivityType ?activitytype_w .\n  ?learningactivities p:ActivityType ?activitytype_w2 .\n  ?learningactivities p:Purpose ?purpose_w .\n  FILTER((((STR(?activitytype_w) = \"Field Trip\" || STR(?activitytype_w2) = \"Study Group\")) && STR(?purpose_w) = \"Real-world Application\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all field trip classes and study group classes that are for real-world applications.",
+      "qtype": "ambig",
+      "sql": "SELECT Classes.Name \nFROM LearningActivities JOIN Classes ON Classes.ClassID = LearningActivities.ClassID\nWHERE LearningActivities.ActivityType = \"Field Trip\" OR LearningActivities.ActivityType = \"Study Group\" AND LearningActivities.Purpose = \"Real-world Application\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learningactivities a :LearningActivities .\n  ?classes a :Classes .\n  ?learningactivities p:hasClasses ?classes .\n  ?classes p:name ?name .\n  ?learningactivities p:ActivityType ?activitytype_w .\n  ?learningactivities p:ActivityType ?activitytype_w2 .\n  ?learningactivities p:Purpose ?purpose_w .\n  FILTER((STR(?activitytype_w) = \"Field Trip\" || (STR(?activitytype_w2) = \"Study Group\" && STR(?purpose_w) = \"Real-world Application\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all field trip classes and study group classes that are for real-world applications.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?learningactivities a :LearningActivities .\n  ?classes a :Classes .\n  ?learningactivities p:hasClasses ?classes .\n  ?classes p:name ?name .\n  ?learningactivities p:ActivityType ?activitytype_w .\n  ?learningactivities p:ActivityType ?activitytype_w2 .\n  ?learningactivities p:Purpose ?purpose_w .\n  FILTER((((STR(?activitytype_w) = \"Field Trip\" || STR(?activitytype_w2) = \"Study Group\")) && STR(?purpose_w) = \"Real-world Application\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?learningactivities a :LearningActivities .\n  ?classes a :Classes .\n  ?learningactivities p:hasClasses ?classes .\n  ?classes p:name ?name .\n  ?learningactivities p:ActivityType ?activitytype_w .\n  ?learningactivities p:ActivityType ?activitytype_w2 .\n  ?learningactivities p:Purpose ?purpose_w .\n  FILTER((STR(?activitytype_w) = \"Field Trip\" || (STR(?activitytype_w2) = \"Study Group\" && STR(?purpose_w) = \"Real-world Application\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

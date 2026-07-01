@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{airportId} a :Airports ; p:airportId {airportId} ; p:cityId {cityId} ; p:name {name} ; p:country {country} .
+source		SELECT `airportId`, `cityId`, `name`, `country` FROM `Airports`
+
+mappingId	Cities_base
+target		ex:Cities/{cityId} a :Cities ; p:cityId {cityId} ; p:name {name} ; p:population {population} .
+source		SELECT `cityId`, `name`, `population` FROM `Cities`
+
+mappingId	AirportCity_base
+target		ex:AirportCity/{_amb_rowid} a :AirportCity ; p:airportId {airportId} ; p:cityId {cityId} .
+source		SELECT `_amb_rowid`, `airportId`, `cityId` FROM `AirportCity`
+
+mappingId	AirportCity_cityId_fk
+target		ex:AirportCity/{_amb_rowid} p:hasCities ex:Cities/{cityId} .
+source		SELECT `_amb_rowid`, `cityId` FROM `AirportCity` WHERE `cityId` IS NOT NULL
+
+mappingId	AirportCity_airportId_fk
+target		ex:AirportCity/{_amb_rowid} p:hasAirports ex:Airports/{airportId} .
+source		SELECT `_amb_rowid`, `airportId` FROM `AirportCity` WHERE `airportId` IS NOT NULL
+
+mappingId	Boarding_Areas_Gates_base
+target		ex:Boarding_Areas_Gates/{_amb_rowid} a :Boarding_Areas_Gates ; p:areaId {areaId} ; p:gateId {gateId} .
+source		SELECT `_amb_rowid`, `areaId`, `gateId` FROM `Boarding_Areas_Gates`
+
+mappingId	Boarding_Areas_Gates_gateId_fk
+target		ex:Boarding_Areas_Gates/{_amb_rowid} p:hasGates ex:Gates/{gateId} .
+source		SELECT `_amb_rowid`, `gateId` FROM `Boarding_Areas_Gates` WHERE `gateId` IS NOT NULL
+
+mappingId	Boarding_Areas_Gates_areaId_fk
+target		ex:Boarding_Areas_Gates/{_amb_rowid} p:hasBoarding_Areas ex:Boarding_Areas/{areaId} .
+source		SELECT `_amb_rowid`, `areaId` FROM `Boarding_Areas_Gates` WHERE `areaId` IS NOT NULL
+
+mappingId	Boarding_Areas_base
+target		ex:Boarding_Areas/{areaId} a :Boarding_Areas ; p:areaId {areaId} ; p:location {location} ; p:capacity {capacity} .
+source		SELECT `areaId`, `location`, `capacity` FROM `Boarding_Areas`
+
+mappingId	Gates_base
+target		ex:Gates/{gateId} a :Gates ; p:gateId {gateId} ; p:gateName {gateName} .
+source		SELECT `gateId`, `gateName` FROM `Gates`
+
+]]

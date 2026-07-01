@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_guesthouses_suites",
+  "schema": "amb_scope_guesthouses_suites",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For all guest houses list all of the available suite types.",
+      "qtype": "unambig",
+      "sql": "select guesthouses.housename , suites.suitetype from GuestHouseSuites join Suites on GuestHouseSuites.suiteType = Suites.suiteType join GuestHouses on GuestHouseSuites.guesthouseID = GuestHouses.houseID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?housename ?suitetype WHERE {\n  ?guesthousesuites a :GuestHouseSuites .\n  ?suites a :Suites .\n  ?guesthousesuites p:hasSuites ?suites .\n  ?guesthouses a :GuestHouses .\n  ?guesthousesuites p:hasGuestHouses ?guesthouses .\n  ?guesthouses p:houseName ?housename .\n  ?suites p:suiteType ?suitetype .\n}",
+      "status": "pass",
+      "note": "n=13"
+    },
+    {
+      "qid": 1,
+      "question": "What suite types are there for all guest houses?",
+      "qtype": "ambig",
+      "sql": "SELECT Suites.suiteType  from GuestHouseSuites join Suites on GuestHouseSuites.suiteType = Suites.suiteType join GuestHouses on GuestHouseSuites.guesthouseID = GuestHouses.houseID   GROUP BY GuestHouseSuites.suiteType HAVING COUNT(DISTINCT GuestHouseSuites.guesthouseID) = (SELECT COUNT(*) FROM  GuestHouses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?suitetype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSuites ?child ; p:hasGuestHouses ?parent . } GROUP BY ?child }\n  ?child p:suiteType ?suitetype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :GuestHouses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What suite types are there for all guest houses?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?housename ?suitetype WHERE {\n  ?guesthousesuites a :GuestHouseSuites .\n  ?suites a :Suites .\n  ?guesthousesuites p:hasSuites ?suites .\n  ?guesthouses a :GuestHouses .\n  ?guesthousesuites p:hasGuestHouses ?guesthouses .\n  ?guesthouses p:houseName ?housename .\n  ?suites p:suiteType ?suitetype .\n} }\n  collective: { SELECT ?suitetype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSuites ?child ; p:hasGuestHouses ?parent . } GROUP BY ?child }\n  ?child p:suiteType ?suitetype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :GuestHouses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

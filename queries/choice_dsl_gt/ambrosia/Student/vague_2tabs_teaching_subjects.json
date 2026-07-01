@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_teaching_subjects",
+  "schema": "amb_vague_2tabs_teaching_subjects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What teachers are there and what discipline do they teach?",
+      "qtype": "unambig",
+      "sql": "SELECT DISTINCT t.fullname, ts.Name\nFROM Teacher t\nJOIN Academic_Discipline ts ON t.DisciplineID = ts.DisciplineID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?fullname ?name WHERE {\n  ?t a :Teachers .\n  ?ts a :Academic_Discipline .\n  ?t p:hasAcademic_Discipline ?ts .\n  ?t p:name ?fullname .\n  ?ts p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the teachers and what they do?",
+      "qtype": "ambig",
+      "sql": "SELECT DISTINCT t.fullname, ts.Name\nFROM Teacher t\nJOIN Grade_Level ts ON t.GradeLevelID = ts.LevelID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?fullname ?name WHERE {\n  ?t a :Teachers .\n  ?ts a :Grade_Level .\n  ?t p:hasGrade_Level ?ts .\n  ?t p:name ?fullname .\n  ?ts p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the teachers and what they do?",
+      "qtype": "ambig",
+      "sql": "SELECT DISTINCT t.fullname, gl.Name, ts.Name\nFROM Teacher t\nJOIN Academic_Discipline ts ON t.DisciplineID = ts.DisciplineID  JOIN Grade_Level gl ON t.GradeLevelID = gl.LevelID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?fullname ?name ?name2 WHERE {\n  ?t a :Teachers .\n  ?ts a :Academic_Discipline .\n  ?t p:hasAcademic_Discipline ?ts .\n  ?gl a :Grade_Level .\n  ?t p:hasGrade_Level ?gl .\n  ?t p:name ?fullname .\n  ?gl p:name ?name .\n  ?ts p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the students and what they do?",
+      "qtype": "ambig",
+      "sql": "SELECT s.fullname, ts.Name\nFROM Academic_Discipline ts\nJOIN Student s ON ts.DisciplineID = s.DisciplineID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?ts a :Academic_Discipline .\n  ?s a :Students .\n  ?s p:hasAcademic_Discipline ?ts .\n  ?s p:name ?fullname .\n  ?ts p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the students and what they do?",
+      "qtype": "ambig",
+      "sql": "SELECT s.fullname, ts.Name\nFROM Grade_Level ts\nJOIN Student s ON s.GradeLevelID = ts.LevelID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?ts a :Grade_Level .\n  ?s a :Students .\n  ?s p:hasGrade_Level ?ts .\n  ?s p:name ?fullname .\n  ?ts p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the students and what they do?",
+      "qtype": "ambig",
+      "sql": "SELECT s.fullname, gl.Name, ts.Name\nFROM Academic_Discipline ts\nJOIN Student s ON ts.DisciplineID = s.DisciplineID JOIN Grade_Level gl ON s.GradeLevelID = gl.LevelID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name ?name2 WHERE {\n  ?ts a :Academic_Discipline .\n  ?s a :Students .\n  ?s p:hasAcademic_Discipline ?ts .\n  ?gl a :Grade_Level .\n  ?s p:hasGrade_Level ?gl .\n  ?s p:name ?fullname .\n  ?gl p:name ?name .\n  ?ts p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the teachers and what they do?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT DISTINCT ?fullname ?name WHERE {\n  ?t a :Teachers .\n  ?ts a :Academic_Discipline .\n  ?t p:hasAcademic_Discipline ?ts .\n  ?t p:name ?fullname .\n  ?ts p:name ?name .\n} }\n  full: { SELECT DISTINCT ?fullname ?name ?name2 WHERE {\n  ?t a :Teachers .\n  ?ts a :Academic_Discipline .\n  ?t p:hasAcademic_Discipline ?ts .\n  ?gl a :Grade_Level .\n  ?t p:hasGrade_Level ?gl .\n  ?t p:name ?fullname .\n  ?gl p:name ?name .\n  ?ts p:name ?name2 .\n} }\n  component_2: { SELECT DISTINCT ?fullname ?name WHERE {\n  ?t a :Teachers .\n  ?ts a :Grade_Level .\n  ?t p:hasGrade_Level ?ts .\n  ?t p:name ?fullname .\n  ?ts p:name ?name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the students and what they do?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        4,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?fullname ?name WHERE {\n  ?ts a :Grade_Level .\n  ?s a :Students .\n  ?s p:hasGrade_Level ?ts .\n  ?s p:name ?fullname .\n  ?ts p:name ?name .\n} }\n  component_2: { SELECT ?fullname ?name WHERE {\n  ?ts a :Academic_Discipline .\n  ?s a :Students .\n  ?s p:hasAcademic_Discipline ?ts .\n  ?s p:name ?fullname .\n  ?ts p:name ?name .\n} }\n  full: { SELECT ?fullname ?name ?name2 WHERE {\n  ?ts a :Academic_Discipline .\n  ?s a :Students .\n  ?s p:hasAcademic_Discipline ?ts .\n  ?gl a :Grade_Level .\n  ?s p:hasGrade_Level ?gl .\n  ?s p:name ?fullname .\n  ?gl p:name ?name .\n  ?ts p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

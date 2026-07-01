@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_clinics_services",
+  "schema": "amb_scope_clinics_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the services that every clinic provides.",
+      "qtype": "ambig",
+      "sql": "SELECT Services.service_name  from Clinics_Services join Services on Clinics_Services.service_id = Services.service_id join Clinics on Clinics_Services.clinic_id = Clinics.clinic_id   GROUP BY Clinics_Services.service_id HAVING COUNT(DISTINCT Clinics_Services.clinic_id) = (SELECT COUNT(*) FROM  Clinics)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasClinics ?parent . } GROUP BY ?child }\n  ?child p:service_name ?service_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Clinics } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the services that every clinic provides.",
+      "qtype": "ambig",
+      "sql": "select clinics.name , services.service_name from Clinics_Services join Services on Clinics_Services.service_id = Services.service_id join Clinics on Clinics_Services.clinic_id = Clinics.clinic_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?service_name WHERE {\n  ?clinics_services a :Clinics_Services .\n  ?services a :Services .\n  ?clinics_services p:hasServices ?services .\n  ?clinics a :Clinics .\n  ?clinics_services p:hasClinics ?clinics .\n  ?clinics p:name ?name .\n  ?services p:service_name ?service_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the services that every clinic provides.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?service_name WHERE {\n  ?clinics_services a :Clinics_Services .\n  ?services a :Services .\n  ?clinics_services p:hasServices ?services .\n  ?clinics a :Clinics .\n  ?clinics_services p:hasClinics ?clinics .\n  ?clinics p:name ?name .\n  ?services p:service_name ?service_name .\n} }\n  collective: { SELECT ?service_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasClinics ?parent . } GROUP BY ?child }\n  ?child p:service_name ?service_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Clinics } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Districts_base
+target		ex:Districts/{ID} a :Districts ; p:ID {ID} ; p:name {Name} ; p:Population {Population} .
+source		SELECT `ID`, `Name`, `Population` FROM `Districts`
+
+mappingId	Programs_base
+target		ex:Programs/{ID} a :Programs ; p:ID {ID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `ID`, `Name`, `Description` FROM `Programs`
+
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Age` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{ID} a :Teachers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Subject {Subject} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Subject` FROM `Teachers`
+
+mappingId	Schools_base
+target		ex:Schools/{ID} a :Schools ; p:ID {ID} ; p:name {Name} ; p:Address {Address} ; p:DistrictID {DistrictID} .
+source		SELECT `ID`, `Name`, `Address`, `DistrictID` FROM `Schools`
+
+mappingId	Schools_DistrictID_fk
+target		ex:Schools/{ID} p:hasDistricts ex:Districts/{DistrictID} .
+source		SELECT `ID`, `DistrictID` FROM `Schools` WHERE `DistrictID` IS NOT NULL
+
+mappingId	School_Students_base
+target		ex:School_Students/{_amb_rowid} a :School_Students ; p:StudentID {StudentID} ; p:SchoolID {SchoolID} ; p:EnrollmentDate {EnrollmentDate} .
+source		SELECT `_amb_rowid`, `StudentID`, `SchoolID`, `EnrollmentDate` FROM `School_Students`
+
+mappingId	School_Students_SchoolID_fk
+target		ex:School_Students/{_amb_rowid} p:hasSchools ex:Schools/{SchoolID} .
+source		SELECT `_amb_rowid`, `SchoolID` FROM `School_Students` WHERE `SchoolID` IS NOT NULL
+
+mappingId	School_Students_StudentID_fk
+target		ex:School_Students/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `School_Students` WHERE `StudentID` IS NOT NULL
+
+mappingId	School_Teachers_base
+target		ex:School_Teachers/{_amb_rowid} a :School_Teachers ; p:TeacherID {TeacherID} ; p:SchoolID {SchoolID} ; p:HireDate {HireDate} .
+source		SELECT `_amb_rowid`, `TeacherID`, `SchoolID`, `HireDate` FROM `School_Teachers`
+
+mappingId	School_Teachers_SchoolID_fk
+target		ex:School_Teachers/{_amb_rowid} p:hasSchools ex:Schools/{SchoolID} .
+source		SELECT `_amb_rowid`, `SchoolID` FROM `School_Teachers` WHERE `SchoolID` IS NOT NULL
+
+mappingId	School_Teachers_TeacherID_fk
+target		ex:School_Teachers/{_amb_rowid} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `_amb_rowid`, `TeacherID` FROM `School_Teachers` WHERE `TeacherID` IS NOT NULL
+
+mappingId	Districts_Programs_base
+target		ex:Districts_Programs/{_amb_rowid} a :Districts_Programs ; p:DistrictID {DistrictID} ; p:ProgramID {ProgramID} ; p:Implemented {Implemented} .
+source		SELECT `_amb_rowid`, `DistrictID`, `ProgramID`, `Implemented` FROM `Districts_Programs`
+
+mappingId	Districts_Programs_ProgramID_fk
+target		ex:Districts_Programs/{_amb_rowid} p:hasPrograms ex:Programs/{ProgramID} .
+source		SELECT `_amb_rowid`, `ProgramID` FROM `Districts_Programs` WHERE `ProgramID` IS NOT NULL
+
+mappingId	Districts_Programs_DistrictID_fk
+target		ex:Districts_Programs/{_amb_rowid} p:hasDistricts ex:Districts/{DistrictID} .
+source		SELECT `_amb_rowid`, `DistrictID` FROM `Districts_Programs` WHERE `DistrictID` IS NOT NULL
+
+mappingId	Students_Programs_base
+target		ex:Students_Programs/{_amb_rowid} a :Students_Programs ; p:StudentID {StudentID} ; p:ProgramID {ProgramID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `_amb_rowid`, `StudentID`, `ProgramID`, `StartDate`, `EndDate` FROM `Students_Programs`
+
+mappingId	Students_Programs_ProgramID_fk
+target		ex:Students_Programs/{_amb_rowid} p:hasPrograms ex:Programs/{ProgramID} .
+source		SELECT `_amb_rowid`, `ProgramID` FROM `Students_Programs` WHERE `ProgramID` IS NOT NULL
+
+mappingId	Students_Programs_StudentID_fk
+target		ex:Students_Programs/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `Students_Programs` WHERE `StudentID` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Resorts_base
+target		ex:Resorts/{id} a :Resorts ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Resorts`
+
+mappingId	Activities_base
+target		ex:Activities/{activityID} a :Activities ; p:activityID {activityID} ; p:activityName {activityName} .
+source		SELECT `activityID`, `activityName` FROM `Activities`
+
+mappingId	Resorts_Activities_base
+target		ex:Resorts_Activities/{_amb_rowid} a :Resorts_Activities ; p:resortID {resortID} ; p:activityID {activityID} .
+source		SELECT `_amb_rowid`, `resortID`, `activityID` FROM `Resorts_Activities`
+
+mappingId	Resorts_Activities_activityID_fk
+target		ex:Resorts_Activities/{_amb_rowid} p:hasActivities ex:Activities/{activityID} .
+source		SELECT `_amb_rowid`, `activityID` FROM `Resorts_Activities` WHERE `activityID` IS NOT NULL
+
+mappingId	Resorts_Activities_resortID_fk
+target		ex:Resorts_Activities/{_amb_rowid} p:hasResorts ex:Resorts/{resortID} .
+source		SELECT `_amb_rowid`, `resortID` FROM `Resorts_Activities` WHERE `resortID` IS NOT NULL
+
+]]

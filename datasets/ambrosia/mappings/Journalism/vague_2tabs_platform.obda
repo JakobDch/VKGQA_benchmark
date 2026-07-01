@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Website_base
+target		ex:Website/{id} a :Website ; p:id {id} ; p:name {name} ; p:url {url} .
+source		SELECT `id`, `name`, `url` FROM `Website`
+
+mappingId	Mobile_App_base
+target		ex:Mobile_App/{id} a :Mobile_App ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Mobile_App`
+
+mappingId	News_Agency_base
+target		ex:News_Agency/{id} a :News_Agency ; p:id {id} ; p:name {name} ; p:websiteId {websiteId} ; p:mobileAppId {mobileAppId} .
+source		SELECT `id`, `name`, `websiteId`, `mobileAppId` FROM `News_Agency`
+
+mappingId	News_Agency_mobileAppId_fk
+target		ex:News_Agency/{id} p:hasMobile_App ex:Mobile_App/{mobileAppId} .
+source		SELECT `id`, `mobileAppId` FROM `News_Agency` WHERE `mobileAppId` IS NOT NULL
+
+mappingId	News_Agency_websiteId_fk
+target		ex:News_Agency/{id} p:hasWebsite ex:Website/{websiteId} .
+source		SELECT `id`, `websiteId` FROM `News_Agency` WHERE `websiteId` IS NOT NULL
+
+mappingId	Article_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publishedDate {publishedDate} ; p:newsAgencyId {newsAgencyId} .
+source		SELECT `id`, `title`, `content`, `publishedDate`, `newsAgencyId` FROM `Article`
+
+mappingId	Article_newsAgencyId_fk
+target		ex:Articles/{id} p:hasNews_Agency ex:News_Agency/{newsAgencyId} .
+source		SELECT `id`, `newsAgencyId` FROM `Article` WHERE `newsAgencyId` IS NOT NULL
+
+mappingId	Author_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {fullname} .
+source		SELECT `id`, `fullname` FROM `Author`
+
+mappingId	AuthorArticle_base
+target		ex:Article_Authors/{_amb_rowid} a :Article_Authors ; p:authorId {authorId} ; p:articleId {articleId} .
+source		SELECT `_amb_rowid`, `authorId`, `articleId` FROM `AuthorArticle`
+
+mappingId	AuthorArticle_articleId_fk
+target		ex:Article_Authors/{_amb_rowid} p:hasArticles ex:Articles/{articleId} .
+source		SELECT `_amb_rowid`, `articleId` FROM `AuthorArticle` WHERE `articleId` IS NOT NULL
+
+mappingId	AuthorArticle_authorId_fk
+target		ex:Article_Authors/{_amb_rowid} p:hasAuthors ex:Authors/{authorId} .
+source		SELECT `_amb_rowid`, `authorId` FROM `AuthorArticle` WHERE `authorId` IS NOT NULL
+
+]]

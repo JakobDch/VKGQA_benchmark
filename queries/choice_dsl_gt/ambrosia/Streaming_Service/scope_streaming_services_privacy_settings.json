@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_privacy_settings",
+  "schema": "amb_scope_streaming_services_privacy_settings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the privacy setting value for each streaming service.",
+      "qtype": "ambig",
+      "sql": "SELECT Privacy_Settings.setting_value  from Streaming_Services_Privacy_Settings join Privacy_Settings on Streaming_Services_Privacy_Settings.privacy_settings_id = Privacy_Settings.setting_id join Streaming_Services on Streaming_Services_Privacy_Settings.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Privacy_Settings.privacy_settings_id HAVING COUNT(DISTINCT Streaming_Services_Privacy_Settings.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?setting_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrivacy_Settings ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:setting_value ?setting_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the privacy setting value for each streaming service.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.service_name , privacy_settings.setting_value from Streaming_Services_Privacy_Settings join Privacy_Settings on Streaming_Services_Privacy_Settings.privacy_settings_id = Privacy_Settings.setting_id join Streaming_Services on Streaming_Services_Privacy_Settings.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?setting_value WHERE {\n  ?streaming_services_privacy_settings a :Streaming_Services_Privacy_Settings .\n  ?privacy_settings a :Privacy_Settings .\n  ?streaming_services_privacy_settings p:hasPrivacy_Settings ?privacy_settings .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_privacy_settings p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?privacy_settings p:setting_value ?setting_value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the privacy setting value for each streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?setting_value WHERE {\n  ?streaming_services_privacy_settings a :Streaming_Services_Privacy_Settings .\n  ?privacy_settings a :Privacy_Settings .\n  ?streaming_services_privacy_settings p:hasPrivacy_Settings ?privacy_settings .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_privacy_settings p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?privacy_settings p:setting_value ?setting_value .\n} }\n  collective: { SELECT ?setting_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrivacy_Settings ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:setting_value ?setting_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

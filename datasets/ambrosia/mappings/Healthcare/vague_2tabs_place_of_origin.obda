@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Country_base
+target		ex:Country/{id} a :Country ; p:id {id} ; p:name {name} ; p:population {population} .
+source		SELECT `id`, `name`, `population` FROM `Country`
+
+mappingId	Manufacturing_Company_base
+target		ex:Manufacturing_Company/{id} a :Manufacturing_Company ; p:id {id} ; p:company_name {company_name} ; p:address {address} .
+source		SELECT `id`, `company_name`, `address` FROM `Manufacturing_Company`
+
+mappingId	Medical_Device_base
+target		ex:MedicalDevices/{id} a :MedicalDevices ; p:id {id} ; p:device_name {device_name} ; p:manufacturing_company_id {manufacturing_company_id} ; p:country_id {country_id} .
+source		SELECT `id`, `device_name`, `manufacturing_company_id`, `country_id` FROM `Medical_Device`
+
+mappingId	Medical_Device_country_id_fk
+target		ex:MedicalDevices/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Medical_Device` WHERE `country_id` IS NOT NULL
+
+mappingId	Medical_Device_manufacturing_company_id_fk
+target		ex:MedicalDevices/{id} p:hasManufacturing_Company ex:Manufacturing_Company/{manufacturing_company_id} .
+source		SELECT `id`, `manufacturing_company_id` FROM `Medical_Device` WHERE `manufacturing_company_id` IS NOT NULL
+
+mappingId	Patient_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:age {age} .
+source		SELECT `id`, `first_name`, `last_name`, `age` FROM `Patient`
+
+mappingId	Doctor_base
+target		ex:Doctors/{id} a :Doctors ; p:id {id} ; p:doctor_name {doctor_name} ; p:speciality {speciality} .
+source		SELECT `id`, `doctor_name`, `speciality` FROM `Doctor`
+
+mappingId	Prescription_base
+target		ex:Prescriptions/{prescription_id} a :Prescriptions ; p:prescription_id {prescription_id} ; p:patient_id {patient_id} ; p:doctor_id {doctor_id} ; p:medical_device_id {medical_device_id} ; p:quantity {quantity} ; p:date {date} .
+source		SELECT `prescription_id`, `patient_id`, `doctor_id`, `medical_device_id`, `quantity`, `date` FROM `Prescription`
+
+mappingId	Prescription_medical_device_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasMedicalDevices ex:MedicalDevices/{medical_device_id} .
+source		SELECT `prescription_id`, `medical_device_id` FROM `Prescription` WHERE `medical_device_id` IS NOT NULL
+
+mappingId	Prescription_doctor_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `prescription_id`, `doctor_id` FROM `Prescription` WHERE `doctor_id` IS NOT NULL
+
+mappingId	Prescription_patient_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `prescription_id`, `patient_id` FROM `Prescription` WHERE `patient_id` IS NOT NULL
+
+]]

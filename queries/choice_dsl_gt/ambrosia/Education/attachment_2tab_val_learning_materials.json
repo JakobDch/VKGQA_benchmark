@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_learning_materials",
+  "schema": "amb_attachment_2tab_val_learning_materials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show intermediate online courses and textbooks.",
+      "qtype": "ambig",
+      "sql": "SELECT Textbooks.Title as Title\nFROM Textbooks\nWHERE Textbooks.Difficulty_Level = \"Intermediate\"\nUNION\nSELECT Online_Courses.Course_Name as Title\nFROM Online_Courses\nWHERE Online_Courses.Difficulty_Level = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?textbooks a :Textbooks .\n    ?textbooks p:Title ?title .\n    ?textbooks p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?online_courses a :Online_Courses .\n    ?online_courses p:Course_Name ?course_name .\n    ?online_courses p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?course_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show intermediate online courses and textbooks.",
+      "qtype": "ambig",
+      "sql": "SELECT Textbooks.Title as Title\nFROM Textbooks\nUNION\nSELECT Online_Courses.Course_Name as Title\nFROM Online_Courses\nWHERE Online_Courses.Difficulty_Level = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?textbooks a :Textbooks .\n    ?textbooks p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?online_courses a :Online_Courses .\n    ?online_courses p:Course_Name ?course_name .\n    ?online_courses p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?course_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show intermediate online courses and textbooks.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?textbooks a :Textbooks .\n    ?textbooks p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?online_courses a :Online_Courses .\n    ?online_courses p:Course_Name ?course_name .\n    ?online_courses p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?course_name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?textbooks a :Textbooks .\n    ?textbooks p:Title ?title .\n    ?textbooks p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?online_courses a :Online_Courses .\n    ?online_courses p:Course_Name ?course_name .\n    ?online_courses p:Difficulty_Level ?difficulty_level_f .\n    FILTER(STR(?difficulty_level_f) = \"Intermediate\")\n    BIND(?course_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

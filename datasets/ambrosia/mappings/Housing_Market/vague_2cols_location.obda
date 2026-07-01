@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Properties_base
+target		ex:Properties/{property_id} a :Properties ; p:property_id {property_id} ; p:Street_Address {Street_Address} ; p:City {City} ; p:Real_Estate_Offices {Real_Estate_Offices} ; p:Price {Price} ; p:Property_Type {Property_Type} ; p:Square_Feet {Square_Feet} .
+source		SELECT `property_id`, `Street_Address`, `City`, `Real_Estate_Offices`, `Price`, `Property_Type`, `Square_Feet` FROM `Properties`
+
+mappingId	RealEstateOffices_base
+target		ex:RealEstateOffices/{real_estate_office_id} a :RealEstateOffices ; p:real_estate_office_id {real_estate_office_id} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `real_estate_office_id`, `Name`, `Address`, `PhoneNumber` FROM `RealEstateOffices`
+
+mappingId	Clients_base
+target		ex:Clients/{client_id} a :Clients ; p:client_id {client_id} ; p:name {Name} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `client_id`, `Name`, `Email`, `PhoneNumber` FROM `Clients`
+
+mappingId	ClientProperties_base
+target		ex:ClientProperties/{_amb_rowid} a :ClientProperties ; p:client_id {client_id} ; p:property_id {property_id} ; p:InterestedDate {InterestedDate} .
+source		SELECT `_amb_rowid`, `client_id`, `property_id`, `InterestedDate` FROM `ClientProperties`
+
+mappingId	ClientProperties_property_id_fk
+target		ex:ClientProperties/{_amb_rowid} p:hasProperties ex:Properties/{property_id} .
+source		SELECT `_amb_rowid`, `property_id` FROM `ClientProperties` WHERE `property_id` IS NOT NULL
+
+mappingId	ClientProperties_client_id_fk
+target		ex:ClientProperties/{_amb_rowid} p:hasClients ex:Clients/{client_id} .
+source		SELECT `_amb_rowid`, `client_id` FROM `ClientProperties` WHERE `client_id` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:TransactionDate {TransactionDate} ; p:client_id {client_id} ; p:property_id {property_id} ; p:TypeOfTransaction {TypeOfTransaction} .
+source		SELECT `transaction_id`, `TransactionDate`, `client_id`, `property_id`, `TypeOfTransaction` FROM `Transactions`
+
+mappingId	Transactions_property_id_fk
+target		ex:Transactions/{transaction_id} p:hasProperties ex:Properties/{property_id} .
+source		SELECT `transaction_id`, `property_id` FROM `Transactions` WHERE `property_id` IS NOT NULL
+
+mappingId	Transactions_client_id_fk
+target		ex:Transactions/{transaction_id} p:hasClients ex:Clients/{client_id} .
+source		SELECT `transaction_id`, `client_id` FROM `Transactions` WHERE `client_id` IS NOT NULL
+
+]]

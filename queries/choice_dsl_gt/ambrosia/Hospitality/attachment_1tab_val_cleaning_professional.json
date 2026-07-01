@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_cleaning_professional",
+  "schema": "amb_attachment_1tab_val_cleaning_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which housekeepers work for The Grand Hotel and which laundry attendants work for the same hotel?",
+      "qtype": "unambig",
+      "sql": "SELECT Cleaning_Professionals.Name \nFROM Cleaning_Professionals JOIN Hotels ON Cleaning_Professionals.Hotel_ID = Hotels.ID\nWHERE (Cleaning_Professionals.Position = \"Housekeeper\" OR Cleaning_Professionals.Position = \"Laundry Attendant\") AND Hotels.Name = 'The Grand Hotel'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?cleaning_professionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaning_professionals p:Hotel_ID ?hotel_id_l .\n  ?hotels p:ID ?id_r .\n  ?cleaning_professionals p:name ?name .\n  ?cleaning_professionals p:Position ?position_w .\n  ?cleaning_professionals p:Position ?position_w2 .\n  ?hotels p:name ?name_w .\n  FILTER(STR(?hotel_id_l) = STR(?id_r))\n  FILTER((((STR(?position_w) = \"Housekeeper\" || STR(?position_w2) = \"Laundry Attendant\")) && STR(?name_w) = \"The Grand Hotel\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all housekeepers and also provide a list of laundry attendants who work for The Grand Hotel.",
+      "qtype": "unambig",
+      "sql": "SELECT Cleaning_Professionals.Name \nFROM Cleaning_Professionals JOIN Hotels ON Cleaning_Professionals.Hotel_ID = Hotels.ID\nWHERE Cleaning_Professionals.Position = \"Housekeeper\" OR Cleaning_Professionals.Position = \"Laundry Attendant\" AND Hotels.Name = 'The Grand Hotel'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?cleaning_professionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaning_professionals p:Hotel_ID ?hotel_id_l .\n  ?hotels p:ID ?id_r .\n  ?cleaning_professionals p:name ?name .\n  ?cleaning_professionals p:Position ?position_w .\n  ?cleaning_professionals p:Position ?position_w2 .\n  ?hotels p:name ?name_w .\n  FILTER(STR(?hotel_id_l) = STR(?id_r))\n  FILTER((STR(?position_w) = \"Housekeeper\" || (STR(?position_w2) = \"Laundry Attendant\" && STR(?name_w) = \"The Grand Hotel\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all housekeepers and laundry attendants who work for The Grand Hotel.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?cleaning_professionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaning_professionals p:Hotel_ID ?hotel_id_l .\n  ?hotels p:ID ?id_r .\n  ?cleaning_professionals p:name ?name .\n  ?cleaning_professionals p:Position ?position_w .\n  ?cleaning_professionals p:Position ?position_w2 .\n  ?hotels p:name ?name_w .\n  FILTER(STR(?hotel_id_l) = STR(?id_r))\n  FILTER((((STR(?position_w) = \"Housekeeper\" || STR(?position_w2) = \"Laundry Attendant\")) && STR(?name_w) = \"The Grand Hotel\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?cleaning_professionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaning_professionals p:Hotel_ID ?hotel_id_l .\n  ?hotels p:ID ?id_r .\n  ?cleaning_professionals p:name ?name .\n  ?cleaning_professionals p:Position ?position_w .\n  ?cleaning_professionals p:Position ?position_w2 .\n  ?hotels p:name ?name_w .\n  FILTER(STR(?hotel_id_l) = STR(?id_r))\n  FILTER((STR(?position_w) = \"Housekeeper\" || (STR(?position_w2) = \"Laundry Attendant\" && STR(?name_w) = \"The Grand Hotel\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

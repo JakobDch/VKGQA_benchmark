@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_music",
+  "schema": "amb_attachment_1tab_val_music",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with the blues music and folk music sung by John Hurt.",
+      "qtype": "ambig",
+      "sql": "SELECT Songs.SongTitle \nFROM Songs JOIN Singers ON Songs.Singer_id = Singers.id\nWHERE (Songs.Music = 'Blues Music' OR Songs.Music = 'Folk Music') AND Singers.singername = \"John Hurt\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?songtitle WHERE {\n  ?songs a :Song .\n  ?singers a :Singer .\n  ?songs p:hasSingers ?singers .\n  ?songs p:SongTitle ?songtitle .\n  ?songs p:Music ?music_w .\n  ?songs p:Music ?music_w2 .\n  ?singers p:SingerName ?singername_w .\n  FILTER((((STR(?music_w) = \"Blues Music\" || STR(?music_w2) = \"Folk Music\")) && STR(?singername_w) = \"John Hurt\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide me with the blues music and folk music sung by John Hurt.",
+      "qtype": "ambig",
+      "sql": "SELECT Songs.SongTitle \nFROM Songs JOIN Singers ON Songs.Singer_id = Singers.id\nWHERE Songs.Music = 'Blues Music' OR Songs.Music = 'Folk Music' AND Singers.singername = \"John Hurt\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?songtitle WHERE {\n  ?songs a :Song .\n  ?singers a :Singer .\n  ?songs p:hasSingers ?singers .\n  ?songs p:SongTitle ?songtitle .\n  ?songs p:Music ?music_w .\n  ?songs p:Music ?music_w2 .\n  ?singers p:SingerName ?singername_w .\n  FILTER((STR(?music_w) = \"Blues Music\" || (STR(?music_w2) = \"Folk Music\" && STR(?singername_w) = \"John Hurt\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide me with the blues music and folk music sung by John Hurt.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?songtitle WHERE {\n  ?songs a :Song .\n  ?singers a :Singer .\n  ?songs p:hasSingers ?singers .\n  ?songs p:SongTitle ?songtitle .\n  ?songs p:Music ?music_w .\n  ?songs p:Music ?music_w2 .\n  ?singers p:SingerName ?singername_w .\n  FILTER((((STR(?music_w) = \"Blues Music\" || STR(?music_w2) = \"Folk Music\")) && STR(?singername_w) = \"John Hurt\"))\n} }\n  low: { SELECT ?songtitle WHERE {\n  ?songs a :Song .\n  ?singers a :Singer .\n  ?songs p:hasSingers ?singers .\n  ?songs p:SongTitle ?songtitle .\n  ?songs p:Music ?music_w .\n  ?songs p:Music ?music_w2 .\n  ?singers p:SingerName ?singername_w .\n  FILTER((STR(?music_w) = \"Blues Music\" || (STR(?music_w2) = \"Folk Music\" && STR(?singername_w) = \"John Hurt\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

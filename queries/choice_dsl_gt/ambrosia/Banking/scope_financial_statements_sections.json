@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_financial_statements_sections",
+  "schema": "amb_scope_financial_statements_sections",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me the section names which are common to all statements",
+      "qtype": "unambig",
+      "sql": "SELECT Sections.SectionName  from Financial_Statements_Sections join Sections on Financial_Statements_Sections.Section_id = Sections.id join Financial_Statements on Financial_Statements_Sections.Financial_Statement_id = Financial_Statements.id   GROUP BY Financial_Statements_Sections.Section_id HAVING COUNT(DISTINCT Financial_Statements_Sections.Financial_Statement_id) = (SELECT COUNT(*) FROM  Financial_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sectionname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSections ?child ; p:hasFinancial_Statements ?parent . } GROUP BY ?child }\n  ?child p:SectionName ?sectionname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Financial_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each statement, provide me the section names it contains",
+      "qtype": "unambig",
+      "sql": "select financial_statements.name , sections.sectionname from Financial_Statements_Sections join Sections on Financial_Statements_Sections.Section_id = Sections.id join Financial_Statements on Financial_Statements_Sections.Financial_Statement_id = Financial_Statements.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?sectionname WHERE {\n  ?financial_statements_sections a :Financial_Statements_Sections .\n  ?sections a :Sections .\n  ?financial_statements_sections p:hasSections ?sections .\n  ?financial_statements a :Financial_Statements .\n  ?financial_statements_sections p:hasFinancial_Statements ?financial_statements .\n  ?financial_statements p:name ?name .\n  ?sections p:SectionName ?sectionname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What section names do we have for every statement",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?sectionname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSections ?child ; p:hasFinancial_Statements ?parent . } GROUP BY ?child }\n  ?child p:SectionName ?sectionname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Financial_Statements } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?sectionname WHERE {\n  ?financial_statements_sections a :Financial_Statements_Sections .\n  ?sections a :Sections .\n  ?financial_statements_sections p:hasSections ?sections .\n  ?financial_statements a :Financial_Statements .\n  ?financial_statements_sections p:hasFinancial_Statements ?financial_statements .\n  ?financial_statements p:name ?name .\n  ?sections p:SectionName ?sectionname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

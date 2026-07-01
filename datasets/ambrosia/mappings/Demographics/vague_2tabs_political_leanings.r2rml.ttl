@@ -1,0 +1,57 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_political_leanings_0_Individuals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"age\" FROM \"Individuals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Person/{id}" ; rr:class :Person ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] .
+
+<#tm_vague_2tabs_political_leanings_1_VotingRecords_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recordID\", \"individualId\", \"party\" FROM \"VotingRecords\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/VotingRecords/{recordID}" ; rr:class :VotingRecords ] ;
+  rr:predicateObjectMap [ rr:predicate p:recordID ; rr:objectMap [ rr:column "recordID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:individualId ; rr:objectMap [ rr:column "individualId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:party ; rr:objectMap [ rr:column "party" ] ] .
+
+<#tm_vague_2tabs_political_leanings_2_VotingRecords_individualId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"recordID\", \"individualId\" FROM \"VotingRecords\" WHERE \"individualId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/VotingRecords/{recordID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPerson ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Person/{individualId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_political_leanings_3_Districts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"districtID\", \"name\", \"totalPopulation\" FROM \"Districts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Districts/{districtID}" ; rr:class :Districts ] ;
+  rr:predicateObjectMap [ rr:predicate p:districtID ; rr:objectMap [ rr:column "districtID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:totalPopulation ; rr:objectMap [ rr:column "totalPopulation" ] ] .
+
+<#tm_vague_2tabs_political_leanings_4_Dominating_Party_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"districtID\", \"partyName\", \"percentageVotes\" FROM \"Dominating_Party\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Dominating_Party/{districtID}/{partyName}" ; rr:class :Dominating_Party ] ;
+  rr:predicateObjectMap [ rr:predicate p:districtID ; rr:objectMap [ rr:column "districtID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:partyName ; rr:objectMap [ rr:column "partyName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:percentageVotes ; rr:objectMap [ rr:column "percentageVotes" ] ] .
+
+<#tm_vague_2tabs_political_leanings_5_Dominating_Party_districtID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"districtID\", \"partyName\" FROM \"Dominating_Party\" WHERE \"districtID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Dominating_Party/{districtID}/{partyName}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDistricts ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Districts/{districtID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_political_leanings_6_Prevalent_Ideology_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"districtID\", \"ideologyName\", \"percentageVotes\" FROM \"Prevalent_Ideology\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Prevalent_Ideology/{districtID}/{ideologyName}" ; rr:class :Prevalent_Ideology ] ;
+  rr:predicateObjectMap [ rr:predicate p:districtID ; rr:objectMap [ rr:column "districtID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ideologyName ; rr:objectMap [ rr:column "ideologyName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:percentageVotes ; rr:objectMap [ rr:column "percentageVotes" ] ] .
+
+<#tm_vague_2tabs_political_leanings_7_Prevalent_Ideology_districtID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"districtID\", \"ideologyName\" FROM \"Prevalent_Ideology\" WHERE \"districtID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Prevalent_Ideology/{districtID}/{ideologyName}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDistricts ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Districts/{districtID}" ; rr:termType rr:IRI ] ] .
+

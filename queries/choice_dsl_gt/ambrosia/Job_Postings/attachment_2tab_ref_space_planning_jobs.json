@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_space_planning_jobs",
+  "schema": "amb_attachment_2tab_ref_space_planning_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What designers use modern styles, and what architects also use the same style?",
+      "qtype": "unambig",
+      "sql": "SELECT Interior_Designer.name\nFROM Style JOIN Interior_Designer ON Style.style_id = Interior_Designer.design_style\nWHERE Style.style_name = \"Modern\"\nUNION\nSELECT Landscape_Architect.name\nFROM Style JOIN Landscape_Architect ON Style.style_id = Landscape_Architect.landscape_style\nWHERE Style.style_name = \"Modern\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?style a :Styles .\n    ?interior_designer a :Interior_Designers .\n    ?interior_designer p:hasStyle ?style .\n    ?interior_designer p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?style a :Styles .\n    ?landscape_architect a :Landscape_Architects .\n    ?landscape_architect p:hasStyle ?style .\n    ?landscape_architect p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all designers and also provide a list of modern architects.",
+      "qtype": "unambig",
+      "sql": "SELECT Interior_Designer.name\nFROM Style JOIN Interior_Designer ON Style.style_id = Interior_Designer.design_style\nUNION\nSELECT Landscape_Architect.name\nFROM Style JOIN Landscape_Architect ON Style.style_id = Landscape_Architect.landscape_style\nWHERE Style.style_name = \"Modern\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?style a :Styles .\n    ?interior_designer a :Interior_Designers .\n    ?interior_designer p:hasStyle ?style .\n    ?interior_designer p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?style a :Styles .\n    ?landscape_architect a :Landscape_Architects .\n    ?landscape_architect p:hasStyle ?style .\n    ?landscape_architect p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide modern architects and designers.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?style a :Styles .\n    ?interior_designer a :Interior_Designers .\n    ?interior_designer p:hasStyle ?style .\n    ?interior_designer p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?style a :Styles .\n    ?landscape_architect a :Landscape_Architects .\n    ?landscape_architect p:hasStyle ?style .\n    ?landscape_architect p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?style a :Styles .\n    ?interior_designer a :Interior_Designers .\n    ?interior_designer p:hasStyle ?style .\n    ?interior_designer p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?style a :Styles .\n    ?landscape_architect a :Landscape_Architects .\n    ?landscape_architect p:hasStyle ?style .\n    ?landscape_architect p:name ?name .\n    ?style p:style_name ?style_name_f .\n    FILTER(STR(?style_name_f) = \"Modern\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

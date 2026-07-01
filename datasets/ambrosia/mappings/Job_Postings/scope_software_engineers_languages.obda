@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{CompanyID} a :Companies ; p:CompanyID {CompanyID} ; p:CompanyName {CompanyName} .
+source		SELECT `CompanyID`, `CompanyName` FROM `Companies`
+
+mappingId	Locations_base
+target		ex:Locations/{LocationID} a :Locations ; p:LocationID {LocationID} ; p:LocationName {LocationName} .
+source		SELECT `LocationID`, `LocationName` FROM `Locations`
+
+mappingId	Jobs_base
+target		ex:Jobs/{JobID} a :Jobs ; p:JobID {JobID} ; p:JobTitle {JobTitle} ; p:Description {Description} ; p:Salary {Salary} ; p:CompanyID {CompanyID} .
+source		SELECT `JobID`, `JobTitle`, `Description`, `Salary`, `CompanyID` FROM `Jobs`
+
+mappingId	Jobs_CompanyID_fk
+target		ex:Jobs/{JobID} p:hasCompanies ex:Companies/{CompanyID} .
+source		SELECT `JobID`, `CompanyID` FROM `Jobs` WHERE `CompanyID` IS NOT NULL
+
+mappingId	Software_Engineers_base
+target		ex:Software_Engineers/{EngineerID} a :Software_Engineers ; p:EngineerID {EngineerID} ; p:name {Name} ; p:email {Email} ; p:LocationID {LocationID} .
+source		SELECT `EngineerID`, `Name`, `Email`, `LocationID` FROM `Software_Engineers`
+
+mappingId	Software_Engineers_LocationID_fk
+target		ex:Software_Engineers/{EngineerID} p:hasLocations ex:Locations/{LocationID} .
+source		SELECT `EngineerID`, `LocationID` FROM `Software_Engineers` WHERE `LocationID` IS NOT NULL
+
+mappingId	Languages_base
+target		ex:Languages/{LanguageID} a :Languages ; p:LanguageID {LanguageID} ; p:LanguageName {LanguageName} .
+source		SELECT `LanguageID`, `LanguageName` FROM `Languages`
+
+mappingId	Skills_base
+target		ex:Skill/{SkillID} a :Skill ; p:SkillID {SkillID} ; p:SkillDescription {SkillDescription} .
+source		SELECT `SkillID`, `SkillDescription` FROM `Skills`
+
+mappingId	Software_Engineers_Languages_base
+target		ex:Software_Engineers_Languages/{SE_LanguageID}/{SE_Id} a :Software_Engineers_Languages ; p:SE_LanguageID {SE_LanguageID} ; p:SE_Id {SE_Id} .
+source		SELECT `SE_LanguageID`, `SE_Id` FROM `Software_Engineers_Languages`
+
+mappingId	Software_Engineers_Languages_SE_Id_fk
+target		ex:Software_Engineers_Languages/{SE_LanguageID}/{SE_Id} p:hasSoftware_Engineers ex:Software_Engineers/{SE_Id} .
+source		SELECT `SE_LanguageID`, `SE_Id` FROM `Software_Engineers_Languages` WHERE `SE_Id` IS NOT NULL
+
+mappingId	Software_Engineers_Languages_SE_LanguageID_fk
+target		ex:Software_Engineers_Languages/{SE_LanguageID}/{SE_Id} p:hasLanguages ex:Languages/{SE_LanguageID} .
+source		SELECT `SE_LanguageID`, `SE_Id` FROM `Software_Engineers_Languages` WHERE `SE_LanguageID` IS NOT NULL
+
+]]

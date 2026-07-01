@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_educational_materials",
+  "schema": "amb_attachment_1tab_val_educational_materials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What textbooks have a publisher email address of pearson@email.com and what e-books have the same publisher email?",
+      "qtype": "unambig",
+      "sql": "SELECT Books.Title \nFROM Books JOIN Publishers ON Books.PublisherID = Publishers.PublisherID\nWHERE (Books.Educational_Materials = 'Textbook' OR Books.Educational_Materials = 'E-Book') AND Publishers.email = \"pearson@email.com\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?publishers a :Publishers .\n  ?books p:hasPublishers ?publishers .\n  ?books p:Title ?title .\n  ?books p:Educational_Materials ?educational_materials_w .\n  ?books p:Educational_Materials ?educational_materials_w2 .\n  ?publishers p:email ?email_w .\n  FILTER((((STR(?educational_materials_w) = \"Textbook\" || STR(?educational_materials_w2) = \"E-Book\")) && STR(?email_w) = \"pearson@email.com\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all textbooks and also list e-books with a publisher email address of pearson@email.com.",
+      "qtype": "unambig",
+      "sql": "SELECT Books.Title \nFROM Books JOIN Publishers ON Books.PublisherID = Publishers.PublisherID\nWHERE Books.Educational_Materials = 'Textbook' OR Books.Educational_Materials = 'E-Book' AND Publishers.email = \"pearson@email.com\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?publishers a :Publishers .\n  ?books p:hasPublishers ?publishers .\n  ?books p:Title ?title .\n  ?books p:Educational_Materials ?educational_materials_w .\n  ?books p:Educational_Materials ?educational_materials_w2 .\n  ?publishers p:email ?email_w .\n  FILTER((STR(?educational_materials_w) = \"Textbook\" || (STR(?educational_materials_w2) = \"E-Book\" && STR(?email_w) = \"pearson@email.com\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show textbooks and e-books with a publisher email address of pearson@email.com.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?publishers a :Publishers .\n  ?books p:hasPublishers ?publishers .\n  ?books p:Title ?title .\n  ?books p:Educational_Materials ?educational_materials_w .\n  ?books p:Educational_Materials ?educational_materials_w2 .\n  ?publishers p:email ?email_w .\n  FILTER((((STR(?educational_materials_w) = \"Textbook\" || STR(?educational_materials_w2) = \"E-Book\")) && STR(?email_w) = \"pearson@email.com\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?publishers a :Publishers .\n  ?books p:hasPublishers ?publishers .\n  ?books p:Title ?title .\n  ?books p:Educational_Materials ?educational_materials_w .\n  ?books p:Educational_Materials ?educational_materials_w2 .\n  ?publishers p:email ?email_w .\n  FILTER((STR(?educational_materials_w) = \"Textbook\" || (STR(?educational_materials_w2) = \"E-Book\" && STR(?email_w) = \"pearson@email.com\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

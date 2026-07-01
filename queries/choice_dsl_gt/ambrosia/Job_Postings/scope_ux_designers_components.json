@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_ux_designers_components",
+  "schema": "amb_scope_ux_designers_components",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each UX designer, show me the component descriptions.",
+      "qtype": "unambig",
+      "sql": "select ux_designers.name , components.description from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which components are the same for all UX designers?",
+      "qtype": "unambig",
+      "sql": "SELECT Components.component_name  from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id   GROUP BY Ux_Designers_Components.component_id HAVING COUNT(DISTINCT Ux_Designers_Components.ux_designer_id) = (SELECT COUNT(*) FROM  Ux_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?component_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:component_name ?component_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the names and descriptions of the components every UX designer uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Components.component_name, Components.description  from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id   GROUP BY Ux_Designers_Components.component_id HAVING COUNT(DISTINCT Ux_Designers_Components.ux_designer_id) = (SELECT COUNT(*) FROM  Ux_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?component_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:component_name ?component_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the names and descriptions of the components every UX designer uses.",
+      "qtype": "ambig",
+      "sql": "select ux_designers.name , components.component_name , components.description from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?component_name ?description WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:component_name ?component_name .\n  ?components p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every UX designer, show the components that they design.",
+      "qtype": "unambig",
+      "sql": "select ux_designers.name , components.component_name from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?component_name WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:component_name ?component_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What is the component description that all UX designers have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Components.description  from Ux_Designers_Components join Components on Ux_Designers_Components.component_id = Components.id join Ux_Designers on Ux_Designers_Components.ux_designer_id = Ux_Designers.id   GROUP BY Ux_Designers_Components.component_id HAVING COUNT(DISTINCT Ux_Designers_Components.ux_designer_id) = (SELECT COUNT(*) FROM  Ux_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the descriptions of the components corresponding to each UX designer.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the components that every UX designer designs.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?component_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:component_name ?component_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?component_name WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:component_name ?component_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the names and descriptions of the components every UX designer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?component_name ?description WHERE {\n  ?ux_designers_components a :Ux_Designers_Components .\n  ?components a :Components .\n  ?ux_designers_components p:hasComponents ?components .\n  ?ux_designers a :Ux_Designers .\n  ?ux_designers_components p:hasUx_Designers ?ux_designers .\n  ?ux_designers p:name ?name .\n  ?components p:component_name ?component_name .\n  ?components p:description ?description .\n} }\n  collective: { SELECT ?component_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:component_id ?cg . ?child a :Components ; p:id ?cg . ?l p:ux_designer_id ?pg . ?parent a :Ux_Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:component_name ?component_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Ux_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

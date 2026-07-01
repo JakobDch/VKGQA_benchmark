@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_audio_format",
+  "schema": "amb_attachment_1tab_val_audio_format",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display podcasts and radio shows with hosts with 10 years of experience.",
+      "qtype": "ambig",
+      "sql": "SELECT Shows.title \nFROM Shows JOIN Podcasters ON Shows.host = Podcasters.name\nWHERE (Shows.audio_format = 'Podcast' OR Shows.audio_format = 'Radio Show') AND Podcasters.years_experience = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?shows a :Show .\n  ?podcasters a :Podcasters .\n  ?shows p:host ?host_l .\n  ?podcasters p:name ?name_r .\n  ?shows p:title ?title .\n  ?shows p:audio_format ?audio_format_w .\n  ?shows p:audio_format ?audio_format_w2 .\n  ?podcasters p:years_experience ?years_experience_w .\n  FILTER(STR(?host_l) = STR(?name_r))\n  FILTER((((STR(?audio_format_w) = \"Podcast\" || STR(?audio_format_w2) = \"Radio Show\")) && (STR(?years_experience_w) = \"10\" || STR(?years_experience_w) = \"10.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display podcasts and radio shows with hosts with 10 years of experience.",
+      "qtype": "ambig",
+      "sql": "SELECT Shows.title \nFROM Shows JOIN Podcasters ON Shows.host = Podcasters.name\nWHERE Shows.audio_format = 'Podcast' OR Shows.audio_format = 'Radio Show' AND Podcasters.years_experience = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?shows a :Show .\n  ?podcasters a :Podcasters .\n  ?shows p:host ?host_l .\n  ?podcasters p:name ?name_r .\n  ?shows p:title ?title .\n  ?shows p:audio_format ?audio_format_w .\n  ?shows p:audio_format ?audio_format_w2 .\n  ?podcasters p:years_experience ?years_experience_w .\n  FILTER(STR(?host_l) = STR(?name_r))\n  FILTER((STR(?audio_format_w) = \"Podcast\" || (STR(?audio_format_w2) = \"Radio Show\" && (STR(?years_experience_w) = \"10\" || STR(?years_experience_w) = \"10.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display podcasts and radio shows with hosts with 10 years of experience.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?shows a :Show .\n  ?podcasters a :Podcasters .\n  ?shows p:host ?host_l .\n  ?podcasters p:name ?name_r .\n  ?shows p:title ?title .\n  ?shows p:audio_format ?audio_format_w .\n  ?shows p:audio_format ?audio_format_w2 .\n  ?podcasters p:years_experience ?years_experience_w .\n  FILTER(STR(?host_l) = STR(?name_r))\n  FILTER((STR(?audio_format_w) = \"Podcast\" || (STR(?audio_format_w2) = \"Radio Show\" && (STR(?years_experience_w) = \"10\" || STR(?years_experience_w) = \"10.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?shows a :Show .\n  ?podcasters a :Podcasters .\n  ?shows p:host ?host_l .\n  ?podcasters p:name ?name_r .\n  ?shows p:title ?title .\n  ?shows p:audio_format ?audio_format_w .\n  ?shows p:audio_format ?audio_format_w2 .\n  ?podcasters p:years_experience ?years_experience_w .\n  FILTER(STR(?host_l) = STR(?name_r))\n  FILTER((((STR(?audio_format_w) = \"Podcast\" || STR(?audio_format_w2) = \"Radio Show\")) && (STR(?years_experience_w) = \"10\" || STR(?years_experience_w) = \"10.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_systems",
+  "schema": "amb_attachment_2tab_val_airport_systems",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all navigation systems and also display communication systems used at Heathrow Airport.",
+      "qtype": "unambig",
+      "sql": "SELECT Navigation_Systems.TypeOfSystem\nFROM Navigation_Systems\nUNION\nSELECT Communication_Systems.TypeOfSystem\nFROM Communication_Systems\nWHERE Communication_Systems.Airport = \"Heathrow\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?navigation_systems a :Navigation_Systems .\n    ?navigation_systems p:TypeOfSystem ?typeofsystem .\n    BIND(?typeofsystem AS ?o0)\n  }\n  UNION\n  {\n    ?communication_systems a :Communication_Systems .\n    ?communication_systems p:TypeOfSystem ?typeofsystem .\n    ?communication_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Can you show navigation and communication systems used at Heathrow Airport?",
+      "qtype": "unambig",
+      "sql": "SELECT Navigation_Systems.TypeOfSystem\nFROM Navigation_Systems\nWHERE Navigation_Systems.Airport = \"Heathrow\"\nUNION\nSELECT Communication_Systems.TypeOfSystem\nFROM Communication_Systems\nWHERE Communication_Systems.Airport = \"Heathrow\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?navigation_systems a :Navigation_Systems .\n    ?navigation_systems p:TypeOfSystem ?typeofsystem .\n    ?navigation_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n  UNION\n  {\n    ?communication_systems a :Communication_Systems .\n    ?communication_systems p:TypeOfSystem ?typeofsystem .\n    ?communication_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display navigation systems and communication systems used at Heathrow Airport.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?navigation_systems a :Navigation_Systems .\n    ?navigation_systems p:TypeOfSystem ?typeofsystem .\n    BIND(?typeofsystem AS ?o0)\n  }\n  UNION\n  {\n    ?communication_systems a :Communication_Systems .\n    ?communication_systems p:TypeOfSystem ?typeofsystem .\n    ?communication_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?navigation_systems a :Navigation_Systems .\n    ?navigation_systems p:TypeOfSystem ?typeofsystem .\n    ?navigation_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n  UNION\n  {\n    ?communication_systems a :Communication_Systems .\n    ?communication_systems p:TypeOfSystem ?typeofsystem .\n    ?communication_systems p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Heathrow\")\n    BIND(?typeofsystem AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

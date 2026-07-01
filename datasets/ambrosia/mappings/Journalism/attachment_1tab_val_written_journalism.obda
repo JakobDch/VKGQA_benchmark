@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} .
+source		SELECT `AuthorID`, `FirstName`, `LastName` FROM `Authors`
+
+mappingId	Publishers_base
+target		ex:Publishers/{PublisherID} a :Publishers ; p:PublisherID {PublisherID} ; p:name {Name} .
+source		SELECT `PublisherID`, `Name` FROM `Publishers`
+
+mappingId	Categories_base
+target		ex:Category/{CategoryID} a :Category ; p:CategoryID {CategoryID} ; p:CategoryName {CategoryName} .
+source		SELECT `CategoryID`, `CategoryName` FROM `Categories`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Written_Journalism {Written_Journalism} ; p:Word_Count {Word_Count} ; p:PublicationDate {PublicationDate} ; p:AuthorID {AuthorID} ; p:CategoryID {CategoryID} ; p:PublisherID {PublisherID} .
+source		SELECT `ArticleID`, `Title`, `Written_Journalism`, `Word_Count`, `PublicationDate`, `AuthorID`, `CategoryID`, `PublisherID` FROM `Articles`
+
+mappingId	Articles_PublisherID_fk
+target		ex:Articles/{ArticleID} p:hasPublishers ex:Publishers/{PublisherID} .
+source		SELECT `ArticleID`, `PublisherID` FROM `Articles` WHERE `PublisherID` IS NOT NULL
+
+mappingId	Articles_CategoryID_fk
+target		ex:Articles/{ArticleID} p:hasCategory ex:Category/{CategoryID} .
+source		SELECT `ArticleID`, `CategoryID` FROM `Articles` WHERE `CategoryID` IS NOT NULL
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+]]

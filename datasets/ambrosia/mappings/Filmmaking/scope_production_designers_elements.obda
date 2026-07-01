@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Production_Designers_base
+target		ex:Production_Designers/{id} a :Production_Designers ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Production_Designers`
+
+mappingId	Elements_base
+target		ex:Elements/{id} a :Elements ; p:id {id} ; p:element_type {element_type} ; p:description {description} .
+source		SELECT `id`, `element_type`, `description` FROM `Elements`
+
+mappingId	Production_Designers_Elements_base
+target		ex:Production_Designers_Elements/{production_designer_id}/{element_id} a :Production_Designers_Elements ; p:production_designer_id {production_designer_id} ; p:element_id {element_id} .
+source		SELECT `production_designer_id`, `element_id` FROM `Production_Designers_Elements`
+
+mappingId	Production_Designers_Elements_element_id_fk
+target		ex:Production_Designers_Elements/{production_designer_id}/{element_id} p:hasElements ex:Elements/{element_id} .
+source		SELECT `production_designer_id`, `element_id` FROM `Production_Designers_Elements` WHERE `element_id` IS NOT NULL
+
+mappingId	Production_Designers_Elements_production_designer_id_fk
+target		ex:Production_Designers_Elements/{production_designer_id}/{element_id} p:hasProduction_Designers ex:Production_Designers/{production_designer_id} .
+source		SELECT `production_designer_id`, `element_id` FROM `Production_Designers_Elements` WHERE `production_designer_id` IS NOT NULL
+
+]]

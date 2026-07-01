@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_educational_methods",
+  "schema": "amb_attachment_1tab_ref_educational_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the content of online and classroom lessons taught by Emily Williams?",
+      "qtype": "unambig",
+      "sql": "SELECT Lessons.content \nFROM Lessons JOIN Curriculums ON Lessons.curriculumID = Curriculums.curriculumID JOIN Educators ON Educators.educatorID =  Curriculums.EducatorID\nWHERE (Lessons.educationalMethod = 'Online Learning' OR Lessons.educationalMethod = 'Classroom Teaching') AND Educators.firstName = 'Emily' AND Educators.lastName = 'Williams'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?content WHERE {\n  ?lessons a :Lessons .\n  ?curriculums a :Curriculums .\n  ?lessons p:hasCurriculums ?curriculums .\n  ?educators a :Educators .\n  ?curriculums p:hasEducators ?educators .\n  ?lessons p:content ?content .\n  ?lessons p:educationalMethod ?educationalmethod_w .\n  ?lessons p:educationalMethod ?educationalmethod_w2 .\n  ?educators p:firstName ?firstname_w .\n  ?educators p:lastName ?lastname_w .\n  FILTER(((((STR(?educationalmethod_w) = \"Online Learning\" || STR(?educationalmethod_w2) = \"Classroom Teaching\")) && STR(?firstname_w) = \"Emily\") && STR(?lastname_w) = \"Williams\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide content for all the online learning lessons and also the content of classroom teaching lessons taught by Emily Williams.",
+      "qtype": "unambig",
+      "sql": "SELECT Lessons.content \nFROM Lessons JOIN Curriculums ON Lessons.curriculumID = Curriculums.curriculumID JOIN Educators ON Educators.educatorID =  Curriculums.EducatorID\nWHERE Lessons.educationalMethod = 'Online Learning' OR Lessons.educationalMethod = 'Classroom Teaching' AND Educators.firstName = 'Emily' AND Educators.lastName = 'Williams'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?content WHERE {\n  ?lessons a :Lessons .\n  ?curriculums a :Curriculums .\n  ?lessons p:hasCurriculums ?curriculums .\n  ?educators a :Educators .\n  ?curriculums p:hasEducators ?educators .\n  ?lessons p:content ?content .\n  ?lessons p:educationalMethod ?educationalmethod_w .\n  ?lessons p:educationalMethod ?educationalmethod_w2 .\n  ?educators p:firstName ?firstname_w .\n  ?educators p:lastName ?lastname_w .\n  FILTER((STR(?educationalmethod_w) = \"Online Learning\" || ((STR(?educationalmethod_w2) = \"Classroom Teaching\" && STR(?firstname_w) = \"Emily\") && STR(?lastname_w) = \"Williams\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the content of online lessons and classroom lessons taught by Emily Williams.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?content WHERE {\n  ?lessons a :Lessons .\n  ?curriculums a :Curriculums .\n  ?lessons p:hasCurriculums ?curriculums .\n  ?educators a :Educators .\n  ?curriculums p:hasEducators ?educators .\n  ?lessons p:content ?content .\n  ?lessons p:educationalMethod ?educationalmethod_w .\n  ?lessons p:educationalMethod ?educationalmethod_w2 .\n  ?educators p:firstName ?firstname_w .\n  ?educators p:lastName ?lastname_w .\n  FILTER(((((STR(?educationalmethod_w) = \"Online Learning\" || STR(?educationalmethod_w2) = \"Classroom Teaching\")) && STR(?firstname_w) = \"Emily\") && STR(?lastname_w) = \"Williams\"))\n} }\n  low: { SELECT ?content WHERE {\n  ?lessons a :Lessons .\n  ?curriculums a :Curriculums .\n  ?lessons p:hasCurriculums ?curriculums .\n  ?educators a :Educators .\n  ?curriculums p:hasEducators ?educators .\n  ?lessons p:content ?content .\n  ?lessons p:educationalMethod ?educationalmethod_w .\n  ?lessons p:educationalMethod ?educationalmethod_w2 .\n  ?educators p:firstName ?firstname_w .\n  ?educators p:lastName ?lastname_w .\n  FILTER((STR(?educationalmethod_w) = \"Online Learning\" || ((STR(?educationalmethod_w2) = \"Classroom Teaching\" && STR(?firstname_w) = \"Emily\") && STR(?lastname_w) = \"Williams\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

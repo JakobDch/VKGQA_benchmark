@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Fashion_Reporters_base
+target		ex:Fashion_Reporters/{ReporterID} a :Fashion_Reporters ; p:ReporterID {ReporterID} ; p:name {FullName} .
+source		SELECT `ReporterID`, `FullName` FROM `Fashion_Reporters`
+
+mappingId	Designers_base
+target		ex:Designers/{DesignerID} a :Designers ; p:DesignerID {DesignerID} ; p:name {Name} .
+source		SELECT `DesignerID`, `Name` FROM `Designers`
+
+mappingId	Fashion_Reporters_Designers_base
+target		ex:Fashion_Reporters_Designers/{ReporterID}/{DesignerID} a :Fashion_Reporters_Designers ; p:ReporterID {ReporterID} ; p:DesignerID {DesignerID} .
+source		SELECT `ReporterID`, `DesignerID` FROM `Fashion_Reporters_Designers`
+
+mappingId	Fashion_Reporters_Designers_DesignerID_fk
+target		ex:Fashion_Reporters_Designers/{ReporterID}/{DesignerID} p:hasDesigners ex:Designers/{DesignerID} .
+source		SELECT `ReporterID`, `DesignerID` FROM `Fashion_Reporters_Designers` WHERE `DesignerID` IS NOT NULL
+
+mappingId	Fashion_Reporters_Designers_ReporterID_fk
+target		ex:Fashion_Reporters_Designers/{ReporterID}/{DesignerID} p:hasFashion_Reporters ex:Fashion_Reporters/{ReporterID} .
+source		SELECT `ReporterID`, `DesignerID` FROM `Fashion_Reporters_Designers` WHERE `ReporterID` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:ReporterID {ReporterID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `ReporterID` FROM `Articles`
+
+mappingId	Articles_ReporterID_fk
+target		ex:Articles/{ArticleID} p:hasFashion_Reporters ex:Fashion_Reporters/{ReporterID} .
+source		SELECT `ArticleID`, `ReporterID` FROM `Articles` WHERE `ReporterID` IS NOT NULL
+
+mappingId	Publications_base
+target		ex:Publications/{PublicationID} a :Publications ; p:PublicationID {PublicationID} ; p:PublisherName {PublisherName} ; p:WebsiteURL {WebsiteURL} .
+source		SELECT `PublicationID`, `PublisherName`, `WebsiteURL` FROM `Publications`
+
+mappingId	Article_Publications_base
+target		ex:Article_Publications/{_amb_rowid} a :Article_Publications ; p:ArticleID {ArticleID} ; p:PublicationID {PublicationID} ; p:PublishedOn {PublishedOn} .
+source		SELECT `_amb_rowid`, `ArticleID`, `PublicationID`, `PublishedOn` FROM `Article_Publications`
+
+mappingId	Article_Publications_PublicationID_fk
+target		ex:Article_Publications/{_amb_rowid} p:hasPublications ex:Publications/{PublicationID} .
+source		SELECT `_amb_rowid`, `PublicationID` FROM `Article_Publications` WHERE `PublicationID` IS NOT NULL
+
+mappingId	Article_Publications_ArticleID_fk
+target		ex:Article_Publications/{_amb_rowid} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `_amb_rowid`, `ArticleID` FROM `Article_Publications` WHERE `ArticleID` IS NOT NULL
+
+]]

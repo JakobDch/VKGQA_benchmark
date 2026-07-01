@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_media_jobs",
+  "schema": "amb_attachment_2tab_val_media_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display journalists and editors with English language proficiency.",
+      "qtype": "ambig",
+      "sql": "SELECT Journalists.name\nFROM Journalists\nWHERE Journalists.language_proficiency = \"English\"\nUNION\nSELECT Editors.name\nFROM Editors\nWHERE Editors.language_proficiency = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?journalists a :Journalists .\n    ?journalists p:name ?name .\n    ?journalists p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display journalists and editors with English language proficiency.",
+      "qtype": "ambig",
+      "sql": "SELECT Journalists.name\nFROM Journalists\nUNION\nSELECT Editors.name\nFROM Editors\nWHERE Editors.language_proficiency = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?journalists a :Journalists .\n    ?journalists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display journalists and editors with English language proficiency.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?journalists a :Journalists .\n    ?journalists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?journalists a :Journalists .\n    ?journalists p:name ?name .\n    ?journalists p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:language_proficiency ?language_proficiency_f .\n    FILTER(STR(?language_proficiency_f) = \"English\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_overnight_stay",
+  "schema": "amb_attachment_1tab_ref_overnight_stay",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of people who have booked guest rooms, as well as a list of people who have booked air-conditioned suites.",
+      "qtype": "unambig",
+      "sql": "SELECT Guests.FullName \nFROM Rooms JOIN Services ON Rooms.ServiceID = Services.ServiceID JOIN Bookings ON Bookings.ROOMID = Rooms.RoomID JOIN Guests ON Guests.ID = Bookings.GuestID\nWHERE Rooms.TypeOfRoom = 'Guestroom' OR Rooms.TypeOfRoom = 'Suite' AND Services.Amenity = 'Air Conditioning'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?rooms a :Rooms .\n  ?services a :Services .\n  ?rooms p:hasServices ?services .\n  ?bookings a :Bookings .\n  ?bookings p:hasRooms ?rooms .\n  ?guests a :Guests .\n  ?bookings p:hasGuests ?guests .\n  ?guests p:name ?fullname .\n  ?rooms p:TypeOfRoom ?typeofroom_w .\n  ?rooms p:TypeOfRoom ?typeofroom_w2 .\n  ?services p:Amenity ?amenity_w .\n  FILTER((STR(?typeofroom_w) = \"Guestroom\" || (STR(?typeofroom_w2) = \"Suite\" && STR(?amenity_w) = \"Air Conditioning\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Who booked air-conditioned guest rooms and who booked air-conditioned suites?",
+      "qtype": "unambig",
+      "sql": "SELECT Guests.FullName \nFROM Rooms JOIN Services ON Rooms.ServiceID = Services.ServiceID JOIN Bookings ON Bookings.ROOMID = Rooms.RoomID JOIN Guests ON Guests.ID = Bookings.GuestID\nWHERE (Rooms.TypeOfRoom = 'Guestroom' OR Rooms.TypeOfRoom = 'Suite') AND Services.Amenity = 'Air Conditioning'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?rooms a :Rooms .\n  ?services a :Services .\n  ?rooms p:hasServices ?services .\n  ?bookings a :Bookings .\n  ?bookings p:hasRooms ?rooms .\n  ?guests a :Guests .\n  ?bookings p:hasGuests ?guests .\n  ?guests p:name ?fullname .\n  ?rooms p:TypeOfRoom ?typeofroom_w .\n  ?rooms p:TypeOfRoom ?typeofroom_w2 .\n  ?services p:Amenity ?amenity_w .\n  FILTER((((STR(?typeofroom_w) = \"Guestroom\" || STR(?typeofroom_w2) = \"Suite\")) && STR(?amenity_w) = \"Air Conditioning\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who booked a guest room or suite with air conditioning?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?rooms a :Rooms .\n  ?services a :Services .\n  ?rooms p:hasServices ?services .\n  ?bookings a :Bookings .\n  ?bookings p:hasRooms ?rooms .\n  ?guests a :Guests .\n  ?bookings p:hasGuests ?guests .\n  ?guests p:name ?fullname .\n  ?rooms p:TypeOfRoom ?typeofroom_w .\n  ?rooms p:TypeOfRoom ?typeofroom_w2 .\n  ?services p:Amenity ?amenity_w .\n  FILTER((STR(?typeofroom_w) = \"Guestroom\" || (STR(?typeofroom_w2) = \"Suite\" && STR(?amenity_w) = \"Air Conditioning\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?rooms a :Rooms .\n  ?services a :Services .\n  ?rooms p:hasServices ?services .\n  ?bookings a :Bookings .\n  ?bookings p:hasRooms ?rooms .\n  ?guests a :Guests .\n  ?bookings p:hasGuests ?guests .\n  ?guests p:name ?fullname .\n  ?rooms p:TypeOfRoom ?typeofroom_w .\n  ?rooms p:TypeOfRoom ?typeofroom_w2 .\n  ?services p:Amenity ?amenity_w .\n  FILTER((((STR(?typeofroom_w) = \"Guestroom\" || STR(?typeofroom_w2) = \"Suite\")) && STR(?amenity_w) = \"Air Conditioning\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

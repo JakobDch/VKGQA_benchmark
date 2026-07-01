@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_hospitality_jobs",
+  "schema": "amb_attachment_2tab_ref_hospitality_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What tour guides work at Expedia and what travel agents also work there?",
+      "qtype": "unambig",
+      "sql": "SELECT TourGuides.name\nFROM Agencies JOIN TourGuides ON Agencies.AgencyID = TourGuides.AgencyID\nWHERE Agencies.Name = \"Expedia\"\nUNION\nSELECT TravelAgents.name\nFROM Agencies JOIN TravelAgents ON Agencies.AgencyID = TravelAgents.AgencyID\nWHERE Agencies.Name = \"Expedia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?agencies a :Agency .\n    ?tourguides a :TourGuides .\n    ?tourguides p:hasAgencies ?agencies .\n    ?tourguides p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?agencies a :Agency .\n    ?travelagents a :TravelAgents .\n    ?travelagents p:hasAgencies ?agencies .\n    ?travelagents p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me tour guides and travel agents working at Expedia.",
+      "qtype": "ambig",
+      "sql": "SELECT TourGuides.name\nFROM Agencies JOIN TourGuides ON Agencies.AgencyID = TourGuides.AgencyID\nUNION\nSELECT TravelAgents.name\nFROM Agencies JOIN TravelAgents ON Agencies.AgencyID = TravelAgents.AgencyID\nWHERE Agencies.Name = \"Expedia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?agencies a :Agency .\n    ?tourguides a :TourGuides .\n    ?tourguides p:hasAgencies ?agencies .\n    ?tourguides p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?agencies a :Agency .\n    ?travelagents a :TravelAgents .\n    ?travelagents p:hasAgencies ?agencies .\n    ?travelagents p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me tour guides and travel agents working at Expedia.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?agencies a :Agency .\n    ?tourguides a :TourGuides .\n    ?tourguides p:hasAgencies ?agencies .\n    ?tourguides p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?agencies a :Agency .\n    ?travelagents a :TravelAgents .\n    ?travelagents p:hasAgencies ?agencies .\n    ?travelagents p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?agencies a :Agency .\n    ?tourguides a :TourGuides .\n    ?tourguides p:hasAgencies ?agencies .\n    ?tourguides p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?agencies a :Agency .\n    ?travelagents a :TravelAgents .\n    ?travelagents p:hasAgencies ?agencies .\n    ?travelagents p:name ?name .\n    ?agencies p:name ?name_f .\n    FILTER(STR(?name_f) = \"Expedia\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

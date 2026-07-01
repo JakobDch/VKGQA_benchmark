@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Farms_base
+target		ex:Farm/{FarmID} a :Farm ; p:FarmID {FarmID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `FarmID`, `Name`, `Location` FROM `Farms`
+
+mappingId	Animals_base
+target		ex:Animals/{AnimalID} a :Animals ; p:AnimalID {AnimalID} ; p:type {Type} ; p:quantity {Quantity} .
+source		SELECT `AnimalID`, `Type`, `Quantity` FROM `Animals`
+
+mappingId	Crops_base
+target		ex:Crop/{CropID} a :Crop ; p:CropID {CropID} ; p:name {Name} ; p:harvestDate {HarvestDate} .
+source		SELECT `CropID`, `Name`, `HarvestDate` FROM `Crops`
+
+mappingId	Equipment_base
+target		ex:Equipment/{EquipID} a :Equipment ; p:EquipID {EquipID} ; p:model {Model} ; p:PurchaseDate {PurchaseDate} .
+source		SELECT `EquipID`, `Model`, `PurchaseDate` FROM `Equipment`
+
+mappingId	Farms_Animals_base
+target		ex:Farms_Animals/{FarmID}/{AnimalID} a :Farms_Animals ; p:FarmID {FarmID} ; p:AnimalID {AnimalID} .
+source		SELECT `FarmID`, `AnimalID` FROM `Farms_Animals`
+
+mappingId	Farms_Animals_AnimalID_fk
+target		ex:Farms_Animals/{FarmID}/{AnimalID} p:hasAnimals ex:Animals/{AnimalID} .
+source		SELECT `FarmID`, `AnimalID` FROM `Farms_Animals` WHERE `AnimalID` IS NOT NULL
+
+mappingId	Farms_Animals_FarmID_fk
+target		ex:Farms_Animals/{FarmID}/{AnimalID} p:hasFarm ex:Farm/{FarmID} .
+source		SELECT `FarmID`, `AnimalID` FROM `Farms_Animals` WHERE `FarmID` IS NOT NULL
+
+mappingId	Farms_Crops_base
+target		ex:FarmsCrops/{FarmID}/{CropID} a :FarmsCrops ; p:FarmID {FarmID} ; p:CropID {CropID} ; p:plantingDate {PlantingDate} ; p:HarvestEstimate {HarvestEstimate} .
+source		SELECT `FarmID`, `CropID`, `PlantingDate`, `HarvestEstimate` FROM `Farms_Crops`
+
+mappingId	Farms_Crops_CropID_fk
+target		ex:FarmsCrops/{FarmID}/{CropID} p:hasCrop ex:Crop/{CropID} .
+source		SELECT `FarmID`, `CropID` FROM `Farms_Crops` WHERE `CropID` IS NOT NULL
+
+mappingId	Farms_Crops_FarmID_fk
+target		ex:FarmsCrops/{FarmID}/{CropID} p:hasFarm ex:Farm/{FarmID} .
+source		SELECT `FarmID`, `CropID` FROM `Farms_Crops` WHERE `FarmID` IS NOT NULL
+
+mappingId	Farms_Equipment_base
+target		ex:Farms_Equipment/{FarmID}/{EquipID} a :Farms_Equipment ; p:FarmID {FarmID} ; p:EquipID {EquipID} ; p:AcquisitionDate {AcquisitionDate} ; p:MaintenanceSchedule {MaintenanceSchedule} .
+source		SELECT `FarmID`, `EquipID`, `AcquisitionDate`, `MaintenanceSchedule` FROM `Farms_Equipment`
+
+mappingId	Farms_Equipment_EquipID_fk
+target		ex:Farms_Equipment/{FarmID}/{EquipID} p:hasEquipment ex:Equipment/{EquipID} .
+source		SELECT `FarmID`, `EquipID` FROM `Farms_Equipment` WHERE `EquipID` IS NOT NULL
+
+mappingId	Farms_Equipment_FarmID_fk
+target		ex:Farms_Equipment/{FarmID}/{EquipID} p:hasFarm ex:Farm/{FarmID} .
+source		SELECT `FarmID`, `EquipID` FROM `Farms_Equipment` WHERE `FarmID` IS NOT NULL
+
+]]

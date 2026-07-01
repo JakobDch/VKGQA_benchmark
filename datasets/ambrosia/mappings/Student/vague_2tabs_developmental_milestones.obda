@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Children_base
+target		ex:Children/{id} a :Children ; p:id {id} ; p:name {name} ; p:age {age} .
+source		SELECT `id`, `name`, `age` FROM `Children`
+
+mappingId	Physical_Milestones_base
+target		ex:Physical_Milestones/{id} a :Physical_Milestones ; p:id {id} ; p:milestone_name {milestone_name} ; p:description {description} .
+source		SELECT `id`, `milestone_name`, `description` FROM `Physical_Milestones`
+
+mappingId	Cognitive_Milestones_base
+target		ex:Cognitive_Milestones/{id} a :Cognitive_Milestones ; p:id {id} ; p:milestone_name {milestone_name} ; p:description {description} .
+source		SELECT `id`, `milestone_name`, `description` FROM `Cognitive_Milestones`
+
+mappingId	Child_Age_base
+target		ex:Child_Age/{_amb_rowid} a :Child_Age ; p:child_id {child_id} ; p:physical_milestone_id {physical_milestone_id} ; p:cognitive_milestone_id {cognitive_milestone_id} .
+source		SELECT `_amb_rowid`, `child_id`, `physical_milestone_id`, `cognitive_milestone_id` FROM `Child_Age`
+
+mappingId	Child_Age_cognitive_milestone_id_fk
+target		ex:Child_Age/{_amb_rowid} p:hasCognitive_Milestones ex:Cognitive_Milestones/{cognitive_milestone_id} .
+source		SELECT `_amb_rowid`, `cognitive_milestone_id` FROM `Child_Age` WHERE `cognitive_milestone_id` IS NOT NULL
+
+mappingId	Child_Age_physical_milestone_id_fk
+target		ex:Child_Age/{_amb_rowid} p:hasPhysical_Milestones ex:Physical_Milestones/{physical_milestone_id} .
+source		SELECT `_amb_rowid`, `physical_milestone_id` FROM `Child_Age` WHERE `physical_milestone_id` IS NOT NULL
+
+mappingId	Child_Age_child_id_fk
+target		ex:Child_Age/{_amb_rowid} p:hasChildren ex:Children/{child_id} .
+source		SELECT `_amb_rowid`, `child_id` FROM `Child_Age` WHERE `child_id` IS NOT NULL
+
+]]

@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hospitals_base
+target		ex:Hospitals/{id} a :Hospitals ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Hospitals`
+
+mappingId	Departments_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:departmentName {departmentName} .
+source		SELECT `id`, `departmentName` FROM `Departments`
+
+mappingId	Doctors_base
+target		ex:Doctors/{id} a :Doctors ; p:id {id} ; p:name {name} ; p:specialtyId {specialtyId} ; p:hospitalId {hospitalId} .
+source		SELECT `id`, `name`, `specialtyId`, `hospitalId` FROM `Doctors`
+
+mappingId	Doctors_hospitalId_fk
+target		ex:Doctors/{id} p:hasHospitals ex:Hospitals/{hospitalId} .
+source		SELECT `id`, `hospitalId` FROM `Doctors` WHERE `hospitalId` IS NOT NULL
+
+mappingId	Doctors_specialtyId_fk
+target		ex:Doctors/{id} p:hasDepartments ex:Departments/{specialtyId} .
+source		SELECT `id`, `specialtyId` FROM `Doctors` WHERE `specialtyId` IS NOT NULL
+
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:age {age} ; p:illnessText {illnessText} .
+source		SELECT `id`, `firstName`, `lastName`, `age`, `illnessText` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{id} a :Appointments ; p:id {id} ; p:patientId {patientId} ; p:doctorId {doctorId} ; p:date {date} ; p:time {time} ; p:reasonForVisit {reasonForVisit} .
+source		SELECT `id`, `patientId`, `doctorId`, `date`, `time`, `reasonForVisit` FROM `Appointments`
+
+mappingId	Appointments_doctorId_fk
+target		ex:Appointments/{id} p:hasDoctors ex:Doctors/{doctorId} .
+source		SELECT `id`, `doctorId` FROM `Appointments` WHERE `doctorId` IS NOT NULL
+
+mappingId	Appointments_patientId_fk
+target		ex:Appointments/{id} p:hasPatients ex:Patients/{patientId} .
+source		SELECT `id`, `patientId` FROM `Appointments` WHERE `patientId` IS NOT NULL
+
+mappingId	Hospitals_Departments_base
+target		ex:Hospitals_Departments/{hospitalId}/{departmentId} a :Hospitals_Departments ; p:hospitalId {hospitalId} ; p:departmentId {departmentId} .
+source		SELECT `hospitalId`, `departmentId` FROM `Hospitals_Departments`
+
+mappingId	Hospitals_Departments_departmentId_fk
+target		ex:Hospitals_Departments/{hospitalId}/{departmentId} p:hasDepartments ex:Departments/{departmentId} .
+source		SELECT `hospitalId`, `departmentId` FROM `Hospitals_Departments` WHERE `departmentId` IS NOT NULL
+
+mappingId	Hospitals_Departments_hospitalId_fk
+target		ex:Hospitals_Departments/{hospitalId}/{departmentId} p:hasHospitals ex:Hospitals/{hospitalId} .
+source		SELECT `hospitalId`, `departmentId` FROM `Hospitals_Departments` WHERE `hospitalId` IS NOT NULL
+
+]]

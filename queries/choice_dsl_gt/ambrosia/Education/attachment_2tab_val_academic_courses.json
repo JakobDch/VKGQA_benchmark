@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_academic_courses",
+  "schema": "amb_attachment_2tab_val_academic_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What engineering classes and design classes are currently working on sustainability projects?",
+      "qtype": "unambig",
+      "sql": "SELECT Engineering_Class.name\nFROM Engineering_Class\nWHERE Engineering_Class.Projects = \"Sustainability Project\"\nUNION\nSELECT Design_Class.name\nFROM Design_Class\nWHERE Design_Class.Projects = \"Sustainability Project\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?engineering_class a :Engineering_Class .\n    ?engineering_class p:name ?name .\n    ?engineering_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?design_class a :Design_Class .\n    ?design_class p:name ?name .\n    ?design_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display engineering classes and design classes with projects related to sustainability.",
+      "qtype": "ambig",
+      "sql": "SELECT Engineering_Class.name\nFROM Engineering_Class\nUNION\nSELECT Design_Class.name\nFROM Design_Class\nWHERE Design_Class.Projects = \"Sustainability Project\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?engineering_class a :Engineering_Class .\n    ?engineering_class p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?design_class a :Design_Class .\n    ?design_class p:name ?name .\n    ?design_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display engineering classes and design classes with projects related to sustainability.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?engineering_class a :Engineering_Class .\n    ?engineering_class p:name ?name .\n    ?engineering_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?design_class a :Design_Class .\n    ?design_class p:name ?name .\n    ?design_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?engineering_class a :Engineering_Class .\n    ?engineering_class p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?design_class a :Design_Class .\n    ?design_class p:name ?name .\n    ?design_class p:Projects ?projects_f .\n    FILTER(STR(?projects_f) = \"Sustainability Project\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

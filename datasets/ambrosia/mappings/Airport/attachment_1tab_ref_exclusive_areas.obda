@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Terminal_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Terminal`
+
+mappingId	Gate_base
+target		ex:Gates/{id} a :Gates ; p:id {id} ; p:terminal_id {terminal_id} ; p:gate_number {gate_number} .
+source		SELECT `id`, `terminal_id`, `gate_number` FROM `Gate`
+
+mappingId	Gate_terminal_id_fk
+target		ex:Gates/{id} p:hasTerminals ex:Terminals/{terminal_id} .
+source		SELECT `id`, `terminal_id` FROM `Gate` WHERE `terminal_id` IS NOT NULL
+
+mappingId	AircraftType_base
+target		ex:AircraftType/{id} a :AircraftType ; p:id {id} ; p:typeName {typeName} .
+source		SELECT `id`, `typeName` FROM `AircraftType`
+
+mappingId	Flight_base
+target		ex:Flights/{flightNumber} a :Flights ; p:flightNumber {flightNumber} ; p:aircraftTypeId {aircraftTypeId} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:originTerminalId {originTerminalId} ; p:destinationTerminalId {destinationTerminalId} .
+source		SELECT `flightNumber`, `aircraftTypeId`, `departureTime`, `arrivalTime`, `originTerminalId`, `destinationTerminalId` FROM `Flight`
+
+mappingId	Flight_destinationTerminalId_fk
+target		ex:Flights/{flightNumber} p:hasTerminals_destinationTerminalId ex:Terminals/{destinationTerminalId} .
+source		SELECT `flightNumber`, `destinationTerminalId` FROM `Flight` WHERE `destinationTerminalId` IS NOT NULL
+
+mappingId	Flight_originTerminalId_fk
+target		ex:Flights/{flightNumber} p:hasTerminals_originTerminalId ex:Terminals/{originTerminalId} .
+source		SELECT `flightNumber`, `originTerminalId` FROM `Flight` WHERE `originTerminalId` IS NOT NULL
+
+mappingId	Flight_aircraftTypeId_fk
+target		ex:Flights/{flightNumber} p:hasAircraftType ex:AircraftType/{aircraftTypeId} .
+source		SELECT `flightNumber`, `aircraftTypeId` FROM `Flight` WHERE `aircraftTypeId` IS NOT NULL
+
+mappingId	ExclusiveArea_base
+target		ex:ExclusiveArea/{areaId} a :ExclusiveArea ; p:areaId {areaId} ; p:terminalId {terminalId} ; p:exclusiveAreaValue {exclusiveAreaValue} .
+source		SELECT `areaId`, `terminalId`, `exclusiveAreaValue` FROM `ExclusiveArea`
+
+mappingId	ExclusiveArea_terminalId_fk
+target		ex:ExclusiveArea/{areaId} p:hasTerminals ex:Terminals/{terminalId} .
+source		SELECT `areaId`, `terminalId` FROM `ExclusiveArea` WHERE `terminalId` IS NOT NULL
+
+mappingId	Amenity_base
+target		ex:Amenity/{amenityId} a :Amenity ; p:amenityId {amenityId} ; p:amenityValue {amenityValue} .
+source		SELECT `amenityId`, `amenityValue` FROM `Amenity`
+
+mappingId	AreaAmenityMap_base
+target		ex:AreaAmenityMap/{_amb_rowid} a :AreaAmenityMap ; p:areaId {areaId} ; p:amenityId {amenityId} .
+source		SELECT `_amb_rowid`, `areaId`, `amenityId` FROM `AreaAmenityMap`
+
+mappingId	AreaAmenityMap_amenityId_fk
+target		ex:AreaAmenityMap/{_amb_rowid} p:hasAmenity ex:Amenity/{amenityId} .
+source		SELECT `_amb_rowid`, `amenityId` FROM `AreaAmenityMap` WHERE `amenityId` IS NOT NULL
+
+mappingId	AreaAmenityMap_areaId_fk
+target		ex:AreaAmenityMap/{_amb_rowid} p:hasExclusiveArea ex:ExclusiveArea/{areaId} .
+source		SELECT `_amb_rowid`, `areaId` FROM `AreaAmenityMap` WHERE `areaId` IS NOT NULL
+
+]]

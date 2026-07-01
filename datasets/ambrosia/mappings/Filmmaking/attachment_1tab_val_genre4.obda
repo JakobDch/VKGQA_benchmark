@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Directors_base
+target		ex:Directors/{DirectorID} a :Directors ; p:DirectorID {DirectorID} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `DirectorID`, `Name`, `BirthDate`, `Country` FROM `Directors`
+
+mappingId	Actors_base
+target		ex:Actors/{ActorID} a :Actors ; p:ActorID {ActorID} ; p:name {Name} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} .
+source		SELECT `ActorID`, `Name`, `DateOfBirth`, `Nationality` FROM `Actors`
+
+mappingId	Producers_base
+target		ex:Producers/{ProducerID} a :Producers ; p:ProducerID {ProducerID} ; p:name {Name} ; p:CompanyName {CompanyName} ; p:ContactInfo {ContactInfo} .
+source		SELECT `ProducerID`, `Name`, `CompanyName`, `ContactInfo` FROM `Producers`
+
+mappingId	Roles_base
+target		ex:Roles/{RoleID} a :Roles ; p:RoleID {RoleID} ; p:MovieTitle {MovieTitle} ; p:CharacterName {CharacterName} ; p:DirectorID {DirectorID} ; p:ProducerID {ProducerID} .
+source		SELECT `RoleID`, `MovieTitle`, `CharacterName`, `DirectorID`, `ProducerID` FROM `Roles`
+
+mappingId	Roles_ProducerID_fk
+target		ex:Roles/{RoleID} p:hasProducers ex:Producers/{ProducerID} .
+source		SELECT `RoleID`, `ProducerID` FROM `Roles` WHERE `ProducerID` IS NOT NULL
+
+mappingId	Roles_DirectorID_fk
+target		ex:Roles/{RoleID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `RoleID`, `DirectorID` FROM `Roles` WHERE `DirectorID` IS NOT NULL
+
+mappingId	Movies_base
+target		ex:Movies/{MovieID} a :Movies ; p:MovieID {MovieID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Genre {Genre} ; p:Rating {Rating} ; p:FilmFestival {FilmFestival} ; p:Budget {Budget} ; p:BoxOffice {BoxOffice} ; p:DirectorID {DirectorID} ; p:ProducerID {ProducerID} .
+source		SELECT `MovieID`, `Title`, `ReleaseYear`, `Genre`, `Rating`, `FilmFestival`, `Budget`, `BoxOffice`, `DirectorID`, `ProducerID` FROM `Movies`
+
+mappingId	Movies_ProducerID_fk
+target		ex:Movies/{MovieID} p:hasProducers ex:Producers/{ProducerID} .
+source		SELECT `MovieID`, `ProducerID` FROM `Movies` WHERE `ProducerID` IS NOT NULL
+
+mappingId	Movies_DirectorID_fk
+target		ex:Movies/{MovieID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `MovieID`, `DirectorID` FROM `Movies` WHERE `DirectorID` IS NOT NULL
+
+]]

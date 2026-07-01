@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_educational_venues",
+  "schema": "amb_attachment_1tab_ref_educational_venues",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show museums and planetariums with a ticket price of 20.",
+      "qtype": "ambig",
+      "sql": "SELECT Educational_Venues.Name \nFROM Educational_Venues JOIN Venue_Tickets ON Educational_Venues.VenueID = Venue_Tickets.VenueID JOIN Tickets ON Venue_Tickets.TicketID = Tickets.TicketID\nWHERE Educational_Venues.Type = \"Museum\" AND Tickets.Price = 20.0\nUNION\nSELECT Educational_Venues.Name \nFROM Educational_Venues JOIN Venue_Tickets ON Educational_Venues.VenueID = Venue_Tickets.VenueID JOIN Tickets ON Venue_Tickets.TicketID = Tickets.TicketID\nWHERE Educational_Venues.Type = \"Planetarium\" AND Tickets.Price = 20.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Museum\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Planetarium\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show museums and planetariums with a ticket price of 20.",
+      "qtype": "ambig",
+      "sql": "SELECT Educational_Venues.Name \nFROM Educational_Venues WHERE Educational_Venues.Type = \"Museum\"\nUNION\nSELECT Educational_Venues.Name \nFROM Educational_Venues JOIN Venue_Tickets ON Educational_Venues.VenueID = Venue_Tickets.VenueID JOIN Tickets ON Venue_Tickets.TicketID = Tickets.TicketID\nWHERE Educational_Venues.Type = \"Planetarium\" AND Tickets.Price = 20.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?educational_venues a :Educational_Venues .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Museum\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Planetarium\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show museums and planetariums with a ticket price of 20.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Museum\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Planetarium\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?educational_venues a :Educational_Venues .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Museum\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?educational_venues a :Educational_Venues .\n    ?venue_tickets a :Venue_Tickets .\n    ?venue_tickets p:hasEducational_Venues ?educational_venues .\n    ?tickets a :Tickets .\n    ?venue_tickets p:hasTickets ?tickets .\n    ?educational_venues p:name ?name .\n    ?educational_venues p:Type ?type_f .\n    ?tickets p:Price ?price_f .\n    FILTER(STR(?type_f) = \"Planetarium\")\n    FILTER((STR(?price_f) = \"20\" || STR(?price_f) = \"20.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

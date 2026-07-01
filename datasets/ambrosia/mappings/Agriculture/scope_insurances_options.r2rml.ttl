@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/agriculture#> .
+@prefix p: <http://ambrosia.example.org/agriculture/prop#> .
+@prefix ex: <http://ambrosia.example.org/agriculture/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_insurances_options_0_Insurances_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"policy_holder\", \"premium\" FROM \"Insurances\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Insurances/{id}" ; rr:class :Insurances ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "policy_holder" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:premium ; rr:objectMap [ rr:column "premium" ] ] .
+
+<#tm_scope_insurances_options_1_Options_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"option_name\" FROM \"Options\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Options/{id}" ; rr:class :Options ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "option_name" ] ] .
+
+<#tm_scope_insurances_options_2_Insurance_Options_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"insurance_id\", \"option_id\" FROM \"Insurance_Options\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Insurance_Options/{insurance_id}/{option_id}" ; rr:class :Insurance_Options ] ;
+  rr:predicateObjectMap [ rr:predicate p:insurance_id ; rr:objectMap [ rr:column "insurance_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:option_id ; rr:objectMap [ rr:column "option_id" ] ] .
+
+<#tm_scope_insurances_options_3_Insurance_Options_option_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"insurance_id\", \"option_id\" FROM \"Insurance_Options\" WHERE \"option_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Insurance_Options/{insurance_id}/{option_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasOptions ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Options/{option_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_insurances_options_4_Insurance_Options_insurance_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"insurance_id\", \"option_id\" FROM \"Insurance_Options\" WHERE \"insurance_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Insurance_Options/{insurance_id}/{option_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasInsurances ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Insurances/{insurance_id}" ; rr:termType rr:IRI ] ] .
+

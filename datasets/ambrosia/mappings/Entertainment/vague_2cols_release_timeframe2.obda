@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	VideoGames_base
+target		ex:VideoGames/{id} a :VideoGames ; p:id {id} ; p:Release_Year {Release_Year} ; p:Release_Date {Release_Date} ; p:name {Name} ; p:Platform {Platform} .
+source		SELECT `id`, `Release_Year`, `Release_Date`, `Name`, `Platform` FROM `VideoGames`
+
+mappingId	Directors_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `id`, `FirstName`, `LastName`, `BirthDate` FROM `Directors`
+
+mappingId	Actors_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:name {FullName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `id`, `FullName`, `DateOfBirth` FROM `Actors`
+
+mappingId	Movies_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:Title {Title} ; p:YearReleased {YearReleased} ; p:DirectorId {DirectorId} .
+source		SELECT `id`, `Title`, `YearReleased`, `DirectorId` FROM `Movies`
+
+mappingId	Movies_DirectorId_fk
+target		ex:Movie/{id} p:hasDirector ex:Director/{DirectorId} .
+source		SELECT `id`, `DirectorId` FROM `Movies` WHERE `DirectorId` IS NOT NULL
+
+mappingId	MovieRoles_base
+target		ex:MovieRoles/{id} a :MovieRoles ; p:id {id} ; p:ActorId {ActorId} ; p:MovieId {MovieId} ; p:RoleType {RoleType} .
+source		SELECT `id`, `ActorId`, `MovieId`, `RoleType` FROM `MovieRoles`
+
+mappingId	MovieRoles_MovieId_fk
+target		ex:MovieRoles/{id} p:hasMovie ex:Movie/{MovieId} .
+source		SELECT `id`, `MovieId` FROM `MovieRoles` WHERE `MovieId` IS NOT NULL
+
+mappingId	MovieRoles_ActorId_fk
+target		ex:MovieRoles/{id} p:hasActor ex:Actor/{ActorId} .
+source		SELECT `id`, `ActorId` FROM `MovieRoles` WHERE `ActorId` IS NOT NULL
+
+mappingId	GameReviews_base
+target		ex:GameReviews/{id} a :GameReviews ; p:id {id} ; p:ReviewText {ReviewText} ; p:Rating {Rating} ; p:GameId {GameId} ; p:ReviewerId {ReviewerId} .
+source		SELECT `id`, `ReviewText`, `Rating`, `GameId`, `ReviewerId` FROM `GameReviews`
+
+mappingId	GameReviews_ReviewerId_fk
+target		ex:GameReviews/{id} p:hasActor ex:Actor/{ReviewerId} .
+source		SELECT `id`, `ReviewerId` FROM `GameReviews` WHERE `ReviewerId` IS NOT NULL
+
+mappingId	GameReviews_GameId_fk
+target		ex:GameReviews/{id} p:hasVideoGames ex:VideoGames/{GameId} .
+source		SELECT `id`, `GameId` FROM `GameReviews` WHERE `GameId` IS NOT NULL
+
+]]

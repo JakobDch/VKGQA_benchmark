@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2tabs_owner_population",
+  "schema": "amb_vague_2tabs_owner_population",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "How many homeowners are there in numbers?",
+      "qtype": "unambig",
+      "sql": "SELECT Percentage * TotalPopulation / 100 FROM OwnerPercentage",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?val WHERE { ?x a :OwnerPercentage ; p:Percentage ?pct ; p:TotalPopulation ?tp . BIND(?pct * ?tp / 100 AS ?val) }",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "How many people own homes and what is this as a percentage of the total?",
+      "qtype": "unambig",
+      "sql": "SELECT O.Percentage * O.TotalPopulation/ 100, N.NumberOfHouseholds  FROM OwnerPercentage AS O LEFT JOIN NumbersOfOwners AS N on O.Year = N.Year",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?val ?noh WHERE {\n  ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp .\n  BIND(?pct * ?tp / 100 AS ?val)\n  OPTIONAL { ?n a :NumbersOfOwners ; p:Year ?y2 ; p:NumberOfHouseholds ?noh . FILTER(STR(?y)=STR(?y2)) }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "What was the owner percentage of homes in 2023?",
+      "qtype": "unambig",
+      "sql": "SELECT O.Percentage * O.TotalPopulation  / 100 FROM OwnerPercentage AS O WHERE O.Year = 2023",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?val WHERE { ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp . FILTER(?y=2023) BIND(?pct * ?tp / 100 AS ?val) }",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What was the number of owners of homes in 2023?",
+      "qtype": "unambig",
+      "sql": "SELECT O.NumberOfHouseholds FROM NumbersOfOwners AS O WHERE O.Year = 2023",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?numberofhouseholds WHERE {\n  ?o a :NumbersOfOwners .\n  ?o p:NumberOfHouseholds ?numberofhouseholds .\n  ?o p:Year ?year_f .\n  FILTER(?year_f = 2023)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What percentage of people own homes?",
+      "qtype": "unambig",
+      "sql": "SELECT NumberOfHouseholds FROM NumbersOfOwners",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?numberofhouseholds WHERE {\n  ?numbersofowners a :NumbersOfOwners .\n  ?numbersofowners p:NumberOfHouseholds ?numberofhouseholds .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "How many people owned homes in 2023?",
+      "qtype": "ambig",
+      "sql": "SELECT O.Percentage * O.TotalPopulation / 100, N.NumberOfHouseholds  FROM OwnerPercentage AS O LEFT JOIN NumbersOfOwners AS N on O.Year = N.Year WHERE O.Year = 2023",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?val ?noh WHERE {\n  ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp . FILTER(?y=2023)\n  BIND(?pct * ?tp / 100 AS ?val)\n  OPTIONAL { ?n a :NumbersOfOwners ; p:Year ?y2 ; p:NumberOfHouseholds ?noh . FILTER(STR(?y)=STR(?y2)) }\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "How many people own homes?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nCHOICE vague {\n  component: { SELECT ?val WHERE { ?x a :OwnerPercentage ; p:Percentage ?pct ; p:TotalPopulation ?tp . BIND(?pct * ?tp / 100 AS ?val) } }\n  full: { SELECT ?val ?noh WHERE {\n  ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp .\n  BIND(?pct * ?tp / 100 AS ?val)\n  OPTIONAL { ?n a :NumbersOfOwners ; p:Year ?y2 ; p:NumberOfHouseholds ?noh . FILTER(STR(?y)=STR(?y2)) }\n} }\n  component_2: { SELECT ?numberofhouseholds WHERE {\n  ?numbersofowners a :NumbersOfOwners .\n  ?numbersofowners p:NumberOfHouseholds ?numberofhouseholds .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "How many people owned homes in 2023?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nCHOICE vague {\n  component: { SELECT ?val WHERE { ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp . FILTER(?y=2023) BIND(?pct * ?tp / 100 AS ?val) } }\n  component_2: { SELECT ?numberofhouseholds WHERE {\n  ?o a :NumbersOfOwners .\n  ?o p:NumberOfHouseholds ?numberofhouseholds .\n  ?o p:Year ?year_f .\n  FILTER(?year_f = 2023)\n} }\n  full: { SELECT ?val ?noh WHERE {\n  ?x a :OwnerPercentage ; p:Year ?y ; p:Percentage ?pct ; p:TotalPopulation ?tp . FILTER(?y=2023)\n  BIND(?pct * ?tp / 100 AS ?val)\n  OPTIONAL { ?n a :NumbersOfOwners ; p:Year ?y2 ; p:NumberOfHouseholds ?noh . FILTER(STR(?y)=STR(?y2)) }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

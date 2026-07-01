@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `EmailAddress`, `PhoneNumber` FROM `Customers`
+
+mappingId	FoodTypes_base
+target		ex:FoodTypes/{FoodTypeID} a :FoodTypes ; p:FoodTypeID {FoodTypeID} ; p:TypeName {TypeName} .
+source		SELECT `FoodTypeID`, `TypeName` FROM `FoodTypes`
+
+mappingId	Products_base
+target		ex:Products/{ProductID} a :Products ; p:ProductID {ProductID} ; p:name {Name} ; p:Dining {Dining} ; p:Best_Before {Best_Before} .
+source		SELECT `ProductID`, `Name`, `Dining`, `Best_Before` FROM `Products`
+
+mappingId	Products_Dining_fk
+target		ex:Products/{ProductID} p:hasFoodTypes ex:FoodTypes/{Dining} .
+source		SELECT `ProductID`, `Dining` FROM `Products` WHERE `Dining` IS NOT NULL
+
+mappingId	Orders_base
+target		ex:Orders/{OrderID} a :Orders ; p:OrderID {OrderID} ; p:CustomerID {CustomerID} ; p:TotalAmount {TotalAmount} ; p:OrderDate {OrderDate} .
+source		SELECT `OrderID`, `CustomerID`, `TotalAmount`, `OrderDate` FROM `Orders`
+
+mappingId	Orders_OrderID_fk
+target		ex:Orders/{OrderID} p:hasProducts ex:Products/{OrderID} .
+source		SELECT `OrderID` FROM `Orders` WHERE `OrderID` IS NOT NULL
+
+mappingId	Orders_CustomerID_fk
+target		ex:Orders/{OrderID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `OrderID`, `CustomerID` FROM `Orders` WHERE `CustomerID` IS NOT NULL
+
+]]

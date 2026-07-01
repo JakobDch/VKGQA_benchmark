@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_developmental_milestones",
+  "schema": "amb_vague_2cols_developmental_milestones",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show developmental milestones and child's age in order of the age",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.physicalMilestones, MilestoneRecords.childAge FROM MileStoneRecords ORDER BY MilestoneRecords.childAge",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?physicalmilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:physicalMilestones ?physicalmilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show developmental milestones and child's age in order of the age",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.cognitiveMilestones, MilestoneRecords.childAge FROM MileStoneRecords ORDER BY MilestoneRecords.childAge",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?cognitivemilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show developmental milestones and child's age in order of the age",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.physicalMilestones, cognitiveMilestones, MilestoneRecords.childAge FROM MileStoneRecords ORDER BY MilestoneRecords.childAge",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?physicalmilestones ?cognitivemilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:physicalMilestones ?physicalmilestones .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show how many students have achieved each developmental milestone",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.physicalMilestones, Count(*) as Pupil_Count FROM MileStoneRecords",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?pm (COUNT(?x) AS ?n) WHERE { ?x a :MilestoneRecords ; p:physicalMilestones ?pm } GROUP BY ?pm",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold SQL omits GROUP BY (returns 1 arbitrary row); NL intent = #students per phy"
+    },
+    {
+      "qid": 4,
+      "question": "Show how many students have achieved each developmental milestone",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.cognitiveMilestones, Count(*) as Pupil_Count FROM MileStoneRecords",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(?cognitivemilestones) AS ?cognitivemilestoness) (COUNT(*) AS ?agg) WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show how many students have achieved each developmental milestone",
+      "qtype": "ambig",
+      "sql": "SELECT MilestoneRecords.physicalMilestones, cognitiveMilestones, Count(*) as Pupil_Count FROM MileStoneRecords",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?pm ?cm (COUNT(?x) AS ?n) WHERE { ?x a :MilestoneRecords ; p:physicalMilestones ?pm ; p:cognitiveMilestones ?cm } GROUP BY ?pm ?cm",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold SQL omits GROUP BY; NL intent = #students per (physical, cognitive) milesto"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show developmental milestones and child's age in order of the age",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?physicalmilestones ?cognitivemilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:physicalMilestones ?physicalmilestones .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o) }\n  component: { SELECT ?cognitivemilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o) }\n  component_2: { SELECT ?physicalmilestones ?childage WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:physicalMilestones ?physicalmilestones .\n  ?milestonerecords p:childAge ?childage .\n  ?milestonerecords p:childAge ?childage_o .\n}\nORDER BY ASC(?childage_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show how many students have achieved each developmental milestone",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        5,
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nCHOICE vague {\n  full: { SELECT ?pm ?cm (COUNT(?x) AS ?n) WHERE { ?x a :MilestoneRecords ; p:physicalMilestones ?pm ; p:cognitiveMilestones ?cm } GROUP BY ?pm ?cm }\n  component: { SELECT (SAMPLE(?cognitivemilestones) AS ?cognitivemilestoness) (COUNT(*) AS ?agg) WHERE {\n  ?milestonerecords a :MilestoneRecords .\n  ?milestonerecords p:cognitiveMilestones ?cognitivemilestones .\n} }\n  component_2: { SELECT ?pm (COUNT(?x) AS ?n) WHERE { ?x a :MilestoneRecords ; p:physicalMilestones ?pm } GROUP BY ?pm }\n}",
+      "verified": true
+    }
+  ]
+}

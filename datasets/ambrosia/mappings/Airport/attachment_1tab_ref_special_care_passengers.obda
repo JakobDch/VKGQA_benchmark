@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:Origin {Origin} ; p:Destination {Destination} .
+source		SELECT `FlightID`, `DepartureTime`, `ArrivalTime`, `Origin`, `Destination` FROM `Flights`
+
+mappingId	Airports_base
+target		ex:Airports/{AirportID} a :Airports ; p:AirportID {AirportID} ; p:name {Name} ; p:City {City} ; p:Country {Country} .
+source		SELECT `AirportID`, `Name`, `City`, `Country` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{AirlineID} a :Airlines ; p:AirlineID {AirlineID} ; p:name {Name} ; p:HeadquartersCity {HeadquartersCity} ; p:HomeAirportId {HomeAirportId} .
+source		SELECT `AirlineID`, `Name`, `HeadquartersCity`, `HomeAirportId` FROM `Airlines`
+
+mappingId	Airlines_HomeAirportId_fk
+target		ex:Airlines/{AirlineID} p:hasAirports ex:Airports/{HomeAirportId} .
+source		SELECT `AirlineID`, `HomeAirportId` FROM `Airlines` WHERE `HomeAirportId` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:DateOfBirth {DateOfBirth} ; p:name {FullName} .
+source		SELECT `PassengerID`, `DateOfBirth`, `FullName` FROM `Passengers`
+
+mappingId	Assistants_base
+target		ex:Assistant/{AssistantID} a :Assistant ; p:AssistantID {AssistantID} ; p:name {Name} .
+source		SELECT `AssistantID`, `Name` FROM `Assistants`
+
+mappingId	PassengerAssistanceRequests_base
+target		ex:PassengerAssistanceRequests/{RequestID} a :PassengerAssistanceRequests ; p:RequestID {RequestID} ; p:PassengerID {PassengerID} ; p:AssistantID {AssistantID} ; p:Type {Type} .
+source		SELECT `RequestID`, `PassengerID`, `AssistantID`, `Type` FROM `PassengerAssistanceRequests`
+
+mappingId	PassengerAssistanceRequests_AssistantID_fk
+target		ex:PassengerAssistanceRequests/{RequestID} p:hasAssistant ex:Assistant/{AssistantID} .
+source		SELECT `RequestID`, `AssistantID` FROM `PassengerAssistanceRequests` WHERE `AssistantID` IS NOT NULL
+
+mappingId	PassengerAssistanceRequests_PassengerID_fk
+target		ex:PassengerAssistanceRequests/{RequestID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `RequestID`, `PassengerID` FROM `PassengerAssistanceRequests` WHERE `PassengerID` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Recruiters_base
+target		ex:Recruiters/{recruiter_id} a :Recruiters ; p:recruiter_id {recruiter_id} ; p:name {name} ; p:email {email} .
+source		SELECT `recruiter_id`, `name`, `email` FROM `Recruiters`
+
+mappingId	Sources_base
+target		ex:Sources/{source_id} a :Sources ; p:source_id {source_id} ; p:source_name {source_name} .
+source		SELECT `source_id`, `source_name` FROM `Sources`
+
+mappingId	Recruiters_Sources_base
+target		ex:Recruiters_Sources/{recruiter_source_id} a :Recruiters_Sources ; p:recruiter_source_id {recruiter_source_id} ; p:recruiter_id {recruiter_id} ; p:source_id {source_id} .
+source		SELECT `recruiter_source_id`, `recruiter_id`, `source_id` FROM `Recruiters_Sources`
+
+mappingId	Recruiters_Sources_source_id_fk
+target		ex:Recruiters_Sources/{recruiter_source_id} p:hasSources ex:Sources/{source_id} .
+source		SELECT `recruiter_source_id`, `source_id` FROM `Recruiters_Sources` WHERE `source_id` IS NOT NULL
+
+mappingId	Recruiters_Sources_recruiter_id_fk
+target		ex:Recruiters_Sources/{recruiter_source_id} p:hasRecruiters ex:Recruiters/{recruiter_id} .
+source		SELECT `recruiter_source_id`, `recruiter_id` FROM `Recruiters_Sources` WHERE `recruiter_id` IS NOT NULL
+
+]]

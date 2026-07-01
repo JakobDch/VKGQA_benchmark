@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_ref_exclusive_areas",
+  "schema": "amb_attachment_2tab_ref_exclusive_areas",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the capacities of frequent flyer lounges and VIP lounges with power outlets at every seat?",
+      "qtype": "ambig",
+      "sql": "SELECT FrequentFlyerLounges.capacity\nFROM Amenities JOIN FrequentFlyerLounges ON Amenities.amenityID = FrequentFlyerLounges.amenityID\nWHERE Amenities.description = \"Power outlets at every seat\"\nUNION\nSELECT VIPLounges.capacity\nFROM Amenities JOIN VIPLounges ON Amenities.amenityID = VIPLounges.amenityID\nWHERE Amenities.description = \"Power outlets at every seat\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?amenities a :Amenity .\n    ?frequentflyerlounges a :VIPLounges .\n    ?frequentflyerlounges p:hasAmenities ?amenities .\n    ?frequentflyerlounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n  UNION\n  {\n    ?amenities a :Amenity .\n    ?viplounges a :VIPLounges .\n    ?viplounges p:hasAmenities ?amenities .\n    ?viplounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What are the capacities of frequent flyer lounges and VIP lounges with power outlets at every seat?",
+      "qtype": "ambig",
+      "sql": "SELECT FrequentFlyerLounges.capacity\nFROM Amenities JOIN FrequentFlyerLounges ON Amenities.amenityID = FrequentFlyerLounges.amenityID\nUNION\nSELECT VIPLounges.capacity\nFROM Amenities JOIN VIPLounges ON Amenities.amenityID = VIPLounges.amenityID\nWHERE Amenities.description = \"Power outlets at every seat\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?amenities a :Amenity .\n    ?frequentflyerlounges a :VIPLounges .\n    ?frequentflyerlounges p:hasAmenities ?amenities .\n    ?frequentflyerlounges p:capacity ?capacity .\n    BIND(?capacity AS ?o0)\n  }\n  UNION\n  {\n    ?amenities a :Amenity .\n    ?viplounges a :VIPLounges .\n    ?viplounges p:hasAmenities ?amenities .\n    ?viplounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the capacities of frequent flyer lounges and VIP lounges with power outlets at every seat?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?amenities a :Amenity .\n    ?frequentflyerlounges a :VIPLounges .\n    ?frequentflyerlounges p:hasAmenities ?amenities .\n    ?frequentflyerlounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n  UNION\n  {\n    ?amenities a :Amenity .\n    ?viplounges a :VIPLounges .\n    ?viplounges p:hasAmenities ?amenities .\n    ?viplounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?amenities a :Amenity .\n    ?frequentflyerlounges a :VIPLounges .\n    ?frequentflyerlounges p:hasAmenities ?amenities .\n    ?frequentflyerlounges p:capacity ?capacity .\n    BIND(?capacity AS ?o0)\n  }\n  UNION\n  {\n    ?amenities a :Amenity .\n    ?viplounges a :VIPLounges .\n    ?viplounges p:hasAmenities ?amenities .\n    ?viplounges p:capacity ?capacity .\n    ?amenities p:description ?description_f .\n    FILTER(STR(?description_f) = \"Power outlets at every seat\")\n    BIND(?capacity AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Freelance_Journalists_base
+target		ex:Freelance_Journalists/{journalist_id} a :Freelance_Journalists ; p:journalist_id {journalist_id} ; p:name {name} ; p:email {email} .
+source		SELECT `journalist_id`, `name`, `email` FROM `Freelance_Journalists`
+
+mappingId	Assignments_base
+target		ex:Assignments/{assignment_id} a :Assignments ; p:assignment_id {assignment_id} ; p:title {title} ; p:deadline {deadline} .
+source		SELECT `assignment_id`, `title`, `deadline` FROM `Assignments`
+
+mappingId	Publications_base
+target		ex:Publications/{publication_id} a :Publications ; p:publication_id {publication_id} ; p:publication_name {publication_name} ; p:publisher_name {publisher_name} .
+source		SELECT `publication_id`, `publication_name`, `publisher_name` FROM `Publications`
+
+mappingId	Article_Publication_base
+target		ex:Article_Publication/{article_publication_id} a :Article_Publication ; p:article_publication_id {article_publication_id} ; p:freelance_journalist_id {freelance_journalist_id} ; p:assignment_id {assignment_id} ; p:publication_id {publication_id} ; p:publish_date {publish_date} .
+source		SELECT `article_publication_id`, `freelance_journalist_id`, `assignment_id`, `publication_id`, `publish_date` FROM `Article_Publication`
+
+mappingId	Article_Publication_publication_id_fk
+target		ex:Article_Publication/{article_publication_id} p:hasPublications ex:Publications/{publication_id} .
+source		SELECT `article_publication_id`, `publication_id` FROM `Article_Publication` WHERE `publication_id` IS NOT NULL
+
+mappingId	Article_Publication_assignment_id_fk
+target		ex:Article_Publication/{article_publication_id} p:hasAssignments ex:Assignments/{assignment_id} .
+source		SELECT `article_publication_id`, `assignment_id` FROM `Article_Publication` WHERE `assignment_id` IS NOT NULL
+
+mappingId	Article_Publication_freelance_journalist_id_fk
+target		ex:Article_Publication/{article_publication_id} p:hasFreelance_Journalists ex:Freelance_Journalists/{freelance_journalist_id} .
+source		SELECT `article_publication_id`, `freelance_journalist_id` FROM `Article_Publication` WHERE `freelance_journalist_id` IS NOT NULL
+
+]]

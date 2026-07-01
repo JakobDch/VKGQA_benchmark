@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	OnlineResources_base
+target		ex:OnlineResources/{resourceId} a :OnlineResources ; p:resourceId {resourceId} ; p:url {url} ; p:title {title} .
+source		SELECT `resourceId`, `url`, `title` FROM `OnlineResources`
+
+mappingId	TestPreparations_base
+target		ex:TestPreparations/{preparationId} a :TestPreparations ; p:preparationId {preparationId} ; p:topic {topic} ; p:resourcesId {resourcesId} ; p:servicesId {servicesId} .
+source		SELECT `preparationId`, `topic`, `resourcesId`, `servicesId` FROM `TestPreparations`
+
+mappingId	TestPreparations_servicesId_fk
+target		ex:TestPreparations/{preparationId} p:hasTutoringServices ex:TutoringServices/{servicesId} .
+source		SELECT `preparationId`, `servicesId` FROM `TestPreparations` WHERE `servicesId` IS NOT NULL
+
+mappingId	TestPreparations_resourcesId_fk
+target		ex:TestPreparations/{preparationId} p:hasOnlineResources ex:OnlineResources/{resourcesId} .
+source		SELECT `preparationId`, `resourcesId` FROM `TestPreparations` WHERE `resourcesId` IS NOT NULL
+
+mappingId	TutoringServices_base
+target		ex:TutoringServices/{serviceId} a :TutoringServices ; p:serviceId {serviceId} ; p:tutorId {tutorId} ; p:date {date} ; p:duration {duration} .
+source		SELECT `serviceId`, `tutorId`, `date`, `duration` FROM `TutoringServices`
+
+mappingId	Tutors_base
+target		ex:Tutors/{id} a :Tutors ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Tutors`
+
+]]

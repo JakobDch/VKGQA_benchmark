@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_ref_visual_arts",
+  "schema": "amb_attachment_2tab_ref_visual_arts",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all photo descriptions and also illustration descriptions but only related to the history course.",
+      "qtype": "unambig",
+      "sql": "SELECT Photos.description\nFROM Subjects JOIN Photos ON Subjects.ID = Photos.SubjectID\nUNION\nSELECT Illustrations.description\nFROM Subjects JOIN Illustrations ON Subjects.ID = Illustrations.SubjectID\nWHERE Subjects.Name = \"History\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?subjects a :Subjects .\n    ?photos a :Photos .\n    ?photos p:hasSubjects ?subjects .\n    ?photos p:Description ?description .\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?subjects a :Subjects .\n    ?illustrations a :Illustrations .\n    ?illustrations p:hasSubjects ?subjects .\n    ?illustrations p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What are the descriptions of photos related to the history course and what are the descriptions of illustrations related to the same course?",
+      "qtype": "unambig",
+      "sql": "SELECT Photos.description\nFROM Subjects JOIN Photos ON Subjects.ID = Photos.SubjectID\nWHERE Subjects.Name = \"History\"\nUNION\nSELECT Illustrations.description\nFROM Subjects JOIN Illustrations ON Subjects.ID = Illustrations.SubjectID\nWHERE Subjects.Name = \"History\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?subjects a :Subjects .\n    ?photos a :Photos .\n    ?photos p:hasSubjects ?subjects .\n    ?photos p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?subjects a :Subjects .\n    ?illustrations a :Illustrations .\n    ?illustrations p:hasSubjects ?subjects .\n    ?illustrations p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show descriptions of all photos and illustrations related to the history course.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?subjects a :Subjects .\n    ?photos a :Photos .\n    ?photos p:hasSubjects ?subjects .\n    ?photos p:Description ?description .\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?subjects a :Subjects .\n    ?illustrations a :Illustrations .\n    ?illustrations p:hasSubjects ?subjects .\n    ?illustrations p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?subjects a :Subjects .\n    ?photos a :Photos .\n    ?photos p:hasSubjects ?subjects .\n    ?photos p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n  UNION\n  {\n    ?subjects a :Subjects .\n    ?illustrations a :Illustrations .\n    ?illustrations p:hasSubjects ?subjects .\n    ?illustrations p:Description ?description .\n    ?subjects p:name ?name_f .\n    FILTER(STR(?name_f) = \"History\")\n    BIND(?description AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

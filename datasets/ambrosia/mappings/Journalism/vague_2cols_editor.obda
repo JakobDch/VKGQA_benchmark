@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `Email` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:Managing_Editor {Managing_Editor} ; p:Copy_Editor {Copy_Editor} ; p:Final_Draft {Final_Draft} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `Managing_Editor`, `Copy_Editor`, `Final_Draft` FROM `Articles`
+
+mappingId	Readers_base
+target		ex:Readers/{ReaderID} a :Readers ; p:ReaderID {ReaderID} ; p:name {Name} ; p:SubscriptionDate {SubscriptionDate} ; p:PreferredEmail {PreferredEmail} .
+source		SELECT `ReaderID`, `Name`, `SubscriptionDate`, `PreferredEmail` FROM `Readers`
+
+mappingId	Comments_base
+target		ex:Comments/{CommentID} a :Comments ; p:CommentID {CommentID} ; p:ArticleID {ArticleID} ; p:ReaderID {ReaderID} ; p:CommentText {CommentText} ; p:Rating {Rating} .
+source		SELECT `CommentID`, `ArticleID`, `ReaderID`, `CommentText`, `Rating` FROM `Comments`
+
+mappingId	Comments_ReaderID_fk
+target		ex:Comments/{CommentID} p:hasReaders ex:Readers/{ReaderID} .
+source		SELECT `CommentID`, `ReaderID` FROM `Comments` WHERE `ReaderID` IS NOT NULL
+
+mappingId	Comments_ArticleID_fk
+target		ex:Comments/{CommentID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `CommentID`, `ArticleID` FROM `Comments` WHERE `ArticleID` IS NOT NULL
+
+mappingId	Advertisements_base
+target		ex:Advertisements/{AdID} a :Advertisements ; p:AdID {AdID} ; p:Description {Description} ; p:ImgURL {ImgURL} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:Price {Price} .
+source		SELECT `AdID`, `Description`, `ImgURL`, `StartDate`, `EndDate`, `Price` FROM `Advertisements`
+
+mappingId	AdAssignments_base
+target		ex:AdAssignments/{AdAssignmentID} a :AdAssignments ; p:AdAssignmentID {AdAssignmentID} ; p:AdID {AdID} ; p:ArticleID {ArticleID} ; p:AssignmentDate {AssignmentDate} .
+source		SELECT `AdAssignmentID`, `AdID`, `ArticleID`, `AssignmentDate` FROM `AdAssignments`
+
+mappingId	AdAssignments_ArticleID_fk
+target		ex:AdAssignments/{AdAssignmentID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `AdAssignmentID`, `ArticleID` FROM `AdAssignments` WHERE `ArticleID` IS NOT NULL
+
+mappingId	AdAssignments_AdID_fk
+target		ex:AdAssignments/{AdAssignmentID} p:hasAdvertisements ex:Advertisements/{AdID} .
+source		SELECT `AdAssignmentID`, `AdID` FROM `AdAssignments` WHERE `AdID` IS NOT NULL
+
+]]

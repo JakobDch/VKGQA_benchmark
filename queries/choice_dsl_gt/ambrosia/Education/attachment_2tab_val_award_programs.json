@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_award_programs",
+  "schema": "amb_attachment_2tab_val_award_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which diplomas require a passing exam for completion and which certificates have the same requirement?",
+      "qtype": "unambig",
+      "sql": "SELECT Diplomas.title\nFROM Diplomas\nWHERE Diplomas.CompletionRequirements = \"Passing Exam\"\nUNION\nSELECT Certificates.title\nFROM Certificates\nWHERE Certificates.CompletionRequirements = \"Passing Exam\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?diplomas a :Diplomas .\n    ?diplomas p:Title ?title .\n    ?diplomas p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?certificates a :Certificates .\n    ?certificates p:Title ?title .\n    ?certificates p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all diplomas and also provide a list of certificates that require a passing exam for completion.",
+      "qtype": "unambig",
+      "sql": "SELECT Diplomas.title\nFROM Diplomas\nUNION\nSELECT Certificates.title\nFROM Certificates\nWHERE Certificates.CompletionRequirements = \"Passing Exam\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?diplomas a :Diplomas .\n    ?diplomas p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?certificates a :Certificates .\n    ?certificates p:Title ?title .\n    ?certificates p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show diplomas and certificates that require a passing exam for completion.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?diplomas a :Diplomas .\n    ?diplomas p:Title ?title .\n    ?diplomas p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?certificates a :Certificates .\n    ?certificates p:Title ?title .\n    ?certificates p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?diplomas a :Diplomas .\n    ?diplomas p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?certificates a :Certificates .\n    ?certificates p:Title ?title .\n    ?certificates p:CompletionRequirements ?completionrequirements_f .\n    FILTER(STR(?completionrequirements_f) = \"Passing Exam\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

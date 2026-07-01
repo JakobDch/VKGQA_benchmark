@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_film_style",
+  "schema": "amb_attachment_1tab_ref_film_style",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the adventure movies and action movies directed by Sofia Martinez.",
+      "qtype": "ambig",
+      "sql": "SELECT Movies.Title \nFROM Movies JOIN Directors ON Movies.DirectorId = Directors.DirectorId\nWHERE (Movies.FilmStyle = \"Adventure Movie\" OR Movies.FilmStyle = \"Action Movie\") AND Directors.Name = \"Sofia Martinez\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movie .\n  ?directors a :Director .\n  ?movies p:hasDirectors ?directors .\n  ?movies p:Title ?title .\n  ?movies p:FilmStyle ?filmstyle_w .\n  ?movies p:FilmStyle ?filmstyle_w2 .\n  ?directors p:name ?name_w .\n  FILTER((((STR(?filmstyle_w) = \"Adventure Movie\" || STR(?filmstyle_w2) = \"Action Movie\")) && STR(?name_w) = \"Sofia Martinez\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the adventure movies and action movies directed by Sofia Martinez.",
+      "qtype": "ambig",
+      "sql": "SELECT Movies.Title \nFROM Movies JOIN Directors ON Movies.DirectorId = Directors.DirectorId\nWHERE Movies.FilmStyle = \"Adventure Movie\" OR Movies.FilmStyle = \"Action Movie\" AND Directors.Name = \"Sofia Martinez\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movie .\n  ?directors a :Director .\n  ?movies p:hasDirectors ?directors .\n  ?movies p:Title ?title .\n  ?movies p:FilmStyle ?filmstyle_w .\n  ?movies p:FilmStyle ?filmstyle_w2 .\n  ?directors p:name ?name_w .\n  FILTER((STR(?filmstyle_w) = \"Adventure Movie\" || (STR(?filmstyle_w2) = \"Action Movie\" && STR(?name_w) = \"Sofia Martinez\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all the adventure movies and action movies directed by Sofia Martinez.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?movies a :Movie .\n  ?directors a :Director .\n  ?movies p:hasDirectors ?directors .\n  ?movies p:Title ?title .\n  ?movies p:FilmStyle ?filmstyle_w .\n  ?movies p:FilmStyle ?filmstyle_w2 .\n  ?directors p:name ?name_w .\n  FILTER((((STR(?filmstyle_w) = \"Adventure Movie\" || STR(?filmstyle_w2) = \"Action Movie\")) && STR(?name_w) = \"Sofia Martinez\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?movies a :Movie .\n  ?directors a :Director .\n  ?movies p:hasDirectors ?directors .\n  ?movies p:Title ?title .\n  ?movies p:FilmStyle ?filmstyle_w .\n  ?movies p:FilmStyle ?filmstyle_w2 .\n  ?directors p:name ?name_w .\n  FILTER((STR(?filmstyle_w) = \"Adventure Movie\" || (STR(?filmstyle_w2) = \"Action Movie\" && STR(?name_w) = \"Sofia Martinez\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

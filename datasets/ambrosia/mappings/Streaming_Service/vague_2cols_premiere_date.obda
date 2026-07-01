@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Movies_base
+target		ex:Movies/{id} a :Movies ; p:id {id} ; p:title {title} ; p:genre {genre} ; p:director {director} ; p:runtime {runtime} ; p:release_date {release_date} .
+source		SELECT `id`, `title`, `genre`, `director`, `runtime`, `release_date` FROM `Movies`
+
+mappingId	Series_base
+target		ex:Series/{id} a :Series ; p:id {id} ; p:title {title} ; p:genre {genre} ; p:creator {creator} ; p:episodeCount {episodeCount} ; p:premiereDate {premiereDate} .
+source		SELECT `id`, `title`, `genre`, `creator`, `episodeCount`, `premiereDate` FROM `Series`
+
+mappingId	Users_base
+target		ex:Users/{id} a :Users ; p:id {id} ; p:username {username} ; p:password {password} ; p:email {email} ; p:subscriptionType {subscriptionType} .
+source		SELECT `id`, `username`, `password`, `email`, `subscriptionType` FROM `Users`
+
+mappingId	Reviews_base
+target		ex:Reviews/{id} a :Reviews ; p:id {id} ; p:userId {userId} ; p:contentId {contentId} ; p:rating {rating} ; p:reviewText {reviewText} .
+source		SELECT `id`, `userId`, `contentId`, `rating`, `reviewText` FROM `Reviews`
+
+mappingId	Reviews_contentId_fk
+target		ex:Reviews/{id} p:hasContent ex:Content/{contentId} .
+source		SELECT `id`, `contentId` FROM `Reviews` WHERE `contentId` IS NOT NULL
+
+mappingId	Reviews_userId_fk
+target		ex:Reviews/{id} p:hasUsers ex:Users/{userId} .
+source		SELECT `id`, `userId` FROM `Reviews` WHERE `userId` IS NOT NULL
+
+mappingId	Content_base
+target		ex:Content/{id} a :Content ; p:id {id} ; p:type {type} ; p:title {title} ; p:genre {genre} ; p:creator {creator} ; p:numEpisodesOrDuration {numEpisodesOrDuration} ; p:premiereMonth {premiereMonth} ; p:premiereYear {premiereYear} ; p:season {season} .
+source		SELECT `id`, `type`, `title`, `genre`, `creator`, `numEpisodesOrDuration`, `premiereMonth`, `premiereYear`, `season` FROM `Content`
+
+mappingId	Content_creator_fk
+target		ex:Content/{id} p:hasCreators ex:Creators/{creator} .
+source		SELECT `id`, `creator` FROM `Content` WHERE `creator` IS NOT NULL
+
+mappingId	Creators_base
+target		ex:Creators/{id} a :Creators ; p:id {id} ; p:name {name} ; p:birthYear {birthYear} .
+source		SELECT `id`, `name`, `birthYear` FROM `Creators`
+
+]]

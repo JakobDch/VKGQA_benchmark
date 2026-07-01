@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hospitals_base
+target		ex:Hospitals/{HospitalID} a :Hospitals ; p:HospitalID {HospitalID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `HospitalID`, `Name`, `Address` FROM `Hospitals`
+
+mappingId	Procedures_base
+target		ex:Procedures/{ProcedureID} a :Procedures ; p:ProcedureID {ProcedureID} ; p:ProcedureName {ProcedureName} ; p:Description {Description} .
+source		SELECT `ProcedureID`, `ProcedureName`, `Description` FROM `Procedures`
+
+mappingId	Hospitals_Procedures_base
+target		ex:Hospitals_Procedures/{HospitalID}/{ProcedureID} a :Hospitals_Procedures ; p:HospitalID {HospitalID} ; p:ProcedureID {ProcedureID} .
+source		SELECT `HospitalID`, `ProcedureID` FROM `Hospitals_Procedures`
+
+mappingId	Hospitals_Procedures_ProcedureID_fk
+target		ex:Hospitals_Procedures/{HospitalID}/{ProcedureID} p:hasProcedures ex:Procedures/{ProcedureID} .
+source		SELECT `HospitalID`, `ProcedureID` FROM `Hospitals_Procedures` WHERE `ProcedureID` IS NOT NULL
+
+mappingId	Hospitals_Procedures_HospitalID_fk
+target		ex:Hospitals_Procedures/{HospitalID}/{ProcedureID} p:hasHospitals ex:Hospitals/{HospitalID} .
+source		SELECT `HospitalID`, `ProcedureID` FROM `Hospitals_Procedures` WHERE `HospitalID` IS NOT NULL
+
+]]

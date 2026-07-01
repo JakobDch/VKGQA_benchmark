@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_insurance_type",
+  "schema": "amb_attachment_1tab_val_insurance_type",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the premium amount, for both pet and disability insurance plans, with monthly payments.",
+      "qtype": "unambig",
+      "sql": "SELECT Insurance.PremiumAmount \nFROM Insurance\nWHERE (Insurance.InsuranceType = \"Pet Insurance\" OR Insurance.InsuranceType = \"Disability Insurance\") AND Insurance.PaymentFrequency = \"Monthly\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?premiumamount WHERE {\n  ?insurance a :Insurance .\n  ?insurance p:PremiumAmount ?premiumamount .\n  ?insurance p:InsuranceType ?insurancetype_w .\n  ?insurance p:InsuranceType ?insurancetype_w2 .\n  ?insurance p:PaymentFrequency ?paymentfrequency_w .\n  FILTER((((STR(?insurancetype_w) = \"Pet Insurance\" || STR(?insurancetype_w2) = \"Disability Insurance\")) && STR(?paymentfrequency_w) = \"Monthly\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What is the amount of all the pet insurance and disability insurance which are charged monthly?",
+      "qtype": "ambig",
+      "sql": "SELECT Insurance.PremiumAmount \nFROM Insurance\nWHERE Insurance.InsuranceType = \"Pet Insurance\" OR Insurance.InsuranceType = \"Disability Insurance\" AND Insurance.PaymentFrequency = \"Monthly\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?premiumamount WHERE {\n  ?insurance a :Insurance .\n  ?insurance p:PremiumAmount ?premiumamount .\n  ?insurance p:InsuranceType ?insurancetype_w .\n  ?insurance p:InsuranceType ?insurancetype_w2 .\n  ?insurance p:PaymentFrequency ?paymentfrequency_w .\n  FILTER((STR(?insurancetype_w) = \"Pet Insurance\" || (STR(?insurancetype_w2) = \"Disability Insurance\" && STR(?paymentfrequency_w) = \"Monthly\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the amount of all the pet insurance and disability insurance which are charged monthly?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?premiumamount WHERE {\n  ?insurance a :Insurance .\n  ?insurance p:PremiumAmount ?premiumamount .\n  ?insurance p:InsuranceType ?insurancetype_w .\n  ?insurance p:InsuranceType ?insurancetype_w2 .\n  ?insurance p:PaymentFrequency ?paymentfrequency_w .\n  FILTER((((STR(?insurancetype_w) = \"Pet Insurance\" || STR(?insurancetype_w2) = \"Disability Insurance\")) && STR(?paymentfrequency_w) = \"Monthly\"))\n} }\n  low: { SELECT ?premiumamount WHERE {\n  ?insurance a :Insurance .\n  ?insurance p:PremiumAmount ?premiumamount .\n  ?insurance p:InsuranceType ?insurancetype_w .\n  ?insurance p:InsuranceType ?insurancetype_w2 .\n  ?insurance p:PaymentFrequency ?paymentfrequency_w .\n  FILTER((STR(?insurancetype_w) = \"Pet Insurance\" || (STR(?insurancetype_w2) = \"Disability Insurance\" && STR(?paymentfrequency_w) = \"Monthly\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

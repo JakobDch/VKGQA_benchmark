@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_curriculum_topics",
+  "schema": "amb_vague_2tabs_curriculum_topics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What core concepts is Charlie studying?",
+      "qtype": "unambig",
+      "sql": "select c.concept_name  \nfrom EnrolledStudents e\ninner join Students t on t.id = e.student_id\ninner join School_Subjects s on s.subject_id = e.subject_id\nleft join Core_Concepts c on s.core_concept_id = c.concept_id\nwhere t.name = 'Charlie'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?concept_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?c p:concept_name ?concept_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What core concepts are associated with the highest grade?",
+      "qtype": "unambig",
+      "sql": "select c.concept_name\nfrom EnrolledStudents e\ninner join School_Subjects s on s.subject_id = e.subject_id\ninner join Core_Concepts c on s.core_concept_id = c.concept_id\norder by e.grade desc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?concept_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?c p:concept_name ?concept_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which of the advanced topics are associated with the highest grade?",
+      "qtype": "unambig",
+      "sql": "select c.topic_name\nfrom EnrolledStudents e\ninner join School_Subjects s on s.subject_id = e.subject_id\ninner join Advanced_Topics c on s.Advanced_Topic_id = c.topic_id\norder by e.grade desc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?c .\n  ?c p:topic_name ?topic_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which core concepts and advanced topics are associated with the highest scores?",
+      "qtype": "unambig",
+      "sql": "select c.concept_name, at.topic_name\nfrom EnrolledStudents e\ninner join School_Subjects s on s.subject_id = e.subject_id\ninner join Core_Concepts c on s.core_concept_id = c.concept_id\ninner join Advanced_Topics at on s.Advanced_Topic_id = at.topic_id\norder by e.grade desc limit 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?concept_name ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?at a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?at .\n  ?c p:concept_name ?concept_name .\n  ?at p:topic_name ?topic_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What advanced topics is Charlie studying?",
+      "qtype": "unambig",
+      "sql": "select c.topic_name  \nfrom EnrolledStudents e\ninner join Students t on t.id = e.student_id\ninner join School_Subjects s on s.subject_id = e.subject_id\nleft join Advanced_Topics c on s.Advanced_Topic_id = c.topic_id\nwhere t.name = 'Charlie'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?c .\n  ?c p:topic_name ?topic_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What topic is Charlie studying?",
+      "qtype": "ambig",
+      "sql": "select c.concept_name, at.topic_name   \nfrom EnrolledStudents e\ninner join Students t on t.id = e.student_id\ninner join School_Subjects s on s.subject_id = e.subject_id\nleft join Core_Concepts c on s.core_concept_id = c.concept_id\nleft join Advanced_Topics at on s.Advanced_Topic_id = at.topic_id\nwhere t.name = 'Charlie'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?concept_name ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?at a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?at .\n  ?c p:concept_name ?concept_name .\n  ?at p:topic_name ?topic_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What topic is Charlie studying?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?concept_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?c p:concept_name ?concept_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n} }\n  component_2: { SELECT ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?c .\n  ?c p:topic_name ?topic_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n} }\n  full: { SELECT ?concept_name ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?t a :Students .\n  ?e p:hasStudents ?t .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?at a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?at .\n  ?c p:concept_name ?concept_name .\n  ?at p:topic_name ?topic_name .\n  ?t p:name ?name_f .\n  FILTER(STR(?name_f) = STR(\"Charlie\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which curriculum topics are associated with the highest grade?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?concept_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?c p:concept_name ?concept_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1 }\n  component_2: { SELECT ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?c .\n  ?c p:topic_name ?topic_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1 }\n  full: { SELECT ?concept_name ?topic_name WHERE {\n  ?e a :Enrollments .\n  ?s a :School_Subjects .\n  ?e p:hasSchool_Subjects ?s .\n  ?c a :Core_Concepts .\n  ?s p:hasCore_Concepts ?c .\n  ?at a :Advanced_Topics .\n  ?s p:hasAdvanced_Topics ?at .\n  ?c p:concept_name ?concept_name .\n  ?at p:topic_name ?topic_name .\n  ?e p:grade ?grade_o .\n}\nORDER BY DESC(?grade_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_media_careers",
+  "schema": "amb_attachment_1tab_val_media_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show journalist postings and editor postings for English and Spanish languages.",
+      "qtype": "ambig",
+      "sql": "SELECT JobPosting.title \nFROM JobPosting\nWHERE (JobPosting.mediaCareer = \"Journalist\" OR JobPosting.mediaCareer = \"Editor\") AND JobPosting.languages = \"English and Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobposting a :JobPostings .\n  ?jobposting p:title ?title .\n  ?jobposting p:mediaCareer ?mediacareer_w .\n  ?jobposting p:mediaCareer ?mediacareer_w2 .\n  ?jobposting p:languages ?languages_w .\n  FILTER((((STR(?mediacareer_w) = \"Journalist\" || STR(?mediacareer_w2) = \"Editor\")) && STR(?languages_w) = \"English and Spanish\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show journalist postings and editor postings for English and Spanish languages.",
+      "qtype": "ambig",
+      "sql": "SELECT JobPosting.title \nFROM JobPosting\nWHERE JobPosting.mediaCareer = \"Journalist\" OR JobPosting.mediaCareer = \"Editor\" AND JobPosting.languages = \"English and Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobposting a :JobPostings .\n  ?jobposting p:title ?title .\n  ?jobposting p:mediaCareer ?mediacareer_w .\n  ?jobposting p:mediaCareer ?mediacareer_w2 .\n  ?jobposting p:languages ?languages_w .\n  FILTER((STR(?mediacareer_w) = \"Journalist\" || (STR(?mediacareer_w2) = \"Editor\" && STR(?languages_w) = \"English and Spanish\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show journalist postings and editor postings for English and Spanish languages.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?jobposting a :JobPostings .\n  ?jobposting p:title ?title .\n  ?jobposting p:mediaCareer ?mediacareer_w .\n  ?jobposting p:mediaCareer ?mediacareer_w2 .\n  ?jobposting p:languages ?languages_w .\n  FILTER((((STR(?mediacareer_w) = \"Journalist\" || STR(?mediacareer_w2) = \"Editor\")) && STR(?languages_w) = \"English and Spanish\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?jobposting a :JobPostings .\n  ?jobposting p:title ?title .\n  ?jobposting p:mediaCareer ?mediacareer_w .\n  ?jobposting p:mediaCareer ?mediacareer_w2 .\n  ?jobposting p:languages ?languages_w .\n  FILTER((STR(?mediacareer_w) = \"Journalist\" || (STR(?mediacareer_w2) = \"Editor\" && STR(?languages_w) = \"English and Spanish\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

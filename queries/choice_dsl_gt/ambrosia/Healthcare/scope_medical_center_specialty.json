@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_medical_center_specialty",
+  "schema": "amb_scope_medical_center_specialty",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the types of specialty common to all medical centres.",
+      "qtype": "unambig",
+      "sql": "SELECT Specialty.Type  from Medical_Center_Specialty join Specialty on Medical_Center_Specialty.Specialty_ID = Specialty.ID join Medical_Center on Medical_Center_Specialty.Medical_Center_ID = Medical_Center.ID   GROUP BY Medical_Center_Specialty.Specialty_ID HAVING COUNT(DISTINCT Medical_Center_Specialty.Medical_Center_ID) = (SELECT COUNT(*) FROM  Medical_Center)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSpecialty ?child ; p:hasMedical_Center ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Center } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For all the medical centres, list their specialty type.",
+      "qtype": "unambig",
+      "sql": "select medical_center.name , specialty.type from Medical_Center_Specialty join Specialty on Medical_Center_Specialty.Specialty_ID = Specialty.ID join Medical_Center on Medical_Center_Specialty.Medical_Center_ID = Medical_Center.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?medical_center_specialty a :Medical_Center_Specialty .\n  ?specialty a :Specialty .\n  ?medical_center_specialty p:hasSpecialty ?specialty .\n  ?medical_center a :Medical_Center .\n  ?medical_center_specialty p:hasMedical_Center ?medical_center .\n  ?medical_center p:name ?name .\n  ?specialty p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the types of speciality of every medical centre.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSpecialty ?child ; p:hasMedical_Center ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Center } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?medical_center_specialty a :Medical_Center_Specialty .\n  ?specialty a :Specialty .\n  ?medical_center_specialty p:hasSpecialty ?specialty .\n  ?medical_center a :Medical_Center .\n  ?medical_center_specialty p:hasMedical_Center ?medical_center .\n  ?medical_center p:name ?name .\n  ?specialty p:Type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

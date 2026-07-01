@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Artists_base
+target		ex:Artist/{artist_id} a :Artist ; p:artist_id {artist_id} ; p:name {name} ; p:genre {genre} .
+source		SELECT `artist_id`, `name`, `genre` FROM `Artists`
+
+mappingId	Venues_base
+target		ex:Venue/{venue_id} a :Venue ; p:venue_id {venue_id} ; p:name {name} ; p:location {location} .
+source		SELECT `venue_id`, `name`, `location` FROM `Venues`
+
+mappingId	Events_base
+target		ex:Events/{event_id} a :Events ; p:event_id {event_id} ; p:artist_id {artist_id} ; p:venue_id {venue_id} ; p:event_date {event_date} .
+source		SELECT `event_id`, `artist_id`, `venue_id`, `event_date` FROM `Events`
+
+mappingId	Events_venue_id_fk
+target		ex:Events/{event_id} p:hasVenue ex:Venue/{venue_id} .
+source		SELECT `event_id`, `venue_id` FROM `Events` WHERE `venue_id` IS NOT NULL
+
+mappingId	Events_artist_id_fk
+target		ex:Events/{event_id} p:hasArtist ex:Artist/{artist_id} .
+source		SELECT `event_id`, `artist_id` FROM `Events` WHERE `artist_id` IS NOT NULL
+
+mappingId	On_Sale_Date_base
+target		ex:On_Sale_Date/{sale_id} a :On_Sale_Date ; p:sale_id {sale_id} ; p:event_id {event_id} ; p:start_time {start_time} ; p:end_time {end_time} .
+source		SELECT `sale_id`, `event_id`, `start_time`, `end_time` FROM `On_Sale_Date`
+
+mappingId	On_Sale_Date_event_id_fk
+target		ex:On_Sale_Date/{sale_id} p:hasEvents ex:Events/{event_id} .
+source		SELECT `sale_id`, `event_id` FROM `On_Sale_Date` WHERE `event_id` IS NOT NULL
+
+mappingId	Pre_sale_Date_base
+target		ex:Pre_sale_Date/{presale_id} a :Pre_sale_Date ; p:presale_id {presale_id} ; p:event_id {event_id} ; p:start_time {start_time} ; p:end_time {end_time} .
+source		SELECT `presale_id`, `event_id`, `start_time`, `end_time` FROM `Pre_sale_Date`
+
+mappingId	Pre_sale_Date_event_id_fk
+target		ex:Pre_sale_Date/{presale_id} p:hasEvents ex:Events/{event_id} .
+source		SELECT `presale_id`, `event_id` FROM `Pre_sale_Date` WHERE `event_id` IS NOT NULL
+
+mappingId	Tickets_base
+target		ex:Tickets/{ticket_id} a :Tickets ; p:ticket_id {ticket_id} ; p:event_id {event_id} ; p:seat_number {seat_number} ; p:price {price} ; p:ON_SALE_DATE_ID {ON_SALE_DATE_ID} ; p:PRESALE_DATE_ID {PRESALE_DATE_ID} .
+source		SELECT `ticket_id`, `event_id`, `seat_number`, `price`, `ON_SALE_DATE_ID`, `PRESALE_DATE_ID` FROM `Tickets`
+
+mappingId	Tickets_event_id_fk
+target		ex:Tickets/{ticket_id} p:hasEvents ex:Events/{event_id} .
+source		SELECT `ticket_id`, `event_id` FROM `Tickets` WHERE `event_id` IS NOT NULL
+
+mappingId	Tickets_PRESALE_DATE_ID_fk
+target		ex:Tickets/{ticket_id} p:hasPre_sale_Date ex:Pre_sale_Date/{PRESALE_DATE_ID} .
+source		SELECT `ticket_id`, `PRESALE_DATE_ID` FROM `Tickets` WHERE `PRESALE_DATE_ID` IS NOT NULL
+
+mappingId	Tickets_ON_SALE_DATE_ID_fk
+target		ex:Tickets/{ticket_id} p:hasOn_Sale_Date ex:On_Sale_Date/{ON_SALE_DATE_ID} .
+source		SELECT `ticket_id`, `ON_SALE_DATE_ID` FROM `Tickets` WHERE `ON_SALE_DATE_ID` IS NOT NULL
+
+]]

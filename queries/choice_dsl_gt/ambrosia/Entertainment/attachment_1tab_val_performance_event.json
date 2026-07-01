@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_performance_event",
+  "schema": "amb_attachment_1tab_val_performance_event",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all events that had both dance recitals in room 101 and talent shows in room 101",
+      "qtype": "unambig",
+      "sql": "SELECT Events.Name \nFROM Performances JOIN Events ON Events.EventID = Performances.EventID\nWHERE (Performances.PerformanceEvent = \"Dance Recital\" OR Performances.PerformanceEvent = \"Talent Show\") AND Performances.AuditionRoom = \"Room 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?performances a :Performance .\n  ?events a :Events .\n  ?performances p:hasEvents ?events .\n  ?events p:name ?name .\n  ?performances p:PerformanceEvent ?performanceevent_w .\n  ?performances p:PerformanceEvent ?performanceevent_w2 .\n  ?performances p:AuditionRoom ?auditionroom_w .\n  FILTER((((STR(?performanceevent_w) = \"Dance Recital\" || STR(?performanceevent_w2) = \"Talent Show\")) && STR(?auditionroom_w) = \"Room 101\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What events have dance recitals and talent shows been held in room 101?",
+      "qtype": "ambig",
+      "sql": "SELECT Events.Name \nFROM Performances JOIN Events ON Events.EventID = Performances.EventID\nWHERE Performances.PerformanceEvent = \"Dance Recital\" OR Performances.PerformanceEvent = \"Talent Show\" AND Performances.AuditionRoom = \"Room 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?performances a :Performance .\n  ?events a :Events .\n  ?performances p:hasEvents ?events .\n  ?events p:name ?name .\n  ?performances p:PerformanceEvent ?performanceevent_w .\n  ?performances p:PerformanceEvent ?performanceevent_w2 .\n  ?performances p:AuditionRoom ?auditionroom_w .\n  FILTER((STR(?performanceevent_w) = \"Dance Recital\" || (STR(?performanceevent_w2) = \"Talent Show\" && STR(?auditionroom_w) = \"Room 101\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What events have dance recitals and talent shows been held in room 101?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?performances a :Performance .\n  ?events a :Events .\n  ?performances p:hasEvents ?events .\n  ?events p:name ?name .\n  ?performances p:PerformanceEvent ?performanceevent_w .\n  ?performances p:PerformanceEvent ?performanceevent_w2 .\n  ?performances p:AuditionRoom ?auditionroom_w .\n  FILTER((((STR(?performanceevent_w) = \"Dance Recital\" || STR(?performanceevent_w2) = \"Talent Show\")) && STR(?auditionroom_w) = \"Room 101\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?performances a :Performance .\n  ?events a :Events .\n  ?performances p:hasEvents ?events .\n  ?events p:name ?name .\n  ?performances p:PerformanceEvent ?performanceevent_w .\n  ?performances p:PerformanceEvent ?performanceevent_w2 .\n  ?performances p:AuditionRoom ?auditionroom_w .\n  FILTER((STR(?performanceevent_w) = \"Dance Recital\" || (STR(?performanceevent_w2) = \"Talent Show\" && STR(?auditionroom_w) = \"Room 101\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

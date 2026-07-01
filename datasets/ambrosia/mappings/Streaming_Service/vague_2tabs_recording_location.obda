@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Studio_base
+target		ex:Studio/{studio_id} a :Studio ; p:studio_id {studio_id} ; p:name {name} ; p:founded_year {founded_year} .
+source		SELECT `studio_id`, `name`, `founded_year` FROM `Studio`
+
+mappingId	Address_base
+target		ex:Address/{address_id} a :Address ; p:address_id {address_id} ; p:street {street} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `address_id`, `street`, `city`, `state`, `country` FROM `Address`
+
+mappingId	Podcast_base
+target		ex:Podcast/{podcast_id} a :Podcast ; p:podcast_id {podcast_id} ; p:title {title} ; p:description {description} ; p:release_date {release_date} ; p:studio_id {studio_id} ; p:address_id {address_id} .
+source		SELECT `podcast_id`, `title`, `description`, `release_date`, `studio_id`, `address_id` FROM `Podcast`
+
+mappingId	Podcast_address_id_fk
+target		ex:Podcast/{podcast_id} p:hasAddress ex:Address/{address_id} .
+source		SELECT `podcast_id`, `address_id` FROM `Podcast` WHERE `address_id` IS NOT NULL
+
+mappingId	Podcast_studio_id_fk
+target		ex:Podcast/{podcast_id} p:hasStudio ex:Studio/{studio_id} .
+source		SELECT `podcast_id`, `studio_id` FROM `Podcast` WHERE `studio_id` IS NOT NULL
+
+mappingId	Episode_base
+target		ex:Episode/{episode_id} a :Episode ; p:episode_id {episode_id} ; p:number {number} ; p:duration {duration} ; p:podcast_id {podcast_id} .
+source		SELECT `episode_id`, `number`, `duration`, `podcast_id` FROM `Episode`
+
+mappingId	Episode_podcast_id_fk
+target		ex:Episode/{episode_id} p:hasPodcast ex:Podcast/{podcast_id} .
+source		SELECT `episode_id`, `podcast_id` FROM `Episode` WHERE `podcast_id` IS NOT NULL
+
+mappingId	Reviewer_base
+target		ex:Reviewer/{reviewer_id} a :Reviewer ; p:reviewer_id {reviewer_id} ; p:username {username} ; p:email {email} .
+source		SELECT `reviewer_id`, `username`, `email` FROM `Reviewer`
+
+mappingId	Review_base
+target		ex:Review/{review_id} a :Review ; p:review_id {review_id} ; p:rating {rating} ; p:comment {comment} ; p:episode_id {episode_id} ; p:reviewer_id {reviewer_id} .
+source		SELECT `review_id`, `rating`, `comment`, `episode_id`, `reviewer_id` FROM `Review`
+
+mappingId	Review_reviewer_id_fk
+target		ex:Review/{review_id} p:hasReviewer ex:Reviewer/{reviewer_id} .
+source		SELECT `review_id`, `reviewer_id` FROM `Review` WHERE `reviewer_id` IS NOT NULL
+
+mappingId	Review_episode_id_fk
+target		ex:Review/{review_id} p:hasEpisode ex:Episode/{episode_id} .
+source		SELECT `review_id`, `episode_id` FROM `Review` WHERE `episode_id` IS NOT NULL
+
+]]

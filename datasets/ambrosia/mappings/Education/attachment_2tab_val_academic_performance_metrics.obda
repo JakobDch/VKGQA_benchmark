@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Student_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Student`
+
+mappingId	Attendance_base
+target		ex:Attendance/{AttendID} a :Attendance ; p:AttendID {AttendID} ; p:StudentID {StudentID} ; p:Date {Date} ; p:Status {Status} .
+source		SELECT `AttendID`, `StudentID`, `Date`, `Status` FROM `Attendance`
+
+mappingId	Attendance_StudentID_fk
+target		ex:Attendance/{AttendID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `AttendID`, `StudentID` FROM `Attendance` WHERE `StudentID` IS NOT NULL
+
+mappingId	Teacher_base
+target		ex:Teachers/{TeachID} a :Teachers ; p:TeachID {TeachID} ; p:name {Name} .
+source		SELECT `TeachID`, `Name` FROM `Teacher`
+
+mappingId	Classroom_base
+target		ex:Classrooms/{ClassID} a :Classrooms ; p:ClassID {ClassID} ; p:TeachID {TeachID} ; p:location {Location} .
+source		SELECT `ClassID`, `TeachID`, `Location` FROM `Classroom`
+
+mappingId	Classroom_TeachID_fk
+target		ex:Classrooms/{ClassID} p:hasTeachers ex:Teachers/{TeachID} .
+source		SELECT `ClassID`, `TeachID` FROM `Classroom` WHERE `TeachID` IS NOT NULL
+
+mappingId	Enrollment_base
+target		ex:Enrollments/{EnrollID} a :Enrollments ; p:EnrollID {EnrollID} ; p:StudentID {StudentID} ; p:ClassID {ClassID} .
+source		SELECT `EnrollID`, `StudentID`, `ClassID` FROM `Enrollment`
+
+mappingId	Enrollment_ClassID_fk
+target		ex:Enrollments/{EnrollID} p:hasClassrooms ex:Classrooms/{ClassID} .
+source		SELECT `EnrollID`, `ClassID` FROM `Enrollment` WHERE `ClassID` IS NOT NULL
+
+mappingId	Enrollment_StudentID_fk
+target		ex:Enrollments/{EnrollID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollID`, `StudentID` FROM `Enrollment` WHERE `StudentID` IS NOT NULL
+
+mappingId	Grades_base
+target		ex:Grades/{GradeID} a :Grades ; p:GradeID {GradeID} ; p:StudentID {StudentID} ; p:Subject {Subject} ; p:Score {Score} .
+source		SELECT `GradeID`, `StudentID`, `Subject`, `Score` FROM `Grades`
+
+mappingId	Grades_StudentID_fk
+target		ex:Grades/{GradeID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `GradeID`, `StudentID` FROM `Grades` WHERE `StudentID` IS NOT NULL
+
+]]

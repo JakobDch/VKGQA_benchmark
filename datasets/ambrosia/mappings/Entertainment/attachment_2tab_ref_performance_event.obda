@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Audition_Room_base
+target		ex:Audition_Room/{RoomID} a :Audition_Room ; p:RoomID {RoomID} ; p:RoomName {RoomName} .
+source		SELECT `RoomID`, `RoomName` FROM `Audition_Room`
+
+mappingId	Talent_Show_base
+target		ex:Talent_Show/{ShowID} a :Talent_Show ; p:ShowID {ShowID} ; p:name {Name} ; p:Description {Description} ; p:RoomID {RoomID} .
+source		SELECT `ShowID`, `Name`, `Description`, `RoomID` FROM `Talent_Show`
+
+mappingId	Talent_Show_RoomID_fk
+target		ex:Talent_Show/{ShowID} p:hasAudition_Room ex:Audition_Room/{RoomID} .
+source		SELECT `ShowID`, `RoomID` FROM `Talent_Show` WHERE `RoomID` IS NOT NULL
+
+mappingId	Participant_base
+target		ex:Participant/{ParticipantID} a :Participant ; p:ParticipantID {ParticipantID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:PhoneNumber {PhoneNumber} ; p:email {Email} ; p:Role {Role} ; p:RecitalID {RecitalID} ; p:ShowID {ShowID} .
+source		SELECT `ParticipantID`, `FirstName`, `LastName`, `Age`, `PhoneNumber`, `Email`, `Role`, `RecitalID`, `ShowID` FROM `Participant`
+
+mappingId	Participant_ShowID_fk
+target		ex:Participant/{ParticipantID} p:hasTalent_Show ex:Talent_Show/{ShowID} .
+source		SELECT `ParticipantID`, `ShowID` FROM `Participant` WHERE `ShowID` IS NOT NULL
+
+mappingId	Participant_RecitalID_fk
+target		ex:Participant/{ParticipantID} p:hasDance_Recital ex:Dance_Recital/{RecitalID} .
+source		SELECT `ParticipantID`, `RecitalID` FROM `Participant` WHERE `RecitalID` IS NOT NULL
+
+mappingId	Dance_Recital_base
+target		ex:Dance_Recital/{RecitalID} a :Dance_Recital ; p:RecitalID {RecitalID} ; p:name {name} ; p:Date {Date} ; p:Time {Time} ; p:RoomID {RoomID} .
+source		SELECT `RecitalID`, `name`, `Date`, `Time`, `RoomID` FROM `Dance_Recital`
+
+mappingId	Dance_Recital_RoomID_fk
+target		ex:Dance_Recital/{RecitalID} p:hasAudition_Room ex:Audition_Room/{RoomID} .
+source		SELECT `RecitalID`, `RoomID` FROM `Dance_Recital` WHERE `RoomID` IS NOT NULL
+
+]]

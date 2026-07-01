@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_media_formats",
+  "schema": "amb_attachment_2tab_val_media_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display podcasts and audio documents lasting 60 minutes.",
+      "qtype": "ambig",
+      "sql": "SELECT Podcasts.title\nFROM Podcasts\nWHERE Podcasts.Length = 60\nUNION\nSELECT AudioDocuments.title\nFROM AudioDocuments\nWHERE AudioDocuments.Length = 60",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?podcasts a :Podcasts .\n    ?podcasts p:Title ?title .\n    ?podcasts p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?audiodocuments a :AudioDocuments .\n    ?audiodocuments p:Title ?title .\n    ?audiodocuments p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display podcasts and audio documents lasting 60 minutes.",
+      "qtype": "ambig",
+      "sql": "SELECT Podcasts.title\nFROM Podcasts\nUNION\nSELECT AudioDocuments.title\nFROM AudioDocuments\nWHERE AudioDocuments.Length = 60",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?podcasts a :Podcasts .\n    ?podcasts p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?audiodocuments a :AudioDocuments .\n    ?audiodocuments p:Title ?title .\n    ?audiodocuments p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display podcasts and audio documents lasting 60 minutes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?podcasts a :Podcasts .\n    ?podcasts p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?audiodocuments a :AudioDocuments .\n    ?audiodocuments p:Title ?title .\n    ?audiodocuments p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?podcasts a :Podcasts .\n    ?podcasts p:Title ?title .\n    ?podcasts p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?audiodocuments a :AudioDocuments .\n    ?audiodocuments p:Title ?title .\n    ?audiodocuments p:Length ?length_f .\n    FILTER((STR(?length_f) = \"60\" || STR(?length_f) = \"60.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

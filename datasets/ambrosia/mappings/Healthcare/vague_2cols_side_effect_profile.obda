@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Patients_base
+target		ex:Patients/{patient_id} a :Patients ; p:patient_id {patient_id} ; p:name {name} ; p:age {age} .
+source		SELECT `patient_id`, `name`, `age` FROM `Patients`
+
+mappingId	Doctors_base
+target		ex:Doctors/{doctor_id} a :Doctors ; p:doctor_id {doctor_id} ; p:name {name} ; p:specialty {specialty} .
+source		SELECT `doctor_id`, `name`, `specialty` FROM `Doctors`
+
+mappingId	Medications_base
+target		ex:Medications/{medication_id} a :Medications ; p:medication_id {medication_id} ; p:antibiotic {antibiotic} ; p:common_side_effects {common_side_effects} ; p:serious_side_effects {serious_side_effects} ; p:dosage {dosage} .
+source		SELECT `medication_id`, `antibiotic`, `common_side_effects`, `serious_side_effects`, `dosage` FROM `Medications`
+
+mappingId	Prescriptions_base
+target		ex:Prescriptions/{prescription_id} a :Prescriptions ; p:prescription_id {prescription_id} ; p:patient_id {patient_id} ; p:doctor_id {doctor_id} ; p:medication_id {medication_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `prescription_id`, `patient_id`, `doctor_id`, `medication_id`, `start_date`, `end_date` FROM `Prescriptions`
+
+mappingId	Prescriptions_medication_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasMedications ex:Medications/{medication_id} .
+source		SELECT `prescription_id`, `medication_id` FROM `Prescriptions` WHERE `medication_id` IS NOT NULL
+
+mappingId	Prescriptions_doctor_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `prescription_id`, `doctor_id` FROM `Prescriptions` WHERE `doctor_id` IS NOT NULL
+
+mappingId	Prescriptions_patient_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `prescription_id`, `patient_id` FROM `Prescriptions` WHERE `patient_id` IS NOT NULL
+
+mappingId	DoctorPatient_base
+target		ex:DoctorPatient/{doctor_patient_id} a :DoctorPatient ; p:doctor_patient_id {doctor_patient_id} ; p:doctor_id {doctor_id} ; p:patient_id {patient_id} ; p:relationship {relationship} .
+source		SELECT `doctor_patient_id`, `doctor_id`, `patient_id`, `relationship` FROM `DoctorPatient`
+
+mappingId	DoctorPatient_patient_id_fk
+target		ex:DoctorPatient/{doctor_patient_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `doctor_patient_id`, `patient_id` FROM `DoctorPatient` WHERE `patient_id` IS NOT NULL
+
+mappingId	DoctorPatient_doctor_id_fk
+target		ex:DoctorPatient/{doctor_patient_id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `doctor_patient_id`, `doctor_id` FROM `DoctorPatient` WHERE `doctor_id` IS NOT NULL
+
+mappingId	Diagnosis_base
+target		ex:Diagnoses/{diagnosis_id} a :Diagnoses ; p:diagnosis_id {diagnosis_id} ; p:patient_id {patient_id} ; p:diagnosis_text {diagnosis_text} ; p:diagnosis_code {diagnosis_code} .
+source		SELECT `diagnosis_id`, `patient_id`, `diagnosis_text`, `diagnosis_code` FROM `Diagnosis`
+
+mappingId	Diagnosis_patient_id_fk
+target		ex:Diagnoses/{diagnosis_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `diagnosis_id`, `patient_id` FROM `Diagnosis` WHERE `patient_id` IS NOT NULL
+
+]]

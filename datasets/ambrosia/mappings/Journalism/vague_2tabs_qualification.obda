@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Degree_base
+target		ex:Degree/{degreeID} a :Degree ; p:degreeID {degreeID} ; p:title {title} ; p:major {major} .
+source		SELECT `degreeID`, `title`, `major` FROM `Degree`
+
+mappingId	Certificate_base
+target		ex:Certificate/{certificateID} a :Certificate ; p:certificateID {certificateID} ; p:name {name} ; p:issueDate {issueDate} .
+source		SELECT `certificateID`, `name`, `issueDate` FROM `Certificate`
+
+mappingId	Investigative_Journalist_base
+target		ex:Investigative_Journalist/{journalistID} a :Investigative_Journalist ; p:journalistID {journalistID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:degreeID {degreeID} ; p:certificateID {certificateID} .
+source		SELECT `journalistID`, `firstName`, `lastName`, `degreeID`, `certificateID` FROM `Investigative_Journalist`
+
+mappingId	Investigative_Journalist_certificateID_fk
+target		ex:Investigative_Journalist/{journalistID} p:hasCertificate ex:Certificate/{certificateID} .
+source		SELECT `journalistID`, `certificateID` FROM `Investigative_Journalist` WHERE `certificateID` IS NOT NULL
+
+mappingId	Investigative_Journalist_degreeID_fk
+target		ex:Investigative_Journalist/{journalistID} p:hasDegree ex:Degree/{degreeID} .
+source		SELECT `journalistID`, `degreeID` FROM `Investigative_Journalist` WHERE `degreeID` IS NOT NULL
+
+mappingId	Article_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:headline {headline} ; p:content {content} ; p:publishedDate {publishedDate} ; p:journalistID {journalistID} .
+source		SELECT `articleID`, `headline`, `content`, `publishedDate`, `journalistID` FROM `Article`
+
+mappingId	Article_journalistID_fk
+target		ex:Articles/{articleID} p:hasInvestigative_Journalist ex:Investigative_Journalist/{journalistID} .
+source		SELECT `articleID`, `journalistID` FROM `Article` WHERE `journalistID` IS NOT NULL
+
+mappingId	Source_base
+target		ex:Sources/{sourceID} a :Sources ; p:sourceID {sourceID} ; p:name {name} ; p:type {type} ; p:contactInfo {contactInfo} ; p:articleID {articleID} .
+source		SELECT `sourceID`, `name`, `type`, `contactInfo`, `articleID` FROM `Source`
+
+mappingId	Source_articleID_fk
+target		ex:Sources/{sourceID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `sourceID`, `articleID` FROM `Source` WHERE `articleID` IS NOT NULL
+
+]]

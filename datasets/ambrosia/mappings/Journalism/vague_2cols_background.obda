@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Article_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:author_id {author_id} ; p:publication_date {publication_date} .
+source		SELECT `id`, `title`, `content`, `author_id`, `publication_date` FROM `Article`
+
+mappingId	Article_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Article` WHERE `author_id` IS NOT NULL
+
+mappingId	Author_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Author`
+
+mappingId	Journalist_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:name {name} ; p:email {email} ; p:education {education} ; p:experience {experience} ; p:photojournalist {photojournalist} .
+source		SELECT `id`, `name`, `email`, `education`, `experience`, `photojournalist` FROM `Journalist`
+
+mappingId	Publisher_base
+target		ex:Publishers/{id} a :Publishers ; p:id {id} ; p:name {name} ; p:address {address} ; p:contact_email {contact_email} .
+source		SELECT `id`, `name`, `address`, `contact_email` FROM `Publisher`
+
+mappingId	Publication_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:publisher_id {publisher_id} ; p:publication_name {publication_name} ; p:start_year {start_year} ; p:end_year {end_year} .
+source		SELECT `id`, `publisher_id`, `publication_name`, `start_year`, `end_year` FROM `Publication`
+
+mappingId	Publication_publisher_id_fk
+target		ex:Publications/{id} p:hasPublishers ex:Publishers/{publisher_id} .
+source		SELECT `id`, `publisher_id` FROM `Publication` WHERE `publisher_id` IS NOT NULL
+
+]]

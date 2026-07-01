@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_accommodation2",
+  "schema": "amb_attachment_1tab_ref_accommodation2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which chalets are 300.0 per night and which cabins are the same price per night?",
+      "qtype": "unambig",
+      "sql": "SELECT Accomodations.name \nFROM Accomodations JOIN Prices ON Accomodations.id = Prices.accommodationId\nWHERE Accomodations.type = \"Chalet\" AND Prices.price_per_night = 300.0\nUNION\nSELECT Accomodations.name \nFROM Accomodations JOIN Prices ON Accomodations.id = Prices.accommodationId\nWHERE Accomodations.type = \"Cabin\" AND Prices.price_per_night = 300.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Chalet\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Cabin\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show chalets and cabins that are 300.0 per night.",
+      "qtype": "ambig",
+      "sql": "SELECT Accomodations.name \nFROM Accomodations WHERE Accomodations.type = \"Chalet\"\nUNION\nSELECT Accomodations.name \nFROM Accomodations JOIN Prices ON Accomodations.id = Prices.accommodationId\nWHERE Accomodations.type = \"Cabin\" AND Prices.price_per_night = 300.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?accomodations a :Accommodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    FILTER(STR(?type_f) = \"Chalet\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Cabin\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show chalets and cabins that are 300.0 per night.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Chalet\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Cabin\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?accomodations a :Accommodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    FILTER(STR(?type_f) = \"Chalet\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?accomodations a :Accommodations .\n    ?prices a :Prices .\n    ?prices p:hasAccomodations ?accomodations .\n    ?accomodations p:name ?name .\n    ?accomodations p:type ?type_f .\n    ?prices p:price_per_night ?price_per_night_f .\n    FILTER(STR(?type_f) = \"Cabin\")\n    FILTER((STR(?price_per_night_f) = \"300\" || STR(?price_per_night_f) = \"300.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

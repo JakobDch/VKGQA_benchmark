@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_immigration_reporters_countries",
+  "schema": "amb_scope_immigration_reporters_countries",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the countries for every immigration reporter.",
+      "qtype": "ambig",
+      "sql": "SELECT Countries.countryName  from Immigration_Reporters_Countries join Countries on Immigration_Reporters_Countries.countryId = Countries.id join Immigration_Reporters on Immigration_Reporters_Countries.immigrationReporterId = Immigration_Reporters.id   GROUP BY Immigration_Reporters_Countries.countryId HAVING COUNT(DISTINCT Immigration_Reporters_Countries.immigrationReporterId) = (SELECT COUNT(*) FROM  Immigration_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?countryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCountries ?child ; p:hasImmigration_Reporters ?parent . } GROUP BY ?child }\n  ?child p:countryName ?countryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Immigration_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the countries for every immigration reporter.",
+      "qtype": "ambig",
+      "sql": "select immigration_reporters.reportername , countries.countryname from Immigration_Reporters_Countries join Countries on Immigration_Reporters_Countries.countryId = Countries.id join Immigration_Reporters on Immigration_Reporters_Countries.immigrationReporterId = Immigration_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?reportername ?countryname WHERE {\n  ?immigration_reporters_countries a :Immigration_Reporters_Countries .\n  ?countries a :Countries .\n  ?immigration_reporters_countries p:hasCountries ?countries .\n  ?immigration_reporters a :Immigration_Reporters .\n  ?immigration_reporters_countries p:hasImmigration_Reporters ?immigration_reporters .\n  ?immigration_reporters p:reporterName ?reportername .\n  ?countries p:countryName ?countryname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the countries for every immigration reporter.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?countryname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCountries ?child ; p:hasImmigration_Reporters ?parent . } GROUP BY ?child }\n  ?child p:countryName ?countryname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Immigration_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?reportername ?countryname WHERE {\n  ?immigration_reporters_countries a :Immigration_Reporters_Countries .\n  ?countries a :Countries .\n  ?immigration_reporters_countries p:hasCountries ?countries .\n  ?immigration_reporters a :Immigration_Reporters .\n  ?immigration_reporters_countries p:hasImmigration_Reporters ?immigration_reporters .\n  ?immigration_reporters p:reporterName ?reportername .\n  ?countries p:countryName ?countryname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

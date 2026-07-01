@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Address {Address} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth`, `Address` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountID`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Deposits_base
+target		ex:Deposits/{DepositID} a :Deposits ; p:DepositID {DepositID} ; p:AccountID {AccountID} ; p:Amount {Amount} ; p:TransactionDate {TransactionDate} .
+source		SELECT `DepositID`, `AccountID`, `Amount`, `TransactionDate` FROM `Deposits`
+
+mappingId	Deposits_AccountID_fk
+target		ex:Deposits/{DepositID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `DepositID`, `AccountID` FROM `Deposits` WHERE `AccountID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:StockMarketOfferings {StockMarketOfferings} ; p:RaisedCapitalAmount {RaisedCapitalAmount} ; p:InterestRate {InterestRate} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `LoanID`, `CustomerID`, `StockMarketOfferings`, `RaisedCapitalAmount`, `InterestRate`, `StartDate`, `EndDate` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+]]

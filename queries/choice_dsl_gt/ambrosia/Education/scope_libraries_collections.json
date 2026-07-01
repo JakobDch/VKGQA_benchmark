@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_libraries_collections",
+  "schema": "amb_scope_libraries_collections",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the collections corresponding to each library?",
+      "qtype": "ambig",
+      "sql": "SELECT Collections.collection_name  from Libraries_Collections join Collections on Libraries_Collections.collection_id = Collections.collection_id join Libraries on Libraries_Collections.library_id = Libraries.id   GROUP BY Libraries_Collections.collection_id HAVING COUNT(DISTINCT Libraries_Collections.library_id) = (SELECT COUNT(*) FROM  Libraries)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?collection_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCollections ?child ; p:hasLibraries ?parent . } GROUP BY ?child }\n  ?child p:collection_name ?collection_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Libraries } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the collections corresponding to each library?",
+      "qtype": "ambig",
+      "sql": "select libraries.name , collections.collection_name from Libraries_Collections join Collections on Libraries_Collections.collection_id = Collections.collection_id join Libraries on Libraries_Collections.library_id = Libraries.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?collection_name WHERE {\n  ?libraries_collections a :Libraries_Collections .\n  ?collections a :Collections .\n  ?libraries_collections p:hasCollections ?collections .\n  ?libraries a :Libraries .\n  ?libraries_collections p:hasLibraries ?libraries .\n  ?libraries p:name ?name .\n  ?collections p:collection_name ?collection_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the collections corresponding to each library?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?collection_name WHERE {\n  ?libraries_collections a :Libraries_Collections .\n  ?collections a :Collections .\n  ?libraries_collections p:hasCollections ?collections .\n  ?libraries a :Libraries .\n  ?libraries_collections p:hasLibraries ?libraries .\n  ?libraries p:name ?name .\n  ?collections p:collection_name ?collection_name .\n} }\n  collective: { SELECT ?collection_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCollections ?child ; p:hasLibraries ?parent . } GROUP BY ?child }\n  ?child p:collection_name ?collection_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Libraries } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

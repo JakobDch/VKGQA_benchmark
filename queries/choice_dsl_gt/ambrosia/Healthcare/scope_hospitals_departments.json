@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_hospitals_departments",
+  "schema": "amb_scope_hospitals_departments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What department does every hospital have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Departments.departmentName  from Hospitals_Departments join Departments on Hospitals_Departments.departmentId = Departments.id join Hospitals on Hospitals_Departments.hospitalId = Hospitals.id   GROUP BY Hospitals_Departments.departmentId HAVING COUNT(DISTINCT Hospitals_Departments.hospitalId) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?departmentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDepartments ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:departmentName ?departmentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the departments that each hospital has.",
+      "qtype": "ambig",
+      "sql": "select hospitals.name , departments.departmentname from Hospitals_Departments join Departments on Hospitals_Departments.departmentId = Departments.id join Hospitals on Hospitals_Departments.hospitalId = Hospitals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?departmentname WHERE {\n  ?hospitals_departments a :Hospitals_Departments .\n  ?departments a :Departments .\n  ?hospitals_departments p:hasDepartments ?departments .\n  ?hospitals a :Hospitals .\n  ?hospitals_departments p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?departments p:departmentName ?departmentname .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the departments that each hospital has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?departmentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDepartments ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:departmentName ?departmentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?departmentname WHERE {\n  ?hospitals_departments a :Hospitals_Departments .\n  ?departments a :Departments .\n  ?hospitals_departments p:hasDepartments ?departments .\n  ?hospitals a :Hospitals .\n  ?hospitals_departments p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?departments p:departmentName ?departmentname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

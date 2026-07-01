@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_academic_papers",
+  "schema": "amb_attachment_1tab_val_academic_papers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the research papers, also show the review articles that use the APA style for citations.",
+      "qtype": "unambig",
+      "sql": "SELECT Papers.Title \nFROM Papers\nWHERE Papers.Academic_PaperType = \"Research Paper\" OR Papers.Academic_PaperType = \"Review Article\" AND Papers.Citation_Style = \"APA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?papers a :Research_Papers .\n  ?papers p:Title ?title .\n  ?papers p:Academic_PaperType ?academic_papertype_w .\n  ?papers p:Academic_PaperType ?academic_papertype_w2 .\n  ?papers p:Citation_Style ?citation_style_w .\n  FILTER((STR(?academic_papertype_w) = \"Research Paper\" || (STR(?academic_papertype_w2) = \"Review Article\" && STR(?citation_style_w) = \"APA\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show both the research papers and review articles where either use the APA citation style.",
+      "qtype": "unambig",
+      "sql": "SELECT Papers.Title \nFROM Papers\nWHERE (Papers.Academic_PaperType = \"Research Paper\" OR Papers.Academic_PaperType = \"Review Article\") AND Papers.Citation_Style = \"APA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?papers a :Research_Papers .\n  ?papers p:Title ?title .\n  ?papers p:Academic_PaperType ?academic_papertype_w .\n  ?papers p:Academic_PaperType ?academic_papertype_w2 .\n  ?papers p:Citation_Style ?citation_style_w .\n  FILTER((((STR(?academic_papertype_w) = \"Research Paper\" || STR(?academic_papertype_w2) = \"Review Article\")) && STR(?citation_style_w) = \"APA\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Please show all research papers and review articles using the APA citation style.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?papers a :Research_Papers .\n  ?papers p:Title ?title .\n  ?papers p:Academic_PaperType ?academic_papertype_w .\n  ?papers p:Academic_PaperType ?academic_papertype_w2 .\n  ?papers p:Citation_Style ?citation_style_w .\n  FILTER((STR(?academic_papertype_w) = \"Research Paper\" || (STR(?academic_papertype_w2) = \"Review Article\" && STR(?citation_style_w) = \"APA\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?papers a :Research_Papers .\n  ?papers p:Title ?title .\n  ?papers p:Academic_PaperType ?academic_papertype_w .\n  ?papers p:Academic_PaperType ?academic_papertype_w2 .\n  ?papers p:Citation_Style ?citation_style_w .\n  FILTER((((STR(?academic_papertype_w) = \"Research Paper\" || STR(?academic_papertype_w2) = \"Review Article\")) && STR(?citation_style_w) = \"APA\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

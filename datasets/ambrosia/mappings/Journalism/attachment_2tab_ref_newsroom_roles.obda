@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Reporters_base
+target		ex:Reporters/{id} a :Reporters ; p:id {id} ; p:name {name} ; p:email {email} ; p:phone_number {phone_number} ; p:address {address} .
+source		SELECT `id`, `name`, `email`, `phone_number`, `address` FROM `Reporters`
+
+mappingId	Photographers_base
+target		ex:Photographers/{id} a :Photographers ; p:id {id} ; p:name {name} ; p:email {email} ; p:phone_number {phone_number} ; p:address {address} .
+source		SELECT `id`, `name`, `email`, `phone_number`, `address` FROM `Photographers`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:deadline {deadline} ; p:reporter_id {reporter_id} ; p:photographer_id {photographer_id} .
+source		SELECT `id`, `title`, `content`, `deadline`, `reporter_id`, `photographer_id` FROM `Articles`
+
+mappingId	Articles_photographer_id_fk
+target		ex:Articles/{id} p:hasPhotographers ex:Photographers/{photographer_id} .
+source		SELECT `id`, `photographer_id` FROM `Articles` WHERE `photographer_id` IS NOT NULL
+
+mappingId	Articles_reporter_id_fk
+target		ex:Articles/{id} p:hasReporters ex:Reporters/{reporter_id} .
+source		SELECT `id`, `reporter_id` FROM `Articles` WHERE `reporter_id` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{id} a :Sources ; p:id {id} ; p:name {name} ; p:contact_info {contact_info} ; p:type {type} .
+source		SELECT `id`, `name`, `contact_info`, `type` FROM `Sources`
+
+mappingId	ArticleSources_base
+target		ex:Article_Source/{_amb_rowid} a :Article_Source ; p:article_id {article_id} ; p:source_id {source_id} ; p:relationship {relationship} .
+source		SELECT `_amb_rowid`, `article_id`, `source_id`, `relationship` FROM `ArticleSources`
+
+mappingId	ArticleSources_source_id_fk
+target		ex:Article_Source/{_amb_rowid} p:hasSources ex:Sources/{source_id} .
+source		SELECT `_amb_rowid`, `source_id` FROM `ArticleSources` WHERE `source_id` IS NOT NULL
+
+mappingId	ArticleSources_article_id_fk
+target		ex:Article_Source/{_amb_rowid} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `_amb_rowid`, `article_id` FROM `ArticleSources` WHERE `article_id` IS NOT NULL
+
+mappingId	ReaderComments_base
+target		ex:ReaderComments/{comment_id} a :ReaderComments ; p:comment_id {comment_id} ; p:reader_name {reader_name} ; p:email {email} ; p:comment {comment} ; p:article_id {article_id} .
+source		SELECT `comment_id`, `reader_name`, `email`, `comment`, `article_id` FROM `ReaderComments`
+
+mappingId	ReaderComments_article_id_fk
+target		ex:ReaderComments/{comment_id} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `comment_id`, `article_id` FROM `ReaderComments` WHERE `article_id` IS NOT NULL
+
+]]

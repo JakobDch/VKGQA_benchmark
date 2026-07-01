@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_age_group",
+  "schema": "amb_attachment_2tab_ref_age_group",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all children's books and also provide a list of young adult books illustrated by Jane Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT ChildrensBooks.title\nFROM Illustrators JOIN ChildrensBooks ON Illustrators.id = ChildrensBooks.illustratorId\nUNION\nSELECT YoungAdultBooks.title\nFROM Illustrators JOIN YoungAdultBooks ON Illustrators.id = YoungAdultBooks.illustratorId\nWHERE Illustrators.illustratorName = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?illustrators a :Illustrator .\n    ?childrensbooks a :ChildrensBooks .\n    ?childrensbooks p:hasIllustrators ?illustrators .\n    ?childrensbooks p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?illustrators a :Illustrator .\n    ?youngadultbooks a :ChildrensBooks .\n    ?youngadultbooks p:hasIllustrators ?illustrators .\n    ?youngadultbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show children's books and young adult books illustrated by Jane Smith.",
+      "qtype": "ambig",
+      "sql": "SELECT ChildrensBooks.title\nFROM Illustrators JOIN ChildrensBooks ON Illustrators.id = ChildrensBooks.illustratorId\nWHERE Illustrators.illustratorName = \"Jane Smith\"\nUNION\nSELECT YoungAdultBooks.title\nFROM Illustrators JOIN YoungAdultBooks ON Illustrators.id = YoungAdultBooks.illustratorId\nWHERE Illustrators.illustratorName = \"Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?illustrators a :Illustrator .\n    ?childrensbooks a :ChildrensBooks .\n    ?childrensbooks p:hasIllustrators ?illustrators .\n    ?childrensbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?illustrators a :Illustrator .\n    ?youngadultbooks a :ChildrensBooks .\n    ?youngadultbooks p:hasIllustrators ?illustrators .\n    ?youngadultbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show children's books and young adult books illustrated by Jane Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?illustrators a :Illustrator .\n    ?childrensbooks a :ChildrensBooks .\n    ?childrensbooks p:hasIllustrators ?illustrators .\n    ?childrensbooks p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?illustrators a :Illustrator .\n    ?youngadultbooks a :ChildrensBooks .\n    ?youngadultbooks p:hasIllustrators ?illustrators .\n    ?youngadultbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?illustrators a :Illustrator .\n    ?childrensbooks a :ChildrensBooks .\n    ?childrensbooks p:hasIllustrators ?illustrators .\n    ?childrensbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?illustrators a :Illustrator .\n    ?youngadultbooks a :ChildrensBooks .\n    ?youngadultbooks p:hasIllustrators ?illustrators .\n    ?youngadultbooks p:title ?title .\n    ?illustrators p:illustratorName ?illustratorname_f .\n    FILTER(STR(?illustratorname_f) = \"Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

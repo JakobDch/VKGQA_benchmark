@@ -1,0 +1,53 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_life_expectancy",
+  "schema": "amb_vague_2cols_life_expectancy",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For the first region provide the average life expectancy and the gender adjusted result.",
+      "qtype": "unambig",
+      "sql": "SELECT average_years_of_life, gender_specific_life_expectancy\nFROM LifeExpectancies\nORDER BY region_id\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?average_years_of_life ?gender_specific_life_expectancy WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:average_years_of_life ?average_years_of_life .\n  ?lifeexpectancies p:gender_specific_life_expectancy ?gender_specific_life_expectancy .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the life expectancy of the region with the lowest ID?",
+      "qtype": "ambig",
+      "sql": "SELECT average_years_of_life\nFROM LifeExpectancies\nORDER BY region_id\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?average_years_of_life WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:average_years_of_life ?average_years_of_life .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the life expectancy of the region with the lowest ID?",
+      "qtype": "ambig",
+      "sql": "SELECT gender_specific_life_expectancy\nFROM LifeExpectancies\nORDER BY region_id\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gender_specific_life_expectancy WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:gender_specific_life_expectancy ?gender_specific_life_expectancy .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the life expectancy of the region with the lowest ID?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?average_years_of_life ?gender_specific_life_expectancy WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:average_years_of_life ?average_years_of_life .\n  ?lifeexpectancies p:gender_specific_life_expectancy ?gender_specific_life_expectancy .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1 }\n  component: { SELECT ?gender_specific_life_expectancy WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:gender_specific_life_expectancy ?gender_specific_life_expectancy .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1 }\n  component_2: { SELECT ?average_years_of_life WHERE {\n  ?lifeexpectancies a :LifeExpectancies .\n  ?lifeexpectancies p:average_years_of_life ?average_years_of_life .\n  ?lifeexpectancies p:region_id ?region_id_o .\n}\nORDER BY ASC(?region_id_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

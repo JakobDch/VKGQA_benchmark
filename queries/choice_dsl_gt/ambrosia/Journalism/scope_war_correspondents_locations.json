@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_war_correspondents_locations",
+  "schema": "amb_scope_war_correspondents_locations",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which locations are the same for all the war correspondents?",
+      "qtype": "unambig",
+      "sql": "SELECT Locations.locationName  from War_Correspondents_Locations join Locations on War_Correspondents_Locations.locationId = Locations.id join War_Correspondents on War_Correspondents_Locations.warCorrespondentId = War_Correspondents.id   GROUP BY War_Correspondents_Locations.locationId HAVING COUNT(DISTINCT War_Correspondents_Locations.warCorrespondentId) = (SELECT COUNT(*) FROM  War_Correspondents)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?locationname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasWar_Correspondents ?parent . } GROUP BY ?child }\n  ?child p:locationName ?locationname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :War_Correspondents } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every war correspondent, show the locations that they report from.",
+      "qtype": "unambig",
+      "sql": "select war_correspondents.name , locations.locationname from War_Correspondents_Locations join Locations on War_Correspondents_Locations.locationId = Locations.id join War_Correspondents on War_Correspondents_Locations.warCorrespondentId = War_Correspondents.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?locationname WHERE {\n  ?war_correspondents_locations a :War_Correspondents_Locations .\n  ?locations a :Locations .\n  ?war_correspondents_locations p:hasLocations ?locations .\n  ?war_correspondents a :War_Correspondents .\n  ?war_correspondents_locations p:hasWar_Correspondents ?war_correspondents .\n  ?war_correspondents p:name ?name .\n  ?locations p:locationName ?locationname .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the locations that each war correspondent reports from.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?locationname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasWar_Correspondents ?parent . } GROUP BY ?child }\n  ?child p:locationName ?locationname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :War_Correspondents } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?locationname WHERE {\n  ?war_correspondents_locations a :War_Correspondents_Locations .\n  ?locations a :Locations .\n  ?war_correspondents_locations p:hasLocations ?locations .\n  ?war_correspondents a :War_Correspondents .\n  ?war_correspondents_locations p:hasWar_Correspondents ?war_correspondents .\n  ?war_correspondents p:name ?name .\n  ?locations p:locationName ?locationname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

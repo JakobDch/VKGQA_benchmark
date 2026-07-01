@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_media_jobs",
+  "schema": "amb_attachment_1tab_ref_media_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the salaries of editors and the salaries of only those journalists who work in English.",
+      "qtype": "unambig",
+      "sql": "SELECT Jobs.Salary \nFROM Jobs JOIN Languages ON Jobs.LanguageProficiencyID = Languages.ID\nWHERE Jobs.Title = \"Editor\" OR Jobs.Title = \"Journalist\" AND Languages.Name = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salary WHERE {\n  ?jobs a :Jobs .\n  ?languages a :Languages .\n  ?jobs p:hasLanguages ?languages .\n  ?jobs p:Salary ?salary .\n  ?jobs p:Title ?title_w .\n  ?jobs p:Title ?title_w2 .\n  ?languages p:name ?name_w .\n  FILTER((STR(?title_w) = \"Editor\" || (STR(?title_w2) = \"Journalist\" && STR(?name_w) = \"English\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show editor or journalist salaries for English-language positions.",
+      "qtype": "unambig",
+      "sql": "SELECT Jobs.Salary  \nFROM Jobs JOIN Languages ON Jobs.LanguageProficiencyID = Languages.ID\nWHERE (Jobs.Title = \"Editor\" OR Jobs.Title = \"Journalist\") AND Languages.Name = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salary WHERE {\n  ?jobs a :Jobs .\n  ?languages a :Languages .\n  ?jobs p:hasLanguages ?languages .\n  ?jobs p:Salary ?salary .\n  ?jobs p:Title ?title_w .\n  ?jobs p:Title ?title_w2 .\n  ?languages p:name ?name_w .\n  FILTER((((STR(?title_w) = \"Editor\" || STR(?title_w2) = \"Journalist\")) && STR(?name_w) = \"English\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display salaries for English-speaking journalists and editors.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?salary WHERE {\n  ?jobs a :Jobs .\n  ?languages a :Languages .\n  ?jobs p:hasLanguages ?languages .\n  ?jobs p:Salary ?salary .\n  ?jobs p:Title ?title_w .\n  ?jobs p:Title ?title_w2 .\n  ?languages p:name ?name_w .\n  FILTER((STR(?title_w) = \"Editor\" || (STR(?title_w2) = \"Journalist\" && STR(?name_w) = \"English\")))\n} }\n  high: { SELECT ?salary WHERE {\n  ?jobs a :Jobs .\n  ?languages a :Languages .\n  ?jobs p:hasLanguages ?languages .\n  ?jobs p:Salary ?salary .\n  ?jobs p:Title ?title_w .\n  ?jobs p:Title ?title_w2 .\n  ?languages p:name ?name_w .\n  FILTER((((STR(?title_w) = \"Editor\" || STR(?title_w2) = \"Journalist\")) && STR(?name_w) = \"English\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

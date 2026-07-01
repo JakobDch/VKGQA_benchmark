@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_cinematographies_techniques",
+  "schema": "amb_scope_cinematographies_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me what techniques were used in each film.",
+      "qtype": "ambig",
+      "sql": "SELECT Techniques.technique_name  from Cinematographies_Techniques join Techniques on Cinematographies_Techniques.technique_id = Techniques.id join Cinematographies on Cinematographies_Techniques.cinematography_id = Cinematographies.id   GROUP BY Cinematographies_Techniques.technique_id HAVING COUNT(DISTINCT Cinematographies_Techniques.cinematography_id) = (SELECT COUNT(*) FROM  Cinematographies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasCinematographies ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cinematographies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me what techniques were used in each film.",
+      "qtype": "ambig",
+      "sql": "select cinematographies.name , techniques.technique_name from Cinematographies_Techniques join Techniques on Cinematographies_Techniques.technique_id = Techniques.id join Cinematographies on Cinematographies_Techniques.cinematography_id = Cinematographies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?technique_name WHERE {\n  ?cinematographies_techniques a :Cinematographies_Techniques .\n  ?techniques a :Techniques .\n  ?cinematographies_techniques p:hasTechniques ?techniques .\n  ?cinematographies a :Cinematographies .\n  ?cinematographies_techniques p:hasCinematographies ?cinematographies .\n  ?cinematographies p:name ?name .\n  ?techniques p:technique_name ?technique_name .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me what techniques were used in each film.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?technique_name WHERE {\n  ?cinematographies_techniques a :Cinematographies_Techniques .\n  ?techniques a :Techniques .\n  ?cinematographies_techniques p:hasTechniques ?techniques .\n  ?cinematographies a :Cinematographies .\n  ?cinematographies_techniques p:hasCinematographies ?cinematographies .\n  ?cinematographies p:name ?name .\n  ?techniques p:technique_name ?technique_name .\n} }\n  collective: { SELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasCinematographies ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cinematographies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {EmailAddress} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth`, `EmailAddress` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:InterestRate {InterestRate} ; p:OpenDate {OpenDate} ; p:Status {Status} ; p:CustomerID {CustomerID} .
+source		SELECT `AccountNumber`, `Balance`, `InterestRate`, `OpenDate`, `Status`, `CustomerID` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:Amount {Amount} ; p:Term {Term} ; p:Rate {Rate} ; p:ApprovalDate {ApprovalDate} ; p:Status {Status} ; p:CustomerID {CustomerID} .
+source		SELECT `LoanID`, `Amount`, `Term`, `Rate`, `ApprovalDate`, `Status`, `CustomerID` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	EligibilityAndDocuments_base
+target		ex:EligibilityAndDocuments/{ApplicationID} a :EligibilityAndDocuments ; p:ApplicationID {ApplicationID} ; p:Eligibility_Criteria {Eligibility_Criteria} ; p:Documentation_Requirements {Documentation_Requirements} ; p:Business_Loan_Application {Business_Loan_Application} ; p:LoanID {LoanID} .
+source		SELECT `ApplicationID`, `Eligibility_Criteria`, `Documentation_Requirements`, `Business_Loan_Application`, `LoanID` FROM `EligibilityAndDocuments`
+
+mappingId	EligibilityAndDocuments_LoanID_fk
+target		ex:EligibilityAndDocuments/{ApplicationID} p:hasLoans ex:Loans/{LoanID} .
+source		SELECT `ApplicationID`, `LoanID` FROM `EligibilityAndDocuments` WHERE `LoanID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:Description {Description} ; p:Type {Type} ; p:Amount {Amount} ; p:Timestamp {Timestamp} ; p:AccountNumber {AccountNumber} .
+source		SELECT `TransactionID`, `Description`, `Type`, `Amount`, `Timestamp`, `AccountNumber` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{EmployeeID} a :Employees ; p:EmployeeID {EmployeeID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:HireDate {HireDate} ; p:Role {Role} ; p:Salary {Salary} ; p:BranchID {BranchID} .
+source		SELECT `EmployeeID`, `FirstName`, `LastName`, `HireDate`, `Role`, `Salary`, `BranchID` FROM `Employees`
+
+mappingId	Employees_BranchID_fk
+target		ex:Employees/{EmployeeID} p:hasBranches ex:Branches/{BranchID} .
+source		SELECT `EmployeeID`, `BranchID` FROM `Employees` WHERE `BranchID` IS NOT NULL
+
+mappingId	Branches_base
+target		ex:Branches/{BranchID} a :Branches ; p:BranchID {BranchID} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:ManagerID {ManagerID} .
+source		SELECT `BranchID`, `Name`, `Address`, `PhoneNumber`, `ManagerID` FROM `Branches`
+
+mappingId	Branches_ManagerID_fk
+target		ex:Branches/{BranchID} p:hasEmployees ex:Employees/{ManagerID} .
+source		SELECT `BranchID`, `ManagerID` FROM `Branches` WHERE `ManagerID` IS NOT NULL
+
+]]

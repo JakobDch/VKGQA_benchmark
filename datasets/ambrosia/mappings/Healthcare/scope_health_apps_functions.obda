@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Users_base
+target		ex:Users/{userID} a :Users ; p:userID {userID} ; p:username {username} ; p:email {email} ; p:password {password} .
+source		SELECT `userID`, `username`, `email`, `password` FROM `Users`
+
+mappingId	Health_Apps_base
+target		ex:Health_Apps/{appID} a :Health_Apps ; p:appID {appID} ; p:name {name} ; p:description {description} ; p:price {price} .
+source		SELECT `appID`, `name`, `description`, `price` FROM `Health_Apps`
+
+mappingId	Functions_base
+target		ex:Functions/{functionID} a :Functions ; p:functionID {functionID} ; p:value {value} .
+source		SELECT `functionID`, `value` FROM `Functions`
+
+mappingId	Health_Apps_Functions_base
+target		ex:Health_Apps_Functions/{healthAppID}/{functionID} a :Health_Apps_Functions ; p:healthAppID {healthAppID} ; p:functionID {functionID} .
+source		SELECT `healthAppID`, `functionID` FROM `Health_Apps_Functions`
+
+mappingId	Health_Apps_Functions_functionID_fk
+target		ex:Health_Apps_Functions/{healthAppID}/{functionID} p:hasFunctions ex:Functions/{functionID} .
+source		SELECT `healthAppID`, `functionID` FROM `Health_Apps_Functions` WHERE `functionID` IS NOT NULL
+
+mappingId	Health_Apps_Functions_healthAppID_fk
+target		ex:Health_Apps_Functions/{healthAppID}/{functionID} p:hasHealth_Apps ex:Health_Apps/{healthAppID} .
+source		SELECT `healthAppID`, `functionID` FROM `Health_Apps_Functions` WHERE `healthAppID` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Reviews/{reviewID} a :Reviews ; p:reviewID {reviewID} ; p:rating {rating} ; p:comment {comment} ; p:appID {appID} ; p:userID {userID} .
+source		SELECT `reviewID`, `rating`, `comment`, `appID`, `userID` FROM `Reviews`
+
+mappingId	Reviews_userID_fk
+target		ex:Reviews/{reviewID} p:hasUsers ex:Users/{userID} .
+source		SELECT `reviewID`, `userID` FROM `Reviews` WHERE `userID` IS NOT NULL
+
+mappingId	Reviews_appID_fk
+target		ex:Reviews/{reviewID} p:hasHealth_Apps ex:Health_Apps/{appID} .
+source		SELECT `reviewID`, `appID` FROM `Reviews` WHERE `appID` IS NOT NULL
+
+]]

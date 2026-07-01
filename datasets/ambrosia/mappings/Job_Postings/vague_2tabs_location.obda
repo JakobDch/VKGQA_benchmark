@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Office_Address_base
+target		ex:Office_Address/{id} a :Office_Address ; p:id {id} ; p:address {address} ; p:postal_code {postal_code} .
+source		SELECT `id`, `address`, `postal_code` FROM `Office_Address`
+
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:city_name {city_name} ; p:country {country} .
+source		SELECT `id`, `city_name`, `country` FROM `City`
+
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:company_name {company_name} ; p:industry {industry} .
+source		SELECT `id`, `company_name`, `industry` FROM `Company`
+
+mappingId	Internship_base
+target		ex:Internships/{id} a :Internships ; p:id {id} ; p:title {title} ; p:description {description} ; p:start_date {start_date} ; p:end_date {end_date} ; p:office_address_id {office_address_id} ; p:city_id {city_id} .
+source		SELECT `id`, `title`, `description`, `start_date`, `end_date`, `office_address_id`, `city_id` FROM `Internship`
+
+mappingId	Internship_city_id_fk
+target		ex:Internships/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Internship` WHERE `city_id` IS NOT NULL
+
+mappingId	Internship_office_address_id_fk
+target		ex:Internships/{id} p:hasOffice_Address ex:Office_Address/{office_address_id} .
+source		SELECT `id`, `office_address_id` FROM `Internship` WHERE `office_address_id` IS NOT NULL
+
+mappingId	Department_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:department_name {department_name} ; p:company_id {company_id} .
+source		SELECT `id`, `department_name`, `company_id` FROM `Department`
+
+mappingId	Department_company_id_fk
+target		ex:Departments/{id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `id`, `company_id` FROM `Department` WHERE `company_id` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} ; p:hire_date {hire_date} ; p:department_id {department_id} .
+source		SELECT `id`, `first_name`, `last_name`, `email`, `phone_number`, `hire_date`, `department_id` FROM `Employee`
+
+mappingId	Employee_department_id_fk
+target		ex:Employees/{id} p:hasDepartments ex:Departments/{department_id} .
+source		SELECT `id`, `department_id` FROM `Employee` WHERE `department_id` IS NOT NULL
+
+mappingId	Application_base
+target		ex:Application/{id} a :Application ; p:id {id} ; p:application_date {application_date} ; p:internship_id {internship_id} ; p:employee_id {employee_id} ; p:applicant_full_name {applicant_full_name} .
+source		SELECT `id`, `application_date`, `internship_id`, `employee_id`, `applicant_full_name` FROM `Application`
+
+mappingId	Application_employee_id_fk
+target		ex:Application/{id} p:hasEmployees ex:Employees/{employee_id} .
+source		SELECT `id`, `employee_id` FROM `Application` WHERE `employee_id` IS NOT NULL
+
+mappingId	Application_internship_id_fk
+target		ex:Application/{id} p:hasInternships ex:Internships/{internship_id} .
+source		SELECT `id`, `internship_id` FROM `Application` WHERE `internship_id` IS NOT NULL
+
+]]

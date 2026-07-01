@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_software_companies_job_positions",
+  "schema": "amb_scope_software_companies_job_positions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each software company, list the corresponding description of job positions.",
+      "qtype": "unambig",
+      "sql": "select software_companies.company_name , job_positions.description from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?description WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 1,
+      "question": "List the common description of job positions for all software companies.",
+      "qtype": "unambig",
+      "sql": "SELECT Job_Positions.description  from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id   GROUP BY Software_Companies_Job_Positions.job_position_id HAVING COUNT(DISTINCT Software_Companies_Job_Positions.software_company_id) = (SELECT COUNT(*) FROM  Software_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "which job titles and descriptions are associated with each software company?",
+      "qtype": "ambig",
+      "sql": "SELECT Job_Positions.position_title, Job_Positions.description  from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id   GROUP BY Software_Companies_Job_Positions.job_position_id HAVING COUNT(DISTINCT Software_Companies_Job_Positions.software_company_id) = (SELECT COUNT(*) FROM  Software_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_title ?position_title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "which job titles and descriptions are associated with each software company?",
+      "qtype": "ambig",
+      "sql": "select software_companies.company_name , job_positions.position_title , job_positions.description from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?position_title ?description WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:position_title ?position_title .\n  ?job_positions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me the jobs every software company has.",
+      "qtype": "ambig",
+      "sql": "SELECT Job_Positions.position_title  from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id   GROUP BY Software_Companies_Job_Positions.job_position_id HAVING COUNT(DISTINCT Software_Companies_Job_Positions.software_company_id) = (SELECT COUNT(*) FROM  Software_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_title ?position_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Tell me the jobs every software company has.",
+      "qtype": "ambig",
+      "sql": "select software_companies.company_name , job_positions.position_title from Software_Companies_Job_Positions join Job_Positions on Software_Companies_Job_Positions.job_position_id = Job_Positions.id join Software_Companies on Software_Companies_Job_Positions.software_company_id = Software_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company_name ?position_title WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:position_title ?position_title .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display the description of job positions available at each software company.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?company_name ?description WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the jobs every software company has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?position_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_title ?position_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?position_title WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:position_title ?position_title .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which job titles and descriptions are associated with each software company?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?position_title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:job_position_id ?cg . ?child a :Job_Positions ; p:id ?cg . ?l p:software_company_id ?pg . ?parent a :Software_Companies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position_title ?position_title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?company_name ?position_title ?description WHERE {\n  ?software_companies_job_positions a :Software_Companies_Job_Positions .\n  ?job_positions a :Job_Positions .\n  ?software_companies_job_positions p:hasJob_Positions ?job_positions .\n  ?software_companies a :Software_Companies .\n  ?software_companies_job_positions p:hasSoftware_Companies ?software_companies .\n  ?software_companies p:company_name ?company_name .\n  ?job_positions p:position_title ?position_title .\n  ?job_positions p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

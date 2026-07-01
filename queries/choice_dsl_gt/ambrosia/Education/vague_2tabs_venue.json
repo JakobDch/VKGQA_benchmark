@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2tabs_venue",
+  "schema": "amb_vague_2tabs_venue",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the campus building and online platform ranked by the most highly subscribed lecture along with the lecture titles.",
+      "qtype": "unambig",
+      "sql": "SELECT v.name, p.platformName, \n             l.title as 'Lecture Title'\nFROM Campus_Building v \nJOIN Lecture L on campusId = v.id JOIN Online_Platform P on L.onlineId = P.id\nJOIN (SELECT\n         COUNT(StudentId) as Attendance,\n         lectureId\n         FROM Enrollment\n         GROUP BY lectureID) e ON e.lectureID = L.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT DISTINCT ?vn ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v ; p:hasOnline_Platform ?pp . ?v p:name ?vn . ?pp p:platformName ?pn . ?en a :Enrollments ; p:hasLecture ?l }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): derived-table inner-join on Enrollment (Attendance unused) = lectures with >=1 e"
+    },
+    {
+      "qid": 1,
+      "question": "Show the venues ranked by the most highly subscribed lecture along with the lecture titles.",
+      "qtype": "ambig",
+      "sql": "SELECT v.name, \n             l.title as 'Lecture Title'\nFROM Campus_Building v \nJOIN Lecture L on campusId = v.id\nJOIN (SELECT\n         COUNT(StudentId) as Attendance,\n         lectureId\n         FROM Enrollment\n         GROUP BY lectureID) e ON e.lectureID = L.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT DISTINCT ?vn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v . ?v p:name ?vn . ?en a :Enrollments ; p:hasLecture ?l }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): derived-table inner-join on Enrollment = lectures with enrollment; campus+title"
+    },
+    {
+      "qid": 2,
+      "question": "Show the venues ranked by the most highly subscribed lecture along with the lecture titles.",
+      "qtype": "ambig",
+      "sql": "SELECT v.platformName, \n             l.title as 'Lecture Title'\nFROM Online_Platform v \nJOIN Lecture L on onlineId = v.id\nJOIN (SELECT\n         COUNT(StudentId) as Attendance,\n         lectureId\n         FROM Enrollment\n         GROUP BY lectureID) e ON e.lectureID = L.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT DISTINCT ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasOnline_Platform ?v . ?v p:platformName ?pn . ?en a :Enrollments ; p:hasLecture ?l }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): derived-table inner-join on Enrollment = lectures with enrollment; platform+titl"
+    },
+    {
+      "qid": 3,
+      "question": "List the lectures and the campus buildings and/or online platforms they are hosted in.",
+      "qtype": "unambig",
+      "sql": "SELECT v.name, p.platformName, title as 'Lecture Title' FROM Campus_Building v JOIN Lecture L on campusId = v.id JOIN Online_Platform P on L.onlineId = P.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT ?vn ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v ; p:hasOnline_Platform ?pp . ?v p:name ?vn . ?pp p:platformName ?pn }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): unqualified cols resolve to Lecture; campus+platform+title"
+    },
+    {
+      "qid": 4,
+      "question": "List the lectures and the online platforms they are hosted in.",
+      "qtype": "unambig",
+      "sql": "SELECT v.platformName, title as 'Lecture Title' FROM Online_Platform v JOIN Lecture L on onlineId = v.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasOnline_Platform ?v . ?v p:platformName ?pn }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): unqualified cols resolve to Lecture; platform+title"
+    },
+    {
+      "qid": 5,
+      "question": "Where is each lecture held?",
+      "qtype": "ambig",
+      "sql": "SELECT v.name, title as 'Lecture Title' FROM Campus_Building v JOIN Lecture L on campusId = v.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nSELECT ?vn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v . ?v p:name ?vn }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): unqualified cols resolve to Lecture; campus+title"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the venues ranked by the most highly subscribed lecture along with the lecture titles.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nCHOICE vague {\n  full: { SELECT DISTINCT ?vn ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v ; p:hasOnline_Platform ?pp . ?v p:name ?vn . ?pp p:platformName ?pn . ?en a :Enrollments ; p:hasLecture ?l } }\n  component: { SELECT DISTINCT ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasOnline_Platform ?v . ?v p:platformName ?pn . ?en a :Enrollments ; p:hasLecture ?l } }\n  component_2: { SELECT DISTINCT ?vn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v . ?v p:name ?vn . ?en a :Enrollments ; p:hasLecture ?l } }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where is each lecture held?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nCHOICE vague {\n  full: { SELECT ?vn ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v ; p:hasOnline_Platform ?pp . ?v p:name ?vn . ?pp p:platformName ?pn } }\n  component: { SELECT ?pn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasOnline_Platform ?v . ?v p:platformName ?pn } }\n  component_2: { SELECT ?vn ?title WHERE { ?l a :Lecture ; p:title ?title ; p:hasCampus_Building ?v . ?v p:name ?vn } }\n}",
+      "verified": true
+    }
+  ]
+}

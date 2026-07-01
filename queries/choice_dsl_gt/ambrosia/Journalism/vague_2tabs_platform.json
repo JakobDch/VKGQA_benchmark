@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2tabs_platform",
+  "schema": "amb_vague_2tabs_platform",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all articles, mobile apps that they were published on and author names.",
+      "qtype": "unambig",
+      "sql": "SELECT\nArticle.title,\nMobile_App.name,\nAuthor.fullname\nFROM Article\nJOIN News_Agency ON News_Agency.id = Article.newsAgencyId\nJOIN AuthorArticle ON AuthorArticle.authorID = Article.id\nJOIN Author ON Author.id = AuthorArticle.authorID\nJOIN Mobile_App ON News_Agency.MobileAppID = Mobile_App.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?article p:title ?title .\n  ?mobile_app p:name ?name .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "List all the mobile apps with their published articles and dates.",
+      "qtype": "unambig",
+      "sql": "SELECT \nMobile_App.name,\nArticle.title,\nArticle.publishedDate\nFROM Mobile_App\nJOIN News_Agency ON News_Agency.id = Mobile_App.id\nJOIN Article ON Article.newsAgencyID = News_Agency.MobileAppID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title ?publisheddate WHERE {\n  ?mobile_app a :Mobile_App .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?mobile_app p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?mobile_app p:name ?name .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "List all the websites, their mobile apps and their published articles and dates.",
+      "qtype": "unambig",
+      "sql": "SELECT \nWebsite.name,\nWebsite.url, Mobile_App.name,\nArticle.title,\nArticle.publishedDate\nFROM Website\nJOIN News_Agency ON News_Agency.id = Website.id\nJOIN Article ON Article.newsAgencyID = News_Agency.websiteID JOIN Mobile_App ON News_Agency.MobileAppID = Mobile_App.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?url ?name2 ?title ?publisheddate WHERE {\n  ?website a :Website .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?website p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?mobile_app p:name ?name2 .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List all platforms and articles published there along with the published date.",
+      "qtype": "ambig",
+      "sql": "SELECT \nWebsite.name,\nWebsite.url,\nArticle.title,\nArticle.publishedDate\nFROM Website\nJOIN News_Agency ON News_Agency.id = Website.id\nJOIN Article ON Article.newsAgencyID = News_Agency.websiteID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?url ?title ?publisheddate WHERE {\n  ?website a :Website .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?website p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Show all articles, websites and mobile apps on which they were published, along with the author names.",
+      "qtype": "unambig",
+      "sql": "SELECT\nArticle.title,\nWebsite.name, Website.url, Mobile_App.name,\nAuthor.fullname\nFROM Article\nJOIN News_Agency ON News_Agency.id = Article.newsAgencyId\nJOIN AuthorArticle ON AuthorArticle.authorID = Article.id\nJOIN Author ON Author.id = AuthorArticle.authorID\nJOIN Website ON News_Agency.websiteID = Website.id JOIN Mobile_App ON News_Agency.MobileAppID = Mobile_App.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?url ?name2 ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?website a :Website .\n  ?news_agency p:hasWebsite ?website .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?article p:title ?title .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?mobile_app p:name ?name2 .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show all articles, websites that they were published on and author names.",
+      "qtype": "unambig",
+      "sql": "SELECT\nArticle.title,\nWebsite.name,Website.url,\nAuthor.fullname\nFROM Article\nJOIN News_Agency ON News_Agency.id = Article.newsAgencyId\nJOIN AuthorArticle ON AuthorArticle.authorID = Article.id\nJOIN Author ON Author.id = AuthorArticle.authorID\nJOIN Website ON News_Agency.websiteID = Website.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?url ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?website a :Website .\n  ?news_agency p:hasWebsite ?website .\n  ?article p:title ?title .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all articles, platforms that they were published on and author name.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?name ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?article p:title ?title .\n  ?mobile_app p:name ?name .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n} }\n  full: { SELECT ?title ?name ?url ?name2 ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?website a :Website .\n  ?news_agency p:hasWebsite ?website .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?article p:title ?title .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?mobile_app p:name ?name2 .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n} }\n  component_2: { SELECT ?title ?name ?url ?fullname WHERE {\n  ?article a :Articles .\n  ?news_agency a :News_Agency .\n  ?article p:hasNews_Agency ?news_agency .\n  ?authorarticle a :Article_Authors .\n  ?authorarticle p:authorId ?authorid_l .\n  ?article p:id ?id_r .\n  ?author a :Authors .\n  ?authorarticle p:hasAuthor ?author .\n  ?website a :Website .\n  ?news_agency p:hasWebsite ?website .\n  ?article p:title ?title .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?author p:name ?fullname .\n  FILTER(STR(?authorid_l) = STR(?id_r))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all platforms and articles published there along with the published date.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?title ?publisheddate WHERE {\n  ?mobile_app a :Mobile_App .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?mobile_app p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?mobile_app p:name ?name .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n} }\n  full: { SELECT ?name ?url ?name2 ?title ?publisheddate WHERE {\n  ?website a :Website .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?website p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?mobile_app a :Mobile_App .\n  ?news_agency p:hasMobile_App ?mobile_app .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?mobile_app p:name ?name2 .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n} }\n  component_2: { SELECT ?name ?url ?title ?publisheddate WHERE {\n  ?website a :Website .\n  ?news_agency a :News_Agency .\n  ?news_agency p:id ?id_l .\n  ?website p:id ?id_r .\n  ?article a :Articles .\n  ?article p:hasNews_Agency ?news_agency .\n  ?website p:name ?name .\n  ?website p:url ?url .\n  ?article p:title ?title .\n  ?article p:publishedDate ?publisheddate .\n  FILTER(STR(?id_l) = STR(?id_r))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

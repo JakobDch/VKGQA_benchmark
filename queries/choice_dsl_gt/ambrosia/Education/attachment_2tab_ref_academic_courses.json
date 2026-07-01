@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_ref_academic_courses",
+  "schema": "amb_attachment_2tab_ref_academic_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the names of both engineering and design courses where either have a project named \"Waste Management System\".",
+      "qtype": "unambig",
+      "sql": "SELECT EngineeringClasses.classname\nFROM Projects JOIN EngineeringClasses ON Projects.EngineeringClassId = EngineeringClasses.ClassID\nWHERE Projects.ProjectName = 'Waste Management System'\nUNION\nSELECT DesignClasses.classname\nFROM Projects JOIN DesignClasses ON Projects.DesignClassId = DesignClasses.ClassID\nWHERE Projects.ProjectName = 'Waste Management System'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?engineeringclasses a :EngineeringClasses .\n    ?projects p:hasEngineeringClasses ?engineeringclasses .\n    ?engineeringclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?designclasses a :DesignClasses .\n    ?projects p:hasDesignClasses ?designclasses .\n    ?designclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show the names of all engineering classes and the names of design classes which have a project named \"Waste Management System\".",
+      "qtype": "unambig",
+      "sql": "SELECT EngineeringClasses.classname\nFROM Projects JOIN EngineeringClasses ON Projects.EngineeringClassId = EngineeringClasses.ClassID\nUNION\nSELECT DesignClasses.classname\nFROM Projects JOIN DesignClasses ON Projects.DesignClassId = DesignClasses.ClassID\nWHERE Projects.ProjectName = 'Waste Management System'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?engineeringclasses a :EngineeringClasses .\n    ?projects p:hasEngineeringClasses ?engineeringclasses .\n    ?engineeringclasses p:ClassName ?classname .\n    BIND(?classname AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?designclasses a :DesignClasses .\n    ?projects p:hasDesignClasses ?designclasses .\n    ?designclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show engineering classes and design classes which have a project named \"Waste Management System\".",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?engineeringclasses a :EngineeringClasses .\n    ?projects p:hasEngineeringClasses ?engineeringclasses .\n    ?engineeringclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?designclasses a :DesignClasses .\n    ?projects p:hasDesignClasses ?designclasses .\n    ?designclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?projects a :Projects .\n    ?engineeringclasses a :EngineeringClasses .\n    ?projects p:hasEngineeringClasses ?engineeringclasses .\n    ?engineeringclasses p:ClassName ?classname .\n    BIND(?classname AS ?o0)\n  }\n  UNION\n  {\n    ?projects a :Projects .\n    ?designclasses a :DesignClasses .\n    ?projects p:hasDesignClasses ?designclasses .\n    ?designclasses p:ClassName ?classname .\n    ?projects p:ProjectName ?projectname_f .\n    FILTER(STR(?projectname_f) = \"Waste Management System\")\n    BIND(?classname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

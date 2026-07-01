@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Real_Estate_Reporters_base
+target		ex:Real_Estate_Reporters/{id} a :Real_Estate_Reporters ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Real_Estate_Reporters`
+
+mappingId	Markets_base
+target		ex:Markets/{id} a :Markets ; p:id {id} ; p:market_name {market_name} ; p:description {description} .
+source		SELECT `id`, `market_name`, `description` FROM `Markets`
+
+mappingId	Real_Estate_Reporters_Markets_base
+target		ex:Real_Estate_Reporters_Markets/{_amb_rowid} a :Real_Estate_Reporters_Markets ; p:reporter_id {reporter_id} ; p:market_id {market_id} .
+source		SELECT `_amb_rowid`, `reporter_id`, `market_id` FROM `Real_Estate_Reporters_Markets`
+
+mappingId	Real_Estate_Reporters_Markets_market_id_fk
+target		ex:Real_Estate_Reporters_Markets/{_amb_rowid} p:hasMarkets ex:Markets/{market_id} .
+source		SELECT `_amb_rowid`, `market_id` FROM `Real_Estate_Reporters_Markets` WHERE `market_id` IS NOT NULL
+
+mappingId	Real_Estate_Reporters_Markets_reporter_id_fk
+target		ex:Real_Estate_Reporters_Markets/{_amb_rowid} p:hasReal_Estate_Reporters ex:Real_Estate_Reporters/{reporter_id} .
+source		SELECT `_amb_rowid`, `reporter_id` FROM `Real_Estate_Reporters_Markets` WHERE `reporter_id` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{article_id} a :Articles ; p:article_id {article_id} ; p:title {title} ; p:content {content} ; p:published_date {published_date} .
+source		SELECT `article_id`, `title`, `content`, `published_date` FROM `Articles`
+
+mappingId	Reporter_Articles_base
+target		ex:Reporter_Articles/{_amb_rowid} a :Reporter_Articles ; p:reporter_id {reporter_id} ; p:article_id {article_id} .
+source		SELECT `_amb_rowid`, `reporter_id`, `article_id` FROM `Reporter_Articles`
+
+mappingId	Reporter_Articles_article_id_fk
+target		ex:Reporter_Articles/{_amb_rowid} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `_amb_rowid`, `article_id` FROM `Reporter_Articles` WHERE `article_id` IS NOT NULL
+
+mappingId	Reporter_Articles_reporter_id_fk
+target		ex:Reporter_Articles/{_amb_rowid} p:hasReal_Estate_Reporters ex:Real_Estate_Reporters/{reporter_id} .
+source		SELECT `_amb_rowid`, `reporter_id` FROM `Reporter_Articles` WHERE `reporter_id` IS NOT NULL
+
+]]

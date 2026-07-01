@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_cleaning_professional",
+  "schema": "amb_attachment_1tab_ref_cleaning_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which housekeepers work in Park View Inn hotel and which laundry attendants work in the same hotel?",
+      "qtype": "unambig",
+      "sql": "SELECT CleaningProfessionals.name \nFROM CleaningProfessionals JOIN Hotels ON CleaningProfessionals.hotel_id = Hotels.id\nWHERE (CleaningProfessionals.type = \"Housekeeper\" OR CleaningProfessionals.type = \"Laundry Attendant\") AND Hotels.name = \"Park View Inn\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?cleaningprofessionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaningprofessionals p:hasHotels ?hotels .\n  ?cleaningprofessionals p:name ?name .\n  ?cleaningprofessionals p:type ?type_w .\n  ?cleaningprofessionals p:type ?type_w2 .\n  ?hotels p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Housekeeper\" || STR(?type_w2) = \"Laundry Attendant\")) && STR(?name_w) = \"Park View Inn\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me housekeepers and laundry attendants that work in Park View Inn hotel.",
+      "qtype": "ambig",
+      "sql": "SELECT CleaningProfessionals.name \nFROM CleaningProfessionals JOIN Hotels ON CleaningProfessionals.hotel_id = Hotels.id\nWHERE CleaningProfessionals.type = \"Housekeeper\" OR CleaningProfessionals.type = \"Laundry Attendant\" AND Hotels.name = \"Park View Inn\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?cleaningprofessionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaningprofessionals p:hasHotels ?hotels .\n  ?cleaningprofessionals p:name ?name .\n  ?cleaningprofessionals p:type ?type_w .\n  ?cleaningprofessionals p:type ?type_w2 .\n  ?hotels p:name ?name_w .\n  FILTER((STR(?type_w) = \"Housekeeper\" || (STR(?type_w2) = \"Laundry Attendant\" && STR(?name_w) = \"Park View Inn\")))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me housekeepers and laundry attendants that work in Park View Inn hotel.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?cleaningprofessionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaningprofessionals p:hasHotels ?hotels .\n  ?cleaningprofessionals p:name ?name .\n  ?cleaningprofessionals p:type ?type_w .\n  ?cleaningprofessionals p:type ?type_w2 .\n  ?hotels p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Housekeeper\" || STR(?type_w2) = \"Laundry Attendant\")) && STR(?name_w) = \"Park View Inn\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?cleaningprofessionals a :CleaningProfessionals .\n  ?hotels a :Hotels .\n  ?cleaningprofessionals p:hasHotels ?hotels .\n  ?cleaningprofessionals p:name ?name .\n  ?cleaningprofessionals p:type ?type_w .\n  ?cleaningprofessionals p:type ?type_w2 .\n  ?hotels p:name ?name_w .\n  FILTER((STR(?type_w) = \"Housekeeper\" || (STR(?type_w2) = \"Laundry Attendant\" && STR(?name_w) = \"Park View Inn\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

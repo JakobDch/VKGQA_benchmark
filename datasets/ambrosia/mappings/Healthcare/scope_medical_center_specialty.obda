@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Medical_Center_base
+target		ex:Medical_Center/{ID} a :Medical_Center ; p:ID {ID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `ID`, `Name`, `Location` FROM `Medical_Center`
+
+mappingId	Specialty_base
+target		ex:Specialty/{ID} a :Specialty ; p:ID {ID} ; p:Type {Type} .
+source		SELECT `ID`, `Type` FROM `Specialty`
+
+mappingId	Medical_Center_Specialty_base
+target		ex:Medical_Center_Specialty/{_amb_rowid} a :Medical_Center_Specialty ; p:Medical_Center_ID {Medical_Center_ID} ; p:Specialty_ID {Specialty_ID} .
+source		SELECT `_amb_rowid`, `Medical_Center_ID`, `Specialty_ID` FROM `Medical_Center_Specialty`
+
+mappingId	Medical_Center_Specialty_Specialty_ID_fk
+target		ex:Medical_Center_Specialty/{_amb_rowid} p:hasSpecialty ex:Specialty/{Specialty_ID} .
+source		SELECT `_amb_rowid`, `Specialty_ID` FROM `Medical_Center_Specialty` WHERE `Specialty_ID` IS NOT NULL
+
+mappingId	Medical_Center_Specialty_Medical_Center_ID_fk
+target		ex:Medical_Center_Specialty/{_amb_rowid} p:hasMedical_Center ex:Medical_Center/{Medical_Center_ID} .
+source		SELECT `_amb_rowid`, `Medical_Center_ID` FROM `Medical_Center_Specialty` WHERE `Medical_Center_ID` IS NOT NULL
+
+mappingId	Doctor_base
+target		ex:Doctors/{ID} a :Doctors ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:LicenseNumber {LicenseNumber} .
+source		SELECT `ID`, `FirstName`, `LastName`, `LicenseNumber` FROM `Doctor`
+
+mappingId	Patient_base
+target		ex:Patients/{ID} a :Patients ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ID`, `FirstName`, `LastName`, `DateOfBirth`, `PhoneNumber` FROM `Patient`
+
+mappingId	Appointment_base
+target		ex:Appointments/{ID} a :Appointments ; p:ID {ID} ; p:Patient_ID {Patient_ID} ; p:Doctor_ID {Doctor_ID} ; p:StartTime {StartTime} ; p:EndTime {EndTime} .
+source		SELECT `ID`, `Patient_ID`, `Doctor_ID`, `StartTime`, `EndTime` FROM `Appointment`
+
+mappingId	Appointment_Doctor_ID_fk
+target		ex:Appointments/{ID} p:hasDoctors ex:Doctors/{Doctor_ID} .
+source		SELECT `ID`, `Doctor_ID` FROM `Appointment` WHERE `Doctor_ID` IS NOT NULL
+
+mappingId	Appointment_Patient_ID_fk
+target		ex:Appointments/{ID} p:hasPatients ex:Patients/{Patient_ID} .
+source		SELECT `ID`, `Patient_ID` FROM `Appointment` WHERE `Patient_ID` IS NOT NULL
+
+]]

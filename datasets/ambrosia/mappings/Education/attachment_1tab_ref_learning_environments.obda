@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:email {Email} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Age`, `Email` FROM `Students`
+
+mappingId	LearningEnvironments_base
+target		ex:LearningEnvironments/{EnvironmentID} a :LearningEnvironments ; p:EnvironmentID {EnvironmentID} ; p:Value {Value} .
+source		SELECT `EnvironmentID`, `Value` FROM `LearningEnvironments`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:ClassroomID {ClassroomID} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `EnrollmentID`, `StudentID`, `ClassroomID`, `StartDate`, `EndDate` FROM `Enrollments`
+
+mappingId	Enrollments_ClassroomID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasClassrooms ex:Classrooms/{ClassroomID} .
+source		SELECT `EnrollmentID`, `ClassroomID` FROM `Enrollments` WHERE `ClassroomID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Classrooms_base
+target		ex:Classrooms/{ClassroomID} a :Classrooms ; p:ClassroomID {ClassroomID} ; p:name {Name} ; p:Capacity {Capacity} ; p:TypeOfEnvironment {TypeOfEnvironment} .
+source		SELECT `ClassroomID`, `Name`, `Capacity`, `TypeOfEnvironment` FROM `Classrooms`
+
+mappingId	Classrooms_TypeOfEnvironment_fk
+target		ex:Classrooms/{ClassroomID} p:hasLearningEnvironments ex:LearningEnvironments/{TypeOfEnvironment} .
+source		SELECT `ClassroomID`, `TypeOfEnvironment` FROM `Classrooms` WHERE `TypeOfEnvironment` IS NOT NULL
+
+]]

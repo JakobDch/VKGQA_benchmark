@@ -1,0 +1,55 @@
+@prefix : <http://ambrosia.example.org/housingmarket#> .
+@prefix p: <http://ambrosia.example.org/housingmarket/prop#> .
+@prefix ex: <http://ambrosia.example.org/housingmarket/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_amenities_0_CondoBuildings_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"address\", \"city\", \"state\", \"zipcode\" FROM \"CondoBuildings\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/CondoBuildings/{id}" ; rr:class :CondoBuildings ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:address ; rr:objectMap [ rr:column "address" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:city ; rr:objectMap [ rr:column "city" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:state ; rr:objectMap [ rr:column "state" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:zipcode ; rr:objectMap [ rr:column "zipcode" ] ] .
+
+<#tm_vague_2cols_amenities_1_FacilitiesAndServices_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"facilities\", \"services\", \"condos_id\" FROM \"FacilitiesAndServices\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/FacilitiesAndServices/{id}" ; rr:class :FacilitiesAndServices ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:facilities ; rr:objectMap [ rr:column "facilities" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:services ; rr:objectMap [ rr:column "services" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:condos_id ; rr:objectMap [ rr:column "condos_id" ] ] .
+
+<#tm_vague_2cols_amenities_2_FacilitiesAndServices_condos_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"condos_id\" FROM \"FacilitiesAndServices\" WHERE \"condos_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/FacilitiesAndServices/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCondoBuildings ; rr:objectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/CondoBuildings/{condos_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_amenities_3_Residents_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"age\", \"building_id\" FROM \"Residents\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/Residents/{id}" ; rr:class :Residents ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:building_id ; rr:objectMap [ rr:column "building_id" ] ] .
+
+<#tm_vague_2cols_amenities_4_Residents_building_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"building_id\" FROM \"Residents\" WHERE \"building_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/Residents/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCondoBuildings ; rr:objectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/CondoBuildings/{building_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_amenities_5_Transactions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"resident_id\", \"purchase_price\", \"transaction_date\" FROM \"Transactions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/Transactions/{id}" ; rr:class :Transactions ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:resident_id ; rr:objectMap [ rr:column "resident_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:purchase_price ; rr:objectMap [ rr:column "purchase_price" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:transaction_date ; rr:objectMap [ rr:column "transaction_date" ] ] .
+
+<#tm_vague_2cols_amenities_6_Transactions_resident_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"resident_id\" FROM \"Transactions\" WHERE \"resident_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/Transactions/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasResidents ; rr:objectMap [ rr:template "http://ambrosia.example.org/housingmarket/id/Residents/{resident_id}" ; rr:termType rr:IRI ] ] .
+

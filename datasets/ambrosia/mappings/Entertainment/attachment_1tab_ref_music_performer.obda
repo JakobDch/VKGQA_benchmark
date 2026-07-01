@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genre/{genre_id} a :Genre ; p:genre_id {genre_id} ; p:name {name} .
+source		SELECT `genre_id`, `name` FROM `Genres`
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:artist_id {artist_id} .
+source		SELECT `id`, `title`, `release_date`, `artist_id` FROM `Albums`
+
+mappingId	Albums_artist_id_fk
+target		ex:Album/{id} p:hasArtist ex:Artist/{artist_id} .
+source		SELECT `id`, `artist_id` FROM `Albums` WHERE `artist_id` IS NOT NULL
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:title {title} ; p:length {length} ; p:album_id {album_id} .
+source		SELECT `id`, `title`, `length`, `album_id` FROM `Songs`
+
+mappingId	Songs_album_id_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{album_id} .
+source		SELECT `id`, `album_id` FROM `Songs` WHERE `album_id` IS NOT NULL
+
+mappingId	Artist_genre_base
+target		ex:Artist_genre/{artist_id}/{genre_id} a :Artist_genre ; p:artist_id {artist_id} ; p:genre_id {genre_id} ; p:years_in_industry {years_in_industry} .
+source		SELECT `artist_id`, `genre_id`, `years_in_industry` FROM `Artist_genre`
+
+mappingId	Artist_genre_genre_id_fk
+target		ex:Artist_genre/{artist_id}/{genre_id} p:hasGenre ex:Genre/{genre_id} .
+source		SELECT `artist_id`, `genre_id` FROM `Artist_genre` WHERE `genre_id` IS NOT NULL
+
+mappingId	Artist_genre_artist_id_fk
+target		ex:Artist_genre/{artist_id}/{genre_id} p:hasArtist ex:Artist/{artist_id} .
+source		SELECT `artist_id`, `genre_id` FROM `Artist_genre` WHERE `artist_id` IS NOT NULL
+
+mappingId	Artists_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Artists`
+
+]]

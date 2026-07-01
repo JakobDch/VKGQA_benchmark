@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2cols_side_effect_profile",
+  "schema": "amb_vague_2cols_side_effect_profile",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what are the side effects of a particular medication",
+      "qtype": "ambig",
+      "sql": "select antibiotic, common_side_effects from medications",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?common_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "what are the side effects of a particular medication",
+      "qtype": "ambig",
+      "sql": "select antibiotic, serious_side_effects from medications",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:serious_side_effects ?serious_side_effects .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "what are the side effects of a particular medication",
+      "qtype": "ambig",
+      "sql": "select antibiotic, common_side_effects, serious_side_effects from medications",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?common_side_effects ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?medications p:serious_side_effects ?serious_side_effects .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List the medications prescribed by the neurologist and their common and serious side effects.",
+      "qtype": "unambig",
+      "sql": "select antibiotic, common_side_effects, serious_side_effects from medications join Prescriptions on  Prescriptions.medication_id = Medications.medication_id join Doctors on Doctors.doctor_id = Prescriptions.doctor_id where specialty = 'Neurology'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?common_side_effects ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?medications p:serious_side_effects ?serious_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "what are the medications and their side effects that neurologist prescribed?",
+      "qtype": "ambig",
+      "sql": "select antibiotic, common_side_effects from medications join Prescriptions on  Prescriptions.medication_id = Medications.medication_id join Doctors on Doctors.doctor_id = Prescriptions.doctor_id where specialty = 'Neurology'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?common_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "what are the medications and their side effects that neurologist prescribed?",
+      "qtype": "ambig",
+      "sql": "select antibiotic, serious_side_effects from medications join Prescriptions on  Prescriptions.medication_id = Medications.medication_id join Doctors on Doctors.doctor_id = Prescriptions.doctor_id where specialty = 'Neurology'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?antibiotic ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:serious_side_effects ?serious_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what are the medications and their side effects that neurologist prescribed?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?antibiotic ?common_side_effects ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?medications p:serious_side_effects ?serious_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n} }\n  component: { SELECT ?antibiotic ?common_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n} }\n  component_2: { SELECT ?antibiotic ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?prescriptions a :Prescriptions .\n  ?prescriptions p:hasMedications ?medications .\n  ?doctors a :Doctors .\n  ?prescriptions p:hasDoctors ?doctors .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:serious_side_effects ?serious_side_effects .\n  ?doctors p:specialty ?specialty_f .\n  FILTER(STR(?specialty_f) = STR(\"Neurology\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what are the side effects of a particular medication",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?antibiotic ?common_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n} }\n  full: { SELECT ?antibiotic ?common_side_effects ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:common_side_effects ?common_side_effects .\n  ?medications p:serious_side_effects ?serious_side_effects .\n} }\n  component_2: { SELECT ?antibiotic ?serious_side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:antibiotic ?antibiotic .\n  ?medications p:serious_side_effects ?serious_side_effects .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

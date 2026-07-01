@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Librarians_base
+target		ex:Librarians/{id} a :Librarians ; p:id {id} ; p:name {name} ; p:age {age} ; p:experience {experience} ; p:location {location} .
+source		SELECT `id`, `name`, `age`, `experience`, `location` FROM `Librarians`
+
+mappingId	Archivists_base
+target		ex:Archivists/{id} a :Archivists ; p:id {id} ; p:name {name} ; p:age {age} ; p:experience {experience} ; p:location {location} .
+source		SELECT `id`, `name`, `age`, `experience`, `location` FROM `Archivists`
+
+mappingId	Employers_base
+target		ex:Employers/{id} a :Employers ; p:id {id} ; p:company_name {company_name} ; p:address {address} ; p:contact_info {contact_info} .
+source		SELECT `id`, `company_name`, `address`, `contact_info` FROM `Employers`
+
+mappingId	Applicants_base
+target		ex:Applicants/{id} a :Applicants ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone {phone} .
+source		SELECT `id`, `first_name`, `last_name`, `email`, `phone` FROM `Applicants`
+
+mappingId	JobsPosted_base
+target		ex:JobsPosted/{id} a :JobsPosted ; p:id {id} ; p:employer_id {employer_id} ; p:position {position} ; p:description {description} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `id`, `employer_id`, `position`, `description`, `start_date`, `end_date` FROM `JobsPosted`
+
+mappingId	JobsPosted_employer_id_fk
+target		ex:JobsPosted/{id} p:hasEmployers ex:Employers/{employer_id} .
+source		SELECT `id`, `employer_id` FROM `JobsPosted` WHERE `employer_id` IS NOT NULL
+
+mappingId	ApplicationsSubmitted_base
+target		ex:ApplicationsSubmitted/{application_id} a :ApplicationsSubmitted ; p:application_id {application_id} ; p:applicant_id {applicant_id} ; p:job_posting_id {job_posting_id} ; p:resume {resume} ; p:cover_letter {cover_letter} .
+source		SELECT `application_id`, `applicant_id`, `job_posting_id`, `resume`, `cover_letter` FROM `ApplicationsSubmitted`
+
+mappingId	ApplicationsSubmitted_job_posting_id_fk
+target		ex:ApplicationsSubmitted/{application_id} p:hasJobsPosted ex:JobsPosted/{job_posting_id} .
+source		SELECT `application_id`, `job_posting_id` FROM `ApplicationsSubmitted` WHERE `job_posting_id` IS NOT NULL
+
+mappingId	ApplicationsSubmitted_applicant_id_fk
+target		ex:ApplicationsSubmitted/{application_id} p:hasApplicants ex:Applicants/{applicant_id} .
+source		SELECT `application_id`, `applicant_id` FROM `ApplicationsSubmitted` WHERE `applicant_id` IS NOT NULL
+
+]]

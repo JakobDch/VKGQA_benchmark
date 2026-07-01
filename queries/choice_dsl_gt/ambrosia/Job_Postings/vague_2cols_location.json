@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_location",
+  "schema": "amb_vague_2cols_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Where is the address and city of the marketing office?",
+      "qtype": "unambig",
+      "sql": "SELECT Office_Address, City FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID JOIN Department ON Job_Posting.Departments_ID =Department.ID WHERE Department.Name=\"Marketing\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?office_address ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:Office_Address ?office_address .\n  ?office p:City ?city .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the office address and city of the job with the lowest salary and that job.",
+      "qtype": "unambig",
+      "sql": "SELECT Title, Office_Address, City FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID ORDER BY Salary ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?office_address ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:Office_Address ?office_address .\n  ?office p:City ?city .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Where is the marketing office located?",
+      "qtype": "ambig",
+      "sql": "SELECT Office_Address FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID JOIN Department ON Job_Posting.Departments_ID =Department.ID WHERE Department.Name=\"Marketing\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?office_address WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:Office_Address ?office_address .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Where is the marketing office located?",
+      "qtype": "ambig",
+      "sql": "SELECT City FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID JOIN Department ON Job_Posting.Departments_ID =Department.ID WHERE Department.Name=\"Marketing\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:City ?city .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me the city of the job with the lowest salary and that job.",
+      "qtype": "unambig",
+      "sql": "SELECT Title, City FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID ORDER BY Salary ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:City ?city .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Tell me the office address of the job with the lowest salary and that job.",
+      "qtype": "unambig",
+      "sql": "SELECT Title, Office_Address FROM Office JOIN Job_Posting On Job_Posting.Office_ID = Office.ID ORDER BY Salary ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?office_address WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:Office_Address ?office_address .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where is the marketing office located?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?office_address ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:Office_Address ?office_address .\n  ?office p:City ?city .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n} }\n  component: { SELECT ?office_address WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:Office_Address ?office_address .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n} }\n  component_2: { SELECT ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?department a :Departments .\n  ?job_posting p:hasDepartment ?department .\n  ?office p:City ?city .\n  ?department p:name ?name_f .\n  FILTER(STR(?name_f) = \"Marketing\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the job with the lowest salary and where it is located.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?title ?office_address ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:Office_Address ?office_address .\n  ?office p:City ?city .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1 }\n  component: { SELECT ?title ?city WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:City ?city .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1 }\n  component_2: { SELECT ?title ?office_address WHERE {\n  ?office a :Office .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasOffice ?office .\n  ?job_posting p:Title ?title .\n  ?office p:Office_Address ?office_address .\n  ?job_posting p:Salary ?salary_o .\n}\nORDER BY ASC(?salary_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

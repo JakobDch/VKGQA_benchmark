@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_mental_health_careers",
+  "schema": "amb_attachment_2tab_ref_mental_health_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all psychologists and also provide a list of all psychiatrists working in the clinic called Harmony Wellness Center.",
+      "qtype": "unambig",
+      "sql": "SELECT Psychologists.name\nFROM Clinics JOIN Psychologists ON Clinics.id = Psychologists.clinic_id\nUNION\nSELECT Psychiatrists.name\nFROM Clinics JOIN Psychiatrists ON Clinics.id = Psychiatrists.clinic_id\nWHERE Clinics.name = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?clinics a :Clinics .\n    ?psychologists a :Psychologists .\n    ?psychologists p:hasClinics ?clinics .\n    ?psychologists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?clinics a :Clinics .\n    ?psychiatrists a :Psychiatrists .\n    ?psychiatrists p:hasClinics ?clinics .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What psychologists work in Harmony Wellness Center and what psychiatrists work in the clinic with the same name?",
+      "qtype": "unambig",
+      "sql": "SELECT Psychologists.name\nFROM Clinics JOIN Psychologists ON Clinics.id = Psychologists.clinic_id\nWHERE Clinics.name = \"Harmony Wellness Center\"\nUNION\nSELECT Psychiatrists.name\nFROM Clinics JOIN Psychiatrists ON Clinics.id = Psychiatrists.clinic_id\nWHERE Clinics.name = \"Harmony Wellness Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?clinics a :Clinics .\n    ?psychologists a :Psychologists .\n    ?psychologists p:hasClinics ?clinics .\n    ?psychologists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?clinics a :Clinics .\n    ?psychiatrists a :Psychiatrists .\n    ?psychiatrists p:hasClinics ?clinics .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show psychologists and psychiatrists of Harmony Wellness Center.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?clinics a :Clinics .\n    ?psychologists a :Psychologists .\n    ?psychologists p:hasClinics ?clinics .\n    ?psychologists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?clinics a :Clinics .\n    ?psychiatrists a :Psychiatrists .\n    ?psychiatrists p:hasClinics ?clinics .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?clinics a :Clinics .\n    ?psychologists a :Psychologists .\n    ?psychologists p:hasClinics ?clinics .\n    ?psychologists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?clinics a :Clinics .\n    ?psychiatrists a :Psychiatrists .\n    ?psychiatrists p:hasClinics ?clinics .\n    ?psychiatrists p:name ?name .\n    ?clinics p:name ?name_f .\n    FILTER(STR(?name_f) = \"Harmony Wellness Center\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

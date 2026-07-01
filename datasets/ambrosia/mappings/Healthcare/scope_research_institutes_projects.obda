@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Research_Institutes_base
+target		ex:Research_Institutes/{InstituteID} a :Research_Institutes ; p:InstituteID {InstituteID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `InstituteID`, `Name`, `Location` FROM `Research_Institutes`
+
+mappingId	Projects_base
+target		ex:Projects/{ProjectID} a :Projects ; p:ProjectID {ProjectID} ; p:name {Name} .
+source		SELECT `ProjectID`, `Name` FROM `Projects`
+
+mappingId	Research_Institutes_Projects_base
+target		ex:Research_Institutes_Projects/{_amb_rowid} a :Research_Institutes_Projects ; p:InstituteID {InstituteID} ; p:ProjectID {ProjectID} .
+source		SELECT `_amb_rowid`, `InstituteID`, `ProjectID` FROM `Research_Institutes_Projects`
+
+mappingId	Research_Institutes_Projects_ProjectID_fk
+target		ex:Research_Institutes_Projects/{_amb_rowid} p:hasProjects ex:Projects/{ProjectID} .
+source		SELECT `_amb_rowid`, `ProjectID` FROM `Research_Institutes_Projects` WHERE `ProjectID` IS NOT NULL
+
+mappingId	Research_Institutes_Projects_InstituteID_fk
+target		ex:Research_Institutes_Projects/{_amb_rowid} p:hasResearch_Institutes ex:Research_Institutes/{InstituteID} .
+source		SELECT `_amb_rowid`, `InstituteID` FROM `Research_Institutes_Projects` WHERE `InstituteID` IS NOT NULL
+
+]]

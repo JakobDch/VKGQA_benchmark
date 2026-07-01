@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_performance_event",
+  "schema": "amb_attachment_2tab_ref_performance_event",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What dance recitals are in Room 202, and what talent shows are in the same room?",
+      "qtype": "unambig",
+      "sql": "SELECT Dance_Recital.name\nFROM Audition_Room JOIN Dance_Recital ON Audition_Room.RoomID = Dance_Recital.RoomID\nWHERE Audition_Room.RoomName = \"Room 202\"\nUNION\nSELECT Talent_Show.name\nFROM Audition_Room JOIN Talent_Show ON Audition_Room.RoomID = Talent_Show.RoomID\nWHERE Audition_Room.RoomName = \"Room 202\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?audition_room a :Audition_Room .\n    ?dance_recital a :Dance_Recital .\n    ?dance_recital p:hasAudition_Room ?audition_room .\n    ?dance_recital p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?audition_room a :Audition_Room .\n    ?talent_show a :Talent_Show .\n    ?talent_show p:hasAudition_Room ?audition_room .\n    ?talent_show p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give a list of all dance recitals and also list talent shows in Room 202.",
+      "qtype": "unambig",
+      "sql": "SELECT Dance_Recital.name\nFROM Audition_Room JOIN Dance_Recital ON Audition_Room.RoomID = Dance_Recital.RoomID\nUNION\nSELECT Talent_Show.name\nFROM Audition_Room JOIN Talent_Show ON Audition_Room.RoomID = Talent_Show.RoomID\nWHERE Audition_Room.RoomName = \"Room 202\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?audition_room a :Audition_Room .\n    ?dance_recital a :Dance_Recital .\n    ?dance_recital p:hasAudition_Room ?audition_room .\n    ?dance_recital p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?audition_room a :Audition_Room .\n    ?talent_show a :Talent_Show .\n    ?talent_show p:hasAudition_Room ?audition_room .\n    ?talent_show p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide dance recitals and talent shows in Room 202",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?audition_room a :Audition_Room .\n    ?dance_recital a :Dance_Recital .\n    ?dance_recital p:hasAudition_Room ?audition_room .\n    ?dance_recital p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?audition_room a :Audition_Room .\n    ?talent_show a :Talent_Show .\n    ?talent_show p:hasAudition_Room ?audition_room .\n    ?talent_show p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?audition_room a :Audition_Room .\n    ?dance_recital a :Dance_Recital .\n    ?dance_recital p:hasAudition_Room ?audition_room .\n    ?dance_recital p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?audition_room a :Audition_Room .\n    ?talent_show a :Talent_Show .\n    ?talent_show p:hasAudition_Room ?audition_room .\n    ?talent_show p:name ?name .\n    ?audition_room p:RoomName ?roomname_f .\n    FILTER(STR(?roomname_f) = \"Room 202\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+@prefix : <http://ambrosia.example.org/airport#> .
+@prefix p: <http://ambrosia.example.org/airport/prop#> .
+@prefix ex: <http://ambrosia.example.org/airport/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_restrictions_0_Flights_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FlightID\", \"AirlineName\", \"DepartureTime\", \"ArrivalTime\", \"DestinationCity\", \"NumberOfPassengers\", \"BaggageAllowance\" FROM \"Flights\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{FlightID}" ; rr:class :Flights ] ;
+  rr:predicateObjectMap [ rr:predicate p:FlightID ; rr:objectMap [ rr:column "FlightID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AirlineName ; rr:objectMap [ rr:column "AirlineName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DepartureTime ; rr:objectMap [ rr:column "DepartureTime" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ArrivalTime ; rr:objectMap [ rr:column "ArrivalTime" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DestinationCity ; rr:objectMap [ rr:column "DestinationCity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:NumberOfPassengers ; rr:objectMap [ rr:column "NumberOfPassengers" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BaggageAllowance ; rr:objectMap [ rr:column "BaggageAllowance" ] ] .
+
+<#tm_vague_2cols_restrictions_1_Airports_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AirportCode\", \"AirportName\", \"City\", \"Country\", \"Latitude\", \"Longitude\" FROM \"Airports\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{AirportCode}" ; rr:class :Airports ] ;
+  rr:predicateObjectMap [ rr:predicate p:AirportCode ; rr:objectMap [ rr:column "AirportCode" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AirportName ; rr:objectMap [ rr:column "AirportName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:City ; rr:objectMap [ rr:column "City" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Country ; rr:objectMap [ rr:column "Country" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Latitude ; rr:objectMap [ rr:column "Latitude" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Longitude ; rr:objectMap [ rr:column "Longitude" ] ] .
+
+<#tm_vague_2cols_restrictions_2_Terminals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TerminalId\", \"AirportCode\", \"FloorSpace\", \"NumberOfGates\" FROM \"Terminals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{TerminalId}" ; rr:class :Terminals ] ;
+  rr:predicateObjectMap [ rr:predicate p:TerminalId ; rr:objectMap [ rr:column "TerminalId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AirportCode ; rr:objectMap [ rr:column "AirportCode" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FloorSpace ; rr:objectMap [ rr:column "FloorSpace" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:NumberOfGates ; rr:objectMap [ rr:column "NumberOfGates" ] ] .
+
+<#tm_vague_2cols_restrictions_3_Terminals_AirportCode_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TerminalId\", \"AirportCode\" FROM \"Terminals\" WHERE \"AirportCode\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{TerminalId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAirports ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Airports/{AirportCode}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_restrictions_4_Security_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RestrictionId\", \"SizeLimit\", \"ProhibitedItem\", \"Airlines\" FROM \"Security\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Security/{RestrictionId}" ; rr:class :Security ] ;
+  rr:predicateObjectMap [ rr:predicate p:RestrictionId ; rr:objectMap [ rr:column "RestrictionId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:SizeLimit ; rr:objectMap [ rr:column "SizeLimit" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProhibitedItem ; rr:objectMap [ rr:column "ProhibitedItem" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Airlines ; rr:objectMap [ rr:column "Airlines" ] ] .
+
+<#tm_vague_2cols_restrictions_5_Security_Airlines_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RestrictionId\", \"Airlines\" FROM \"Security\" WHERE \"Airlines\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Security/{RestrictionId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFlights ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{Airlines}" ; rr:termType rr:IRI ] ] .
+

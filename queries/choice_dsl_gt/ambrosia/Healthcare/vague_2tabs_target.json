@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2tabs_target",
+  "schema": "amb_vague_2tabs_target",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List each patient along with suitable vaccines, their age groups and health conditions",
+      "qtype": "unambig",
+      "sql": "SELECT Patient.full_name, Health_Condition.condition_name, Age_Group.Name, Vaccine.Vaccine_Name\nFROM Patient INNER JOIN Age_Group ON Patient.Age_Group_Id = Age_Group.Id \nINNER JOIN Vaccine ON Patient.Age_Group_Id = Vaccine.Age_Group_ID INNER JOIN Health_Condition ON Health_Condition.Id = Vaccine.Health_Condition_Id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?condition_name ?name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?age_group a :Age_Group .\n  ?patient p:hasAge_Group ?age_group .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?health_condition a :Health_Condition .\n  ?vaccine p:hasHealth_Condition ?health_condition .\n  ?patient p:name ?full_name .\n  ?health_condition p:condition_name ?condition_name .\n  ?age_group p:name ?name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List each patient along with suitable vaccines and their health conditions",
+      "qtype": "unambig",
+      "sql": "SELECT Patient.full_name, Health_Condition.condition_name, Vaccine.Vaccine_Name\nFROM Patient INNER JOIN Vaccine ON Patient.Age_Group_Id = Vaccine.Age_Group_ID INNER JOIN  Health_Condition ON Vaccine.Health_Condition_Id = Health_Condition.Id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?condition_name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?health_condition a :Health_Condition .\n  ?vaccine p:hasHealth_Condition ?health_condition .\n  ?patient p:name ?full_name .\n  ?health_condition p:condition_name ?condition_name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "List each patient along with suitable vaccines and their age groups",
+      "qtype": "unambig",
+      "sql": "SELECT Patient.full_name, Age_Group.Name, Vaccine.Vaccine_Name\nFROM Patient INNER JOIN Age_Group ON Patient.Age_Group_Id = Age_Group.Id \nINNER JOIN Vaccine ON Patient.Age_Group_Id = Vaccine.Age_Group_ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?age_group a :Age_Group .\n  ?patient p:hasAge_Group ?age_group .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?patient p:name ?full_name .\n  ?age_group p:name ?name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "List the total number of vaccines appropriate for each age group and health condition.",
+      "qtype": "unambig",
+      "sql": "SELECT Health_Condition.condition_name, Age_Group.Name, Count(*) FROM Age_Group INNER JOIN Vaccine ON Age_Group.Id = Vaccine.age_group_id INNER JOIN Health_Condition ON Health_Condition.Id = Vaccine.Health_Condition_Id\nGROUP BY Age_Group.Name, Health_Condition.condition_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nSELECT ?cn ?agn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasAge_Group ?ag ; p:hasHealth_Condition ?hc . ?ag p:name ?agn . ?hc p:condition_name ?cn . } GROUP BY ?cn ?agn",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "List the total number of vaccines appropriate for each target",
+      "qtype": "ambig",
+      "sql": "SELECT Age_Group.Name, Count(*) FROM Age_Group INNER JOIN Vaccine ON Age_Group.Id = Vaccine.age_group_id\nGROUP BY Age_Group.Name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nSELECT ?agn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasAge_Group ?ag . ?ag p:name ?agn . } GROUP BY ?agn",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 5,
+      "question": "List the total number of vaccines appropriate for each target",
+      "qtype": "ambig",
+      "sql": "SELECT Health_Condition.condition_name, Count(*) FROM Health_Condition INNER JOIN Vaccine ON Health_Condition.Id = Vaccine.Health_Condition_Id\nGROUP BY Health_Condition.condition_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nSELECT ?cn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasHealth_Condition ?hc . ?hc p:condition_name ?cn . } GROUP BY ?cn",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List each patient along with suitable vaccines and what they target",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?full_name ?condition_name ?name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?age_group a :Age_Group .\n  ?patient p:hasAge_Group ?age_group .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?health_condition a :Health_Condition .\n  ?vaccine p:hasHealth_Condition ?health_condition .\n  ?patient p:name ?full_name .\n  ?health_condition p:condition_name ?condition_name .\n  ?age_group p:name ?name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n} }\n  component: { SELECT ?full_name ?condition_name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?health_condition a :Health_Condition .\n  ?vaccine p:hasHealth_Condition ?health_condition .\n  ?patient p:name ?full_name .\n  ?health_condition p:condition_name ?condition_name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n} }\n  component_2: { SELECT ?full_name ?name ?vaccine_name WHERE {\n  ?patient a :Patients .\n  ?age_group a :Age_Group .\n  ?patient p:hasAge_Group ?age_group .\n  ?vaccine a :Vaccine .\n  ?patient p:hasAge_Group ?shared_age_group .\n  ?vaccine p:hasAge_Group ?shared_age_group .\n  ?patient p:name ?full_name .\n  ?age_group p:name ?name .\n  ?vaccine p:vaccine_name ?vaccine_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the total number of vaccines appropriate for each target",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nCHOICE vague {\n  full: { SELECT ?cn ?agn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasAge_Group ?ag ; p:hasHealth_Condition ?hc . ?ag p:name ?agn . ?hc p:condition_name ?cn . } GROUP BY ?cn ?agn }\n  component: { SELECT ?agn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasAge_Group ?ag . ?ag p:name ?agn . } GROUP BY ?agn }\n  component_2: { SELECT ?cn (COUNT(*) AS ?n) WHERE { ?v a :Vaccine ; p:hasHealth_Condition ?hc . ?hc p:condition_name ?cn . } GROUP BY ?cn }\n}",
+      "verified": true
+    }
+  ]
+}

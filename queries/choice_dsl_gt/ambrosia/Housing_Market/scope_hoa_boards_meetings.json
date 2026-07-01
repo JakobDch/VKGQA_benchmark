@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_hoa_boards_meetings",
+  "schema": "amb_scope_hoa_boards_meetings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what meeting types are associated with each HOA board?",
+      "qtype": "ambig",
+      "sql": "SELECT Meetings.meeting_type  from Hoa_Boards_Meetings join Meetings on Hoa_Boards_Meetings.meeting_id = Meetings.meeting_id join Hoa_Boards on Hoa_Boards_Meetings.hoa_board_id = Hoa_Boards.board_id   GROUP BY Hoa_Boards_Meetings.meeting_id HAVING COUNT(DISTINCT Hoa_Boards_Meetings.hoa_board_id) = (SELECT COUNT(*) FROM  Hoa_Boards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?meeting_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMeetings ?child ; p:hasHoa_Boards ?parent . } GROUP BY ?child }\n  ?child p:meeting_type ?meeting_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hoa_Boards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "what meeting types are associated with each HOA board?",
+      "qtype": "ambig",
+      "sql": "select hoa_boards.address , meetings.meeting_type from Hoa_Boards_Meetings join Meetings on Hoa_Boards_Meetings.meeting_id = Meetings.meeting_id join Hoa_Boards on Hoa_Boards_Meetings.hoa_board_id = Hoa_Boards.board_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?address ?meeting_type WHERE {\n  ?hoa_boards_meetings a :Hoa_Boards_Meetings .\n  ?meetings a :Meetings .\n  ?hoa_boards_meetings p:hasMeetings ?meetings .\n  ?hoa_boards a :Hoa_Boards .\n  ?hoa_boards_meetings p:hasHoa_Boards ?hoa_boards .\n  ?hoa_boards p:address ?address .\n  ?meetings p:meeting_type ?meeting_type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what meeting types are associated with each HOA board?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?meeting_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMeetings ?child ; p:hasHoa_Boards ?parent . } GROUP BY ?child }\n  ?child p:meeting_type ?meeting_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hoa_Boards } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?address ?meeting_type WHERE {\n  ?hoa_boards_meetings a :Hoa_Boards_Meetings .\n  ?meetings a :Meetings .\n  ?hoa_boards_meetings p:hasMeetings ?meetings .\n  ?hoa_boards a :Hoa_Boards .\n  ?hoa_boards_meetings p:hasHoa_Boards ?hoa_boards .\n  ?hoa_boards p:address ?address .\n  ?meetings p:meeting_type ?meeting_type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

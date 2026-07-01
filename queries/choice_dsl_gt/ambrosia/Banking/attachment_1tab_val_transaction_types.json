@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_transaction_types",
+  "schema": "amb_attachment_1tab_val_transaction_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the amounts of all payments and remittance transfers from bank account 1234567.",
+      "qtype": "ambig",
+      "sql": "SELECT Transaction_Type.amount \nFROM Transaction_Type\nWHERE (Transaction_Type.transaction_type = \"Payment\" OR Transaction_Type.transaction_type = \"Remittance Transfer\") AND Transaction_Type.bank_account = \"1234567\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount WHERE {\n  ?transaction_type a :Transactions .\n  ?transaction_type p:amount ?amount .\n  ?transaction_type p:transaction_type ?transaction_type_w .\n  ?transaction_type p:transaction_type ?transaction_type_w2 .\n  ?transaction_type p:bank_account ?bank_account_w .\n  FILTER((((STR(?transaction_type_w) = \"Payment\" || STR(?transaction_type_w2) = \"Remittance Transfer\")) && (STR(?bank_account_w) = \"1234567\" || STR(?bank_account_w) = \"1234567.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the amounts of all payments and remittance transfers from bank account 1234567.",
+      "qtype": "ambig",
+      "sql": "SELECT Transaction_Type.amount \nFROM Transaction_Type\nWHERE Transaction_Type.transaction_type = \"Payment\" OR Transaction_Type.transaction_type = \"Remittance Transfer\" AND Transaction_Type.bank_account = \"1234567\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount WHERE {\n  ?transaction_type a :Transactions .\n  ?transaction_type p:amount ?amount .\n  ?transaction_type p:transaction_type ?transaction_type_w .\n  ?transaction_type p:transaction_type ?transaction_type_w2 .\n  ?transaction_type p:bank_account ?bank_account_w .\n  FILTER((STR(?transaction_type_w) = \"Payment\" || (STR(?transaction_type_w2) = \"Remittance Transfer\" && (STR(?bank_account_w) = \"1234567\" || STR(?bank_account_w) = \"1234567.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the amounts of all payments and remittance transfers from bank account 1234567.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?amount WHERE {\n  ?transaction_type a :Transactions .\n  ?transaction_type p:amount ?amount .\n  ?transaction_type p:transaction_type ?transaction_type_w .\n  ?transaction_type p:transaction_type ?transaction_type_w2 .\n  ?transaction_type p:bank_account ?bank_account_w .\n  FILTER((STR(?transaction_type_w) = \"Payment\" || (STR(?transaction_type_w2) = \"Remittance Transfer\" && (STR(?bank_account_w) = \"1234567\" || STR(?bank_account_w) = \"1234567.0\"))))\n} }\n  high: { SELECT ?amount WHERE {\n  ?transaction_type a :Transactions .\n  ?transaction_type p:amount ?amount .\n  ?transaction_type p:transaction_type ?transaction_type_w .\n  ?transaction_type p:transaction_type ?transaction_type_w2 .\n  ?transaction_type p:bank_account ?bank_account_w .\n  FILTER((((STR(?transaction_type_w) = \"Payment\" || STR(?transaction_type_w2) = \"Remittance Transfer\")) && (STR(?bank_account_w) = \"1234567\" || STR(?bank_account_w) = \"1234567.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Housing_Market_base
+target		ex:Housing_Market/{id} a :Housing_Market ; p:id {id} ; p:city {city} ; p:median_home_price {median_home_price} .
+source		SELECT `id`, `city`, `median_home_price` FROM `Housing_Market`
+
+mappingId	RealEstateAgents_base
+target		ex:RealEstateAgents/{agent_id} a :RealEstateAgents ; p:agent_id {agent_id} ; p:name {name} ; p:years_experience {years_experience} .
+source		SELECT `agent_id`, `name`, `years_experience` FROM `RealEstateAgents`
+
+mappingId	Housing_Finance_Agencies_base
+target		ex:Housing_Finance_Agencies/{agency_id} a :Housing_Finance_Agencies ; p:agency_id {agency_id} ; p:name {name} ; p:rating {rating} .
+source		SELECT `agency_id`, `name`, `rating` FROM `Housing_Finance_Agencies`
+
+mappingId	Loan_Programs_base
+target		ex:Loan_Programs/{program_id} a :Loan_Programs ; p:program_id {program_id} ; p:description {description} ; p:interest_rate {interest_rate} .
+source		SELECT `program_id`, `description`, `interest_rate` FROM `Loan_Programs`
+
+mappingId	Housing_Finance_Agencies_Loan_Programs_base
+target		ex:Housing_Finance_Agencies_Loan_Programs/{housing_finance_agency_id}/{loan_program_id} a :Housing_Finance_Agencies_Loan_Programs ; p:housing_finance_agency_id {housing_finance_agency_id} ; p:loan_program_id {loan_program_id} .
+source		SELECT `housing_finance_agency_id`, `loan_program_id` FROM `Housing_Finance_Agencies_Loan_Programs`
+
+mappingId	Housing_Finance_Agencies_Loan_Programs_loan_program_id_fk
+target		ex:Housing_Finance_Agencies_Loan_Programs/{housing_finance_agency_id}/{loan_program_id} p:hasLoan_Programs ex:Loan_Programs/{loan_program_id} .
+source		SELECT `housing_finance_agency_id`, `loan_program_id` FROM `Housing_Finance_Agencies_Loan_Programs` WHERE `loan_program_id` IS NOT NULL
+
+mappingId	Housing_Finance_Agencies_Loan_Programs_housing_finance_agency_id_fk
+target		ex:Housing_Finance_Agencies_Loan_Programs/{housing_finance_agency_id}/{loan_program_id} p:hasHousing_Finance_Agencies ex:Housing_Finance_Agencies/{housing_finance_agency_id} .
+source		SELECT `housing_finance_agency_id`, `loan_program_id` FROM `Housing_Finance_Agencies_Loan_Programs` WHERE `housing_finance_agency_id` IS NOT NULL
+
+]]

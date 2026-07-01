@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Reservations_base
+target		ex:Reservations/{reservation_id} a :Reservations ; p:reservation_id {reservation_id} ; p:customer_name {customer_name} ; p:phone_number {phone_number} ; p:date {date} ; p:time {time} .
+source		SELECT `reservation_id`, `customer_name`, `phone_number`, `date`, `time` FROM `Reservations`
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:name {name} ; p:email {email} ; p:address {address} ; p:phone_number {phone_number} .
+source		SELECT `customer_id`, `name`, `email`, `address`, `phone_number` FROM `Customers`
+
+mappingId	MenuItems_base
+target		ex:MenuItems/{item_id} a :MenuItems ; p:item_id {item_id} ; p:restaurant_id {restaurant_id} ; p:item_name {item_name} ; p:description {description} ; p:price {price} .
+source		SELECT `item_id`, `restaurant_id`, `item_name`, `description`, `price` FROM `MenuItems`
+
+mappingId	MenuItems_restaurant_id_fk
+target		ex:MenuItems/{item_id} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `item_id`, `restaurant_id` FROM `MenuItems` WHERE `restaurant_id` IS NOT NULL
+
+mappingId	Restaurants_base
+target		ex:Restaurants/{restaurant_id} a :Restaurants ; p:restaurant_id {restaurant_id} ; p:name {name} ; p:location {location} ; p:executive_chef {executive_chef} ; p:sous_chef {sous_chef} ; p:cuisine {cuisine} .
+source		SELECT `restaurant_id`, `name`, `location`, `executive_chef`, `sous_chef`, `cuisine` FROM `Restaurants`
+
+mappingId	Reviews_base
+target		ex:Reviews/{review_id} a :Reviews ; p:review_id {review_id} ; p:customer_id {customer_id} ; p:rating {rating} ; p:comments {comments} .
+source		SELECT `review_id`, `customer_id`, `rating`, `comments` FROM `Reviews`
+
+mappingId	Reviews_customer_id_fk
+target		ex:Reviews/{review_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `review_id`, `customer_id` FROM `Reviews` WHERE `customer_id` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{employee_id} a :Employees ; p:employee_id {employee_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:position {position} ; p:hire_date {hire_date} ; p:wage {wage} .
+source		SELECT `employee_id`, `first_name`, `last_name`, `position`, `hire_date`, `wage` FROM `Employees`
+
+]]

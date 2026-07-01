@@ -1,0 +1,97 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "vague_2tabs_production",
+  "schema": "amb_vague_2tabs_production",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who produced Inception?",
+      "qtype": "ambig",
+      "sql": "select name from Studio join Movies on Studio.studio_id=Movies.studio_id where Movies.title='Inception'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?studio p:name ?name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?title_f) = \"Inception\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who produced Inception?",
+      "qtype": "ambig",
+      "sql": "select Full_name from Producer join Movies on Producer.producer_id=Movies.studio_id where Movies.title='Inception'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?producer a :Producers .\n  ?movies a :Movies .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?producer p:name ?full_name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n  FILTER(STR(?title_f) = \"Inception\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who produced Inception?",
+      "qtype": "ambig",
+      "sql": "select name, Full_name  from Studio join Movies on Studio.studio_id=Movies.studio_id  join Producer on Producer.producer_id=Movies.studio_id where Movies.title='Inception'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?full_name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?producer a :Producers .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?studio p:name ?name .\n  ?producer p:name ?full_name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n  FILTER(STR(?title_f) = \"Inception\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Display a list of movies and who produced them",
+      "qtype": "ambig",
+      "sql": "select Movies.title, Studio.name from Studio join Movies on Studio.studio_id=Movies.studio_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?movies p:title ?title .\n  ?studio p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Display a list of movies and who produced them",
+      "qtype": "ambig",
+      "sql": "select Movies.title, Producer.Full_name  from Producer join Movies on Producer.producer_id=Movies.studio_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?full_name WHERE {\n  ?producer a :Producers .\n  ?movies a :Movies .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?movies p:title ?title .\n  ?producer p:name ?full_name .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Display a list of movies and who produced them",
+      "qtype": "ambig",
+      "sql": "select Movies.title, Studio.name, Producer.Full_name  from Studio join Movies on Studio.studio_id=Movies.studio_id  join Producer on Producer.producer_id=Movies.studio_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?full_name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?producer a :Producers .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?movies p:title ?title .\n  ?studio p:name ?name .\n  ?producer p:name ?full_name .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display a list of movies and who produced them",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?movies p:title ?title .\n  ?studio p:name ?name .\n} }\n  full: { SELECT ?title ?name ?full_name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?producer a :Producers .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?movies p:title ?title .\n  ?studio p:name ?name .\n  ?producer p:name ?full_name .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n} }\n  component_2: { SELECT ?title ?full_name WHERE {\n  ?producer a :Producers .\n  ?movies a :Movies .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?movies p:title ?title .\n  ?producer p:name ?full_name .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who produced Inception?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?studio p:name ?name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?title_f) = \"Inception\")\n} }\n  full: { SELECT ?name ?full_name WHERE {\n  ?studio a :Studio .\n  ?movies a :Movies .\n  ?movies p:hasStudio ?studio .\n  ?producer a :Producers .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?studio p:name ?name .\n  ?producer p:name ?full_name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n  FILTER(STR(?title_f) = \"Inception\")\n} }\n  component_2: { SELECT ?full_name WHERE {\n  ?producer a :Producers .\n  ?movies a :Movies .\n  ?producer p:producer_id ?producer_id_l .\n  ?movies p:studio_id ?studio_id_r .\n  ?producer p:name ?full_name .\n  ?movies p:title ?title_f .\n  FILTER(STR(?producer_id_l) = STR(?studio_id_r))\n  FILTER(STR(?title_f) = \"Inception\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

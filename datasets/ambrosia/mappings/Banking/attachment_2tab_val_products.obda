@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Exchange_traded_Products_base
+target		ex:Exchange_traded_Products/{id} a :Exchange_traded_Products ; p:id {id} ; p:ProductName {ProductName} ; p:TickerSymbol {TickerSymbol} ; p:AssetClass {AssetClass} ; p:TotalAssets {TotalAssets} ; p:ExitFee {ExitFee} .
+source		SELECT `id`, `ProductName`, `TickerSymbol`, `AssetClass`, `TotalAssets`, `ExitFee` FROM `Exchange_traded_Products`
+
+mappingId	Unit_investment_Trusts_base
+target		ex:Unit_investment_Trusts/{id} a :Unit_investment_Trusts ; p:id {id} ; p:TrustName {TrustName} ; p:TickerSymbol {TickerSymbol} ; p:NetAssetValue {NetAssetValue} ; p:NumberOfUnits {NumberOfUnits} ; p:ExitFee {ExitFee} .
+source		SELECT `id`, `TrustName`, `TickerSymbol`, `NetAssetValue`, `NumberOfUnits`, `ExitFee` FROM `Unit_investment_Trusts`
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:CustomerName {CustomerName} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} ; p:AccountBalance {AccountBalance} .
+source		SELECT `id`, `CustomerName`, `EmailAddress`, `PhoneNumber`, `AccountBalance` FROM `Customers`
+
+mappingId	Orders_base
+target		ex:Orders/{OrderID} a :Orders ; p:OrderID {OrderID} ; p:CustomerId {CustomerId} ; p:ProductType {ProductType} ; p:Quantity {Quantity} ; p:Price {Price} ; p:DateOrdered {DateOrdered} .
+source		SELECT `OrderID`, `CustomerId`, `ProductType`, `Quantity`, `Price`, `DateOrdered` FROM `Orders`
+
+mappingId	Orders_CustomerId_fk
+target		ex:Orders/{OrderID} p:hasCustomers ex:Customers/{CustomerId} .
+source		SELECT `OrderID`, `CustomerId` FROM `Orders` WHERE `CustomerId` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionId} a :Transactions ; p:TransactionId {TransactionId} ; p:OrderId {OrderId} ; p:Amount {Amount} ; p:Fees {Fees} ; p:PaymentMethod {PaymentMethod} ; p:Status {Status} ; p:ProcessDate {ProcessDate} .
+source		SELECT `TransactionId`, `OrderId`, `Amount`, `Fees`, `PaymentMethod`, `Status`, `ProcessDate` FROM `Transactions`
+
+mappingId	Transactions_OrderId_fk
+target		ex:Transactions/{TransactionId} p:hasOrders ex:Orders/{OrderId} .
+source		SELECT `TransactionId`, `OrderId` FROM `Transactions` WHERE `OrderId` IS NOT NULL
+
+]]

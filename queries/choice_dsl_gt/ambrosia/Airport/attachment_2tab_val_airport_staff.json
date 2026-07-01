@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_staff",
+  "schema": "amb_attachment_2tab_val_airport_staff",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show Spanish-speaking pilots and gate agents.",
+      "qtype": "ambig",
+      "sql": "SELECT Gate_Agents.name\nFROM Gate_Agents\nWHERE Gate_Agents.Language = \"Spanish\"\nUNION\nSELECT Pilots.name\nFROM Pilots\nWHERE Pilots.Language = \"Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?gate_agents a :GateAgents .\n    ?gate_agents p:name ?name .\n    ?gate_agents p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?pilots a :Pilots .\n    ?pilots p:name ?name .\n    ?pilots p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show Spanish-speaking pilots and gate agents.",
+      "qtype": "ambig",
+      "sql": "SELECT Gate_Agents.name\nFROM Gate_Agents\nUNION\nSELECT Pilots.name\nFROM Pilots\nWHERE Pilots.Language = \"Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?gate_agents a :GateAgents .\n    ?gate_agents p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?pilots a :Pilots .\n    ?pilots p:name ?name .\n    ?pilots p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show Spanish-speaking pilots and gate agents.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?gate_agents a :GateAgents .\n    ?gate_agents p:name ?name .\n    ?gate_agents p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?pilots a :Pilots .\n    ?pilots p:name ?name .\n    ?pilots p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?gate_agents a :GateAgents .\n    ?gate_agents p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?pilots a :Pilots .\n    ?pilots p:name ?name .\n    ?pilots p:Language ?language_f .\n    FILTER(STR(?language_f) = \"Spanish\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

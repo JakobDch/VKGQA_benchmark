@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Age_Range_base
+target		ex:Age_Range/{id} a :Age_Range ; p:id {id} ; p:min_age {min_age} ; p:max_age {max_age} .
+source		SELECT `id`, `min_age`, `max_age` FROM `Age_Range`
+
+mappingId	Socioeconomic_Status_base
+target		ex:Socioeconomic_Status/{id} a :Socioeconomic_Status ; p:id {id} ; p:status {status} ; p:description {description} .
+source		SELECT `id`, `status`, `description` FROM `Socioeconomic_Status`
+
+mappingId	Readers_base
+target		ex:Readers/{id} a :Readers ; p:id {id} ; p:age_range_id {age_range_id} ; p:socioeconomic_status_id {socioeconomic_status_id} .
+source		SELECT `id`, `age_range_id`, `socioeconomic_status_id` FROM `Readers`
+
+mappingId	Readers_socioeconomic_status_id_fk
+target		ex:Readers/{id} p:hasSocioeconomic_Status ex:Socioeconomic_Status/{socioeconomic_status_id} .
+source		SELECT `id`, `socioeconomic_status_id` FROM `Readers` WHERE `socioeconomic_status_id` IS NOT NULL
+
+mappingId	Readers_age_range_id_fk
+target		ex:Readers/{id} p:hasAge_Range ex:Age_Range/{age_range_id} .
+source		SELECT `id`, `age_range_id` FROM `Readers` WHERE `age_range_id` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:author_name {author_name} ; p:bio {bio} .
+source		SELECT `id`, `author_name`, `bio` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publish_date {publish_date} ; p:author_id {author_id} .
+source		SELECT `id`, `title`, `content`, `publish_date`, `author_id` FROM `Articles`
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Article_Readers_base
+target		ex:Article_Readers/{article_id}/{reader_id} a :Article_Readers ; p:article_id {article_id} ; p:reader_id {reader_id} .
+source		SELECT `article_id`, `reader_id` FROM `Article_Readers`
+
+mappingId	Article_Readers_reader_id_fk
+target		ex:Article_Readers/{article_id}/{reader_id} p:hasReaders ex:Readers/{reader_id} .
+source		SELECT `article_id`, `reader_id` FROM `Article_Readers` WHERE `reader_id` IS NOT NULL
+
+mappingId	Article_Readers_article_id_fk
+target		ex:Article_Readers/{article_id}/{reader_id} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `article_id`, `reader_id` FROM `Article_Readers` WHERE `article_id` IS NOT NULL
+
+]]

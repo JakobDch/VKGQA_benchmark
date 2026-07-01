@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_houses_rooms",
+  "schema": "amb_scope_houses_rooms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the type of rooms each house has.",
+      "qtype": "ambig",
+      "sql": "SELECT Rooms.roomType  from Houses join Houses_Rooms on Houses.id = Houses_Rooms.houseId join Rooms on Houses_Rooms.roomId = Rooms.id   GROUP BY Houses_Rooms.roomId HAVING COUNT(DISTINCT Houses_Rooms.houseId) = (SELECT COUNT(*) FROM  Houses)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?roomtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasHouses ?parent . } GROUP BY ?child }\n  ?child p:roomType ?roomtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Houses } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the type of rooms each house has.",
+      "qtype": "ambig",
+      "sql": "select houses.address , rooms.roomtype from Houses join Houses_Rooms on Houses.id = Houses_Rooms.houseId join Rooms on Houses_Rooms.roomId = Rooms.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?address ?roomtype WHERE {\n  ?houses a :Houses .\n  ?houses_rooms a :Houses_Rooms .\n  ?houses_rooms p:hasHouses ?houses .\n  ?rooms a :Rooms .\n  ?houses_rooms p:hasRooms ?rooms .\n  ?houses p:address ?address .\n  ?rooms p:roomType ?roomtype .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the type of rooms each house has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?address ?roomtype WHERE {\n  ?houses a :Houses .\n  ?houses_rooms a :Houses_Rooms .\n  ?houses_rooms p:hasHouses ?houses .\n  ?rooms a :Rooms .\n  ?houses_rooms p:hasRooms ?rooms .\n  ?houses p:address ?address .\n  ?rooms p:roomType ?roomtype .\n} }\n  collective: { SELECT ?roomtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRooms ?child ; p:hasHouses ?parent . } GROUP BY ?child }\n  ?child p:roomType ?roomtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Houses } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

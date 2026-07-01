@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Brands_base
+target		ex:Brands/{id} a :Brands ; p:id {id} ; p:name {brand_name} .
+source		SELECT `id`, `brand_name` FROM `Brands`
+
+mappingId	Agricultural_Machinery_Stores_base
+target		ex:Agricultural_Machinery_Stores/{store_id} a :Agricultural_Machinery_Stores ; p:store_id {store_id} ; p:name {store_name} ; p:location {location} .
+source		SELECT `store_id`, `store_name`, `location` FROM `Agricultural_Machinery_Stores`
+
+mappingId	Machines_base
+target		ex:Machines/{machine_id} a :Machines ; p:machine_id {machine_id} ; p:model {model_number} ; p:description {description} .
+source		SELECT `machine_id`, `model_number`, `description` FROM `Machines`
+
+mappingId	Stores_Machines_base
+target		ex:Stores_Machines/{_amb_rowid} a :Stores_Machines ; p:store_id {store_id} ; p:machine_id {machine_id} .
+source		SELECT `_amb_rowid`, `store_id`, `machine_id` FROM `Stores_Machines`
+
+mappingId	Stores_Machines_machine_id_fk
+target		ex:Stores_Machines/{_amb_rowid} p:hasMachines ex:Machines/{machine_id} .
+source		SELECT `_amb_rowid`, `machine_id` FROM `Stores_Machines` WHERE `machine_id` IS NOT NULL
+
+mappingId	Stores_Machines_store_id_fk
+target		ex:Stores_Machines/{_amb_rowid} p:hasAgricultural_Machinery_Stores ex:Agricultural_Machinery_Stores/{store_id} .
+source		SELECT `_amb_rowid`, `store_id` FROM `Stores_Machines` WHERE `store_id` IS NOT NULL
+
+mappingId	Stores_Brands_base
+target		ex:Stores_Brands/{_amb_rowid} a :Stores_Brands ; p:store_id {store_id} ; p:brand_id {brand_id} .
+source		SELECT `_amb_rowid`, `store_id`, `brand_id` FROM `Stores_Brands`
+
+mappingId	Stores_Brands_brand_id_fk
+target		ex:Stores_Brands/{_amb_rowid} p:hasBrands ex:Brands/{brand_id} .
+source		SELECT `_amb_rowid`, `brand_id` FROM `Stores_Brands` WHERE `brand_id` IS NOT NULL
+
+mappingId	Stores_Brands_store_id_fk
+target		ex:Stores_Brands/{_amb_rowid} p:hasAgricultural_Machinery_Stores ex:Agricultural_Machinery_Stores/{store_id} .
+source		SELECT `_amb_rowid`, `store_id` FROM `Stores_Brands` WHERE `store_id` IS NOT NULL
+
+]]

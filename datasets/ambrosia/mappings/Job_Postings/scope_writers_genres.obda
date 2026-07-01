@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Writers_base
+target		ex:Writers/{writerID} a :Writers ; p:writerID {writerID} ; p:name {fullName} .
+source		SELECT `writerID`, `fullName` FROM `Writers`
+
+mappingId	Genres_base
+target		ex:Genres/{genreID} a :Genres ; p:genreID {genreID} ; p:name {name} .
+source		SELECT `genreID`, `name` FROM `Genres`
+
+mappingId	Writers_Genres_base
+target		ex:Writers_Genres/{writerID}/{genreID} a :Writers_Genres ; p:writerID {writerID} ; p:genreID {genreID} .
+source		SELECT `writerID`, `genreID` FROM `Writers_Genres`
+
+mappingId	Writers_Genres_genreID_fk
+target		ex:Writers_Genres/{writerID}/{genreID} p:hasGenres ex:Genres/{genreID} .
+source		SELECT `writerID`, `genreID` FROM `Writers_Genres` WHERE `genreID` IS NOT NULL
+
+mappingId	Writers_Genres_writerID_fk
+target		ex:Writers_Genres/{writerID}/{genreID} p:hasWriters ex:Writers/{writerID} .
+source		SELECT `writerID`, `genreID` FROM `Writers_Genres` WHERE `writerID` IS NOT NULL
+
+]]

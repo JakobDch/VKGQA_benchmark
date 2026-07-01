@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Visual_Art_Profession_base
+target		ex:Visual_Art_Profession/{Profession_ID} a :Visual_Art_Profession ; p:Profession_ID {Profession_ID} ; p:Profession {Profession} ; p:Price {Price} ; p:Experience_Level {Experience_Level} ; p:Specialization {Specialization} .
+source		SELECT `Profession_ID`, `Profession`, `Price`, `Experience_Level`, `Specialization` FROM `Visual_Art_Profession`
+
+mappingId	Employer_base
+target		ex:Employers/{ID} a :Employers ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Employer`
+
+mappingId	JobPosting_base
+target		ex:JobPostings/{ID} a :JobPostings ; p:ID {ID} ; p:Title {Title} ; p:Description {Description} ; p:Date {Date} ; p:Status {Status} .
+source		SELECT `ID`, `Title`, `Description`, `Date`, `Status` FROM `JobPosting`
+
+mappingId	AppliesToJobPosting_base
+target		ex:AppliesToJobPosting/{Apply_ID} a :AppliesToJobPosting ; p:Apply_ID {Apply_ID} ; p:Job_ID {Job_ID} ; p:Applicant_Name {Applicant_Name} ; p:Resume_Path {Resume_Path} ; p:Application_Date {Application_Date} .
+source		SELECT `Apply_ID`, `Job_ID`, `Applicant_Name`, `Resume_Path`, `Application_Date` FROM `AppliesToJobPosting`
+
+mappingId	AppliesToJobPosting_Job_ID_fk
+target		ex:AppliesToJobPosting/{Apply_ID} p:hasJobPostings ex:JobPostings/{Job_ID} .
+source		SELECT `Apply_ID`, `Job_ID` FROM `AppliesToJobPosting` WHERE `Job_ID` IS NOT NULL
+
+]]

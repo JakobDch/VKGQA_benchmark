@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_orchestras_instruments",
+  "schema": "amb_scope_orchestras_instruments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each orchestra, can you list the types of instruments there?",
+      "qtype": "unambig",
+      "sql": "select orchestras.orchestra_name , instruments.instrument_type from Orchestras_Instruments join Instruments on Orchestras_Instruments.instrument_id = Instruments.id join Orchestras on Orchestras_Instruments.orchestra_id = Orchestras.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?orchestra_name ?instrument_type WHERE {\n  ?orchestras_instruments a :Orchestras_Instruments .\n  ?instruments a :Instrument .\n  ?orchestras_instruments p:hasInstruments ?instruments .\n  ?orchestras a :Orchestras .\n  ?orchestras_instruments p:hasOrchestras ?orchestras .\n  ?orchestras p:orchestra_name ?orchestra_name .\n  ?instruments p:instrument_type ?instrument_type .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 1,
+      "question": "What kind of instruments does each orchestra have?",
+      "qtype": "ambig",
+      "sql": "SELECT Instruments.instrument_type  from Orchestras_Instruments join Instruments on Orchestras_Instruments.instrument_id = Instruments.id join Orchestras on Orchestras_Instruments.orchestra_id = Orchestras.id   GROUP BY Orchestras_Instruments.instrument_id HAVING COUNT(DISTINCT Orchestras_Instruments.orchestra_id) = (SELECT COUNT(*) FROM  Orchestras)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?instrument_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrument_id ?cg . ?child a :Instrument ; p:id ?cg . ?l p:orchestra_id ?pg . ?parent a :Orchestras ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrument_type ?instrument_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Orchestras } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What kind of instruments does each orchestra have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?orchestra_name ?instrument_type WHERE {\n  ?orchestras_instruments a :Orchestras_Instruments .\n  ?instruments a :Instrument .\n  ?orchestras_instruments p:hasInstruments ?instruments .\n  ?orchestras a :Orchestras .\n  ?orchestras_instruments p:hasOrchestras ?orchestras .\n  ?orchestras p:orchestra_name ?orchestra_name .\n  ?instruments p:instrument_type ?instrument_type .\n} }\n  collective: { SELECT ?instrument_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrument_id ?cg . ?child a :Instrument ; p:id ?cg . ?l p:orchestra_id ?pg . ?parent a :Orchestras ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrument_type ?instrument_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Orchestras } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

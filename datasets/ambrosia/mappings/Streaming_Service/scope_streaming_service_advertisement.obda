@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Service_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:platform {platform} .
+source		SELECT `id`, `name`, `platform` FROM `Streaming_Service`
+
+mappingId	Advertisement_base
+target		ex:Advertisement/{id} a :Advertisement ; p:id {id} ; p:type {type} ; p:duration {duration} .
+source		SELECT `id`, `type`, `duration` FROM `Advertisement`
+
+mappingId	Streaming_Service_Advertisement_base
+target		ex:Streaming_Service_Advertisement/{_amb_rowid} a :Streaming_Service_Advertisement ; p:streaming_service_id {streaming_service_id} ; p:advertisement_id {advertisement_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id`, `advertisement_id` FROM `Streaming_Service_Advertisement`
+
+mappingId	Streaming_Service_Advertisement_advertisement_id_fk
+target		ex:Streaming_Service_Advertisement/{_amb_rowid} p:hasAdvertisement ex:Advertisement/{advertisement_id} .
+source		SELECT `_amb_rowid`, `advertisement_id` FROM `Streaming_Service_Advertisement` WHERE `advertisement_id` IS NOT NULL
+
+mappingId	Streaming_Service_Advertisement_streaming_service_id_fk
+target		ex:Streaming_Service_Advertisement/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id` FROM `Streaming_Service_Advertisement` WHERE `streaming_service_id` IS NOT NULL
+
+]]

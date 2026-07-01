@@ -1,0 +1,106 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_requirements_0_Customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CustomerID\", \"FirstName\", \"LastName\", \"DateOfBirth\", \"EmailAddress\" FROM \"Customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DateOfBirth ; rr:objectMap [ rr:column "DateOfBirth" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "EmailAddress" ] ] .
+
+<#tm_vague_2cols_requirements_1_Accounts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"Balance\", \"InterestRate\", \"OpenDate\", \"Status\", \"CustomerID\" FROM \"Accounts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ; rr:class :Accounts ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Balance ; rr:objectMap [ rr:column "Balance" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:InterestRate ; rr:objectMap [ rr:column "InterestRate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:OpenDate ; rr:objectMap [ rr:column "OpenDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Status ; rr:objectMap [ rr:column "Status" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] .
+
+<#tm_vague_2cols_requirements_2_Accounts_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AccountNumber\", \"CustomerID\" FROM \"Accounts\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_requirements_3_Loans_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"LoanID\", \"Amount\", \"Term\", \"Rate\", \"ApprovalDate\", \"Status\", \"CustomerID\" FROM \"Loans\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{LoanID}" ; rr:class :Loans ] ;
+  rr:predicateObjectMap [ rr:predicate p:LoanID ; rr:objectMap [ rr:column "LoanID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Amount ; rr:objectMap [ rr:column "Amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Term ; rr:objectMap [ rr:column "Term" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Rate ; rr:objectMap [ rr:column "Rate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ApprovalDate ; rr:objectMap [ rr:column "ApprovalDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Status ; rr:objectMap [ rr:column "Status" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CustomerID ; rr:objectMap [ rr:column "CustomerID" ] ] .
+
+<#tm_vague_2cols_requirements_4_Loans_CustomerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"LoanID\", \"CustomerID\" FROM \"Loans\" WHERE \"CustomerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{LoanID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{CustomerID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_requirements_5_EligibilityAndDocuments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ApplicationID\", \"Eligibility_Criteria\", \"Documentation_Requirements\", \"Business_Loan_Application\", \"LoanID\" FROM \"EligibilityAndDocuments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/EligibilityAndDocuments/{ApplicationID}" ; rr:class :EligibilityAndDocuments ] ;
+  rr:predicateObjectMap [ rr:predicate p:ApplicationID ; rr:objectMap [ rr:column "ApplicationID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Eligibility_Criteria ; rr:objectMap [ rr:column "Eligibility_Criteria" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Documentation_Requirements ; rr:objectMap [ rr:column "Documentation_Requirements" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Business_Loan_Application ; rr:objectMap [ rr:column "Business_Loan_Application" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LoanID ; rr:objectMap [ rr:column "LoanID" ] ] .
+
+<#tm_vague_2cols_requirements_6_EligibilityAndDocuments_LoanID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ApplicationID\", \"LoanID\" FROM \"EligibilityAndDocuments\" WHERE \"LoanID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/EligibilityAndDocuments/{ApplicationID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasLoans ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{LoanID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_requirements_7_Transactions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"Description\", \"Type\", \"Amount\", \"Timestamp\", \"AccountNumber\" FROM \"Transactions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ; rr:class :Transactions ] ;
+  rr:predicateObjectMap [ rr:predicate p:TransactionID ; rr:objectMap [ rr:column "TransactionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Description ; rr:objectMap [ rr:column "Description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Type ; rr:objectMap [ rr:column "Type" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Amount ; rr:objectMap [ rr:column "Amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Timestamp ; rr:objectMap [ rr:column "Timestamp" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AccountNumber ; rr:objectMap [ rr:column "AccountNumber" ] ] .
+
+<#tm_vague_2cols_requirements_8_Transactions_AccountNumber_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"TransactionID\", \"AccountNumber\" FROM \"Transactions\" WHERE \"AccountNumber\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Transactions/{TransactionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAccounts ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Accounts/{AccountNumber}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_requirements_9_Employees_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EmployeeID\", \"FirstName\", \"LastName\", \"HireDate\", \"Role\", \"Salary\", \"BranchID\" FROM \"Employees\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{EmployeeID}" ; rr:class :Employees ] ;
+  rr:predicateObjectMap [ rr:predicate p:EmployeeID ; rr:objectMap [ rr:column "EmployeeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:HireDate ; rr:objectMap [ rr:column "HireDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Role ; rr:objectMap [ rr:column "Role" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Salary ; rr:objectMap [ rr:column "Salary" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchID ; rr:objectMap [ rr:column "BranchID" ] ] .
+
+<#tm_vague_2cols_requirements_10_Employees_BranchID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EmployeeID\", \"BranchID\" FROM \"Employees\" WHERE \"BranchID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{EmployeeID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBranches ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Branches/{BranchID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_requirements_11_Branches_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BranchID\", \"Name\", \"Address\", \"PhoneNumber\", \"ManagerID\" FROM \"Branches\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Branches/{BranchID}" ; rr:class :Branches ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchID ; rr:objectMap [ rr:column "BranchID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Address ; rr:objectMap [ rr:column "Address" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PhoneNumber ; rr:objectMap [ rr:column "PhoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ManagerID ; rr:objectMap [ rr:column "ManagerID" ] ] .
+
+<#tm_vague_2cols_requirements_12_Branches_ManagerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BranchID\", \"ManagerID\" FROM \"Branches\" WHERE \"ManagerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Branches/{BranchID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEmployees ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Employees/{ManagerID}" ; rr:termType rr:IRI ] ] .
+

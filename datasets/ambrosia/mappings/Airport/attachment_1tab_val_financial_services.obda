@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Financial_Services_base
+target		ex:Financial_Services/{id} a :Financial_Services ; p:id {id} ; p:name {Name} ; p:Type {Type} ; p:Location_Within_Terminal {Location_Within_Terminal} ; p:Operating_Hours {Operating_Hours} .
+source		SELECT `id`, `Name`, `Type`, `Location_Within_Terminal`, `Operating_Hours` FROM `Financial_Services`
+
+mappingId	Terminals_base
+target		ex:Terminals/{id} a :Terminals ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Terminals`
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:airline_name {airline_name} ; p:terminal_id {terminal_id} .
+source		SELECT `id`, `airline_name`, `terminal_id` FROM `Airlines`
+
+mappingId	Airlines_terminal_id_fk
+target		ex:Airlines/{id} p:hasTerminals ex:Terminals/{terminal_id} .
+source		SELECT `id`, `terminal_id` FROM `Airlines` WHERE `terminal_id` IS NOT NULL
+
+mappingId	Flight_Details_base
+target		ex:Flight_Details/{_amb_rowid} a :Flight_Details ; p:flight_number {flight_number} ; p:departure_time {departure_time} ; p:arrival_time {arrival_time} ; p:origin_airport {origin_airport} ; p:destination_airport {destination_airport} ; p:airline_id {airline_id} .
+source		SELECT `_amb_rowid`, `flight_number`, `departure_time`, `arrival_time`, `origin_airport`, `destination_airport`, `airline_id` FROM `Flight_Details`
+
+mappingId	Flight_Details_airline_id_fk
+target		ex:Flight_Details/{_amb_rowid} p:hasAirlines ex:Airlines/{airline_id} .
+source		SELECT `_amb_rowid`, `airline_id` FROM `Flight_Details` WHERE `airline_id` IS NOT NULL
+
+mappingId	Baggage_Claims_base
+target		ex:BaggageClaims/{_amb_rowid} a :BaggageClaims ; p:claim_number {claim_number} ; p:carousel_location {carousel_location} ; p:airport_code {airport_code} .
+source		SELECT `_amb_rowid`, `claim_number`, `carousel_location`, `airport_code` FROM `Baggage_Claims`
+
+mappingId	Baggage_Claims_airport_code_fk
+target		ex:BaggageClaims/{_amb_rowid} p:hasAirports ex:Airports/{airport_code} .
+source		SELECT `_amb_rowid`, `airport_code` FROM `Baggage_Claims` WHERE `airport_code` IS NOT NULL
+
+mappingId	Airports_base
+target		ex:Airports/{code} a :Airports ; p:code {code} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `code`, `name`, `city`, `country` FROM `Airports`
+
+]]

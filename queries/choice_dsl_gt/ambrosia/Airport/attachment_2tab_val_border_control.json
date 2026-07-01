@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_border_control",
+  "schema": "amb_attachment_2tab_val_border_control",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show customs officers and immigration officers at Gatwick airport.",
+      "qtype": "ambig",
+      "sql": "SELECT Customs.CustomOfficerName as name\nFROM Customs\nWHERE Customs.Airport = \"Gatwick\"\nUNION\nSELECT Immigration.ImmigrationOfficerName as name\nFROM Immigration\nWHERE Immigration.Airport = \"Gatwick\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?customs a :Customs .\n    ?customs p:CustomOfficerName ?customofficername .\n    ?customs p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?customofficername AS ?o0)\n  }\n  UNION\n  {\n    ?immigration a :Immigration .\n    ?immigration p:ImmigrationOfficerName ?immigrationofficername .\n    ?immigration p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?immigrationofficername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show customs officers and immigration officers at Gatwick airport.",
+      "qtype": "ambig",
+      "sql": "SELECT Customs.CustomOfficerName as name\nFROM Customs\nUNION\nSELECT Immigration.ImmigrationOfficerName as name\nFROM Immigration\nWHERE Immigration.Airport = \"Gatwick\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?customs a :Customs .\n    ?customs p:CustomOfficerName ?customofficername .\n    BIND(?customofficername AS ?o0)\n  }\n  UNION\n  {\n    ?immigration a :Immigration .\n    ?immigration p:ImmigrationOfficerName ?immigrationofficername .\n    ?immigration p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?immigrationofficername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show customs officers and immigration officers at Gatwick airport.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?customs a :Customs .\n    ?customs p:CustomOfficerName ?customofficername .\n    BIND(?customofficername AS ?o0)\n  }\n  UNION\n  {\n    ?immigration a :Immigration .\n    ?immigration p:ImmigrationOfficerName ?immigrationofficername .\n    ?immigration p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?immigrationofficername AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?customs a :Customs .\n    ?customs p:CustomOfficerName ?customofficername .\n    ?customs p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?customofficername AS ?o0)\n  }\n  UNION\n  {\n    ?immigration a :Immigration .\n    ?immigration p:ImmigrationOfficerName ?immigrationofficername .\n    ?immigration p:Airport ?airport_f .\n    FILTER(STR(?airport_f) = \"Gatwick\")\n    BIND(?immigrationofficername AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

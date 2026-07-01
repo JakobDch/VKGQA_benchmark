@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_recruiter",
+  "schema": "amb_vague_2cols_recruiter",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the positions available and the recruiting company along with recruitment agency.",
+      "qtype": "unambig",
+      "sql": "SELECT \nposition, \ncompany, recruitment_agency\nFROM Positions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position ?company ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:company ?company .\n  ?positions p:recruitment_agency ?recruitment_agency .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display the software engineer jobs, the companies that are hiring them and the recruitment agencies filling these roles.",
+      "qtype": "unambig",
+      "sql": "SELECT \ncompany, recruitment_agency\nposition\nFROM Positions\nWHERE position = 'Software Engineer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:company ?company .\n  ?positions p:recruitment_agency ?recruitment_agency .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List all the positions and the recruiting company.",
+      "qtype": "ambig",
+      "sql": "SELECT \nposition, \ncompany\nFROM Positions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position ?company WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:company ?company .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "List all the positions and the recruiting company.",
+      "qtype": "ambig",
+      "sql": "SELECT \nposition, \nrecruitment_agency\nFROM Positions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:recruitment_agency ?recruitment_agency .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Show the vacant positions for software engineers and the recruitment agencies searching for them.",
+      "qtype": "unambig",
+      "sql": "SELECT \nrecruitment_agency\nposition\nFROM Positions\nWHERE position = 'Software Engineer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:recruitment_agency ?recruitment_agency .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show the software engineer jobs and companies that are hiring them.",
+      "qtype": "unambig",
+      "sql": "SELECT \ncompany\nposition\nFROM Positions\nWHERE position = 'Software Engineer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?company WHERE {\n  ?positions a :Position .\n  ?positions p:company ?company .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all the positions and the recruiting company.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?position ?company ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:company ?company .\n  ?positions p:recruitment_agency ?recruitment_agency .\n} }\n  component: { SELECT ?position ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:recruitment_agency ?recruitment_agency .\n} }\n  component_2: { SELECT ?position ?company WHERE {\n  ?positions a :Position .\n  ?positions p:position ?position .\n  ?positions p:company ?company .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all 'Software Engineer' positions and recruiting companies hiring for these roles.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?company ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:company ?company .\n  ?positions p:recruitment_agency ?recruitment_agency .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n} }\n  component: { SELECT ?recruitment_agency WHERE {\n  ?positions a :Position .\n  ?positions p:recruitment_agency ?recruitment_agency .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n} }\n  component_2: { SELECT ?company WHERE {\n  ?positions a :Position .\n  ?positions p:company ?company .\n  ?positions p:position ?position_f .\n  FILTER(STR(?position_f) = \"Software Engineer\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

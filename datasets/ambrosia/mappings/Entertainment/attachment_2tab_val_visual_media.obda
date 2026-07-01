@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:genre {genre} ; p:releaseYear {releaseYear} ; p:director {director} .
+source		SELECT `id`, `title`, `genre`, `releaseYear`, `director` FROM `Movie`
+
+mappingId	Tv_Show_base
+target		ex:Tv_Show/{id} a :Tv_Show ; p:id {id} ; p:showName {showName} ; p:genre {genre} ; p:episodeCount {episodeCount} ; p:network {network} .
+source		SELECT `id`, `showName`, `genre`, `episodeCount`, `network` FROM `Tv_Show`
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:name {name} ; p:birthDate {birthDate} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birthDate`, `nationality` FROM `Actor`
+
+mappingId	Director_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:name {name} ; p:birthDate {birthDate} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birthDate`, `nationality` FROM `Director`
+
+mappingId	Role_base
+target		ex:Role/{_amb_rowid} a :Role ; p:movieId {movieId} ; p:actorId {actorId} ; p:roleType {roleType} .
+source		SELECT `_amb_rowid`, `movieId`, `actorId`, `roleType` FROM `Role`
+
+mappingId	Role_actorId_fk
+target		ex:Role/{_amb_rowid} p:hasActor ex:Actor/{actorId} .
+source		SELECT `_amb_rowid`, `actorId` FROM `Role` WHERE `actorId` IS NOT NULL
+
+mappingId	Role_movieId_fk
+target		ex:Role/{_amb_rowid} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `_amb_rowid`, `movieId` FROM `Role` WHERE `movieId` IS NOT NULL
+
+mappingId	Directed_base
+target		ex:Directed/{_amb_rowid} a :Directed ; p:movieId {movieId} ; p:directorId {directorId} ; p:year {year} .
+source		SELECT `_amb_rowid`, `movieId`, `directorId`, `year` FROM `Directed`
+
+mappingId	Directed_directorId_fk
+target		ex:Directed/{_amb_rowid} p:hasDirector ex:Director/{directorId} .
+source		SELECT `_amb_rowid`, `directorId` FROM `Directed` WHERE `directorId` IS NOT NULL
+
+mappingId	Directed_movieId_fk
+target		ex:Directed/{_amb_rowid} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `_amb_rowid`, `movieId` FROM `Directed` WHERE `movieId` IS NOT NULL
+
+]]

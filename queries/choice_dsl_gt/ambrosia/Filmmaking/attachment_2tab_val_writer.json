@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_writer",
+  "schema": "amb_attachment_2tab_val_writer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display screenwriters and playwrights who graduated from New York University.",
+      "qtype": "ambig",
+      "sql": "SELECT Screenwriters.name\nFROM Screenwriters\nWHERE Screenwriters.Education = \"New York University\"\nUNION\nSELECT Playwrights.name\nFROM Playwrights\nWHERE Playwrights.Education = \"New York University\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?screenwriters a :Screenwriters .\n    ?screenwriters p:name ?name .\n    ?screenwriters p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?playwrights a :Playwrights .\n    ?playwrights p:name ?name .\n    ?playwrights p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display screenwriters and playwrights who graduated from New York University.",
+      "qtype": "ambig",
+      "sql": "SELECT Screenwriters.name\nFROM Screenwriters\nUNION\nSELECT Playwrights.name\nFROM Playwrights\nWHERE Playwrights.Education = \"New York University\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?screenwriters a :Screenwriters .\n    ?screenwriters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?playwrights a :Playwrights .\n    ?playwrights p:name ?name .\n    ?playwrights p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display screenwriters and playwrights who graduated from New York University.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?screenwriters a :Screenwriters .\n    ?screenwriters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?playwrights a :Playwrights .\n    ?playwrights p:name ?name .\n    ?playwrights p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?screenwriters a :Screenwriters .\n    ?screenwriters p:name ?name .\n    ?screenwriters p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?playwrights a :Playwrights .\n    ?playwrights p:name ?name .\n    ?playwrights p:Education ?education_f .\n    FILTER(STR(?education_f) = \"New York University\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

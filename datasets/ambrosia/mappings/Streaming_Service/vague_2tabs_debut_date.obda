@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Debut_Day_base
+target		ex:Debut_Date/{id} a :Debut_Date ; p:id {id} ; p:day {day} ; p:month {month} .
+source		SELECT `id`, `day`, `month` FROM `Debut_Day`
+
+mappingId	Debut_Year_base
+target		ex:Debut_Year/{id} a :Debut_Year ; p:id {id} ; p:year {year} .
+source		SELECT `id`, `year` FROM `Debut_Year`
+
+mappingId	Podcast_base
+target		ex:Podcast/{id} a :Podcast ; p:id {id} ; p:podcast_name {podcast_name} ; p:debut_day_id {debut_day_id} ; p:debut_year_id {debut_year_id} .
+source		SELECT `id`, `podcast_name`, `debut_day_id`, `debut_year_id` FROM `Podcast`
+
+mappingId	Podcast_debut_year_id_fk
+target		ex:Podcast/{id} p:hasDebut_Year ex:Debut_Year/{debut_year_id} .
+source		SELECT `id`, `debut_year_id` FROM `Podcast` WHERE `debut_year_id` IS NOT NULL
+
+mappingId	Podcast_debut_day_id_fk
+target		ex:Podcast/{id} p:hasDebut_Date ex:Debut_Date/{debut_day_id} .
+source		SELECT `id`, `debut_day_id` FROM `Podcast` WHERE `debut_day_id` IS NOT NULL
+
+mappingId	Genre_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:genre_name {genre_name} .
+source		SELECT `id`, `genre_name` FROM `Genre`
+
+mappingId	Podcast_Genre_base
+target		ex:Podcast_Genre/{pod_genre_id} a :Podcast_Genre ; p:pod_genre_id {pod_genre_id} ; p:podcast_id {podcast_id} ; p:genre_id {genre_id} .
+source		SELECT `pod_genre_id`, `podcast_id`, `genre_id` FROM `Podcast_Genre`
+
+mappingId	Podcast_Genre_genre_id_fk
+target		ex:Podcast_Genre/{pod_genre_id} p:hasGenres ex:Genres/{genre_id} .
+source		SELECT `pod_genre_id`, `genre_id` FROM `Podcast_Genre` WHERE `genre_id` IS NOT NULL
+
+mappingId	Podcast_Genre_podcast_id_fk
+target		ex:Podcast_Genre/{pod_genre_id} p:hasPodcast ex:Podcast/{podcast_id} .
+source		SELECT `pod_genre_id`, `podcast_id` FROM `Podcast_Genre` WHERE `podcast_id` IS NOT NULL
+
+]]

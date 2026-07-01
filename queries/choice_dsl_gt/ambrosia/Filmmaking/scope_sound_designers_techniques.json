@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_sound_designers_techniques",
+  "schema": "amb_scope_sound_designers_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every sound designer, list the techniques they use.",
+      "qtype": "unambig",
+      "sql": "select sound_designers.name , techniques.methodname from Sound_Designer_Technique join Techniques on Sound_Designer_Technique.TechniqueID = Techniques.ID join Sound_Designers on Sound_Designer_Technique.SoundDesignerID = Sound_Designers.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?methodname WHERE {\n  ?sound_designer_technique a :Sound_Designer_Technique .\n  ?techniques a :Techniques .\n  ?sound_designer_technique p:hasTechniques ?techniques .\n  ?sound_designers a :Sound_Designers .\n  ?sound_designer_technique p:hasSound_Designers ?sound_designers .\n  ?sound_designers p:name ?name .\n  ?techniques p:MethodName ?methodname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the techniques each sound designer uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Techniques.MethodName  from Sound_Designer_Technique join Techniques on Sound_Designer_Technique.TechniqueID = Techniques.ID join Sound_Designers on Sound_Designer_Technique.SoundDesignerID = Sound_Designers.ID   GROUP BY Sound_Designer_Technique.TechniqueID HAVING COUNT(DISTINCT Sound_Designer_Technique.SoundDesignerID) = (SELECT COUNT(*) FROM  Sound_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?methodname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasSound_Designers ?parent . } GROUP BY ?child }\n  ?child p:MethodName ?methodname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sound_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the techniques each sound designer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?methodname WHERE {\n  ?sound_designer_technique a :Sound_Designer_Technique .\n  ?techniques a :Techniques .\n  ?sound_designer_technique p:hasTechniques ?techniques .\n  ?sound_designers a :Sound_Designers .\n  ?sound_designer_technique p:hasSound_Designers ?sound_designers .\n  ?sound_designers p:name ?name .\n  ?techniques p:MethodName ?methodname .\n} }\n  collective: { SELECT ?methodname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasSound_Designers ?parent . } GROUP BY ?child }\n  ?child p:MethodName ?methodname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sound_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

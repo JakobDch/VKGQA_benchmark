@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clinics_base
+target		ex:Clinics/{id} a :Clinics ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Clinics`
+
+mappingId	Psychologists_base
+target		ex:Psychologists/{id} a :Psychologists ; p:id {id} ; p:clinic_id {clinic_id} ; p:name {name} ; p:specialty {specialty} .
+source		SELECT `id`, `clinic_id`, `name`, `specialty` FROM `Psychologists`
+
+mappingId	Psychologists_clinic_id_fk
+target		ex:Psychologists/{id} p:hasClinics ex:Clinics/{clinic_id} .
+source		SELECT `id`, `clinic_id` FROM `Psychologists` WHERE `clinic_id` IS NOT NULL
+
+mappingId	Psychiatrists_base
+target		ex:Psychiatrists/{id} a :Psychiatrists ; p:id {id} ; p:clinic_id {clinic_id} ; p:name {name} ; p:specialty {specialty} .
+source		SELECT `id`, `clinic_id`, `name`, `specialty` FROM `Psychiatrists`
+
+mappingId	Psychiatrists_clinic_id_fk
+target		ex:Psychiatrists/{id} p:hasClinics ex:Clinics/{clinic_id} .
+source		SELECT `id`, `clinic_id` FROM `Psychiatrists` WHERE `clinic_id` IS NOT NULL
+
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:psychologist_id {psychologist_id} ; p:psychiatrist_id {psychiatrist_id} ; p:name {name} ; p:age {age} ; p:diagnosis {diagnosis} .
+source		SELECT `id`, `psychologist_id`, `psychiatrist_id`, `name`, `age`, `diagnosis` FROM `Patients`
+
+mappingId	Patients_psychiatrist_id_fk
+target		ex:Patients/{id} p:hasPsychiatrists ex:Psychiatrists/{psychiatrist_id} .
+source		SELECT `id`, `psychiatrist_id` FROM `Patients` WHERE `psychiatrist_id` IS NOT NULL
+
+mappingId	Patients_psychologist_id_fk
+target		ex:Patients/{id} p:hasPsychologists ex:Psychologists/{psychologist_id} .
+source		SELECT `id`, `psychologist_id` FROM `Patients` WHERE `psychologist_id` IS NOT NULL
+
+mappingId	Appointments_base
+target		ex:Appointments/{id} a :Appointments ; p:id {id} ; p:patient_id {patient_id} ; p:date {date} ; p:notes {notes} .
+source		SELECT `id`, `patient_id`, `date`, `notes` FROM `Appointments`
+
+mappingId	Appointments_patient_id_fk
+target		ex:Appointments/{id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `id`, `patient_id` FROM `Appointments` WHERE `patient_id` IS NOT NULL
+
+mappingId	TreatmentPlans_base
+target		ex:TreatmentPlans/{id} a :TreatmentPlans ; p:id {id} ; p:appointment_id {appointment_id} ; p:plan {plan} ; p:status {status} .
+source		SELECT `id`, `appointment_id`, `plan`, `status` FROM `TreatmentPlans`
+
+mappingId	TreatmentPlans_appointment_id_fk
+target		ex:TreatmentPlans/{id} p:hasAppointments ex:Appointments/{appointment_id} .
+source		SELECT `id`, `appointment_id` FROM `TreatmentPlans` WHERE `appointment_id` IS NOT NULL
+
+]]

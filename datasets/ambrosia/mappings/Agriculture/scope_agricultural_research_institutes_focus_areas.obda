@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Agricultural_Research_Institutes_base
+target		ex:Agricultural_Research_Institutes/{id} a :Agricultural_Research_Institutes ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Agricultural_Research_Institutes`
+
+mappingId	Focus_Areas_base
+target		ex:Focus_Areas/{id} a :Focus_Areas ; p:id {id} ; p:name {area_name} .
+source		SELECT `id`, `area_name` FROM `Focus_Areas`
+
+mappingId	Agricultural_Research_Institutes_Focus_Areas_base
+target		ex:Agricultural_Research_Institutes_Focus_Areas/{institute_id}/{focus_area_id} a :Agricultural_Research_Institutes_Focus_Areas ; p:institute_id {institute_id} ; p:focus_area_id {focus_area_id} .
+source		SELECT `institute_id`, `focus_area_id` FROM `Agricultural_Research_Institutes_Focus_Areas`
+
+mappingId	Agricultural_Research_Institutes_Focus_Areas_focus_area_id_fk
+target		ex:Agricultural_Research_Institutes_Focus_Areas/{institute_id}/{focus_area_id} p:hasFocus_Areas ex:Focus_Areas/{focus_area_id} .
+source		SELECT `institute_id`, `focus_area_id` FROM `Agricultural_Research_Institutes_Focus_Areas` WHERE `focus_area_id` IS NOT NULL
+
+mappingId	Agricultural_Research_Institutes_Focus_Areas_institute_id_fk
+target		ex:Agricultural_Research_Institutes_Focus_Areas/{institute_id}/{focus_area_id} p:hasAgricultural_Research_Institutes ex:Agricultural_Research_Institutes/{institute_id} .
+source		SELECT `institute_id`, `focus_area_id` FROM `Agricultural_Research_Institutes_Focus_Areas` WHERE `institute_id` IS NOT NULL
+
+]]

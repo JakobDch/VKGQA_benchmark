@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_genre2",
+  "schema": "amb_attachment_1tab_val_genre2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all animation films and also list comedies that were released in 2021.",
+      "qtype": "unambig",
+      "sql": "SELECT Films.Title \nFROM Films\nWHERE Films.Genre = \"Animation\" OR Films.Genre = \"Comedy\" AND Films.Release_Year = 2021",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:Genre ?genre_w .\n  ?films p:Genre ?genre_w2 .\n  ?films p:Release_Year ?release_year_w .\n  FILTER((STR(?genre_w) = \"Animation\" || (STR(?genre_w2) = \"Comedy\" && (STR(?release_year_w) = \"2021\" || STR(?release_year_w) = \"2021.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What animation films were released in 2021 and what comedies were released in the same year?",
+      "qtype": "unambig",
+      "sql": "SELECT Films.Title \nFROM Films\nWHERE (Films.Genre = \"Animation\" OR Films.Genre = \"Comedy\") AND Films.Release_Year = 2021",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:Genre ?genre_w .\n  ?films p:Genre ?genre_w2 .\n  ?films p:Release_Year ?release_year_w .\n  FILTER((((STR(?genre_w) = \"Animation\" || STR(?genre_w2) = \"Comedy\")) && (STR(?release_year_w) = \"2021\" || STR(?release_year_w) = \"2021.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show animation films and comedy films released in 2021.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:Genre ?genre_w .\n  ?films p:Genre ?genre_w2 .\n  ?films p:Release_Year ?release_year_w .\n  FILTER((STR(?genre_w) = \"Animation\" || (STR(?genre_w2) = \"Comedy\" && (STR(?release_year_w) = \"2021\" || STR(?release_year_w) = \"2021.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?films a :Films .\n  ?films p:Title ?title .\n  ?films p:Genre ?genre_w .\n  ?films p:Genre ?genre_w2 .\n  ?films p:Release_Year ?release_year_w .\n  FILTER((((STR(?genre_w) = \"Animation\" || STR(?genre_w2) = \"Comedy\")) && (STR(?release_year_w) = \"2021\" || STR(?release_year_w) = \"2021.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

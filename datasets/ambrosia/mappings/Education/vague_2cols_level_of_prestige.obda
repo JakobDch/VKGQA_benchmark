@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:name {name} ; p:age {age} ; p:major {major} .
+source		SELECT `id`, `name`, `age`, `major` FROM `Students`
+
+mappingId	Universities_base
+target		ex:Universities/{id} a :Universities ; p:id {id} ; p:universityName {universityName} ; p:admissionRate {admissionRate} ; p:ranking {ranking} ; p:location {location} .
+source		SELECT `id`, `universityName`, `admissionRate`, `ranking`, `location` FROM `Universities`
+
+mappingId	Departments_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:departmentName {departmentName} ; p:universityId {universityId} .
+source		SELECT `id`, `departmentName`, `universityId` FROM `Departments`
+
+mappingId	Departments_universityId_fk
+target		ex:Departments/{id} p:hasUniversities ex:Universities/{universityId} .
+source		SELECT `id`, `universityId` FROM `Departments` WHERE `universityId` IS NOT NULL
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:studentID {studentID} ; p:courseID {courseID} ; p:semester {semester} ; p:grade {grade} ; p:enrollmentDate {enrollmentDate} .
+source		SELECT `_amb_rowid`, `studentID`, `courseID`, `semester`, `grade`, `enrollmentDate` FROM `Enrollments`
+
+mappingId	Enrollments_courseID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasCourses ex:Courses/{courseID} .
+source		SELECT `_amb_rowid`, `courseID` FROM `Enrollments` WHERE `courseID` IS NOT NULL
+
+mappingId	Enrollments_studentID_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{studentID} .
+source		SELECT `_amb_rowid`, `studentID` FROM `Enrollments` WHERE `studentID` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{id} a :Courses ; p:id {id} ; p:courseCode {courseCode} ; p:courseTitle {courseTitle} ; p:creditHours {creditHours} ; p:departmentId {departmentId} .
+source		SELECT `id`, `courseCode`, `courseTitle`, `creditHours`, `departmentId` FROM `Courses`
+
+mappingId	Courses_departmentId_fk
+target		ex:Courses/{id} p:hasDepartments ex:Departments/{departmentId} .
+source		SELECT `id`, `departmentId` FROM `Courses` WHERE `departmentId` IS NOT NULL
+
+]]

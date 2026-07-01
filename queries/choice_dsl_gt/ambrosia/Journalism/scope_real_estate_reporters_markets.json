@@ -1,0 +1,108 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_real_estate_reporters_markets",
+  "schema": "amb_scope_real_estate_reporters_markets",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what markets and descriptions are covered by each real estate reporter?",
+      "qtype": "ambig",
+      "sql": "SELECT Markets.market_name, Markets.description  from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id   GROUP BY Real_Estate_Reporters_Markets.market_id HAVING COUNT(DISTINCT Real_Estate_Reporters_Markets.reporter_id) = (SELECT COUNT(*) FROM  Real_Estate_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?market_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:market_name ?market_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "what markets and descriptions are covered by each real estate reporter?",
+      "qtype": "ambig",
+      "sql": "select real_estate_reporters.name , markets.market_name , markets.description from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?market_name ?description WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:market_name ?market_name .\n  ?markets p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Which market is common across all real estate reporters?",
+      "qtype": "unambig",
+      "sql": "SELECT Markets.market_name  from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id   GROUP BY Real_Estate_Reporters_Markets.market_id HAVING COUNT(DISTINCT Real_Estate_Reporters_Markets.reporter_id) = (SELECT COUNT(*) FROM  Real_Estate_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?market_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:market_name ?market_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What markets are associated with each real estate reporter?",
+      "qtype": "ambig",
+      "sql": "select real_estate_reporters.name , markets.market_name from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?market_name WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:market_name ?market_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What are descriptions of markets all real estate reporters equally cover?",
+      "qtype": "unambig",
+      "sql": "SELECT Markets.description  from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id   GROUP BY Real_Estate_Reporters_Markets.market_id HAVING COUNT(DISTINCT Real_Estate_Reporters_Markets.reporter_id) = (SELECT COUNT(*) FROM  Real_Estate_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me descriptions of markets every real estate reporter covers.",
+      "qtype": "ambig",
+      "sql": "select real_estate_reporters.name , markets.description from Real_Estate_Reporters_Markets join Markets on Real_Estate_Reporters_Markets.market_id = Markets.id join Real_Estate_Reporters on Real_Estate_Reporters_Markets.reporter_id = Real_Estate_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what markets and descriptions are covered by each real estate reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?market_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:market_name ?market_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?market_name ?description WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:market_name ?market_name .\n  ?markets p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What markets are associated with each real estate reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?market_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:market_name ?market_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?market_name WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:market_name ?market_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me descriptions of markets every real estate reporter covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMarkets ?child ; p:hasReal_Estate_Reporters ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Real_Estate_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?real_estate_reporters_markets a :Real_Estate_Reporters_Markets .\n  ?markets a :Markets .\n  ?real_estate_reporters_markets p:hasMarkets ?markets .\n  ?real_estate_reporters a :Real_Estate_Reporters .\n  ?real_estate_reporters_markets p:hasReal_Estate_Reporters ?real_estate_reporters .\n  ?real_estate_reporters p:name ?name .\n  ?markets p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

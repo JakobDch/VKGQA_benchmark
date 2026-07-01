@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_devices_compatibility",
+  "schema": "amb_scope_streaming_services_devices_compatibility",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the status of the devices that each streaming service is compatible with.",
+      "qtype": "ambig",
+      "sql": "SELECT Devices_Compatibility.isActive  from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id   GROUP BY Streaming_Service_Devices_Compatibility.deviceTypeId HAVING COUNT(DISTINCT Streaming_Service_Devices_Compatibility.streamingServiceId) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?isactive WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:isActive ?isactive .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the status of the devices that each streaming service is compatible with.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.servicename , devices_compatibility.isactive from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename ?isactive WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:isActive ?isactive .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the names and statuses of the compatible devices each streaming service has.",
+      "qtype": "ambig",
+      "sql": "SELECT Devices_Compatibility.deviceName, Devices_Compatibility.isActive  from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id   GROUP BY Streaming_Service_Devices_Compatibility.deviceTypeId HAVING COUNT(DISTINCT Streaming_Service_Devices_Compatibility.streamingServiceId) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?devicename ?isactive WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:deviceName ?devicename .\n  ?child p:isActive ?isactive .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the names and statuses of the compatible devices each streaming service has.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.servicename , devices_compatibility.devicename , devices_compatibility.isactive from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename ?devicename ?isactive WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:deviceName ?devicename .\n  ?devices_compatibility p:isActive ?isactive .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the devices we have for every streaming service",
+      "qtype": "ambig",
+      "sql": "SELECT Devices_Compatibility.deviceName  from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id   GROUP BY Streaming_Service_Devices_Compatibility.deviceTypeId HAVING COUNT(DISTINCT Streaming_Service_Devices_Compatibility.streamingServiceId) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?devicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:deviceName ?devicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the devices we have for every streaming service",
+      "qtype": "ambig",
+      "sql": "select streaming_services.servicename , devices_compatibility.devicename from Streaming_Service_Devices_Compatibility join Devices_Compatibility on Streaming_Service_Devices_Compatibility.deviceTypeId = Devices_Compatibility.id join Streaming_Services on Streaming_Service_Devices_Compatibility.streamingServiceId = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename ?devicename WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:deviceName ?devicename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the names and statuses of the compatible devices each streaming service has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?servicename ?devicename ?isactive WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:deviceName ?devicename .\n  ?devices_compatibility p:isActive ?isactive .\n} }\n  collective: { SELECT ?devicename ?isactive WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:deviceName ?devicename .\n  ?child p:isActive ?isactive .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the status of the devices that each streaming service is compatible with.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?isactive WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:isActive ?isactive .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?servicename ?isactive WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:isActive ?isactive .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the devices we have for every streaming service",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?servicename ?devicename WHERE {\n  ?streaming_service_devices_compatibility a :Streaming_Service_Devices_Compatibility .\n  ?devices_compatibility a :Devices_Compatibility .\n  ?streaming_service_devices_compatibility p:hasDevices_Compatibility ?devices_compatibility .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_service_devices_compatibility p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:serviceName ?servicename .\n  ?devices_compatibility p:deviceName ?devicename .\n} }\n  collective: { SELECT ?devicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDevices_Compatibility ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:deviceName ?devicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

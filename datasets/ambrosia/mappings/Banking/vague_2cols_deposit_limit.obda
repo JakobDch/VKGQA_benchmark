@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:name {fullname} .
+source		SELECT `CustomerID`, `fullname` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountNumber`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountNumber {AccountNumber} ; p:Amount {Amount} ; p:TransactionDate {TransactionDate} .
+source		SELECT `TransactionID`, `AccountNumber`, `Amount`, `TransactionDate` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanNumber} a :Loans ; p:LoanNumber {LoanNumber} ; p:CustomerID {CustomerID} ; p:Principal {Principal} ; p:InterestRate {InterestRate} ; p:MonthlyPayment {MonthlyPayment} .
+source		SELECT `LoanNumber`, `CustomerID`, `Principal`, `InterestRate`, `MonthlyPayment` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanNumber`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	SavingsAccounts_base
+target		ex:SavingsAccounts/{SavingsID} a :SavingsAccounts ; p:SavingsID {SavingsID} ; p:CustomerID {CustomerID} ; p:InterestRate {InterestRate} .
+source		SELECT `SavingsID`, `CustomerID`, `InterestRate` FROM `SavingsAccounts`
+
+mappingId	SavingsAccounts_CustomerID_fk
+target		ex:SavingsAccounts/{SavingsID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `SavingsID`, `CustomerID` FROM `SavingsAccounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	CheckingAccounts_base
+target		ex:CheckingAccounts/{CheckingID} a :CheckingAccounts ; p:CheckingID {CheckingID} ; p:Maximum_Deposit_Amount {Maximum_Deposit_Amount} ; p:Monthly_Cap {Monthly_Cap} ; p:Checking_Account {Checking_Account} ; p:CustomerID {CustomerID} .
+source		SELECT `CheckingID`, `Maximum_Deposit_Amount`, `Monthly_Cap`, `Checking_Account`, `CustomerID` FROM `CheckingAccounts`
+
+mappingId	CheckingAccounts_CustomerID_fk
+target		ex:CheckingAccounts/{CheckingID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `CheckingID`, `CustomerID` FROM `CheckingAccounts` WHERE `CustomerID` IS NOT NULL
+
+]]

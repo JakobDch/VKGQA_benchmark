@@ -1,0 +1,108 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_traffic_engineers_tools",
+  "schema": "amb_scope_traffic_engineers_tools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which tools do all traffic engineers equally use?",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.tool_name  from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id   GROUP BY Traffic_Engineers_Tools.tool_id HAVING COUNT(DISTINCT Traffic_Engineers_Tools.engineer_id) = (SELECT COUNT(*) FROM  Traffic_Engineers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the type of tools we have for each traffic engineer.",
+      "qtype": "ambig",
+      "sql": "SELECT Tools.type  from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id   GROUP BY Traffic_Engineers_Tools.tool_id HAVING COUNT(DISTINCT Traffic_Engineers_Tools.engineer_id) = (SELECT COUNT(*) FROM  Traffic_Engineers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List the type of tools we have for each traffic engineer.",
+      "qtype": "ambig",
+      "sql": "select traffic_engineers.name , tools.type from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the tools that all traffic engineers use.",
+      "qtype": "ambig",
+      "sql": "select traffic_engineers.name , tools.tool_name from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:name ?tool_name .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the tool types and names that are common to all engineers",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.tool_name, Tools.type  from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id   GROUP BY Traffic_Engineers_Tools.tool_id HAVING COUNT(DISTINCT Traffic_Engineers_Tools.engineer_id) = (SELECT COUNT(*) FROM  Traffic_Engineers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:name ?tool_name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For all engineers, please provide me with the names and types of tools they use.",
+      "qtype": "unambig",
+      "sql": "select traffic_engineers.name , tools.tool_name , tools.type from Traffic_Engineers_Tools join Tools on Traffic_Engineers_Tools.tool_id = Tools.tool_id join Traffic_Engineers on Traffic_Engineers_Tools.engineer_id = Traffic_Engineers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name ?type WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:name ?tool_name .\n  ?tools p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the tools that all traffic engineers use.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?tool_name WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:name ?tool_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the type of tools we have for each traffic engineer.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the tool types and names for every engineer",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?tool_name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasTraffic_Engineers ?parent . } GROUP BY ?child }\n  ?child p:name ?tool_name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Engineers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?tool_name ?type WHERE {\n  ?traffic_engineers_tools a :Traffic_Engineers_Tools .\n  ?tools a :Tools .\n  ?traffic_engineers_tools p:hasTools ?tools .\n  ?traffic_engineers a :Traffic_Engineers .\n  ?traffic_engineers_tools p:hasTraffic_Engineers ?traffic_engineers .\n  ?traffic_engineers p:name ?name .\n  ?tools p:name ?tool_name .\n  ?tools p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Festivals_base
+target		ex:Festivals/{id} a :Festivals ; p:id {id} ; p:Country {Country} ; p:City {City} ; p:FestivalName {FestivalName} ; p:Date {Date} ; p:Genre {Genre} .
+source		SELECT `id`, `Country`, `City`, `FestivalName`, `Date`, `Genre` FROM `Festivals`
+
+mappingId	Artists_base
+target		ex:Artist/{id} a :Artist ; p:id {id} ; p:name {Name} ; p:Nationality {Nationality} ; p:Occupation {Occupation} .
+source		SELECT `id`, `Name`, `Nationality`, `Occupation` FROM `Artists`
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:Title {Title} ; p:ReleaseDate {ReleaseDate} ; p:ArtistID {ArtistID} .
+source		SELECT `id`, `Title`, `ReleaseDate`, `ArtistID` FROM `Albums`
+
+mappingId	Albums_ArtistID_fk
+target		ex:Album/{id} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `id`, `ArtistID` FROM `Albums` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:Title {Title} ; p:Length {Length} ; p:AlbumID {AlbumID} .
+source		SELECT `id`, `Title`, `Length`, `AlbumID` FROM `Songs`
+
+mappingId	Songs_AlbumID_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{AlbumID} .
+source		SELECT `id`, `AlbumID` FROM `Songs` WHERE `AlbumID` IS NOT NULL
+
+mappingId	MovieTitles_base
+target		ex:MovieTitles/{id} a :MovieTitles ; p:id {id} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Director {Director} ; p:LeadActor {LeadActor} .
+source		SELECT `id`, `Title`, `ReleaseYear`, `Director`, `LeadActor` FROM `MovieTitles`
+
+mappingId	MoviesAndSongs_base
+target		ex:MoviesAndSongs/{id} a :MoviesAndSongs ; p:id {id} ; p:MovieTitleID {MovieTitleID} ; p:SongID {SongID} .
+source		SELECT `id`, `MovieTitleID`, `SongID` FROM `MoviesAndSongs`
+
+mappingId	MoviesAndSongs_SongID_fk
+target		ex:MoviesAndSongs/{id} p:hasSong ex:Song/{SongID} .
+source		SELECT `id`, `SongID` FROM `MoviesAndSongs` WHERE `SongID` IS NOT NULL
+
+mappingId	MoviesAndSongs_MovieTitleID_fk
+target		ex:MoviesAndSongs/{id} p:hasMovieTitles ex:MovieTitles/{MovieTitleID} .
+source		SELECT `id`, `MovieTitleID` FROM `MoviesAndSongs` WHERE `MovieTitleID` IS NOT NULL
+
+]]

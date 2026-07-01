@@ -1,0 +1,69 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Financial_Institutions_base
+target		ex:Financial_Institutions/{id} a :Financial_Institutions ; p:id {id} ; p:name {Name} ; p:Founding_Year {Founding_Year} ; p:Founding_Decade {Founding_Decade} ; p:Total_Assets {Total_Assets} ; p:Total_Liabilities {Total_Liabilities} ; p:ROI_Percentage {ROI_Percentage} .
+source		SELECT `id`, `Name`, `Founding_Year`, `Founding_Decade`, `Total_Assets`, `Total_Liabilities`, `ROI_Percentage` FROM `Financial_Institutions`
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:email {EmailAddress} ; p:AccountId {AccountId} .
+source		SELECT `id`, `FirstName`, `LastName`, `DateOfBirth`, `Address`, `PhoneNumber`, `EmailAddress`, `AccountId` FROM `Customers`
+
+mappingId	Customers_AccountId_fk
+target		ex:Customers/{id} p:hasAccounts ex:Accounts/{AccountId} .
+source		SELECT `id`, `AccountId` FROM `Customers` WHERE `AccountId` IS NOT NULL
+
+mappingId	Accounts_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:CustomerId {CustomerId} ; p:Type {Type} ; p:Balance {Balance} ; p:InterestRate {InterestRate} ; p:OpenDate {OpenDate} .
+source		SELECT `id`, `CustomerId`, `Type`, `Balance`, `InterestRate`, `OpenDate` FROM `Accounts`
+
+mappingId	Accounts_CustomerId_fk
+target		ex:Accounts/{id} p:hasCustomers ex:Customers/{CustomerId} .
+source		SELECT `id`, `CustomerId` FROM `Accounts` WHERE `CustomerId` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{id} a :Transactions ; p:id {id} ; p:FromAccountId {FromAccountId} ; p:ToAccountId {ToAccountId} ; p:Amount {Amount} ; p:TransactionType {TransactionType} ; p:Date {Date} .
+source		SELECT `id`, `FromAccountId`, `ToAccountId`, `Amount`, `TransactionType`, `Date` FROM `Transactions`
+
+mappingId	Transactions_ToAccountId_fk
+target		ex:Transactions/{id} p:hasAccounts_ToAccountId ex:Accounts/{ToAccountId} .
+source		SELECT `id`, `ToAccountId` FROM `Transactions` WHERE `ToAccountId` IS NOT NULL
+
+mappingId	Transactions_FromAccountId_fk
+target		ex:Transactions/{id} p:hasAccounts_FromAccountId ex:Accounts/{FromAccountId} .
+source		SELECT `id`, `FromAccountId` FROM `Transactions` WHERE `FromAccountId` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{id} a :Loans ; p:id {id} ; p:BorrowerId {BorrowerId} ; p:LenderId {LenderId} ; p:PrincipalAmount {PrincipalAmount} ; p:InterestRate {InterestRate} ; p:TermYears {TermYears} ; p:MonthlyPayment {MonthlyPayment} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `id`, `BorrowerId`, `LenderId`, `PrincipalAmount`, `InterestRate`, `TermYears`, `MonthlyPayment`, `StartDate`, `EndDate` FROM `Loans`
+
+mappingId	Loans_LenderId_fk
+target		ex:Loans/{id} p:hasAccounts ex:Accounts/{LenderId} .
+source		SELECT `id`, `LenderId` FROM `Loans` WHERE `LenderId` IS NOT NULL
+
+mappingId	Loans_BorrowerId_fk
+target		ex:Loans/{id} p:hasCustomers ex:Customers/{BorrowerId} .
+source		SELECT `id`, `BorrowerId` FROM `Loans` WHERE `BorrowerId` IS NOT NULL
+
+mappingId	Investments_base
+target		ex:Investments/{id} a :Investments ; p:id {id} ; p:PurchaserId {PurchaserId} ; p:SecurityID {SecurityID} ; p:Shares {Shares} ; p:PricePerShare {PricePerShare} ; p:CurrentValue {CurrentValue} ; p:DatePurchased {DatePurchased} .
+source		SELECT `id`, `PurchaserId`, `SecurityID`, `Shares`, `PricePerShare`, `CurrentValue`, `DatePurchased` FROM `Investments`
+
+mappingId	Investments_SecurityID_fk
+target		ex:Investments/{id} p:hasSecurities ex:Securities/{SecurityID} .
+source		SELECT `id`, `SecurityID` FROM `Investments` WHERE `SecurityID` IS NOT NULL
+
+mappingId	Investments_PurchaserId_fk
+target		ex:Investments/{id} p:hasCustomers ex:Customers/{PurchaserId} .
+source		SELECT `id`, `PurchaserId` FROM `Investments` WHERE `PurchaserId` IS NOT NULL
+
+mappingId	Securities_base
+target		ex:Securities/{id} a :Securities ; p:id {id} ; p:Symbol {Symbol} ; p:CompanyName {CompanyName} ; p:Sector {Sector} ; p:Industry {Industry} .
+source		SELECT `id`, `Symbol`, `CompanyName`, `Sector`, `Industry` FROM `Securities`
+
+]]

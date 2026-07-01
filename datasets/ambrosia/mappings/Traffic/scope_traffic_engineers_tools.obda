@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Traffic_Engineers_base
+target		ex:Traffic_Engineers/{id} a :Traffic_Engineers ; p:id {id} ; p:name {name} ; p:yearsOfExperience {years_of_experience} .
+source		SELECT `id`, `name`, `years_of_experience` FROM `Traffic_Engineers`
+
+mappingId	Tools_base
+target		ex:Tools/{tool_id} a :Tools ; p:tool_id {tool_id} ; p:name {tool_name} ; p:type {type} .
+source		SELECT `tool_id`, `tool_name`, `type` FROM `Tools`
+
+mappingId	Traffic_Engineers_Tools_base
+target		ex:Traffic_Engineers_Tools/{tool_id}/{engineer_id} a :Traffic_Engineers_Tools .
+source		SELECT `engineer_id`, `tool_id` FROM `Traffic_Engineers_Tools`
+
+mappingId	Traffic_Engineers_Tools_tool_id_fk
+target		ex:Traffic_Engineers_Tools/{tool_id}/{engineer_id} p:hasTools ex:Tools/{tool_id} .
+source		SELECT `tool_id`, `engineer_id` FROM `Traffic_Engineers_Tools` WHERE `tool_id` IS NOT NULL
+
+mappingId	Traffic_Engineers_Tools_engineer_id_fk
+target		ex:Traffic_Engineers_Tools/{tool_id}/{engineer_id} p:hasTraffic_Engineers ex:Traffic_Engineers/{engineer_id} .
+source		SELECT `tool_id`, `engineer_id` FROM `Traffic_Engineers_Tools` WHERE `engineer_id` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Banks_base
+target		ex:Banks/{BankID} a :Banks ; p:BankID {BankID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `BankID`, `Name`, `Location` FROM `Banks`
+
+mappingId	Financial_Roles_base
+target		ex:Financial_Roles/{RoleID} a :Financial_Roles ; p:RoleID {RoleID} ; p:RoleName {RoleName} .
+source		SELECT `RoleID`, `RoleName` FROM `Financial_Roles`
+
+mappingId	Banks_Financial_Roles_base
+target		ex:Banks_Financial_Roles/{BankID}/{RoleID} a :Banks_Financial_Roles ; p:BankID {BankID} ; p:RoleID {RoleID} .
+source		SELECT `BankID`, `RoleID` FROM `Banks_Financial_Roles`
+
+mappingId	Banks_Financial_Roles_RoleID_fk
+target		ex:Banks_Financial_Roles/{BankID}/{RoleID} p:hasFinancial_Roles ex:Financial_Roles/{RoleID} .
+source		SELECT `BankID`, `RoleID` FROM `Banks_Financial_Roles` WHERE `RoleID` IS NOT NULL
+
+mappingId	Banks_Financial_Roles_BankID_fk
+target		ex:Banks_Financial_Roles/{BankID}/{RoleID} p:hasBanks ex:Banks/{BankID} .
+source		SELECT `BankID`, `RoleID` FROM `Banks_Financial_Roles` WHERE `BankID` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Stockbrokers_base
+target		ex:Stockbrokers/{id} a :Stockbrokers ; p:id {id} ; p:name {name} ; p:contact_number {contact_number} ; p:email {email} ; p:fees {fees} .
+source		SELECT `id`, `name`, `contact_number`, `email`, `fees` FROM `Stockbrokers`
+
+mappingId	Mutual_funds_base
+target		ex:Mutual_funds/{id} a :Mutual_funds ; p:id {id} ; p:fund_name {fund_name} ; p:total_assets {total_assets} ; p:expense_ratio {expense_ratio} ; p:fees {fees} .
+source		SELECT `id`, `fund_name`, `total_assets`, `expense_ratio`, `fees` FROM `Mutual_funds`
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:phone_number {phone_number} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `date_of_birth`, `phone_number`, `email` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:customer_id {customer_id} ; p:balance {balance} ; p:interest_rate {interest_rate} .
+source		SELECT `account_id`, `customer_id`, `balance`, `interest_rate` FROM `Accounts`
+
+mappingId	Accounts_customer_id_fk
+target		ex:Accounts/{account_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `account_id`, `customer_id` FROM `Accounts` WHERE `customer_id` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:account_id {account_id} ; p:amount {amount} ; p:transaction_date {transaction_date} .
+source		SELECT `transaction_id`, `account_id`, `amount`, `transaction_date` FROM `Transactions`
+
+mappingId	Transactions_account_id_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts ex:Accounts/{account_id} .
+source		SELECT `transaction_id`, `account_id` FROM `Transactions` WHERE `account_id` IS NOT NULL
+
+mappingId	Investments_base
+target		ex:Investments/{investment_id} a :Investments ; p:investment_id {investment_id} ; p:stockbroker_id {stockbroker_id} ; p:mutual_fund_id {mutual_fund_id} ; p:customer_id {customer_id} ; p:quantity {quantity} ; p:purchase_price {purchase_price} .
+source		SELECT `investment_id`, `stockbroker_id`, `mutual_fund_id`, `customer_id`, `quantity`, `purchase_price` FROM `Investments`
+
+mappingId	Investments_customer_id_fk
+target		ex:Investments/{investment_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `investment_id`, `customer_id` FROM `Investments` WHERE `customer_id` IS NOT NULL
+
+mappingId	Investments_mutual_fund_id_fk
+target		ex:Investments/{investment_id} p:hasMutual_funds ex:Mutual_funds/{mutual_fund_id} .
+source		SELECT `investment_id`, `mutual_fund_id` FROM `Investments` WHERE `mutual_fund_id` IS NOT NULL
+
+mappingId	Investments_stockbroker_id_fk
+target		ex:Investments/{investment_id} p:hasStockbrokers ex:Stockbrokers/{stockbroker_id} .
+source		SELECT `investment_id`, `stockbroker_id` FROM `Investments` WHERE `stockbroker_id` IS NOT NULL
+
+]]

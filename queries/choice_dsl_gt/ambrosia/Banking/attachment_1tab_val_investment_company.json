@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_investment_company",
+  "schema": "amb_attachment_1tab_val_investment_company",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all of the growth equity firms and the venture capital trusts where either have 5M funding.",
+      "qtype": "unambig",
+      "sql": "SELECT InvestmentCompanies.Name \nFROM InvestmentCompanies\nWHERE (InvestmentCompanies.Type = \"Growth Equity Firm\" OR InvestmentCompanies.Type = \"Venture Capital Trust\") AND InvestmentCompanies.FundingAmount = 5000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?investmentcompanies a :InvestmentCompanies .\n  ?investmentcompanies p:name ?name .\n  ?investmentcompanies p:Type ?type_w .\n  ?investmentcompanies p:Type ?type_w2 .\n  ?investmentcompanies p:FundingAmount ?fundingamount_w .\n  FILTER((((STR(?type_w) = \"Growth Equity Firm\" || STR(?type_w2) = \"Venture Capital Trust\")) && (STR(?fundingamount_w) = \"5000000\" || STR(?fundingamount_w) = \"5000000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all growth equity firms and venture capital trusts with 5M funding.",
+      "qtype": "ambig",
+      "sql": "SELECT InvestmentCompanies.Name \nFROM InvestmentCompanies\nWHERE InvestmentCompanies.Type = \"Growth Equity Firm\" OR InvestmentCompanies.Type = \"Venture Capital Trust\" AND InvestmentCompanies.FundingAmount = 5000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?investmentcompanies a :InvestmentCompanies .\n  ?investmentcompanies p:name ?name .\n  ?investmentcompanies p:Type ?type_w .\n  ?investmentcompanies p:Type ?type_w2 .\n  ?investmentcompanies p:FundingAmount ?fundingamount_w .\n  FILTER((STR(?type_w) = \"Growth Equity Firm\" || (STR(?type_w2) = \"Venture Capital Trust\" && (STR(?fundingamount_w) = \"5000000\" || STR(?fundingamount_w) = \"5000000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all growth equity firms and venture capital trusts with 5M funding.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?investmentcompanies a :InvestmentCompanies .\n  ?investmentcompanies p:name ?name .\n  ?investmentcompanies p:Type ?type_w .\n  ?investmentcompanies p:Type ?type_w2 .\n  ?investmentcompanies p:FundingAmount ?fundingamount_w .\n  FILTER((((STR(?type_w) = \"Growth Equity Firm\" || STR(?type_w2) = \"Venture Capital Trust\")) && (STR(?fundingamount_w) = \"5000000\" || STR(?fundingamount_w) = \"5000000.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?investmentcompanies a :InvestmentCompanies .\n  ?investmentcompanies p:name ?name .\n  ?investmentcompanies p:Type ?type_w .\n  ?investmentcompanies p:Type ?type_w2 .\n  ?investmentcompanies p:FundingAmount ?fundingamount_w .\n  FILTER((STR(?type_w) = \"Growth Equity Firm\" || (STR(?type_w2) = \"Venture Capital Trust\" && (STR(?fundingamount_w) = \"5000000\" || STR(?fundingamount_w) = \"5000000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

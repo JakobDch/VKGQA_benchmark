@@ -1,0 +1,108 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_medical_schools_courses",
+  "schema": "amb_scope_medical_schools_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the courses and their durations that each medical school offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.courseName, Courses.duration  from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id   GROUP BY Medical_School_Courses.courseId HAVING COUNT(DISTINCT Medical_School_Courses.schoolId) = (SELECT COUNT(*) FROM  Medical_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:courseName ?coursename .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the courses and their durations that each medical school offers.",
+      "qtype": "ambig",
+      "sql": "select medical_schools.name , courses.coursename , courses.duration from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?coursename ?duration WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:courseName ?coursename .\n  ?courses p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "For every medical school, provide the courses they offer",
+      "qtype": "unambig",
+      "sql": "select medical_schools.name , courses.coursename from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?coursename WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:courseName ?coursename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Please provide the duration of courses that is consistent across all medical schools.",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.duration  from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id   GROUP BY Medical_School_Courses.courseId HAVING COUNT(DISTINCT Medical_School_Courses.schoolId) = (SELECT COUNT(*) FROM  Medical_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For each medical school, what are the respective durations of their courses?",
+      "qtype": "unambig",
+      "sql": "select medical_schools.name , courses.duration from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?duration WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What courses do we have at every medical school?",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.courseName  from Medical_School_Courses join Courses on Medical_School_Courses.courseId = Courses.id join Medical_Schools on Medical_School_Courses.schoolId = Medical_Schools.id   GROUP BY Medical_School_Courses.courseId HAVING COUNT(DISTINCT Medical_School_Courses.schoolId) = (SELECT COUNT(*) FROM  Medical_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:courseName ?coursename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What courses do we have at every medical school?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?coursename WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:courseName ?coursename .\n} }\n  collective: { SELECT ?coursename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:courseName ?coursename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What durations are available for courses at each medical school?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?duration WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:duration ?duration .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the courses and their durations that each medical school offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?coursename ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasMedical_Schools ?parent . } GROUP BY ?child }\n  ?child p:courseName ?coursename .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Medical_Schools } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?coursename ?duration WHERE {\n  ?medical_school_courses a :Medical_School_Courses .\n  ?courses a :Courses .\n  ?medical_school_courses p:hasCourses ?courses .\n  ?medical_schools a :Medical_Schools .\n  ?medical_school_courses p:hasMedical_Schools ?medical_schools .\n  ?medical_schools p:name ?name .\n  ?courses p:courseName ?coursename .\n  ?courses p:duration ?duration .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

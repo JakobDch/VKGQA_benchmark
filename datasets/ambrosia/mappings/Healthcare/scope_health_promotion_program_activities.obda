@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Health_Promotion_Program_base
+target		ex:Health_Promotion_Program/{program_id} a :Health_Promotion_Program ; p:program_id {program_id} ; p:name {name} ; p:description {description} .
+source		SELECT `program_id`, `name`, `description` FROM `Health_Promotion_Program`
+
+mappingId	Activities_base
+target		ex:Activities/{activity_id} a :Activities ; p:activity_id {activity_id} ; p:activity_name {activity_name} ; p:description {description} .
+source		SELECT `activity_id`, `activity_name`, `description` FROM `Activities`
+
+mappingId	Health_Promotion_Program_Activities_base
+target		ex:Health_Promotion_Program_Activities/{id} a :Health_Promotion_Program_Activities ; p:id {id} ; p:program_id {program_id} ; p:activity_id {activity_id} .
+source		SELECT `id`, `program_id`, `activity_id` FROM `Health_Promotion_Program_Activities`
+
+mappingId	Health_Promotion_Program_Activities_activity_id_fk
+target		ex:Health_Promotion_Program_Activities/{id} p:hasActivities ex:Activities/{activity_id} .
+source		SELECT `id`, `activity_id` FROM `Health_Promotion_Program_Activities` WHERE `activity_id` IS NOT NULL
+
+mappingId	Health_Promotion_Program_Activities_program_id_fk
+target		ex:Health_Promotion_Program_Activities/{id} p:hasHealth_Promotion_Program ex:Health_Promotion_Program/{program_id} .
+source		SELECT `id`, `program_id` FROM `Health_Promotion_Program_Activities` WHERE `program_id` IS NOT NULL
+
+mappingId	Participants_base
+target		ex:Participants/{participant_id} a :Participants ; p:participant_id {participant_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `participant_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Participants`
+
+]]

@@ -1,0 +1,71 @@
+@prefix : <http://ambrosia.example.org/traffic#> .
+@prefix p: <http://ambrosia.example.org/traffic/prop#> .
+@prefix ex: <http://ambrosia.example.org/traffic/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_city_transportation_mode_0_City_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"population\" FROM \"City\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/City/{id}" ; rr:class :City ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:population ; rr:objectMap [ rr:column "population" ] ] .
+
+<#tm_scope_city_transportation_mode_1_Transportation_Mode_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"mode\" FROM \"Transportation_Mode\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Transportation_Mode/{id}" ; rr:class :Transportation_Mode ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "mode" ] ] .
+
+<#tm_scope_city_transportation_mode_2_Roads_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"road_id\", \"city_id\", \"length\" FROM \"Roads\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Roads/{id}" ; rr:class :Roads ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:road_id ; rr:objectMap [ rr:column "road_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:length ; rr:objectMap [ rr:column "length" ] ] .
+
+<#tm_scope_city_transportation_mode_3_Roads_city_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"city_id\" FROM \"Roads\" WHERE \"city_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Roads/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCity ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/City/{city_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_city_transportation_mode_4_Traffic_Volume_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"volume\", \"road_id\", \"timestamp\" FROM \"Traffic_Volume\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Volume/{id}" ; rr:class :Traffic_Volume ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:volume ; rr:objectMap [ rr:column "volume" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:timestamp ; rr:objectMap [ rr:column "timestamp" ] ] .
+
+<#tm_scope_city_transportation_mode_5_Traffic_Volume_road_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"road_id\" FROM \"Traffic_Volume\" WHERE \"road_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Volume/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRoads ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Roads/{road_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_city_transportation_mode_6_Accidents_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"accident_type\", \"severity\", \"road_id\", \"timestamp\" FROM \"Accidents\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Accidents/{id}" ; rr:class :Accidents ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "accident_type" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:severity ; rr:objectMap [ rr:column "severity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:timestamp ; rr:objectMap [ rr:column "timestamp" ] ] .
+
+<#tm_scope_city_transportation_mode_7_Accidents_road_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"road_id\" FROM \"Accidents\" WHERE \"road_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Accidents/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRoads ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Roads/{road_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_city_transportation_mode_8_City_Transportation_Mode_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"city_id\", \"transportation_mode_id\" FROM \"City_Transportation_Mode\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/City_Transportation_Mode/{city_id}/{transportation_mode_id}" ; rr:class :City_Transportation_Mode ] .
+
+<#tm_scope_city_transportation_mode_9_City_Transportation_Mode_transportation_mode_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"city_id\", \"transportation_mode_id\" FROM \"City_Transportation_Mode\" WHERE \"transportation_mode_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/City_Transportation_Mode/{city_id}/{transportation_mode_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTransportation_Mode ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Transportation_Mode/{transportation_mode_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_city_transportation_mode_10_City_Transportation_Mode_city_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"city_id\", \"transportation_mode_id\" FROM \"City_Transportation_Mode\" WHERE \"city_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/City_Transportation_Mode/{city_id}/{transportation_mode_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCity ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/City/{city_id}" ; rr:termType rr:IRI ] ] .
+

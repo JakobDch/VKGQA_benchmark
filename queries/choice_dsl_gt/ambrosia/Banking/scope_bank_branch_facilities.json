@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_bank_branch_facilities",
+  "schema": "amb_scope_bank_branch_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What facility type is common for all bank branches?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.FacilityType  from Bank_Branch_Facilities join Facilities on Bank_Branch_Facilities.FacilityID = Facilities.FacilityID join Bank_Branch on Bank_Branch_Facilities.BranchID = Bank_Branch.BranchID   GROUP BY Bank_Branch_Facilities.FacilityID HAVING COUNT(DISTINCT Bank_Branch_Facilities.BranchID) = (SELECT COUNT(*) FROM  Bank_Branch)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilitytype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasBank_Branch ?parent . } GROUP BY ?child }\n  ?child p:FacilityType ?facilitytype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Branches } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the facility type available at each bank branch.",
+      "qtype": "ambig",
+      "sql": "select bank_branch.branchname , facilities.facilitytype from Bank_Branch_Facilities join Facilities on Bank_Branch_Facilities.FacilityID = Facilities.FacilityID join Bank_Branch on Bank_Branch_Facilities.BranchID = Bank_Branch.BranchID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?branchname ?facilitytype WHERE {\n  ?bank_branch_facilities a :Bank_Branch_Facilities .\n  ?facilities a :Facilities .\n  ?bank_branch_facilities p:hasFacilities ?facilities .\n  ?bank_branch a :Branches .\n  ?bank_branch_facilities p:hasBank_Branch ?bank_branch .\n  ?bank_branch p:BranchName ?branchname .\n  ?facilities p:FacilityType ?facilitytype .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the facility type available at each bank branch.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilitytype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasBank_Branch ?parent . } GROUP BY ?child }\n  ?child p:FacilityType ?facilitytype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Branches } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?branchname ?facilitytype WHERE {\n  ?bank_branch_facilities a :Bank_Branch_Facilities .\n  ?facilities a :Facilities .\n  ?bank_branch_facilities p:hasFacilities ?facilities .\n  ?bank_branch a :Branches .\n  ?bank_branch_facilities p:hasBank_Branch ?bank_branch .\n  ?bank_branch p:BranchName ?branchname .\n  ?facilities p:FacilityType ?facilitytype .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_restaurants_kitchen_roles",
+  "schema": "amb_scope_restaurants_kitchen_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What kitchen roles are there in each restaurant?",
+      "qtype": "ambig",
+      "sql": "SELECT Kitchen_Roles.role_name  from Restaurants_Kitchen_Roles join Kitchen_Roles on Restaurants_Kitchen_Roles.kitchen_role_id = Kitchen_Roles.role_id join Restaurants on Restaurants_Kitchen_Roles.restaurant_id = Restaurants.id   GROUP BY Restaurants_Kitchen_Roles.kitchen_role_id HAVING COUNT(DISTINCT Restaurants_Kitchen_Roles.restaurant_id) = (SELECT COUNT(*) FROM  Restaurants)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?role_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:kitchen_role_id ?cg . ?child a :Kitchen_Roles ; p:role_id ?cg . ?l p:restaurant_id ?pg . ?parent a :Restaurants ; p:id ?pg . } GROUP BY ?child }\n  ?child p:role_name ?role_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Restaurants } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What kitchen roles are there in each restaurant?",
+      "qtype": "ambig",
+      "sql": "select restaurants.name , kitchen_roles.role_name from Restaurants_Kitchen_Roles join Kitchen_Roles on Restaurants_Kitchen_Roles.kitchen_role_id = Kitchen_Roles.role_id join Restaurants on Restaurants_Kitchen_Roles.restaurant_id = Restaurants.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?role_name WHERE {\n  ?restaurants_kitchen_roles a :Restaurants_Kitchen_Roles .\n  ?kitchen_roles a :Kitchen_Roles .\n  ?restaurants_kitchen_roles p:hasKitchen_Roles ?kitchen_roles .\n  ?restaurants a :Restaurants .\n  ?restaurants_kitchen_roles p:hasRestaurants ?restaurants .\n  ?restaurants p:name ?name .\n  ?kitchen_roles p:role_name ?role_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What kitchen roles are there in each restaurant?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?role_name WHERE {\n  ?restaurants_kitchen_roles a :Restaurants_Kitchen_Roles .\n  ?kitchen_roles a :Kitchen_Roles .\n  ?restaurants_kitchen_roles p:hasKitchen_Roles ?kitchen_roles .\n  ?restaurants a :Restaurants .\n  ?restaurants_kitchen_roles p:hasRestaurants ?restaurants .\n  ?restaurants p:name ?name .\n  ?kitchen_roles p:role_name ?role_name .\n} }\n  collective: { SELECT ?role_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:kitchen_role_id ?cg . ?child a :Kitchen_Roles ; p:role_id ?cg . ?l p:restaurant_id ?pg . ?parent a :Restaurants ; p:id ?pg . } GROUP BY ?child }\n  ?child p:role_name ?role_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Restaurants } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

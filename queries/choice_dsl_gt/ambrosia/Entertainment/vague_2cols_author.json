@@ -1,0 +1,53 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_author",
+  "schema": "amb_vague_2cols_author",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "which filmmaker created the drama movie",
+      "qtype": "unambig",
+      "sql": "SELECT Filmmaker FROM Movies JOIN MovieGenre ON Movies.id  = MovieGenre.MovieId JOIN Genres  ON Genres.id = MovieGenre.GenreId WHERE Type = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?filmmaker WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Filmmaker ?filmmaker .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who is the author of the drama movie?",
+      "qtype": "ambig",
+      "sql": "SELECT Screenwriter FROM Movies JOIN MovieGenre ON Movies.id  = MovieGenre.MovieId JOIN Genres  ON Genres.id = MovieGenre.GenreId WHERE Type = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?screenwriter WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Screenwriter ?screenwriter .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who is the author of the drama movie?",
+      "qtype": "ambig",
+      "sql": "SELECT Filmmaker, Screenwriter FROM Movies JOIN MovieGenre ON Movies.id  = MovieGenre.MovieId JOIN Genres  ON Genres.id = MovieGenre.GenreId WHERE Type = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?filmmaker ?screenwriter WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Filmmaker ?filmmaker .\n  ?movies p:Screenwriter ?screenwriter .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who is the author of the drama movie?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?filmmaker WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Filmmaker ?filmmaker .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n} }\n  full: { SELECT ?filmmaker ?screenwriter WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Filmmaker ?filmmaker .\n  ?movies p:Screenwriter ?screenwriter .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n} }\n  component_2: { SELECT ?screenwriter WHERE {\n  ?movies a :Movie .\n  ?moviegenre a :MovieGenre .\n  ?moviegenre p:hasMovies ?movies .\n  ?genres a :Genre .\n  ?moviegenre p:hasGenres ?genres .\n  ?movies p:Screenwriter ?screenwriter .\n  ?genres p:Type ?type_f .\n  FILTER(STR(?type_f) = \"Drama\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

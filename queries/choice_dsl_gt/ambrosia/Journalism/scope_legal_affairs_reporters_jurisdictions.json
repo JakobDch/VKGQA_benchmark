@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_legal_affairs_reporters_jurisdictions",
+  "schema": "amb_scope_legal_affairs_reporters_jurisdictions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with the jurisdiction name that is common for all legal affairs reporters.",
+      "qtype": "unambig",
+      "sql": "SELECT Jurisdictions.jurisdiction_name  from Legal_Affairs_Reporters_Jurisdictions join Jurisdictions on Legal_Affairs_Reporters_Jurisdictions.jurisdiction_id = Jurisdictions.jurisdiction_id join Legal_Affairs_Reporters on Legal_Affairs_Reporters_Jurisdictions.legal_affairs_reporter_id = Legal_Affairs_Reporters.reporter_id   GROUP BY Legal_Affairs_Reporters_Jurisdictions.jurisdiction_id HAVING COUNT(DISTINCT Legal_Affairs_Reporters_Jurisdictions.legal_affairs_reporter_id) = (SELECT COUNT(*) FROM  Legal_Affairs_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?jurisdiction_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasJurisdictions ?child ; p:hasLegal_Affairs_Reporters ?parent . } GROUP BY ?child }\n  ?child p:jurisdiction_name ?jurisdiction_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Legal_Affairs_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each legal affairs reporter, give me the corresponding jurisdiction names.",
+      "qtype": "unambig",
+      "sql": "select legal_affairs_reporters.name , jurisdictions.jurisdiction_name from Legal_Affairs_Reporters_Jurisdictions join Jurisdictions on Legal_Affairs_Reporters_Jurisdictions.jurisdiction_id = Jurisdictions.jurisdiction_id join Legal_Affairs_Reporters on Legal_Affairs_Reporters_Jurisdictions.legal_affairs_reporter_id = Legal_Affairs_Reporters.reporter_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?jurisdiction_name WHERE {\n  ?legal_affairs_reporters_jurisdictions a :Legal_Affairs_Reporters_Jurisdictions .\n  ?jurisdictions a :Jurisdictions .\n  ?legal_affairs_reporters_jurisdictions p:hasJurisdictions ?jurisdictions .\n  ?legal_affairs_reporters a :Legal_Affairs_Reporters .\n  ?legal_affairs_reporters_jurisdictions p:hasLegal_Affairs_Reporters ?legal_affairs_reporters .\n  ?legal_affairs_reporters p:name ?name .\n  ?jurisdictions p:jurisdiction_name ?jurisdiction_name .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which jurisdiction names are associated with each legal affairs reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?jurisdiction_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasJurisdictions ?child ; p:hasLegal_Affairs_Reporters ?parent . } GROUP BY ?child }\n  ?child p:jurisdiction_name ?jurisdiction_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Legal_Affairs_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?jurisdiction_name WHERE {\n  ?legal_affairs_reporters_jurisdictions a :Legal_Affairs_Reporters_Jurisdictions .\n  ?jurisdictions a :Jurisdictions .\n  ?legal_affairs_reporters_jurisdictions p:hasJurisdictions ?jurisdictions .\n  ?legal_affairs_reporters a :Legal_Affairs_Reporters .\n  ?legal_affairs_reporters_jurisdictions p:hasLegal_Affairs_Reporters ?legal_affairs_reporters .\n  ?legal_affairs_reporters p:name ?name .\n  ?jurisdictions p:jurisdiction_name ?jurisdiction_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

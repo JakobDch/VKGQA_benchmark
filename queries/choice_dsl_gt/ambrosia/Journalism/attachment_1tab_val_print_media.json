@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_print_media",
+  "schema": "amb_attachment_1tab_val_print_media",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the newspaper publications, in addition show only the weekly magazine publications.",
+      "qtype": "unambig",
+      "sql": "SELECT Publications.title \nFROM Publications\nWHERE Publications.Print_Media = \"Newspaper\" OR Publications.Print_Media = \"Magazine\" AND Publications.Publication_Frequency = \"Weekly\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?publications a :Publications .\n  ?publications p:Title ?title .\n  ?publications p:Print_Media ?print_media_w .\n  ?publications p:Print_Media ?print_media_w2 .\n  ?publications p:Publication_Frequency ?publication_frequency_w .\n  FILTER((STR(?print_media_w) = \"Newspaper\" || (STR(?print_media_w2) = \"Magazine\" && STR(?publication_frequency_w) = \"Weekly\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List both newspaper and magazine publications where either one is issued weekly.",
+      "qtype": "unambig",
+      "sql": "SELECT Publications.title \nFROM Publications\nWHERE (Publications.Print_Media = \"Newspaper\" OR Publications.Print_Media = \"Magazine\") AND Publications.Publication_Frequency = \"Weekly\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?publications a :Publications .\n  ?publications p:Title ?title .\n  ?publications p:Print_Media ?print_media_w .\n  ?publications p:Print_Media ?print_media_w2 .\n  ?publications p:Publication_Frequency ?publication_frequency_w .\n  FILTER((((STR(?print_media_w) = \"Newspaper\" || STR(?print_media_w2) = \"Magazine\")) && STR(?publication_frequency_w) = \"Weekly\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all newspaper publications and magazine publications that come out weekly.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?publications a :Publications .\n  ?publications p:Title ?title .\n  ?publications p:Print_Media ?print_media_w .\n  ?publications p:Print_Media ?print_media_w2 .\n  ?publications p:Publication_Frequency ?publication_frequency_w .\n  FILTER((STR(?print_media_w) = \"Newspaper\" || (STR(?print_media_w2) = \"Magazine\" && STR(?publication_frequency_w) = \"Weekly\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?publications a :Publications .\n  ?publications p:Title ?title .\n  ?publications p:Print_Media ?print_media_w .\n  ?publications p:Print_Media ?print_media_w2 .\n  ?publications p:Publication_Frequency ?publication_frequency_w .\n  FILTER((((STR(?print_media_w) = \"Newspaper\" || STR(?print_media_w2) = \"Magazine\")) && STR(?publication_frequency_w) = \"Weekly\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

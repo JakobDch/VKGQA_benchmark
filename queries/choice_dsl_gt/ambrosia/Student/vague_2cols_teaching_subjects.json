@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_teaching_subjects",
+  "schema": "amb_vague_2cols_teaching_subjects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What was the grade level of the youngest student?",
+      "qtype": "unambig",
+      "sql": "SELECT Academics.GradeLevel FROM Academics JOIN  Enrollments ON Enrollments.CourseID = Academics.CourseID JOIN Students ON Enrollments.StudentID = Students.StudentID ORDER BY DateOfBirth DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:GradeLevel ?gradelevel .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "To what grade did Mr Brown teach?",
+      "qtype": "unambig",
+      "sql": "SELECT GradeLevel FROM Academics WHERE Teacher LIKE '%Brown%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?academics p:GradeLevel ?gradelevel .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What discipline did Mr. Brown teach and to what grade?",
+      "qtype": "unambig",
+      "sql": "SELECT Discipline, GradeLevel FROM Academics WHERE Teacher LIKE '%Brown%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?discipline ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?academics p:Discipline ?discipline .\n  ?academics p:GradeLevel ?gradelevel .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What was the grade level of the youngest student and what discipline did they study?",
+      "qtype": "unambig",
+      "sql": "SELECT Academics.Discipline, GradeLevel FROM Academics JOIN  Enrollments ON Enrollments.CourseID = Academics.CourseID JOIN Students ON Enrollments.StudentID = Students.StudentID ORDER BY DateOfBirth DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?discipline ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:Discipline ?discipline .\n  ?academics p:GradeLevel ?gradelevel .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What did the youngest student study?",
+      "qtype": "ambig",
+      "sql": "SELECT Academics.Discipline FROM Academics JOIN  Enrollments ON Enrollments.CourseID = Academics.CourseID JOIN Students ON Enrollments.StudentID = Students.StudentID ORDER BY DateOfBirth DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?discipline WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:Discipline ?discipline .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What did Mr. Brown teach?",
+      "qtype": "ambig",
+      "sql": "SELECT Discipline FROM Academics WHERE Teacher LIKE '%Brown%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?discipline WHERE {\n  ?academics a :Academics .\n  ?academics p:Discipline ?discipline .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What did the youngest student study?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:GradeLevel ?gradelevel .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1 }\n  full: { SELECT ?discipline ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:Discipline ?discipline .\n  ?academics p:GradeLevel ?gradelevel .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1 }\n  component_2: { SELECT ?discipline WHERE {\n  ?academics a :Academics .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasAcademics ?academics .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?academics p:Discipline ?discipline .\n  ?students p:DateOfBirth ?dateofbirth_o .\n}\nORDER BY DESC(?dateofbirth_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "What did Mr. Brown teach?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?academics p:GradeLevel ?gradelevel .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n} }\n  full: { SELECT ?discipline ?gradelevel WHERE {\n  ?academics a :Academics .\n  ?academics p:Discipline ?discipline .\n  ?academics p:GradeLevel ?gradelevel .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n} }\n  component_2: { SELECT ?discipline WHERE {\n  ?academics a :Academics .\n  ?academics p:Discipline ?discipline .\n  ?academics p:Teacher ?teacher_lk .\n  FILTER(REGEX(STR(?teacher_lk), \"^.*Brown.*$\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

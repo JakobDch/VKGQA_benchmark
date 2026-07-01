@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MIMIC-III domain ontology (hand-modelled, not bootstrapped).
+  Scope and design rationale: see ../MODELING.md
+  Column semantics grounded in the official MIMIC-III documentation
+  (mimic.mit.edu / mimic-schema-spy), curated in ../glossary/columns.csv.
+-->
+<rdf:RDF
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns="http://example.org/mimic#">
+
+  <owl:Ontology rdf:about="http://example.org/mimic">
+    <rdfs:label>MIMIC-III clinical ontology</rdfs:label>
+    <rdfs:comment>A domain ontology over the MIMIC-III critical-care database: patients, their hospital admissions and ICU stays, and the clinical events, diagnoses, procedures, prescriptions and costs recorded during care.</rdfs:comment>
+  </owl:Ontology>
+
+  <!-- ============================ CLASSES ============================ -->
+
+  <owl:Class rdf:about="http://example.org/mimic#Patient">
+    <rdfs:label>Patient</rdfs:label>
+    <rdfs:comment>An individual patient. Patients are tracked across all of their hospital admissions.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Admission">
+    <rdfs:label>Hospital admission</rdfs:label>
+    <rdfs:comment>A single hospital admission (hospital stay) of a patient, from admission to discharge.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#IcuStay">
+    <rdfs:label>ICU stay</rdfs:label>
+    <rdfs:comment>A single stay in an intensive care unit within a hospital admission.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Transfer">
+    <rdfs:label>Transfer</rdfs:label>
+    <rdfs:comment>A movement of a patient into a care unit/ward during a hospital stay (admission, transfer or discharge event).</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Event">
+    <rdfs:label>Clinical event</rdfs:label>
+    <rdfs:comment>A timestamped clinical event recorded for a patient during an admission (abstract superclass of chart, lab, input, output and microbiology events).</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#ChartEvent">
+    <rdfs:subClassOf rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:label>Chart event</rdfs:label>
+    <rdfs:comment>A charted bedside observation (vital sign or other non-laboratory measurement) recorded during an ICU stay.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#LabEvent">
+    <rdfs:subClassOf rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:label>Laboratory event</rdfs:label>
+    <rdfs:comment>A laboratory test measurement for a patient.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#InputEvent">
+    <rdfs:subClassOf rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:label>Input event</rdfs:label>
+    <rdfs:comment>An administration of fluid or medication input to a patient during an ICU stay.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#OutputEvent">
+    <rdfs:subClassOf rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:label>Output event</rdfs:label>
+    <rdfs:comment>A measured patient output (for example urine) recorded during an ICU stay.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#MicrobiologyEvent">
+    <rdfs:subClassOf rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:label>Microbiology event</rdfs:label>
+    <rdfs:comment>A microbiology specimen test and the organism identified in it.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Diagnosis">
+    <rdfs:label>Diagnosis</rdfs:label>
+    <rdfs:comment>An ICD-9 coded diagnosis assigned to a patient during a hospital admission, with its short and long ICD-9 titles.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Procedure">
+    <rdfs:label>Procedure</rdfs:label>
+    <rdfs:comment>An ICD-9 coded procedure performed for a patient during a hospital admission, with its short and long ICD-9 titles.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#Prescription">
+    <rdfs:label>Prescription</rdfs:label>
+    <rdfs:comment>A medication order for a patient during a hospital admission.</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="http://example.org/mimic#CostEvent">
+    <rdfs:label>Cost event</rdfs:label>
+    <rdfs:comment>A billed cost charged for a clinical event (diagnosis, lab, procedure, prescription) during a hospital admission.</rdfs:comment>
+  </owl:Class>
+
+  <!-- Frequency-rank views (materialised dense_rank): expose the dense_rank() frequency
+       ranking that plain SPARQL 1.1 cannot compute, so top-N queries are exact incl. ties. -->
+  <owl:Class rdf:about="http://example.org/mimic#DrugRank"><rdfs:label>Drug frequency rank</rdfs:label><rdfs:comment>A prescribed drug together with its dense-rank by prescription frequency.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="http://example.org/mimic#DiagnosisCodeRank"><rdfs:label>Diagnosis-code frequency rank</rdfs:label><rdfs:comment>An ICD-9 diagnosis together with its dense-rank by diagnosis frequency.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="http://example.org/mimic#ProcedureCodeRank"><rdfs:label>Procedure-code frequency rank</rdfs:label><rdfs:comment>An ICD-9 procedure together with its dense-rank by procedure frequency.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="http://example.org/mimic#LabItemRank"><rdfs:label>Lab-item frequency rank</rdfs:label><rdfs:comment>A laboratory item together with its dense-rank by measurement frequency.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="http://example.org/mimic#SpecimenRank"><rdfs:label>Specimen frequency rank</rdfs:label><rdfs:comment>A microbiology specimen type together with its dense-rank by frequency.</rdfs:comment></owl:Class>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#frequencyRank"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/><rdfs:label>frequency rank</rdfs:label><rdfs:comment>Dense rank of the item by frequency (1 = most frequent; ties share a rank).</rdfs:comment></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#rankedDrug"><rdfs:domain rdf:resource="http://example.org/mimic#DrugRank"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><rdfs:label>ranked drug</rdfs:label><rdfs:comment>The drug name of this rank entry.</rdfs:comment></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#rankedShortTitle"><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><rdfs:label>ranked short title</rdfs:label><rdfs:comment>The ICD-9 short title of this rank entry.</rdfs:comment></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#rankedLabel"><rdfs:domain rdf:resource="http://example.org/mimic#LabItemRank"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><rdfs:label>ranked label</rdfs:label><rdfs:comment>The lab item label of this rank entry.</rdfs:comment></owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#rankedSpecimen"><rdfs:domain rdf:resource="http://example.org/mimic#SpecimenRank"/><rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/><rdfs:label>ranked specimen</rdfs:label><rdfs:comment>The specimen type of this rank entry.</rdfs:comment></owl:DatatypeProperty>
+
+  <!-- ======================= OBJECT PROPERTIES ======================= -->
+
+  <owl:ObjectProperty rdf:about="http://example.org/mimic#ofPatient">
+    <rdfs:label>of patient</rdfs:label>
+    <rdfs:comment>Relates a clinical record (admission, stay, event, diagnosis, procedure, prescription, cost) to the patient it concerns.</rdfs:comment>
+    <rdfs:range rdf:resource="http://example.org/mimic#Patient"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="http://example.org/mimic#duringAdmission">
+    <rdfs:label>during admission</rdfs:label>
+    <rdfs:comment>Relates a clinical record to the hospital admission during which it occurred.</rdfs:comment>
+    <rdfs:range rdf:resource="http://example.org/mimic#Admission"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="http://example.org/mimic#duringIcuStay">
+    <rdfs:label>during ICU stay</rdfs:label>
+    <rdfs:comment>Relates a clinical record to the ICU stay during which it occurred.</rdfs:comment>
+    <rdfs:range rdf:resource="http://example.org/mimic#IcuStay"/>
+  </owl:ObjectProperty>
+
+  <!-- ====================== DATATYPE PROPERTIES ====================== -->
+
+  <!-- Patient -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#gender">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Patient"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>gender</rdfs:label>
+    <rdfs:comment>Genotypical sex of the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#dateOfBirth">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Patient"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>date of birth</rdfs:label>
+    <rdfs:comment>Date of birth of the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#dateOfDeath">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Patient"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>date of death</rdfs:label>
+    <rdfs:comment>Date of death of the patient; null if the patient was alive at least 90 days after discharge.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Admission -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#admissionTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>admission time</rdfs:label>
+    <rdfs:comment>Time of admission to the hospital.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#dischargeTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>discharge time</rdfs:label>
+    <rdfs:comment>Time of discharge from the hospital.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#admissionType">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>admission type</rdfs:label>
+    <rdfs:comment>Type of admission, for example emergency or elective.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#admissionLocation">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>admission location</rdfs:label>
+    <rdfs:comment>Location of the patient prior to arriving at the hospital.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#dischargeLocation">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>discharge location</rdfs:label>
+    <rdfs:comment>Location to which the patient was discharged.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#insurance">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>insurance</rdfs:label>
+    <rdfs:comment>Insurance type of the patient for the admission.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#language">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>language</rdfs:label>
+    <rdfs:comment>Language of the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#maritalStatus">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>marital status</rdfs:label>
+    <rdfs:comment>Marital status of the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#ethnicity">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>ethnicity</rdfs:label>
+    <rdfs:comment>Ethnicity of the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#age">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>age</rdfs:label>
+    <rdfs:comment>Age of the patient at the time of the admission.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- IcuStay -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#firstCareUnit">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>first care unit</rdfs:label>
+    <rdfs:comment>First care unit associated with the ICU stay.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#lastCareUnit">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>last care unit</rdfs:label>
+    <rdfs:comment>Last care unit associated with the ICU stay.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#firstWardId">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>first ward id</rdfs:label>
+    <rdfs:comment>Identifier for the first ward the patient stayed in during the ICU stay.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#lastWardId">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>last ward id</rdfs:label>
+    <rdfs:comment>Identifier for the last ward the patient stayed in during the ICU stay.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#icuInTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>ICU in-time</rdfs:label>
+    <rdfs:comment>Time of admission to the ICU.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#icuOutTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>ICU out-time</rdfs:label>
+    <rdfs:comment>Time of discharge from the ICU.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Transfer -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#eventType">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>event type</rdfs:label>
+    <rdfs:comment>Type of event. For a transfer: admission, transfer or discharge. For a cost: the kind of billed event.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#careUnit">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Transfer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>care unit</rdfs:label>
+    <rdfs:comment>Care unit into which the patient was transferred.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#wardId">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Transfer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>ward id</rdfs:label>
+    <rdfs:comment>Identifier of the ward into which the patient was transferred.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#transferInTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Transfer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>transfer in-time</rdfs:label>
+    <rdfs:comment>Time when the patient was transferred into the unit.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#transferOutTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Transfer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>transfer out-time</rdfs:label>
+    <rdfs:comment>Time when the patient was transferred out of the unit.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Event (shared) -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#chartTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Event"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>chart time</rdfs:label>
+    <rdfs:comment>Time at which the event was charted.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#measurementLabel">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>measurement label</rdfs:label>
+    <rdfs:comment>Human-readable name of the measured quantity or administered item (from the MIMIC item dictionaries D_ITEMS / D_LABITEMS).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#measurementItemId">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>measurement item id</rdfs:label>
+    <rdfs:comment>Identifier of the measured/administered item in the MIMIC item dictionary. Finer-grained than the label: one label may correspond to several item ids.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#valueNumeric">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>numeric value</rdfs:label>
+    <rdfs:comment>Value of the measurement as a number (chart or laboratory event).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#valueUnit">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>unit of measurement</rdfs:label>
+    <rdfs:comment>Unit of measurement for the measured value.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#amount">
+    <rdfs:domain rdf:resource="http://example.org/mimic#InputEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>amount</rdfs:label>
+    <rdfs:comment>Amount of the item administered to the patient.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#outputValue">
+    <rdfs:domain rdf:resource="http://example.org/mimic#OutputEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>output value</rdfs:label>
+    <rdfs:comment>Amount of the patient output measured.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#specimenType">
+    <rdfs:domain rdf:resource="http://example.org/mimic#MicrobiologyEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>specimen type</rdfs:label>
+    <rdfs:comment>Description of the specimen collected for microbiology testing.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#organismName">
+    <rdfs:domain rdf:resource="http://example.org/mimic#MicrobiologyEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>organism name</rdfs:label>
+    <rdfs:comment>Name of the organism identified in the microbiology analysis.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Diagnosis / Procedure (shared ICD properties) -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#icd9Code">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>ICD-9 code</rdfs:label>
+    <rdfs:comment>ICD-9 code of the diagnosis or procedure.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#shortTitle">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>short title</rdfs:label>
+    <rdfs:comment>Brief label for the ICD-9 diagnosis or procedure code (from the MIMIC code dictionaries).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#longTitle">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>long title</rdfs:label>
+    <rdfs:comment>Full description of the ICD-9 diagnosis or procedure code (from the MIMIC code dictionaries).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#recordedTime">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>recorded time</rdfs:label>
+    <rdfs:comment>Time at which the diagnosis or procedure was recorded.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Prescription -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#drug">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>drug</rdfs:label>
+    <rdfs:comment>Name of the medication prescribed.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#doseValue">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>dose value</rdfs:label>
+    <rdfs:comment>Dose of the drug prescribed.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#doseUnit">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>dose unit</rdfs:label>
+    <rdfs:comment>Unit of measurement associated with the prescribed dose.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#route">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label>route</rdfs:label>
+    <rdfs:comment>Route of administration, for example intravenous or oral.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#startDate">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>start date</rdfs:label>
+    <rdfs:comment>Date when the prescription started.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#endDate">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>end date</rdfs:label>
+    <rdfs:comment>Date when the prescription ended.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- CostEvent -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#cost">
+    <rdfs:domain rdf:resource="http://example.org/mimic#CostEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>cost</rdfs:label>
+    <rdfs:comment>Monetary cost charged for the billed event.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#chargeTime">
+    <rdfs:domain rdf:resource="http://example.org/mimic#CostEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:label>charge time</rdfs:label>
+    <rdfs:comment>Time at which the cost was charged.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#billedEventId">
+    <rdfs:domain rdf:resource="http://example.org/mimic#CostEvent"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>billed event id</rdfs:label>
+    <rdfs:comment>Row identifier of the billed event in its source table (diagnoses_icd, labevents, procedures_icd or prescriptions, according to the event type). Polymorphic reference, kept as a literal.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Derived temporal-distance properties (relative to the EHRSQL fixed "now" =
+       2105-12-31 23:59:00). These materialise day-differences that plain SPARQL/Ontop
+       cannot compute via dateTime subtraction. Value = julian-day difference, matching
+       SQLite strftime('%J',now) - strftime('%J',col). See MODELING.md. -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#daysSinceAdmission">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>days since admission</rdfs:label>
+    <rdfs:comment>Number of days from the hospital admission time to the reference current time.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#lengthOfStayDays">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Admission"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>length of stay (days)</rdfs:label>
+    <rdfs:comment>Length of the hospital stay in days (discharge time minus admission time).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#daysSinceIcuIn">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>days since ICU admission</rdfs:label>
+    <rdfs:comment>Number of days from the ICU admission time to the reference current time.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#icuLengthOfStayDays">
+    <rdfs:domain rdf:resource="http://example.org/mimic#IcuStay"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>ICU length of stay (days)</rdfs:label>
+    <rdfs:comment>Length of the ICU stay in days (ICU out-time minus ICU in-time).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#daysSinceChart">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>days since charted</rdfs:label>
+    <rdfs:comment>Number of days from the time an event was charted to the reference current time.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#daysSinceTransferIn">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Transfer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>days since transfer in</rdfs:label>
+    <rdfs:comment>Number of days from the transfer in-time to the reference current time.</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#daysSinceStart">
+    <rdfs:domain rdf:resource="http://example.org/mimic#Prescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:label>days since prescription start</rdfs:label>
+    <rdfs:comment>Number of days from the prescription start date to the reference current time.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <!-- Internal identity properties (used by cost-linking GT queries; technical) -->
+  <owl:DatatypeProperty rdf:about="http://example.org/mimic#billedRowId">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:label>billed row id</rdfs:label>
+    <rdfs:comment>Internal row identifier of a diagnosis or procedure record, used to link costs to the event they bill. Technical identity, not a clinical attribute.</rdfs:comment>
+  </owl:DatatypeProperty>
+
+</rdf:RDF>

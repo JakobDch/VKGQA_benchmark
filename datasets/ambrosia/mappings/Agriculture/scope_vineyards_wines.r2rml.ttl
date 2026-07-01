@@ -1,0 +1,74 @@
+@prefix : <http://ambrosia.example.org/agriculture#> .
+@prefix p: <http://ambrosia.example.org/agriculture/prop#> .
+@prefix ex: <http://ambrosia.example.org/agriculture/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_vineyards_wines_0_VineyardTypes_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"typeName\" FROM \"VineyardTypes\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/VineyardTypes/{id}" ; rr:class :VineyardTypes ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "typeName" ] ] .
+
+<#tm_scope_vineyards_wines_1_Countries_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"countryId\", \"countryName\" FROM \"Countries\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Country/{countryId}" ; rr:class :Country ] ;
+  rr:predicateObjectMap [ rr:predicate p:countryId ; rr:objectMap [ rr:column "countryId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "countryName" ] ] .
+
+<#tm_scope_vineyards_wines_2_Regions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"regionId\", \"regionName\", \"countryId\" FROM \"Regions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Region/{regionId}" ; rr:class :Region ] ;
+  rr:predicateObjectMap [ rr:predicate p:regionId ; rr:objectMap [ rr:column "regionId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "regionName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:countryId ; rr:objectMap [ rr:column "countryId" ] ] .
+
+<#tm_scope_vineyards_wines_3_Regions_countryId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"regionId\", \"countryId\" FROM \"Regions\" WHERE \"countryId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Region/{regionId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountry ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Country/{countryId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_vineyards_wines_4_Vineyards_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"name\", \"areaSize\", \"typeId\", \"regionId\" FROM \"Vineyards\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards/{vineyardId}" ; rr:class :Vineyards ] ;
+  rr:predicateObjectMap [ rr:predicate p:vineyardId ; rr:objectMap [ rr:column "vineyardId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:areaSize ; rr:objectMap [ rr:column "areaSize" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:typeId ; rr:objectMap [ rr:column "typeId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:regionId ; rr:objectMap [ rr:column "regionId" ] ] .
+
+<#tm_scope_vineyards_wines_5_Vineyards_regionId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"regionId\" FROM \"Vineyards\" WHERE \"regionId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards/{vineyardId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRegion ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Region/{regionId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_vineyards_wines_6_Vineyards_typeId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"typeId\" FROM \"Vineyards\" WHERE \"typeId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards/{vineyardId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasVineyardTypes ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/VineyardTypes/{typeId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_vineyards_wines_7_Wines_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"wineId\", \"name\", \"variety\" FROM \"Wines\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Wines/{wineId}" ; rr:class :Wines ] ;
+  rr:predicateObjectMap [ rr:predicate p:wineId ; rr:objectMap [ rr:column "wineId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:variety ; rr:objectMap [ rr:column "variety" ] ] .
+
+<#tm_scope_vineyards_wines_8_Vineyards_Wines_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"wineId\", \"yearProduced\" FROM \"Vineyards_Wines\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced}" ; rr:class :Vineyards_Wines ] ;
+  rr:predicateObjectMap [ rr:predicate p:vineyardId ; rr:objectMap [ rr:column "vineyardId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:wineId ; rr:objectMap [ rr:column "wineId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:yearProduced ; rr:objectMap [ rr:column "yearProduced" ] ] .
+
+<#tm_scope_vineyards_wines_9_Vineyards_Wines_wineId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"wineId\", \"yearProduced\" FROM \"Vineyards_Wines\" WHERE \"wineId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasWines ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Wines/{wineId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_vineyards_wines_10_Vineyards_Wines_vineyardId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"vineyardId\", \"wineId\", \"yearProduced\" FROM \"Vineyards_Wines\" WHERE \"vineyardId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasVineyards ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Vineyards/{vineyardId}" ; rr:termType rr:IRI ] ] .
+

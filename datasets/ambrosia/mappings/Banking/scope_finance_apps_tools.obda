@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Finance_Apps_base
+target		ex:Finance_Apps/{id} a :Finance_Apps ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Finance_Apps`
+
+mappingId	Tools_base
+target		ex:Tools/{id} a :Tools ; p:id {id} ; p:tool_name {tool_name} ; p:category {category} .
+source		SELECT `id`, `tool_name`, `category` FROM `Tools`
+
+mappingId	Finance_Apps_Tools_base
+target		ex:Finance_Apps_Tools/{finance_app_id}/{tool_id} a :Finance_Apps_Tools ; p:finance_app_id {finance_app_id} ; p:tool_id {tool_id} .
+source		SELECT `finance_app_id`, `tool_id` FROM `Finance_Apps_Tools`
+
+mappingId	Finance_Apps_Tools_tool_id_fk
+target		ex:Finance_Apps_Tools/{finance_app_id}/{tool_id} p:hasTools ex:Tools/{tool_id} .
+source		SELECT `finance_app_id`, `tool_id` FROM `Finance_Apps_Tools` WHERE `tool_id` IS NOT NULL
+
+mappingId	Finance_Apps_Tools_finance_app_id_fk
+target		ex:Finance_Apps_Tools/{finance_app_id}/{tool_id} p:hasFinance_Apps ex:Finance_Apps/{finance_app_id} .
+source		SELECT `finance_app_id`, `tool_id` FROM `Finance_Apps_Tools` WHERE `finance_app_id` IS NOT NULL
+
+]]

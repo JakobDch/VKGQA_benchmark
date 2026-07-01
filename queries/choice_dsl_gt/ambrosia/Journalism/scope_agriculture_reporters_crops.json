@@ -1,0 +1,108 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_agriculture_reporters_crops",
+  "schema": "amb_scope_agriculture_reporters_crops",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the descriptions of the crops that all agricultural reporters equally write about?",
+      "qtype": "unambig",
+      "sql": "SELECT Crops.description  from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id   GROUP BY Agriculture_Reporters_Crops.crop_id HAVING COUNT(DISTINCT Agriculture_Reporters_Crops.agriculture_reporter_id) = (SELECT COUNT(*) FROM  Agriculture_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the crop that all agriculture reporters have in common.",
+      "qtype": "unambig",
+      "sql": "SELECT Crops.crop_name  from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id   GROUP BY Agriculture_Reporters_Crops.crop_id HAVING COUNT(DISTINCT Agriculture_Reporters_Crops.agriculture_reporter_id) = (SELECT COUNT(*) FROM  Agriculture_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?crop_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:crop_name ?crop_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "provide the crop and description that are common for all agriculture reporters.",
+      "qtype": "unambig",
+      "sql": "SELECT Crops.crop_name, Crops.description  from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id   GROUP BY Agriculture_Reporters_Crops.crop_id HAVING COUNT(DISTINCT Agriculture_Reporters_Crops.agriculture_reporter_id) = (SELECT COUNT(*) FROM  Agriculture_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?crop_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:crop_name ?crop_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the agriculture reports and the corresponding crops.",
+      "qtype": "unambig",
+      "sql": "select agriculture_reporters.name , crops.crop_name from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?crop_name WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:crop_name ?crop_name .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 4,
+      "question": "For every agricultural reporter, show the crop descriptions that they write about.",
+      "qtype": "unambig",
+      "sql": "select agriculture_reporters.name , crops.description from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 5,
+      "question": "for each agriculture reporter, show me the corresponding crop names and descriptions.",
+      "qtype": "unambig",
+      "sql": "select agriculture_reporters.name , crops.crop_name , crops.description from Agriculture_Reporters_Crops join Crops on Agriculture_Reporters_Crops.crop_id = Crops.id join Agriculture_Reporters on Agriculture_Reporters_Crops.agriculture_reporter_id = Agriculture_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?crop_name ?description WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:crop_name ?crop_name .\n  ?crops p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the crop descriptions that every agricultural reporter writes about.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What crop does each agricultural reporter have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?crop_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:crop_name ?crop_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?crop_name WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:crop_name ?crop_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what crops and descriptions are associated with every agriculture reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?crop_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCrops ?child ; p:hasAgriculture_Reporters ?parent . } GROUP BY ?child }\n  ?child p:crop_name ?crop_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agriculture_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?crop_name ?description WHERE {\n  ?agriculture_reporters_crops a :Agriculture_Reporters_Crops .\n  ?crops a :Crops .\n  ?agriculture_reporters_crops p:hasCrops ?crops .\n  ?agriculture_reporters a :Agriculture_Reporters .\n  ?agriculture_reporters_crops p:hasAgriculture_Reporters ?agriculture_reporters .\n  ?agriculture_reporters p:name ?name .\n  ?crops p:crop_name ?crop_name .\n  ?crops p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

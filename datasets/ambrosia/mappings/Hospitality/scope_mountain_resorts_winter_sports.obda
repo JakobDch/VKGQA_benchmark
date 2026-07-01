@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Mountain_Resorts_base
+target		ex:Mountain_Resorts/{ResortID} a :Mountain_Resorts ; p:ResortID {ResortID} ; p:name {Name} ; p:location {Location} ; p:NumOfRooms {NumOfRooms} .
+source		SELECT `ResortID`, `Name`, `Location`, `NumOfRooms` FROM `Mountain_Resorts`
+
+mappingId	Winter_Sports_base
+target		ex:Winter_Sports/{SportID} a :Winter_Sports ; p:SportID {SportID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `SportID`, `Name`, `Description` FROM `Winter_Sports`
+
+mappingId	Mountain_Resorts_Winter_Sports_base
+target		ex:Mountain_Resorts_Winter_Sports/{_amb_rowid} a :Mountain_Resorts_Winter_Sports ; p:ResortID {ResortID} ; p:SportID {SportID} .
+source		SELECT `_amb_rowid`, `ResortID`, `SportID` FROM `Mountain_Resorts_Winter_Sports`
+
+mappingId	Mountain_Resorts_Winter_Sports_SportID_fk
+target		ex:Mountain_Resorts_Winter_Sports/{_amb_rowid} p:hasWinter_Sports ex:Winter_Sports/{SportID} .
+source		SELECT `_amb_rowid`, `SportID` FROM `Mountain_Resorts_Winter_Sports` WHERE `SportID` IS NOT NULL
+
+mappingId	Mountain_Resorts_Winter_Sports_ResortID_fk
+target		ex:Mountain_Resorts_Winter_Sports/{_amb_rowid} p:hasMountain_Resorts ex:Mountain_Resorts/{ResortID} .
+source		SELECT `_amb_rowid`, `ResortID` FROM `Mountain_Resorts_Winter_Sports` WHERE `ResortID` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_tv",
+  "schema": "amb_attachment_1tab_ref_tv",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all documentary series and also provide a list of mini-series that have 10 episodes.",
+      "qtype": "unambig",
+      "sql": "SELECT TVShows.Title \nFROM TVShows JOIN EpisodeCounts ON TVShows.Id = EpisodeCounts.Show_ID\nWHERE TVShows.Type = \"Documentary Series\" OR TVShows.Type = \"Mini-Series\" AND EpisodeCounts.Number_of_Episodes = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?tvshows a :Tv_Show .\n  ?episodecounts a :EpisodeCounts .\n  ?episodecounts p:hasTVShows ?tvshows .\n  ?tvshows p:Title ?title .\n  ?tvshows p:Type ?type_w .\n  ?tvshows p:Type ?type_w2 .\n  ?episodecounts p:Number_of_Episodes ?number_of_episodes_w .\n  FILTER((STR(?type_w) = \"Documentary Series\" || (STR(?type_w2) = \"Mini-Series\" && (STR(?number_of_episodes_w) = \"10\" || STR(?number_of_episodes_w) = \"10.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which documentary series have 10 episodes and which mini-series have the same number of episodes?",
+      "qtype": "unambig",
+      "sql": "SELECT TVShows.Title \nFROM TVShows JOIN EpisodeCounts ON TVShows.Id = EpisodeCounts.Show_ID\nWHERE (TVShows.Type = \"Documentary Series\" OR TVShows.Type = \"Mini-Series\") AND EpisodeCounts.Number_of_Episodes = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?tvshows a :Tv_Show .\n  ?episodecounts a :EpisodeCounts .\n  ?episodecounts p:hasTVShows ?tvshows .\n  ?tvshows p:Title ?title .\n  ?tvshows p:Type ?type_w .\n  ?tvshows p:Type ?type_w2 .\n  ?episodecounts p:Number_of_Episodes ?number_of_episodes_w .\n  FILTER((((STR(?type_w) = \"Documentary Series\" || STR(?type_w2) = \"Mini-Series\")) && (STR(?number_of_episodes_w) = \"10\" || STR(?number_of_episodes_w) = \"10.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me documentaries and mini-series that have 10 episodes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?tvshows a :Tv_Show .\n  ?episodecounts a :EpisodeCounts .\n  ?episodecounts p:hasTVShows ?tvshows .\n  ?tvshows p:Title ?title .\n  ?tvshows p:Type ?type_w .\n  ?tvshows p:Type ?type_w2 .\n  ?episodecounts p:Number_of_Episodes ?number_of_episodes_w .\n  FILTER((STR(?type_w) = \"Documentary Series\" || (STR(?type_w2) = \"Mini-Series\" && (STR(?number_of_episodes_w) = \"10\" || STR(?number_of_episodes_w) = \"10.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?tvshows a :Tv_Show .\n  ?episodecounts a :EpisodeCounts .\n  ?episodecounts p:hasTVShows ?tvshows .\n  ?tvshows p:Title ?title .\n  ?tvshows p:Type ?type_w .\n  ?tvshows p:Type ?type_w2 .\n  ?episodecounts p:Number_of_Episodes ?number_of_episodes_w .\n  FILTER((((STR(?type_w) = \"Documentary Series\" || STR(?type_w2) = \"Mini-Series\")) && (STR(?number_of_episodes_w) = \"10\" || STR(?number_of_episodes_w) = \"10.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

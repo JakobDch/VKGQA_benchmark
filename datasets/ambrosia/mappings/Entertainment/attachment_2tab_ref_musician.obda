@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Instruments_base
+target		ex:Instrument/{id} a :Instrument ; p:id {id} ; p:instrumentName {instrumentName} .
+source		SELECT `id`, `instrumentName` FROM `Instruments`
+
+mappingId	CountrySingers_base
+target		ex:CountrySingers/{id} a :CountrySingers ; p:id {id} ; p:singerName {singerName} ; p:country {country} ; p:foreignKey {foreignKey} .
+source		SELECT `id`, `singerName`, `country`, `foreignKey` FROM `CountrySingers`
+
+mappingId	CountrySingers_foreignKey_fk
+target		ex:CountrySingers/{id} p:hasInstrument ex:Instrument/{foreignKey} .
+source		SELECT `id`, `foreignKey` FROM `CountrySingers` WHERE `foreignKey` IS NOT NULL
+
+mappingId	BluegrassSingers_base
+target		ex:BluegrassSingers/{id} a :BluegrassSingers ; p:id {id} ; p:singerName {singerName} ; p:bluegrassStyle {bluegrassStyle} ; p:foreignKey {foreignKey} .
+source		SELECT `id`, `singerName`, `bluegrassStyle`, `foreignKey` FROM `BluegrassSingers`
+
+mappingId	BluegrassSingers_foreignKey_fk
+target		ex:BluegrassSingers/{id} p:hasInstrument ex:Instrument/{foreignKey} .
+source		SELECT `id`, `foreignKey` FROM `BluegrassSingers` WHERE `foreignKey` IS NOT NULL
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:albumTitle {albumTitle} ; p:releaseYear {releaseYear} .
+source		SELECT `id`, `albumTitle`, `releaseYear` FROM `Albums`
+
+mappingId	AlbumTracks_base
+target		ex:AlbumTracks/{id} a :AlbumTracks ; p:id {id} ; p:trackNumber {trackNumber} ; p:title {title} ; p:duration {duration} .
+source		SELECT `id`, `trackNumber`, `title`, `duration` FROM `AlbumTracks`
+
+mappingId	SingsOnAlbum_base
+target		ex:SingsOnAlbum/{id} a :SingsOnAlbum ; p:id {id} ; p:singerId {singerId} ; p:albumId {albumId} .
+source		SELECT `id`, `singerId`, `albumId` FROM `SingsOnAlbum`
+
+mappingId	SingsOnAlbum_albumId_fk
+target		ex:SingsOnAlbum/{id} p:hasAlbum ex:Album/{albumId} .
+source		SELECT `id`, `albumId` FROM `SingsOnAlbum` WHERE `albumId` IS NOT NULL
+
+mappingId	SingsOnAlbum_singerId_fk
+target		ex:SingsOnAlbum/{id} p:hasCountrySingers ex:CountrySingers/{singerId} .
+source		SELECT `id`, `singerId` FROM `SingsOnAlbum` WHERE `singerId` IS NOT NULL
+
+]]

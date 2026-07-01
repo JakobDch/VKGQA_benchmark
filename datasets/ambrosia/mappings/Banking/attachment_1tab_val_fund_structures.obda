@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Clients_base
+target		ex:Clients/{ClientID} a :Clients ; p:ClientID {ClientID} ; p:ClientName {ClientName} ; p:ContactEmail {ContactEmail} .
+source		SELECT `ClientID`, `ClientName`, `ContactEmail` FROM `Clients`
+
+mappingId	AccountTypes_base
+target		ex:AccountTypes/{AccountTypeID} a :AccountTypes ; p:AccountTypeID {AccountTypeID} ; p:TypeName {TypeName} .
+source		SELECT `AccountTypeID`, `TypeName` FROM `AccountTypes`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:InterestRate {InterestRate} ; p:Balance {Balance} ; p:OpenDate {OpenDate} ; p:ForeignExchange {ForeignExchange} ; p:Currency {Currency} ; p:AccountTypeId {AccountTypeId} .
+source		SELECT `AccountNumber`, `InterestRate`, `Balance`, `OpenDate`, `ForeignExchange`, `Currency`, `AccountTypeId` FROM `Accounts`
+
+mappingId	Accounts_AccountTypeId_fk
+target		ex:Accounts/{AccountNumber} p:hasAccountTypes ex:AccountTypes/{AccountTypeId} .
+source		SELECT `AccountNumber`, `AccountTypeId` FROM `Accounts` WHERE `AccountTypeId` IS NOT NULL
+
+mappingId	Investments_base
+target		ex:Investments/{InvestmentID} a :Investments ; p:InvestmentID {InvestmentID} ; p:PurchaseAmount {PurchaseAmount} ; p:DateOfPurchase {DateOfPurchase} ; p:ClientId {ClientId} ; p:AccountNumber {AccountNumber} ; p:FundStructure {FundStructure} ; p:MarketShare {MarketShare} .
+source		SELECT `InvestmentID`, `PurchaseAmount`, `DateOfPurchase`, `ClientId`, `AccountNumber`, `FundStructure`, `MarketShare` FROM `Investments`
+
+mappingId	Investments_AccountNumber_fk
+target		ex:Investments/{InvestmentID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `InvestmentID`, `AccountNumber` FROM `Investments` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Investments_ClientId_fk
+target		ex:Investments/{InvestmentID} p:hasClients ex:Clients/{ClientId} .
+source		SELECT `InvestmentID`, `ClientId` FROM `Investments` WHERE `ClientId` IS NOT NULL
+
+]]

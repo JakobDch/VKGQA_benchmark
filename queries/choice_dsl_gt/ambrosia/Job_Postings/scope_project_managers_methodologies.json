@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_project_managers_methodologies",
+  "schema": "amb_scope_project_managers_methodologies",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the methodologies that every project manager uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Methodologies.name  from Project_Managers_Methodologies join Methodologies on Project_Managers_Methodologies.methodology_id = Methodologies.methodology_id join Project_Managers on Project_Managers_Methodologies.project_manager_id = Project_Managers.id   GROUP BY Project_Managers_Methodologies.methodology_id HAVING COUNT(DISTINCT Project_Managers_Methodologies.project_manager_id) = (SELECT COUNT(*) FROM  Project_Managers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:methodology_id ?cg . ?child a :Methodologies ; p:methodology_id ?cg . ?l p:project_manager_id ?pg . ?parent a :Project_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Project_Managers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the methodologies that every project manager uses.",
+      "qtype": "ambig",
+      "sql": "select project_managers.name , methodologies.name from Project_Managers_Methodologies join Methodologies on Project_Managers_Methodologies.methodology_id = Methodologies.methodology_id join Project_Managers on Project_Managers_Methodologies.project_manager_id = Project_Managers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?project_managers_methodologies a :Project_Managers_Methodologies .\n  ?methodologies a :Methodologies .\n  ?project_managers_methodologies p:hasMethodologies ?methodologies .\n  ?project_managers a :Project_Managers .\n  ?project_managers_methodologies p:hasProject_Managers ?project_managers .\n  ?project_managers p:name ?name .\n  ?methodologies p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the methodologies that every project manager uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?project_managers_methodologies a :Project_Managers_Methodologies .\n  ?methodologies a :Methodologies .\n  ?project_managers_methodologies p:hasMethodologies ?methodologies .\n  ?project_managers a :Project_Managers .\n  ?project_managers_methodologies p:hasProject_Managers ?project_managers .\n  ?project_managers p:name ?name .\n  ?methodologies p:name ?name2 .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:methodology_id ?cg . ?child a :Methodologies ; p:methodology_id ?cg . ?l p:project_manager_id ?pg . ?parent a :Project_Managers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Project_Managers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

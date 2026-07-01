@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Greenhouse_base
+target		ex:Greenhouse/{id} a :Greenhouse ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Greenhouse`
+
+mappingId	Plant_base
+target		ex:Plant/{id} a :Plant ; p:id {id} ; p:name {name} ; p:type {type} .
+source		SELECT `id`, `name`, `type` FROM `Plant`
+
+mappingId	Greenhouse_Plant_base
+target		ex:Greenhouse_Plant/{greenhouse_id}/{plant_id} a :Greenhouse_Plant ; p:greenhouse_id {greenhouse_id} ; p:plant_id {plant_id} ; p:quantity {quantity} .
+source		SELECT `greenhouse_id`, `plant_id`, `quantity` FROM `Greenhouse_Plant`
+
+mappingId	Greenhouse_Plant_plant_id_fk
+target		ex:Greenhouse_Plant/{greenhouse_id}/{plant_id} p:hasPlant ex:Plant/{plant_id} .
+source		SELECT `greenhouse_id`, `plant_id` FROM `Greenhouse_Plant` WHERE `plant_id` IS NOT NULL
+
+mappingId	Greenhouse_Plant_greenhouse_id_fk
+target		ex:Greenhouse_Plant/{greenhouse_id}/{plant_id} p:hasGreenhouse ex:Greenhouse/{greenhouse_id} .
+source		SELECT `greenhouse_id`, `plant_id` FROM `Greenhouse_Plant` WHERE `greenhouse_id` IS NOT NULL
+
+]]

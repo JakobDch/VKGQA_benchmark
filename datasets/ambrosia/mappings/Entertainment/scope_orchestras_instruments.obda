@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Conductors_base
+target		ex:Conductors/{id} a :Conductors ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `id`, `name`, `birthdate` FROM `Conductors`
+
+mappingId	Orchestras_base
+target		ex:Orchestras/{id} a :Orchestras ; p:id {id} ; p:orchestra_name {orchestra_name} ; p:conductor_id {conductor_id} .
+source		SELECT `id`, `orchestra_name`, `conductor_id` FROM `Orchestras`
+
+mappingId	Orchestras_conductor_id_fk
+target		ex:Orchestras/{id} p:hasConductors ex:Conductors/{conductor_id} .
+source		SELECT `id`, `conductor_id` FROM `Orchestras` WHERE `conductor_id` IS NOT NULL
+
+mappingId	Instruments_base
+target		ex:Instrument/{id} a :Instrument ; p:id {id} ; p:instrument_type {instrument_type} .
+source		SELECT `id`, `instrument_type` FROM `Instruments`
+
+mappingId	Orchestras_Instruments_base
+target		ex:Orchestras_Instruments/{id} a :Orchestras_Instruments ; p:id {id} ; p:orchestra_id {orchestra_id} ; p:instrument_id {instrument_id} .
+source		SELECT `id`, `orchestra_id`, `instrument_id` FROM `Orchestras_Instruments`
+
+mappingId	Orchestras_Instruments_instrument_id_fk
+target		ex:Orchestras_Instruments/{id} p:hasInstrument ex:Instrument/{instrument_id} .
+source		SELECT `id`, `instrument_id` FROM `Orchestras_Instruments` WHERE `instrument_id` IS NOT NULL
+
+mappingId	Orchestras_Instruments_orchestra_id_fk
+target		ex:Orchestras_Instruments/{id} p:hasOrchestras ex:Orchestras/{orchestra_id} .
+source		SELECT `id`, `orchestra_id` FROM `Orchestras_Instruments` WHERE `orchestra_id` IS NOT NULL
+
+]]

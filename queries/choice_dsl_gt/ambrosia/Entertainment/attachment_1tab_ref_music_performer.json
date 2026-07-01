@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_music_performer",
+  "schema": "amb_attachment_1tab_ref_music_performer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide all the musicians, jazz and rock, who have been performing for a decade.",
+      "qtype": "unambig",
+      "sql": "SELECT Artists.name \nFROM Artists JOIN Artist_genre ON Artists.id = Artist_genre.artist_id JOIN Genres ON Genres.genre_id = Artist_genre.genre_id\nWHERE (Genres.name = \"Jazz\" OR Genres.name = \"Rock\") AND Artist_genre.years_in_industry = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?artists a :Artist .\n  ?artist_genre a :Artist_genre .\n  ?artist_genre p:hasArtists ?artists .\n  ?genres a :Genre .\n  ?artist_genre p:hasGenres ?genres .\n  ?artists p:name ?name .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?artist_genre p:years_in_industry ?years_in_industry_w .\n  FILTER((((STR(?name_w) = \"Jazz\" || STR(?name_w2) = \"Rock\")) && (STR(?years_in_industry_w) = \"10\" || STR(?years_in_industry_w) = \"10.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the jazz performers, and only those rock artists who have been playing for 10 years.",
+      "qtype": "unambig",
+      "sql": "SELECT Artists.name \nFROM Artists JOIN Artist_genre ON Artists.id = Artist_genre.artist_id JOIN Genres ON Genres.genre_id = Artist_genre.genre_id\nWHERE Genres.name = \"Jazz\" OR Genres.name = \"Rock\" AND Artist_genre.years_in_industry = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?artists a :Artist .\n  ?artist_genre a :Artist_genre .\n  ?artist_genre p:hasArtists ?artists .\n  ?genres a :Genre .\n  ?artist_genre p:hasGenres ?genres .\n  ?artists p:name ?name .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?artist_genre p:years_in_industry ?years_in_industry_w .\n  FILTER((STR(?name_w) = \"Jazz\" || (STR(?name_w2) = \"Rock\" && (STR(?years_in_industry_w) = \"10\" || STR(?years_in_industry_w) = \"10.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide all the jazz musicians and rock guitarists who have been performing for 10 years.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?artists a :Artist .\n  ?artist_genre a :Artist_genre .\n  ?artist_genre p:hasArtists ?artists .\n  ?genres a :Genre .\n  ?artist_genre p:hasGenres ?genres .\n  ?artists p:name ?name .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?artist_genre p:years_in_industry ?years_in_industry_w .\n  FILTER((((STR(?name_w) = \"Jazz\" || STR(?name_w2) = \"Rock\")) && (STR(?years_in_industry_w) = \"10\" || STR(?years_in_industry_w) = \"10.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?artists a :Artist .\n  ?artist_genre a :Artist_genre .\n  ?artist_genre p:hasArtists ?artists .\n  ?genres a :Genre .\n  ?artist_genre p:hasGenres ?genres .\n  ?artists p:name ?name .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?artist_genre p:years_in_industry ?years_in_industry_w .\n  FILTER((STR(?name_w) = \"Jazz\" || (STR(?name_w2) = \"Rock\" && (STR(?years_in_industry_w) = \"10\" || STR(?years_in_industry_w) = \"10.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

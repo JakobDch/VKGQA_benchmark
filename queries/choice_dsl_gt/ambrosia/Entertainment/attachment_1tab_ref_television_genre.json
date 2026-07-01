@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_television_genre",
+  "schema": "amb_attachment_1tab_ref_television_genre",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the sitcom and dramas with 5 seasons.",
+      "qtype": "ambig",
+      "sql": "SELECT TelevisionShows.title \nFROM Genres JOIN TelevisionShows ON Genres.name = TelevisionShows.genre JOIN Seasons ON TelevisionShows.id = Seasons.show_id\nWHERE (Genres.name = \"Sitcom\" OR Genres.name = \"Drama\") AND Seasons.number_of_seasons = 5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genre .\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:hasGenres ?genres .\n  ?seasons a :Seasons .\n  ?seasons p:hasTelevisionShows ?televisionshows .\n  ?televisionshows p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?seasons p:number_of_seasons ?number_of_seasons_w .\n  FILTER((((STR(?name_w) = \"Sitcom\" || STR(?name_w2) = \"Drama\")) && (STR(?number_of_seasons_w) = \"5\" || STR(?number_of_seasons_w) = \"5.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List the sitcom and dramas with 5 seasons.",
+      "qtype": "ambig",
+      "sql": "SELECT TelevisionShows.title \nFROM Genres JOIN TelevisionShows ON Genres.name = TelevisionShows.genre JOIN Seasons ON TelevisionShows.id = Seasons.show_id\nWHERE Genres.name = \"Sitcom\" OR Genres.name = \"Drama\" AND Seasons.number_of_seasons = 5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genre .\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:hasGenres ?genres .\n  ?seasons a :Seasons .\n  ?seasons p:hasTelevisionShows ?televisionshows .\n  ?televisionshows p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?seasons p:number_of_seasons ?number_of_seasons_w .\n  FILTER((STR(?name_w) = \"Sitcom\" || (STR(?name_w2) = \"Drama\" && (STR(?number_of_seasons_w) = \"5\" || STR(?number_of_seasons_w) = \"5.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the sitcom and dramas with 5 seasons.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?genres a :Genre .\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:hasGenres ?genres .\n  ?seasons a :Seasons .\n  ?seasons p:hasTelevisionShows ?televisionshows .\n  ?televisionshows p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?seasons p:number_of_seasons ?number_of_seasons_w .\n  FILTER((((STR(?name_w) = \"Sitcom\" || STR(?name_w2) = \"Drama\")) && (STR(?number_of_seasons_w) = \"5\" || STR(?number_of_seasons_w) = \"5.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?genres a :Genre .\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:hasGenres ?genres .\n  ?seasons a :Seasons .\n  ?seasons p:hasTelevisionShows ?televisionshows .\n  ?televisionshows p:title ?title .\n  ?genres p:name ?name_w .\n  ?genres p:name ?name_w2 .\n  ?seasons p:number_of_seasons ?number_of_seasons_w .\n  FILTER((STR(?name_w) = \"Sitcom\" || (STR(?name_w2) = \"Drama\" && (STR(?number_of_seasons_w) = \"5\" || STR(?number_of_seasons_w) = \"5.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

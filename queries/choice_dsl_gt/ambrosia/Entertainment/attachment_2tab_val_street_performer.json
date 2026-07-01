@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_street_performer",
+  "schema": "amb_attachment_2tab_val_street_performer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both magicians who perform in Times Square, New York and mimes who perform there.",
+      "qtype": "unambig",
+      "sql": "SELECT Magicians.name\nFROM Magicians\nWHERE Magicians.Street_Location = \"Times Square, New York\"\nUNION\nSELECT Mimes.name\nFROM Mimes\nWHERE Mimes.Street_Location = \"Times Square, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mimes a :Mimes .\n    ?mimes p:name ?name .\n    ?mimes p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show magicians and mimes who perform in Times Square, New York.",
+      "qtype": "ambig",
+      "sql": "SELECT Magicians.name\nFROM Magicians\nUNION\nSELECT Mimes.name\nFROM Mimes\nWHERE Mimes.Street_Location = \"Times Square, New York\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mimes a :Mimes .\n    ?mimes p:name ?name .\n    ?mimes p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show magicians and mimes who perform in Times Square, New York.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    ?magicians p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mimes a :Mimes .\n    ?mimes p:name ?name .\n    ?mimes p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?magicians a :Magicians .\n    ?magicians p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?mimes a :Mimes .\n    ?mimes p:name ?name .\n    ?mimes p:Street_Location ?street_location_f .\n    FILTER(STR(?street_location_f) = \"Times Square, New York\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

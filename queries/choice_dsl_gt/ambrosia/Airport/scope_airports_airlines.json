@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_airports_airlines",
+  "schema": "amb_scope_airports_airlines",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the airlines represented at each airport.",
+      "qtype": "ambig",
+      "sql": "SELECT Airlines.Name  from Airports_Airlines join Airlines on Airports_Airlines.AirlineID = Airlines.AirlineID join Airports on Airports_Airlines.AirportID = Airports.AirportID   GROUP BY Airports_Airlines.AirlineID HAVING COUNT(DISTINCT Airports_Airlines.AirportID) = (SELECT COUNT(*) FROM  Airports)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAirlines ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the airlines represented at each airport.",
+      "qtype": "ambig",
+      "sql": "select airports.name , airlines.name from Airports_Airlines join Airlines on Airports_Airlines.AirlineID = Airlines.AirlineID join Airports on Airports_Airlines.AirportID = Airports.AirportID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?airports_airlines a :Airports_Airlines .\n  ?airlines a :Airlines .\n  ?airports_airlines p:hasAirlines ?airlines .\n  ?airports a :Airports .\n  ?airports_airlines p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?airlines p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the airlines represented at each airport.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAirlines ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?airports_airlines a :Airports_Airlines .\n  ?airlines a :Airlines .\n  ?airports_airlines p:hasAirlines ?airlines .\n  ?airports a :Airports .\n  ?airports_airlines p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?airlines p:name ?name2 .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

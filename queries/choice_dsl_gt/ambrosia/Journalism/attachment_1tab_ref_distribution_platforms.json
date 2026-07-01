@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_distribution_platforms",
+  "schema": "amb_attachment_1tab_ref_distribution_platforms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all print media publications and also list online media publications with an audience size of 100,000.",
+      "qtype": "unambig",
+      "sql": "SELECT Publications.Name \nFROM DistributionPlatforms JOIN PublishesIn ON DistributionPlatforms.PlatformID = PublishesIn.PlatformID JOIN Publications ON Publications.PublicationID = PublishesIn.PublicationID\nWHERE DistributionPlatforms.Type = \"Print Media\" OR DistributionPlatforms.Type = \"Online Media\" AND PublishesIn.AudienceSize = 100000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?distributionplatforms a :DistributionPlatforms .\n  ?publishesin a :PublishesIn .\n  ?publishesin p:hasDistributionPlatforms ?distributionplatforms .\n  ?publications a :Publications .\n  ?publishesin p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?distributionplatforms p:Type ?type_w .\n  ?distributionplatforms p:Type ?type_w2 .\n  ?publishesin p:AudienceSize ?audiencesize_w .\n  FILTER((STR(?type_w) = \"Print Media\" || (STR(?type_w2) = \"Online Media\" && (STR(?audiencesize_w) = \"100000\" || STR(?audiencesize_w) = \"100000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What print media publications have an audience size of 100,000 and what online media publications have the same audience size?",
+      "qtype": "unambig",
+      "sql": "SELECT Publications.Name \nFROM DistributionPlatforms JOIN PublishesIn ON DistributionPlatforms.PlatformID = PublishesIn.PlatformID JOIN Publications ON Publications.PublicationID = PublishesIn.PublicationID\nWHERE (DistributionPlatforms.Type = \"Print Media\" OR DistributionPlatforms.Type = \"Online Media\") AND PublishesIn.AudienceSize = 100000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?distributionplatforms a :DistributionPlatforms .\n  ?publishesin a :PublishesIn .\n  ?publishesin p:hasDistributionPlatforms ?distributionplatforms .\n  ?publications a :Publications .\n  ?publishesin p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?distributionplatforms p:Type ?type_w .\n  ?distributionplatforms p:Type ?type_w2 .\n  ?publishesin p:AudienceSize ?audiencesize_w .\n  FILTER((((STR(?type_w) = \"Print Media\" || STR(?type_w2) = \"Online Media\")) && (STR(?audiencesize_w) = \"100000\" || STR(?audiencesize_w) = \"100000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me publications in print media and online media with an audience size of 100,000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?distributionplatforms a :DistributionPlatforms .\n  ?publishesin a :PublishesIn .\n  ?publishesin p:hasDistributionPlatforms ?distributionplatforms .\n  ?publications a :Publications .\n  ?publishesin p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?distributionplatforms p:Type ?type_w .\n  ?distributionplatforms p:Type ?type_w2 .\n  ?publishesin p:AudienceSize ?audiencesize_w .\n  FILTER((STR(?type_w) = \"Print Media\" || (STR(?type_w2) = \"Online Media\" && (STR(?audiencesize_w) = \"100000\" || STR(?audiencesize_w) = \"100000.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?distributionplatforms a :DistributionPlatforms .\n  ?publishesin a :PublishesIn .\n  ?publishesin p:hasDistributionPlatforms ?distributionplatforms .\n  ?publications a :Publications .\n  ?publishesin p:hasPublications ?publications .\n  ?publications p:name ?name .\n  ?distributionplatforms p:Type ?type_w .\n  ?distributionplatforms p:Type ?type_w2 .\n  ?publishesin p:AudienceSize ?audiencesize_w .\n  FILTER((((STR(?type_w) = \"Print Media\" || STR(?type_w2) = \"Online Media\")) && (STR(?audiencesize_w) = \"100000\" || STR(?audiencesize_w) = \"100000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

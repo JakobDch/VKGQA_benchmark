@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_award_programs",
+  "schema": "amb_attachment_1tab_val_award_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all diplomas and certificates that require passing an exam.",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.Title \nFROM Courses\nWHERE (Courses.AwardProgram = \"Diploma\" OR Courses.AwardProgram = \"Certificate\") AND Courses.CompletionRequirements = \"Passing Exam\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?courses a :Courses .\n  ?courses p:Title ?title .\n  ?courses p:AwardProgram ?awardprogram_w .\n  ?courses p:AwardProgram ?awardprogram_w2 .\n  ?courses p:CompletionRequirements ?completionrequirements_w .\n  FILTER((((STR(?awardprogram_w) = \"Diploma\" || STR(?awardprogram_w2) = \"Certificate\")) && STR(?completionrequirements_w) = \"Passing Exam\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all diplomas and certificates that require passing an exam.",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.Title \nFROM Courses\nWHERE Courses.AwardProgram = \"Diploma\" OR Courses.AwardProgram = \"Certificate\" AND Courses.CompletionRequirements = \"Passing Exam\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?courses a :Courses .\n  ?courses p:Title ?title .\n  ?courses p:AwardProgram ?awardprogram_w .\n  ?courses p:AwardProgram ?awardprogram_w2 .\n  ?courses p:CompletionRequirements ?completionrequirements_w .\n  FILTER((STR(?awardprogram_w) = \"Diploma\" || (STR(?awardprogram_w2) = \"Certificate\" && STR(?completionrequirements_w) = \"Passing Exam\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all diplomas and certificates that require passing an exam.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?courses a :Courses .\n  ?courses p:Title ?title .\n  ?courses p:AwardProgram ?awardprogram_w .\n  ?courses p:AwardProgram ?awardprogram_w2 .\n  ?courses p:CompletionRequirements ?completionrequirements_w .\n  FILTER((STR(?awardprogram_w) = \"Diploma\" || (STR(?awardprogram_w2) = \"Certificate\" && STR(?completionrequirements_w) = \"Passing Exam\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?courses a :Courses .\n  ?courses p:Title ?title .\n  ?courses p:AwardProgram ?awardprogram_w .\n  ?courses p:AwardProgram ?awardprogram_w2 .\n  ?courses p:CompletionRequirements ?completionrequirements_w .\n  FILTER((((STR(?awardprogram_w) = \"Diploma\" || STR(?awardprogram_w2) = \"Certificate\")) && STR(?completionrequirements_w) = \"Passing Exam\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

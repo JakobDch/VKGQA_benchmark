@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Languages_base
+target		ex:Languages/{LanguageID} a :Languages ; p:LanguageID {LanguageID} ; p:name {Name} .
+source		SELECT `LanguageID`, `Name` FROM `Languages`
+
+mappingId	Airports_base
+target		ex:Airports/{AirportID} a :Airports ; p:AirportID {AirportID} ; p:name {Name} ; p:City {City} ; p:Country {Country} .
+source		SELECT `AirportID`, `Name`, `City`, `Country` FROM `Airports`
+
+mappingId	Staff_base
+target		ex:Staff/{StaffID} a :Staff ; p:StaffID {StaffID} ; p:Position {Position} ; p:AirportID {AirportID} ; p:LanguageID {LanguageID} ; p:name {FullName} .
+source		SELECT `StaffID`, `Position`, `AirportID`, `LanguageID`, `FullName` FROM `Staff`
+
+mappingId	Staff_LanguageID_fk
+target		ex:Staff/{StaffID} p:hasLanguages ex:Languages/{LanguageID} .
+source		SELECT `StaffID`, `LanguageID` FROM `Staff` WHERE `LanguageID` IS NOT NULL
+
+mappingId	Staff_AirportID_fk
+target		ex:Staff/{StaffID} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `StaffID`, `AirportID` FROM `Staff` WHERE `AirportID` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:OriginAirportID {OriginAirportID} ; p:DestinationAirportID {DestinationAirportID} ; p:AssignedStaffID {AssignedStaffID} .
+source		SELECT `FlightID`, `DepartureTime`, `ArrivalTime`, `OriginAirportID`, `DestinationAirportID`, `AssignedStaffID` FROM `Flights`
+
+mappingId	Flights_AssignedStaffID_fk
+target		ex:Flights/{FlightID} p:hasStaff ex:Staff/{AssignedStaffID} .
+source		SELECT `FlightID`, `AssignedStaffID` FROM `Flights` WHERE `AssignedStaffID` IS NOT NULL
+
+mappingId	Flights_DestinationAirportID_fk
+target		ex:Flights/{FlightID} p:hasAirports_DestinationAirportID ex:Airports/{DestinationAirportID} .
+source		SELECT `FlightID`, `DestinationAirportID` FROM `Flights` WHERE `DestinationAirportID` IS NOT NULL
+
+mappingId	Flights_OriginAirportID_fk
+target		ex:Flights/{FlightID} p:hasAirports_OriginAirportID ex:Airports/{OriginAirportID} .
+source		SELECT `FlightID`, `OriginAirportID` FROM `Flights` WHERE `OriginAirportID` IS NOT NULL
+
+]]

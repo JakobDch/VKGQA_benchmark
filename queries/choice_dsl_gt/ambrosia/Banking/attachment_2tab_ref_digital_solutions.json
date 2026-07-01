@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_ref_digital_solutions",
+  "schema": "amb_attachment_2tab_ref_digital_solutions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which mobile banking apps and internet banking platforms allow users to sign in using token-based authentication?",
+      "qtype": "unambig",
+      "sql": "SELECT MobileBankingApps.name\nFROM SignInOptions JOIN MobileBankingApps ON SignInOptions.OptionName = MobileBankingApps.PlatformType\nWHERE SignInOptions.OptionName = \"Token Based Authentication\"\nUNION\nSELECT InternetBankingPlatforms.name\nFROM SignInOptions JOIN InternetBankingPlatforms ON SignInOptions.OptionName = InternetBankingPlatforms.AdditionalFeatures\nWHERE SignInOptions.OptionName = \"Token Based Authentication\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?signinoptions a :SignInOptions .\n    ?mobilebankingapps a :MobileBankingApps .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?mobilebankingapps p:PlatformType ?platformtype_r .\n    ?mobilebankingapps p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?platformtype_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?signinoptions a :SignInOptions .\n    ?internetbankingplatforms a :InternetBankingPlatforms .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?internetbankingplatforms p:AdditionalFeatures ?additionalfeatures_r .\n    ?internetbankingplatforms p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?additionalfeatures_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me mobile banking apps and internet banking platforms that use token-based authentication for signing in.",
+      "qtype": "ambig",
+      "sql": "SELECT MobileBankingApps.name\nFROM SignInOptions JOIN MobileBankingApps ON SignInOptions.OptionName = MobileBankingApps.PlatformType\nUNION\nSELECT InternetBankingPlatforms.name\nFROM SignInOptions JOIN InternetBankingPlatforms ON SignInOptions.OptionName = InternetBankingPlatforms.AdditionalFeatures\nWHERE SignInOptions.OptionName = \"Token Based Authentication\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?signinoptions a :SignInOptions .\n    ?mobilebankingapps a :MobileBankingApps .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?mobilebankingapps p:PlatformType ?platformtype_r .\n    ?mobilebankingapps p:name ?name .\n    FILTER(STR(?optionname_l) = STR(?platformtype_r))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?signinoptions a :SignInOptions .\n    ?internetbankingplatforms a :InternetBankingPlatforms .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?internetbankingplatforms p:AdditionalFeatures ?additionalfeatures_r .\n    ?internetbankingplatforms p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?additionalfeatures_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me mobile banking apps and internet banking platforms that use token-based authentication for signing in.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?signinoptions a :SignInOptions .\n    ?mobilebankingapps a :MobileBankingApps .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?mobilebankingapps p:PlatformType ?platformtype_r .\n    ?mobilebankingapps p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?platformtype_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?signinoptions a :SignInOptions .\n    ?internetbankingplatforms a :InternetBankingPlatforms .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?internetbankingplatforms p:AdditionalFeatures ?additionalfeatures_r .\n    ?internetbankingplatforms p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?additionalfeatures_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?signinoptions a :SignInOptions .\n    ?mobilebankingapps a :MobileBankingApps .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?mobilebankingapps p:PlatformType ?platformtype_r .\n    ?mobilebankingapps p:name ?name .\n    FILTER(STR(?optionname_l) = STR(?platformtype_r))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?signinoptions a :SignInOptions .\n    ?internetbankingplatforms a :InternetBankingPlatforms .\n    ?signinoptions p:OptionName ?optionname_l .\n    ?internetbankingplatforms p:AdditionalFeatures ?additionalfeatures_r .\n    ?internetbankingplatforms p:name ?name .\n    ?signinoptions p:OptionName ?optionname_f .\n    FILTER(STR(?optionname_l) = STR(?additionalfeatures_r))\n    FILTER(STR(?optionname_f) = \"Token Based Authentication\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

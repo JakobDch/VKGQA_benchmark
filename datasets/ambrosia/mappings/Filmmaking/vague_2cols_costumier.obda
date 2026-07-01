@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Films_base
+target		ex:Films/{FilmID} a :Films ; p:FilmID {FilmID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Runtime {Runtime} .
+source		SELECT `FilmID`, `Title`, `ReleaseYear`, `Runtime` FROM `Films`
+
+mappingId	Actors_base
+target		ex:Actors/{ActorID} a :Actors ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `BirthDate` FROM `Actors`
+
+mappingId	Directors_base
+target		ex:Directors/{DirectorID} a :Directors ; p:DirectorID {DirectorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `DirectorID`, `FirstName`, `LastName`, `BirthDate` FROM `Directors`
+
+mappingId	Producers_base
+target		ex:Producers/{ProducerID} a :Producers ; p:ProducerID {ProducerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:ProductionCompany {ProductionCompany} .
+source		SELECT `ProducerID`, `FirstName`, `LastName`, `ProductionCompany` FROM `Producers`
+
+mappingId	Costumes_base
+target		ex:Costumes/{CostumeID} a :Costumes ; p:CostumeID {CostumeID} ; p:Costume_Designer {Costume_Designer} ; p:Costume_Supervisor {Costume_Supervisor} ; p:Costumes {Costumes} ; p:Budget {Budget} .
+source		SELECT `CostumeID`, `Costume_Designer`, `Costume_Supervisor`, `Costumes`, `Budget` FROM `Costumes`
+
+mappingId	FilmActors_base
+target		ex:FilmActors/{FilmID}/{ActorID} a :FilmActors ; p:FilmID {FilmID} ; p:ActorID {ActorID} ; p:Role {Role} .
+source		SELECT `FilmID`, `ActorID`, `Role` FROM `FilmActors`
+
+mappingId	FilmActors_ActorID_fk
+target		ex:FilmActors/{FilmID}/{ActorID} p:hasActors ex:Actors/{ActorID} .
+source		SELECT `FilmID`, `ActorID` FROM `FilmActors` WHERE `ActorID` IS NOT NULL
+
+mappingId	FilmActors_FilmID_fk
+target		ex:FilmActors/{FilmID}/{ActorID} p:hasFilms ex:Films/{FilmID} .
+source		SELECT `FilmID`, `ActorID` FROM `FilmActors` WHERE `FilmID` IS NOT NULL
+
+]]

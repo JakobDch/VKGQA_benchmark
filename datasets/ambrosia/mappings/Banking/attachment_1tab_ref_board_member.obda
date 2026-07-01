@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Organizations_base
+target		ex:Organizations/{ID} a :Organizations ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Organizations`
+
+mappingId	Board_Members_base
+target		ex:Board_Members/{ID} a :Board_Members ; p:ID {ID} ; p:MemberName {MemberName} ; p:Role {Role} ; p:OrganizationID {OrganizationID} .
+source		SELECT `ID`, `MemberName`, `Role`, `OrganizationID` FROM `Board_Members`
+
+mappingId	Board_Members_OrganizationID_fk
+target		ex:Board_Members/{ID} p:hasOrganizations ex:Organizations/{OrganizationID} .
+source		SELECT `ID`, `OrganizationID` FROM `Board_Members` WHERE `OrganizationID` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} ; p:AddressLine1 {AddressLine1} ; p:AddressLine2 {AddressLine2} ; p:City {City} ; p:State {State} ; p:ZipCode {ZipCode} ; p:Country {Country} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth`, `EmailAddress`, `PhoneNumber`, `AddressLine1`, `AddressLine2`, `City`, `State`, `ZipCode`, `Country` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:Balance {Balance} ; p:Type {Type} .
+source		SELECT `AccountID`, `CustomerID`, `Balance`, `Type` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:Amount {Amount} ; p:InterestRate {InterestRate} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:Status {Status} .
+source		SELECT `LoanID`, `CustomerID`, `Amount`, `InterestRate`, `StartDate`, `EndDate`, `Status` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+]]

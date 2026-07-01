@@ -1,0 +1,38 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_job_postings_requirements_0_Job_Postings_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"title\", \"description\", \"salary\" FROM \"Job_Postings\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/JobPostings/{id}" ; rr:class :JobPostings ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:salary ; rr:objectMap [ rr:column "salary" ] ] .
+
+<#tm_scope_job_postings_requirements_1_Requirements_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"requirement_type\", \"value\" FROM \"Requirements\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Requirements/{id}" ; rr:class :Requirements ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:requirement_type ; rr:objectMap [ rr:column "requirement_type" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:value ; rr:objectMap [ rr:column "value" ] ] .
+
+<#tm_scope_job_postings_requirements_2_Job_Postings_Requirements_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"job_posting_id\", \"requirement_id\" FROM \"Job_Postings_Requirements\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Job_Postings_Requirements/{job_posting_id}/{requirement_id}" ; rr:class :Job_Postings_Requirements ] ;
+  rr:predicateObjectMap [ rr:predicate p:job_posting_id ; rr:objectMap [ rr:column "job_posting_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:requirement_id ; rr:objectMap [ rr:column "requirement_id" ] ] .
+
+<#tm_scope_job_postings_requirements_3_Job_Postings_Requirements_requirement_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"job_posting_id\", \"requirement_id\" FROM \"Job_Postings_Requirements\" WHERE \"requirement_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Job_Postings_Requirements/{job_posting_id}/{requirement_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRequirements ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Requirements/{requirement_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_job_postings_requirements_4_Job_Postings_Requirements_job_posting_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"job_posting_id\", \"requirement_id\" FROM \"Job_Postings_Requirements\" WHERE \"job_posting_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Job_Postings_Requirements/{job_posting_id}/{requirement_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasJobPostings ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/JobPostings/{job_posting_id}" ; rr:termType rr:IRI ] ] .
+

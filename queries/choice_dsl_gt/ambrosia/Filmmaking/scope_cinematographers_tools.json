@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_cinematographers_tools",
+  "schema": "amb_scope_cinematographers_tools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every cinematographer, show me the corresponding tool names.",
+      "qtype": "unambig",
+      "sql": "select cinematographers.name , tools.toolname from Cinematographers_Tools join Tools on Cinematographers_Tools.toolId = Tools.id join Cinematographers on Cinematographers_Tools.cinematographerId = Cinematographers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?toolname WHERE {\n  ?cinematographers_tools a :Cinematographers_Tools .\n  ?tools a :Tools .\n  ?cinematographers_tools p:hasTools ?tools .\n  ?cinematographers a :Cinematographers .\n  ?cinematographers_tools p:hasCinematographers ?cinematographers .\n  ?cinematographers p:name ?name .\n  ?tools p:toolName ?toolname .\n}",
+      "status": "pass",
+      "note": "n=25"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the tool name that is common for all cinematographers.",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.toolName  from Cinematographers_Tools join Tools on Cinematographers_Tools.toolId = Tools.id join Cinematographers on Cinematographers_Tools.cinematographerId = Cinematographers.id   GROUP BY Cinematographers_Tools.toolId HAVING COUNT(DISTINCT Cinematographers_Tools.cinematographerId) = (SELECT COUNT(*) FROM  Cinematographers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?toolname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasCinematographers ?parent . } GROUP BY ?child }\n  ?child p:toolName ?toolname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cinematographers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which tool names are associated with each cinematographer?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?toolname WHERE {\n  ?cinematographers_tools a :Cinematographers_Tools .\n  ?tools a :Tools .\n  ?cinematographers_tools p:hasTools ?tools .\n  ?cinematographers a :Cinematographers .\n  ?cinematographers_tools p:hasCinematographers ?cinematographers .\n  ?cinematographers p:name ?name .\n  ?tools p:toolName ?toolname .\n} }\n  collective: { SELECT ?toolname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasCinematographers ?parent . } GROUP BY ?child }\n  ?child p:toolName ?toolname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Cinematographers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

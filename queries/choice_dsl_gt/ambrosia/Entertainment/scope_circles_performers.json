@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_circles_performers",
+  "schema": "amb_scope_circles_performers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every circle, show the performer there.",
+      "qtype": "unambig",
+      "sql": "select circles.name , performers.type from CirclePerformers join Performers on CirclePerformers.performer_id = Performers.id join Circles on CirclePerformers.circle_id = Circles.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?circleperformers a :CirclePerformers .\n  ?performers a :Performers .\n  ?circleperformers p:hasPerformers ?performers .\n  ?circles a :Circles .\n  ?circleperformers p:hasCircles ?circles .\n  ?circles p:name ?name .\n  ?performers p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "What performer is there in every circus?",
+      "qtype": "ambig",
+      "sql": "SELECT Performers.type  from CirclePerformers join Performers on CirclePerformers.performer_id = Performers.id join Circles on CirclePerformers.circle_id = Circles.id   GROUP BY CirclePerformers.performer_id HAVING COUNT(DISTINCT CirclePerformers.circle_id) = (SELECT COUNT(*) FROM  Circles)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:performer_id ?cg . ?child a :Performers ; p:id ?cg . ?l p:circle_id ?pg . ?parent a :Circles ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Circles } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What performer is there in every circus?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?circleperformers a :CirclePerformers .\n  ?performers a :Performers .\n  ?circleperformers p:hasPerformers ?performers .\n  ?circles a :Circles .\n  ?circleperformers p:hasCircles ?circles .\n  ?circles p:name ?name .\n  ?performers p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:performer_id ?cg . ?child a :Performers ; p:id ?cg . ?l p:circle_id ?pg . ?parent a :Circles ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Circles } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

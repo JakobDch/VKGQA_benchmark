@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_ref_luggage_assistance",
+  "schema": "amb_attachment_2tab_ref_luggage_assistance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Could you show me the IDs of the luggage trolleys located at the departure hall and the ids of the porters located there?",
+      "qtype": "unambig",
+      "sql": "SELECT Luggage_trolleys.TrolleyID as ID\nFROM Available_locations JOIN Luggage_trolleys ON Available_locations.id = Luggage_trolleys.availableLocation\nWHERE Available_locations.location = \"Departure Hall\"\nUNION\nSELECT Porters.PorterID as ID\nFROM Available_locations JOIN Porters ON Available_locations.id = Porters.availableLocation\nWHERE Available_locations.location = \"Departure Hall\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?available_locations a :Available_locations .\n    ?luggage_trolleys a :Luggage_trolleys .\n    ?luggage_trolleys p:hasAvailable_locations ?available_locations .\n    ?luggage_trolleys p:trolleyID ?trolleyid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?trolleyid AS ?o0)\n  }\n  UNION\n  {\n    ?available_locations a :Available_locations .\n    ?porters a :Porters .\n    ?porters p:hasAvailable_locations ?available_locations .\n    ?porters p:porterID ?porterid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?porterid AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "I need the luggage trolley IDs and porter IDs available at the departure hall.",
+      "qtype": "ambig",
+      "sql": "SELECT Luggage_trolleys.TrolleyID as ID\nFROM Available_locations JOIN Luggage_trolleys ON Available_locations.id = Luggage_trolleys.availableLocation\nUNION\nSELECT Porters.PorterID as ID\nFROM Available_locations JOIN Porters ON Available_locations.id = Porters.availableLocation\nWHERE Available_locations.location = \"Departure Hall\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?available_locations a :Available_locations .\n    ?luggage_trolleys a :Luggage_trolleys .\n    ?luggage_trolleys p:hasAvailable_locations ?available_locations .\n    ?luggage_trolleys p:trolleyID ?trolleyid .\n    BIND(?trolleyid AS ?o0)\n  }\n  UNION\n  {\n    ?available_locations a :Available_locations .\n    ?porters a :Porters .\n    ?porters p:hasAvailable_locations ?available_locations .\n    ?porters p:porterID ?porterid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?porterid AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "I need the luggage trolley IDs and porter IDs available at the departure hall.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?available_locations a :Available_locations .\n    ?luggage_trolleys a :Luggage_trolleys .\n    ?luggage_trolleys p:hasAvailable_locations ?available_locations .\n    ?luggage_trolleys p:trolleyID ?trolleyid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?trolleyid AS ?o0)\n  }\n  UNION\n  {\n    ?available_locations a :Available_locations .\n    ?porters a :Porters .\n    ?porters p:hasAvailable_locations ?available_locations .\n    ?porters p:porterID ?porterid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?porterid AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?available_locations a :Available_locations .\n    ?luggage_trolleys a :Luggage_trolleys .\n    ?luggage_trolleys p:hasAvailable_locations ?available_locations .\n    ?luggage_trolleys p:trolleyID ?trolleyid .\n    BIND(?trolleyid AS ?o0)\n  }\n  UNION\n  {\n    ?available_locations a :Available_locations .\n    ?porters a :Porters .\n    ?porters p:hasAvailable_locations ?available_locations .\n    ?porters p:porterID ?porterid .\n    ?available_locations p:location ?location_f .\n    FILTER(STR(?location_f) = \"Departure Hall\")\n    BIND(?porterid AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

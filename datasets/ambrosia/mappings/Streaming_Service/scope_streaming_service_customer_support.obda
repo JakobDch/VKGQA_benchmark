@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	streaming_service_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:price {price} .
+source		SELECT `id`, `name`, `price` FROM `streaming_service`
+
+mappingId	customer_support_base
+target		ex:customer_support/{id} a :customer_support ; p:id {id} ; p:support_type {support_type} ; p:description {description} .
+source		SELECT `id`, `support_type`, `description` FROM `customer_support`
+
+mappingId	streaming_service_customer_support_base
+target		ex:streaming_service_customer_support/{id} a :streaming_service_customer_support ; p:id {id} ; p:streaming_service_id {streaming_service_id} ; p:customer_support_id {customer_support_id} .
+source		SELECT `id`, `streaming_service_id`, `customer_support_id` FROM `streaming_service_customer_support`
+
+mappingId	streaming_service_customer_support_customer_support_id_fk
+target		ex:streaming_service_customer_support/{id} p:hascustomer_support ex:customer_support/{customer_support_id} .
+source		SELECT `id`, `customer_support_id` FROM `streaming_service_customer_support` WHERE `customer_support_id` IS NOT NULL
+
+mappingId	streaming_service_customer_support_streaming_service_id_fk
+target		ex:streaming_service_customer_support/{id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `id`, `streaming_service_id` FROM `streaming_service_customer_support` WHERE `streaming_service_id` IS NOT NULL
+
+]]

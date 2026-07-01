@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_city_transportation_mode",
+  "schema": "amb_scope_city_transportation_mode",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me about transportation options each city has.",
+      "qtype": "ambig",
+      "sql": "SELECT Transportation_Mode.mode  from City_Transportation_Mode join Transportation_Mode on City_Transportation_Mode.transportation_mode_id = Transportation_Mode.id join City on City_Transportation_Mode.city_id = City.id   GROUP BY City_Transportation_Mode.transportation_mode_id HAVING COUNT(DISTINCT City_Transportation_Mode.city_id) = (SELECT COUNT(*) FROM  City)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mode WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransportation_Mode ?child ; p:hasCity ?parent . } GROUP BY ?child }\n  ?child p:type ?mode .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :City } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me about transportation options each city has.",
+      "qtype": "ambig",
+      "sql": "select city.name , transportation_mode.mode from City_Transportation_Mode join Transportation_Mode on City_Transportation_Mode.transportation_mode_id = Transportation_Mode.id join City on City_Transportation_Mode.city_id = City.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?mode WHERE {\n  ?city_transportation_mode a :City_Transportation_Mode .\n  ?transportation_mode a :Transportation_Mode .\n  ?city_transportation_mode p:hasTransportation_Mode ?transportation_mode .\n  ?city a :City .\n  ?city_transportation_mode p:hasCity ?city .\n  ?city p:name ?name .\n  ?transportation_mode p:type ?mode .\n}",
+      "status": "pass",
+      "note": "n=11"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me about transportation options each city has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?mode WHERE {\n  ?city_transportation_mode a :City_Transportation_Mode .\n  ?transportation_mode a :Transportation_Mode .\n  ?city_transportation_mode p:hasTransportation_Mode ?transportation_mode .\n  ?city a :City .\n  ?city_transportation_mode p:hasCity ?city .\n  ?city p:name ?name .\n  ?transportation_mode p:type ?mode .\n} }\n  collective: { SELECT ?mode WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransportation_Mode ?child ; p:hasCity ?parent . } GROUP BY ?child }\n  ?child p:type ?mode .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :City } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

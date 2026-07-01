@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	journalists_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:name {name} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:Degree {Degree} ; p:Certificate {Certificate} ; p:Investigative_Journalist {Investigative_Journalist} .
+source		SELECT `id`, `name`, `email`, `phoneNumber`, `Degree`, `Certificate`, `Investigative_Journalist` FROM `journalists`
+
+mappingId	articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publishDate {publishDate} ; p:authorId {authorId} ; p:publicationId {publicationId} ; p:topicId {topicId} .
+source		SELECT `id`, `title`, `content`, `publishDate`, `authorId`, `publicationId`, `topicId` FROM `articles`
+
+mappingId	articles_topicId_fk
+target		ex:Articles/{id} p:hastopics ex:topics/{topicId} .
+source		SELECT `id`, `topicId` FROM `articles` WHERE `topicId` IS NOT NULL
+
+mappingId	articles_publicationId_fk
+target		ex:Articles/{id} p:hasPublications ex:Publications/{publicationId} .
+source		SELECT `id`, `publicationId` FROM `articles` WHERE `publicationId` IS NOT NULL
+
+mappingId	articles_authorId_fk
+target		ex:Articles/{id} p:hasJournalists ex:Journalists/{authorId} .
+source		SELECT `id`, `authorId` FROM `articles` WHERE `authorId` IS NOT NULL
+
+mappingId	publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `publications`
+
+mappingId	sources_base
+target		ex:Sources/{id} a :Sources ; p:id {id} ; p:name {name} ; p:contactInfo {contactInfo} .
+source		SELECT `id`, `name`, `contactInfo` FROM `sources`
+
+mappingId	topics_base
+target		ex:topics/{id} a :topics ; p:id {id} ; p:description {description} .
+source		SELECT `id`, `description` FROM `topics`
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Age` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{TeacherID} a :Teachers ; p:TeacherID {TeacherID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:SubjectTaught {SubjectTaught} .
+source		SELECT `TeacherID`, `FirstName`, `LastName`, `SubjectTaught` FROM `Teachers`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:Title {Title} ; p:Description {Description} ; p:TeacherID {TeacherID} .
+source		SELECT `CourseID`, `Title`, `Description`, `TeacherID` FROM `Courses`
+
+mappingId	Courses_TeacherID_fk
+target		ex:Courses/{CourseID} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `CourseID`, `TeacherID` FROM `Courses` WHERE `TeacherID` IS NOT NULL
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Grade {Grade} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Textbooks_and_Software_base
+target		ex:Textbooks_and_Software/{ItemID} a :Textbooks_and_Software ; p:ItemID {ItemID} ; p:TextbookTitle {TextbookTitle} ; p:SoftwareName {SoftwareName} ; p:CourseID {CourseID} ; p:Quantity {Quantity} ; p:Price {Price} .
+source		SELECT `ItemID`, `TextbookTitle`, `SoftwareName`, `CourseID`, `Quantity`, `Price` FROM `Textbooks_and_Software`
+
+mappingId	Textbooks_and_Software_CourseID_fk
+target		ex:Textbooks_and_Software/{ItemID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `ItemID`, `CourseID` FROM `Textbooks_and_Software` WHERE `CourseID` IS NOT NULL
+
+mappingId	Exams_base
+target		ex:Exams/{ExamID} a :Exams ; p:ExamID {ExamID} ; p:CourseID {CourseID} ; p:Date {Date} ; p:TotalMarks {TotalMarks} ; p:PassMark {PassMark} .
+source		SELECT `ExamID`, `CourseID`, `Date`, `TotalMarks`, `PassMark` FROM `Exams`
+
+mappingId	Exams_CourseID_fk
+target		ex:Exams/{ExamID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `ExamID`, `CourseID` FROM `Exams` WHERE `CourseID` IS NOT NULL
+
+]]

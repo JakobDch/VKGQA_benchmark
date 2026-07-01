@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_dental_careers",
+  "schema": "amb_attachment_1tab_ref_dental_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List orthodontists and periodontists with a Master of Science in Dentistry degree.",
+      "qtype": "ambig",
+      "sql": "SELECT Dentists.FullName\nFROM Dentists JOIN Education ON Dentists.EducationID = Education.ID\nWHERE (Dentists.DentalSpecialty = \"Orthodontist\" OR Dentists.DentalSpecialty = \"Periodontist\") AND Education.Degree = \"Master of Science in Dentistry\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?dentists a :Dentists .\n  ?education a :Education .\n  ?dentists p:hasEducation ?education .\n  ?dentists p:name ?fullname .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w2 .\n  ?education p:Degree ?degree_w .\n  FILTER((((STR(?dentalspecialty_w) = \"Orthodontist\" || STR(?dentalspecialty_w2) = \"Periodontist\")) && STR(?degree_w) = \"Master of Science in Dentistry\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List orthodontists and periodontists with a Master of Science in Dentistry degree.",
+      "qtype": "ambig",
+      "sql": "SELECT Dentists.FullName\nFROM Dentists JOIN Education ON Dentists.EducationID = Education.ID\nWHERE Dentists.DentalSpecialty = \"Orthodontist\" OR Dentists.DentalSpecialty = \"Periodontist\" AND Education.Degree = \"Master of Science in Dentistry\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?dentists a :Dentists .\n  ?education a :Education .\n  ?dentists p:hasEducation ?education .\n  ?dentists p:name ?fullname .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w2 .\n  ?education p:Degree ?degree_w .\n  FILTER((STR(?dentalspecialty_w) = \"Orthodontist\" || (STR(?dentalspecialty_w2) = \"Periodontist\" && STR(?degree_w) = \"Master of Science in Dentistry\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List orthodontists and periodontists with a Master of Science in Dentistry degree.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?dentists a :Dentists .\n  ?education a :Education .\n  ?dentists p:hasEducation ?education .\n  ?dentists p:name ?fullname .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w2 .\n  ?education p:Degree ?degree_w .\n  FILTER((((STR(?dentalspecialty_w) = \"Orthodontist\" || STR(?dentalspecialty_w2) = \"Periodontist\")) && STR(?degree_w) = \"Master of Science in Dentistry\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?dentists a :Dentists .\n  ?education a :Education .\n  ?dentists p:hasEducation ?education .\n  ?dentists p:name ?fullname .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w .\n  ?dentists p:DentalSpecialty ?dentalspecialty_w2 .\n  ?education p:Degree ?degree_w .\n  FILTER((STR(?dentalspecialty_w) = \"Orthodontist\" || (STR(?dentalspecialty_w2) = \"Periodontist\" && STR(?degree_w) = \"Master of Science in Dentistry\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

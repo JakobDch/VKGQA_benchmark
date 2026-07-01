@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_service_format",
+  "schema": "amb_attachment_1tab_val_service_format",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all buffets open between 7:30 am and 4:00pm, also show the coffee shops open during the same time.",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurant.name \nFROM Restaurant\nWHERE (Restaurant.Service_format = \"Buffet\" OR Restaurant.Service_format = \"Coffee Shop\") AND Restaurant.Hours = \"7.30 a.m. - 4 p.m.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurant a :Restaurants .\n  ?restaurant p:name ?name .\n  ?restaurant p:Service_format ?service_format_w .\n  ?restaurant p:Service_format ?service_format_w2 .\n  ?restaurant p:Hours ?hours_w .\n  FILTER((((STR(?service_format_w) = \"Buffet\" || STR(?service_format_w2) = \"Coffee Shop\")) && STR(?hours_w) = \"7.30 a.m. - 4 p.m.\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the buffets in the data, also show just the coffee shops open from 7:30am to 4:00pm.",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurant.name \nFROM Restaurant\nWHERE Restaurant.Service_format = \"Buffet\" OR Restaurant.Service_format = \"Coffee Shop\" AND Restaurant.Hours = \"7.30 a.m. - 4 p.m.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?restaurant a :Restaurants .\n  ?restaurant p:name ?name .\n  ?restaurant p:Service_format ?service_format_w .\n  ?restaurant p:Service_format ?service_format_w2 .\n  ?restaurant p:Hours ?hours_w .\n  FILTER((STR(?service_format_w) = \"Buffet\" || (STR(?service_format_w2) = \"Coffee Shop\" && STR(?hours_w) = \"7.30 a.m. - 4 p.m.\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all buffets and coffee shops open from 7:30am to 4:00pm.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?restaurant a :Restaurants .\n  ?restaurant p:name ?name .\n  ?restaurant p:Service_format ?service_format_w .\n  ?restaurant p:Service_format ?service_format_w2 .\n  ?restaurant p:Hours ?hours_w .\n  FILTER((((STR(?service_format_w) = \"Buffet\" || STR(?service_format_w2) = \"Coffee Shop\")) && STR(?hours_w) = \"7.30 a.m. - 4 p.m.\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?restaurant a :Restaurants .\n  ?restaurant p:name ?name .\n  ?restaurant p:Service_format ?service_format_w .\n  ?restaurant p:Service_format ?service_format_w2 .\n  ?restaurant p:Hours ?hours_w .\n  FILTER((STR(?service_format_w) = \"Buffet\" || (STR(?service_format_w2) = \"Coffee Shop\" && STR(?hours_w) = \"7.30 a.m. - 4 p.m.\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

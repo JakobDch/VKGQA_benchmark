@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{AuthorID} a :Author ; p:AuthorID {AuthorID} ; p:name {Name} ; p:Country {Country} ; p:BirthDate {BirthDate} .
+source		SELECT `AuthorID`, `Name`, `Country`, `BirthDate` FROM `Authors`
+
+mappingId	WrittenWorks_base
+target		ex:WrittenWorks/{WorkID} a :WrittenWorks ; p:WorkID {WorkID} ; p:Title {Title} ; p:TypeOfWork {TypeOfWork} ; p:PublishedDate {PublishedDate} ; p:WordCount {WordCount} .
+source		SELECT `WorkID`, `Title`, `TypeOfWork`, `PublishedDate`, `WordCount` FROM `WrittenWorks`
+
+mappingId	WrittenWorks_TypeOfWork_fk
+target		ex:WrittenWorks/{WorkID} p:hasTypesOfWork ex:TypesOfWork/{TypeOfWork} .
+source		SELECT `WorkID`, `TypeOfWork` FROM `WrittenWorks` WHERE `TypeOfWork` IS NOT NULL
+
+mappingId	TypesOfWork_base
+target		ex:TypesOfWork/{TypeID} a :TypesOfWork ; p:TypeID {TypeID} ; p:Type {Type} .
+source		SELECT `TypeID`, `Type` FROM `TypesOfWork`
+
+mappingId	Writes_base
+target		ex:Writes/{WriteID} a :Writes ; p:WriteID {WriteID} ; p:AuthorID {AuthorID} ; p:WorkID {WorkID} .
+source		SELECT `WriteID`, `AuthorID`, `WorkID` FROM `Writes`
+
+mappingId	Writes_WorkID_fk
+target		ex:Writes/{WriteID} p:hasWrittenWorks ex:WrittenWorks/{WorkID} .
+source		SELECT `WriteID`, `WorkID` FROM `Writes` WHERE `WorkID` IS NOT NULL
+
+mappingId	Writes_AuthorID_fk
+target		ex:Writes/{WriteID} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `WriteID`, `AuthorID` FROM `Writes` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Publishers_base
+target		ex:Publisher/{PublisherID} a :Publisher ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `PublisherID`, `Name`, `Address` FROM `Publishers`
+
+mappingId	WorksPublishedByPublisher_base
+target		ex:WorksPublishedByPublisher/{_amb_rowid} a :WorksPublishedByPublisher ; p:WorkID {WorkID} ; p:PublisherID {PublisherID} ; p:PublicationYear {PublicationYear} .
+source		SELECT `_amb_rowid`, `WorkID`, `PublisherID`, `PublicationYear` FROM `WorksPublishedByPublisher`
+
+mappingId	WorksPublishedByPublisher_PublisherID_fk
+target		ex:WorksPublishedByPublisher/{_amb_rowid} p:hasPublisher ex:Publisher/{PublisherID} .
+source		SELECT `_amb_rowid`, `PublisherID` FROM `WorksPublishedByPublisher` WHERE `PublisherID` IS NOT NULL
+
+mappingId	WorksPublishedByPublisher_WorkID_fk
+target		ex:WorksPublishedByPublisher/{_amb_rowid} p:hasWrittenWorks ex:WrittenWorks/{WorkID} .
+source		SELECT `_amb_rowid`, `WorkID` FROM `WorksPublishedByPublisher` WHERE `WorkID` IS NOT NULL
+
+]]

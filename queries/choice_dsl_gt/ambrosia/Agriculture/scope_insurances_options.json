@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_insurances_options",
+  "schema": "amb_scope_insurances_options",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What options do we have for every insurance",
+      "qtype": "ambig",
+      "sql": "SELECT Options.option_name  from Insurance_Options join Options on Insurance_Options.option_id = Options.id join Insurances on Insurance_Options.insurance_id = Insurances.id   GROUP BY Insurance_Options.option_id HAVING COUNT(DISTINCT Insurance_Options.insurance_id) = (SELECT COUNT(*) FROM  Insurances)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?option_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasOptions ?child ; p:hasInsurances ?parent . } GROUP BY ?child }\n  ?child p:name ?option_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Insurances } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What options do we have for every insurance",
+      "qtype": "ambig",
+      "sql": "select insurances.policy_holder , options.option_name from Insurance_Options join Options on Insurance_Options.option_id = Options.id join Insurances on Insurance_Options.insurance_id = Insurances.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?policy_holder ?option_name WHERE {\n  ?insurance_options a :Insurance_Options .\n  ?options a :Options .\n  ?insurance_options p:hasOptions ?options .\n  ?insurances a :Insurances .\n  ?insurance_options p:hasInsurances ?insurances .\n  ?insurances p:name ?policy_holder .\n  ?options p:name ?option_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What options do we have for every insurance",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?policy_holder ?option_name WHERE {\n  ?insurance_options a :Insurance_Options .\n  ?options a :Options .\n  ?insurance_options p:hasOptions ?options .\n  ?insurances a :Insurances .\n  ?insurance_options p:hasInsurances ?insurances .\n  ?insurances p:name ?policy_holder .\n  ?options p:name ?option_name .\n} }\n  collective: { SELECT ?option_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasOptions ?child ; p:hasInsurances ?parent . } GROUP BY ?child }\n  ?child p:name ?option_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Insurances } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

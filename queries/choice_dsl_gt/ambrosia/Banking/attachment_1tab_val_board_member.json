@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_board_member",
+  "schema": "amb_attachment_1tab_val_board_member",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which independent directors work for Global Corp and which executive managers work for the same company?",
+      "qtype": "unambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE (Employees.Board_Member = \"Independent Director\" OR Employees.Board_Member = \"Executive Manager\") AND Employees.Organization = \"Global Corp\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Board_Member ?board_member_w .\n  ?employees p:Board_Member ?board_member_w2 .\n  ?employees p:Organization ?organization_w .\n  FILTER((((STR(?board_member_w) = \"Independent Director\" || STR(?board_member_w2) = \"Executive Manager\")) && STR(?organization_w) = \"Global Corp\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show independent directors and executive managers who work for Global Corp.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE Employees.Board_Member = \"Independent Director\" OR Employees.Board_Member = \"Executive Manager\" AND Employees.Organization = \"Global Corp\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Board_Member ?board_member_w .\n  ?employees p:Board_Member ?board_member_w2 .\n  ?employees p:Organization ?organization_w .\n  FILTER((STR(?board_member_w) = \"Independent Director\" || (STR(?board_member_w2) = \"Executive Manager\" && STR(?organization_w) = \"Global Corp\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show independent directors and executive managers who work for Global Corp.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Board_Member ?board_member_w .\n  ?employees p:Board_Member ?board_member_w2 .\n  ?employees p:Organization ?organization_w .\n  FILTER((((STR(?board_member_w) = \"Independent Director\" || STR(?board_member_w2) = \"Executive Manager\")) && STR(?organization_w) = \"Global Corp\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:Board_Member ?board_member_w .\n  ?employees p:Board_Member ?board_member_w2 .\n  ?employees p:Organization ?organization_w .\n  FILTER((STR(?board_member_w) = \"Independent Director\" || (STR(?board_member_w2) = \"Executive Manager\" && STR(?organization_w) = \"Global Corp\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

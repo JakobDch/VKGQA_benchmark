@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{CompanyID} a :Companies ; p:CompanyID {CompanyID} ; p:name {Name} ; p:Industry {Industry} .
+source		SELECT `CompanyID`, `Name`, `Industry` FROM `Companies`
+
+mappingId	Locations_base
+target		ex:Locations/{LocationID} a :Locations ; p:LocationID {LocationID} ; p:City {City} ; p:State {State} ; p:Country {Country} .
+source		SELECT `LocationID`, `City`, `State`, `Country` FROM `Locations`
+
+mappingId	Applicants_base
+target		ex:Applicants/{ApplicantID} a :Applicants ; p:ApplicantID {ApplicantID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ApplicantID`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Applicants`
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{JobID} a :JobPostings ; p:JobID {JobID} ; p:Title {Title} ; p:Description {Description} ; p:CompanyID {CompanyID} ; p:Business_Profession {Business_Profession} ; p:Working_Arrangement {Working_Arrangement} ; p:LocationID {LocationID} ; p:PostedDate {PostedDate} ; p:CloseDate {CloseDate} .
+source		SELECT `JobID`, `Title`, `Description`, `CompanyID`, `Business_Profession`, `Working_Arrangement`, `LocationID`, `PostedDate`, `CloseDate` FROM `JobPostings`
+
+mappingId	JobPostings_LocationID_fk
+target		ex:JobPostings/{JobID} p:hasLocations ex:Locations/{LocationID} .
+source		SELECT `JobID`, `LocationID` FROM `JobPostings` WHERE `LocationID` IS NOT NULL
+
+mappingId	JobPostings_CompanyID_fk
+target		ex:JobPostings/{JobID} p:hasCompanies ex:Companies/{CompanyID} .
+source		SELECT `JobID`, `CompanyID` FROM `JobPostings` WHERE `CompanyID` IS NOT NULL
+
+]]

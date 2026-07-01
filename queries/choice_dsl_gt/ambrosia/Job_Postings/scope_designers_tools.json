@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_designers_tools",
+  "schema": "amb_scope_designers_tools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me the tools each designer uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Tools.tool_name  from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id   GROUP BY Designer_Tools.tool_name HAVING COUNT(DISTINCT Designer_Tools.designer_id) = (SELECT COUNT(*) FROM  Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the tools each designer uses.",
+      "qtype": "ambig",
+      "sql": "select designers.name , tools.tool_name from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:tool_name ?tool_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "What tools are common to all designers",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.tool_name, Tools.description  from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id   GROUP BY Designer_Tools.tool_name HAVING COUNT(DISTINCT Designer_Tools.designer_id) = (SELECT COUNT(*) FROM  Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tool_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each designer, provide the tool name and description for each tool they use",
+      "qtype": "unambig",
+      "sql": "select designers.name , tools.tool_name , tools.description from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tool_name ?description WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:tool_name ?tool_name .\n  ?tools p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "What descriptions do you have on tools that are used the same by all designers?",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.description  from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id   GROUP BY Designer_Tools.tool_name HAVING COUNT(DISTINCT Designer_Tools.designer_id) = (SELECT COUNT(*) FROM  Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every designer, list descriptions of tools used.",
+      "qtype": "unambig",
+      "sql": "select designers.name , tools.description from Designer_Tools join Tools on Designer_Tools.tool_name = Tools.tool_name join Designers on Designer_Tools.designer_id = Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the tools each designer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?tool_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?tool_name WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:tool_name ?tool_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What tool names and descriptions do we have for every designer",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?tool_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:tool_name ?tool_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?tool_name ?description WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:tool_name ?tool_name .\n  ?tools p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me descriptions of the tools that each designer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tool_name ?cg . ?child a :Tools ; p:tool_name ?cg . ?l p:designer_id ?pg . ?parent a :Designers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Designers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?designer_tools a :Designer_Tools .\n  ?tools a :Tools .\n  ?designer_tools p:hasTools ?tools .\n  ?designers a :Designers .\n  ?designer_tools p:hasDesigners ?designers .\n  ?designers p:name ?name .\n  ?tools p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

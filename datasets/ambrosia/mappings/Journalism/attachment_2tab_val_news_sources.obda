@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Articles_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:title {title} ; p:authorName {authorName} ; p:publishDate {publishDate} ; p:content {content} .
+source		SELECT `articleID`, `title`, `authorName`, `publishDate`, `content` FROM `Articles`
+
+mappingId	PressReleases_base
+target		ex:PressReleases/{pressReleaseID} a :PressReleases ; p:pressReleaseID {pressReleaseID} ; p:title {title} ; p:releaseDate {releaseDate} ; p:content {content} ; p:FK_articleID {FK_articleID} .
+source		SELECT `pressReleaseID`, `title`, `releaseDate`, `content`, `FK_articleID` FROM `PressReleases`
+
+mappingId	PressReleases_FK_articleID_fk
+target		ex:PressReleases/{pressReleaseID} p:hasArticles ex:Articles/{FK_articleID} .
+source		SELECT `pressReleaseID`, `FK_articleID` FROM `PressReleases` WHERE `FK_articleID` IS NOT NULL
+
+mappingId	Interviews_base
+target		ex:Interviews/{interviewID} a :Interviews ; p:interviewID {interviewID} ; p:intervieweeName {intervieweeName} ; p:interviewerName {interviewerName} ; p:interviewDate {interviewDate} ; p:content {content} ; p:FK_articleID {FK_articleID} .
+source		SELECT `interviewID`, `intervieweeName`, `interviewerName`, `interviewDate`, `content`, `FK_articleID` FROM `Interviews`
+
+mappingId	Interviews_FK_articleID_fk
+target		ex:Interviews/{interviewID} p:hasArticles ex:Articles/{FK_articleID} .
+source		SELECT `interviewID`, `FK_articleID` FROM `Interviews` WHERE `FK_articleID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{sourceID} a :Sources ; p:sourceID {sourceID} ; p:name {name} ; p:description {description} ; p:contactInfo {contactInfo} .
+source		SELECT `sourceID`, `name`, `description`, `contactInfo` FROM `Sources`
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_music",
+  "schema": "amb_attachment_1tab_ref_music",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the blues songs and folk songs where the singer's first name is John.",
+      "qtype": "ambig",
+      "sql": "SELECT Music.title \nFROM Music JOIN Singer ON Music.SINGER_id = Singer.id\nWHERE (Music.title = \"Blues Song\" OR Music.title = \"Folk Song\") AND Singer.first_name = \"John\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?music a :Music .\n  ?singer a :Singer .\n  ?music p:hasSinger ?singer .\n  ?music p:title ?title .\n  ?music p:title ?title_w .\n  ?music p:title ?title_w2 .\n  ?singer p:first_name ?first_name_w .\n  FILTER((((STR(?title_w) = \"Blues Song\" || STR(?title_w2) = \"Folk Song\")) && STR(?first_name_w) = \"John\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the blues songs and folk songs where the singer's first name is John.",
+      "qtype": "ambig",
+      "sql": "SELECT Music.title \nFROM Music JOIN Singer ON Music.SINGER_id = Singer.id\nWHERE Music.title = \"Blues Song\" OR Music.title = \"Folk Song\" AND Singer.first_name = \"John\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?music a :Music .\n  ?singer a :Singer .\n  ?music p:hasSinger ?singer .\n  ?music p:title ?title .\n  ?music p:title ?title_w .\n  ?music p:title ?title_w2 .\n  ?singer p:first_name ?first_name_w .\n  FILTER((STR(?title_w) = \"Blues Song\" || (STR(?title_w2) = \"Folk Song\" && STR(?first_name_w) = \"John\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the blues songs and folk songs where the singer's first name is John.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?music a :Music .\n  ?singer a :Singer .\n  ?music p:hasSinger ?singer .\n  ?music p:title ?title .\n  ?music p:title ?title_w .\n  ?music p:title ?title_w2 .\n  ?singer p:first_name ?first_name_w .\n  FILTER((STR(?title_w) = \"Blues Song\" || (STR(?title_w2) = \"Folk Song\" && STR(?first_name_w) = \"John\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?music a :Music .\n  ?singer a :Singer .\n  ?music p:hasSinger ?singer .\n  ?music p:title ?title .\n  ?music p:title ?title_w .\n  ?music p:title ?title_w2 .\n  ?singer p:first_name ?first_name_w .\n  FILTER((((STR(?title_w) = \"Blues Song\" || STR(?title_w2) = \"Folk Song\")) && STR(?first_name_w) = \"John\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

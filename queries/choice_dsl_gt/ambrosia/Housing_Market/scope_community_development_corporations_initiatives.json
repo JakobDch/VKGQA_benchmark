@@ -1,0 +1,108 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_community_development_corporations_initiatives",
+  "schema": "amb_scope_community_development_corporations_initiatives",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What initiatives are common across all community development corporations?",
+      "qtype": "unambig",
+      "sql": "SELECT Initiatives.initiative_name  from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id   GROUP BY Community_Development_Corporations_Initiatives.initiative_id HAVING COUNT(DISTINCT Community_Development_Corporations_Initiatives.community_development_corporation_id) = (SELECT COUNT(*) FROM  Community_Development_Corporations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?initiative_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:initiative_name ?initiative_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the information about the initiatives that are applicable to all areas at the same time (names and descriptions).",
+      "qtype": "unambig",
+      "sql": "SELECT Initiatives.initiative_name, Initiatives.description  from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id   GROUP BY Community_Development_Corporations_Initiatives.initiative_id HAVING COUNT(DISTINCT Community_Development_Corporations_Initiatives.community_development_corporation_id) = (SELECT COUNT(*) FROM  Community_Development_Corporations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?initiative_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:initiative_name ?initiative_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Provide the description of initiatives that is common for all community development corporations.",
+      "qtype": "unambig",
+      "sql": "SELECT Initiatives.description  from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id   GROUP BY Community_Development_Corporations_Initiatives.initiative_id HAVING COUNT(DISTINCT Community_Development_Corporations_Initiatives.community_development_corporation_id) = (SELECT COUNT(*) FROM  Community_Development_Corporations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the information about the initiatives available in each area (names and descriptions).",
+      "qtype": "ambig",
+      "sql": "select community_development_corporations.name , initiatives.initiative_name , initiatives.description from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?initiative_name ?description WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:initiative_name ?initiative_name .\n  ?initiatives p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every community development corporation, present the corresponding description of its initiatives.",
+      "qtype": "unambig",
+      "sql": "select community_development_corporations.name , initiatives.description from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What initiatives are there for every community development corporation?",
+      "qtype": "ambig",
+      "sql": "select community_development_corporations.name , initiatives.initiative_name from Community_Development_Corporations_Initiatives join Initiatives on Community_Development_Corporations_Initiatives.initiative_id = Initiatives.id join Community_Development_Corporations on Community_Development_Corporations_Initiatives.community_development_corporation_id = Community_Development_Corporations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?initiative_name WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:initiative_name ?initiative_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What initiatives are there for every community development corporation?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?initiative_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:initiative_name ?initiative_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?initiative_name WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:initiative_name ?initiative_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the information about the initiatives available in each area (names and descriptions).",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?initiative_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:initiative_name ?initiative_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?initiative_name ?description WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:initiative_name ?initiative_name .\n  ?initiatives p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What description of initiatives is available for each community development corporation?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasInitiatives ?child ; p:hasCommunity_Development_Corporations ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Community_Development_Corporations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?community_development_corporations_initiatives a :Community_Development_Corporations_Initiatives .\n  ?initiatives a :Initiatives .\n  ?community_development_corporations_initiatives p:hasInitiatives ?initiatives .\n  ?community_development_corporations a :Community_Development_Corporations .\n  ?community_development_corporations_initiatives p:hasCommunity_Development_Corporations ?community_development_corporations .\n  ?community_development_corporations p:name ?name .\n  ?initiatives p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

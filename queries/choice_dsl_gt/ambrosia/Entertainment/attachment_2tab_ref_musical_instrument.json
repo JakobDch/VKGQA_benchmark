@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_musical_instrument",
+  "schema": "amb_attachment_2tab_ref_musical_instrument",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show guitar models and piano models where Yamaha is the manufacturer.",
+      "qtype": "ambig",
+      "sql": "SELECT Guitars.model_name\nFROM Manufacturers JOIN Guitars ON Manufacturers.id = Guitars.manufacturer_id\nWHERE Manufacturers.name = \"Yamaha\"\nUNION\nSELECT Pianos.model_name\nFROM Manufacturers JOIN Pianos ON Manufacturers.id = Pianos.manufacturer_id\nWHERE Manufacturers.name = \"Yamaha\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?manufacturers a :Manufacturers .\n    ?guitars a :Guitars .\n    ?guitars p:hasManufacturers ?manufacturers .\n    ?guitars p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n  UNION\n  {\n    ?manufacturers a :Manufacturers .\n    ?pianos a :Pianos .\n    ?pianos p:hasManufacturers ?manufacturers .\n    ?pianos p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show guitar models and piano models where Yamaha is the manufacturer.",
+      "qtype": "ambig",
+      "sql": "SELECT Guitars.model_name\nFROM Manufacturers JOIN Guitars ON Manufacturers.id = Guitars.manufacturer_id\nUNION\nSELECT Pianos.model_name\nFROM Manufacturers JOIN Pianos ON Manufacturers.id = Pianos.manufacturer_id\nWHERE Manufacturers.name = \"Yamaha\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?manufacturers a :Manufacturers .\n    ?guitars a :Guitars .\n    ?guitars p:hasManufacturers ?manufacturers .\n    ?guitars p:model_name ?model_name .\n    BIND(?model_name AS ?o0)\n  }\n  UNION\n  {\n    ?manufacturers a :Manufacturers .\n    ?pianos a :Pianos .\n    ?pianos p:hasManufacturers ?manufacturers .\n    ?pianos p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show guitar models and piano models where Yamaha is the manufacturer.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?manufacturers a :Manufacturers .\n    ?guitars a :Guitars .\n    ?guitars p:hasManufacturers ?manufacturers .\n    ?guitars p:model_name ?model_name .\n    BIND(?model_name AS ?o0)\n  }\n  UNION\n  {\n    ?manufacturers a :Manufacturers .\n    ?pianos a :Pianos .\n    ?pianos p:hasManufacturers ?manufacturers .\n    ?pianos p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?manufacturers a :Manufacturers .\n    ?guitars a :Guitars .\n    ?guitars p:hasManufacturers ?manufacturers .\n    ?guitars p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n  UNION\n  {\n    ?manufacturers a :Manufacturers .\n    ?pianos a :Pianos .\n    ?pianos p:hasManufacturers ?manufacturers .\n    ?pianos p:model_name ?model_name .\n    ?manufacturers p:name ?name_f .\n    FILTER(STR(?name_f) = \"Yamaha\")\n    BIND(?model_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

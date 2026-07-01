@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_retail_outlets",
+  "schema": "amb_attachment_1tab_val_retail_outlets",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me duty-free shops and souvenir stores that are located at Terminal 3.",
+      "qtype": "ambig",
+      "sql": "SELECT RetailOutlets.Name \nFROM RetailOutlets\nWHERE (RetailOutlets.type = \"Duty-Free Shop\" OR RetailOutlets.type = \"Souvenir Store\") AND RetailOutlets.location = \"Terminal 3\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?retailoutlets a :RetailOutlets .\n  ?retailoutlets p:name ?name .\n  ?retailoutlets p:type ?type_w .\n  ?retailoutlets p:type ?type_w2 .\n  ?retailoutlets p:location ?location_w .\n  FILTER((((STR(?type_w) = \"Duty-Free Shop\" || STR(?type_w2) = \"Souvenir Store\")) && STR(?location_w) = \"Terminal 3\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me duty-free shops and souvenir stores that are located at Terminal 3.",
+      "qtype": "ambig",
+      "sql": "SELECT RetailOutlets.Name \nFROM RetailOutlets\nWHERE RetailOutlets.type = \"Duty-Free Shop\" OR RetailOutlets.type = \"Souvenir Store\" AND RetailOutlets.location = \"Terminal 3\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?retailoutlets a :RetailOutlets .\n  ?retailoutlets p:name ?name .\n  ?retailoutlets p:type ?type_w .\n  ?retailoutlets p:type ?type_w2 .\n  ?retailoutlets p:location ?location_w .\n  FILTER((STR(?type_w) = \"Duty-Free Shop\" || (STR(?type_w2) = \"Souvenir Store\" && STR(?location_w) = \"Terminal 3\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me duty-free shops and souvenir stores that are located at Terminal 3.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?retailoutlets a :RetailOutlets .\n  ?retailoutlets p:name ?name .\n  ?retailoutlets p:type ?type_w .\n  ?retailoutlets p:type ?type_w2 .\n  ?retailoutlets p:location ?location_w .\n  FILTER((((STR(?type_w) = \"Duty-Free Shop\" || STR(?type_w2) = \"Souvenir Store\")) && STR(?location_w) = \"Terminal 3\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?retailoutlets a :RetailOutlets .\n  ?retailoutlets p:name ?name .\n  ?retailoutlets p:type ?type_w .\n  ?retailoutlets p:type ?type_w2 .\n  ?retailoutlets p:location ?location_w .\n  FILTER((STR(?type_w) = \"Duty-Free Shop\" || (STR(?type_w2) = \"Souvenir Store\" && STR(?location_w) = \"Terminal 3\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

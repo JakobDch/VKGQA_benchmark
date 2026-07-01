@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_commercial_appliances",
+  "schema": "amb_attachment_2tab_val_commercial_appliances",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all espresso machines and also provide a list of blenders in high-end residential apartment.",
+      "qtype": "unambig",
+      "sql": "SELECT Espresso_Machine.model\nFROM Espresso_Machine JOIN Apartments ON Espresso_Machine.apartment_id = Apartments.id\nUNION\nSELECT Blender.model\nFROM Blender JOIN Apartments ON Blender.apartment_id = Apartments.id\nWHERE Apartments.name = \"High-end Residential\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?espresso_machine a :Espresso_Machine .\n    ?apartments a :Apartments .\n    ?espresso_machine p:hasApartments ?apartments .\n    ?espresso_machine p:model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?blender a :Blender .\n    ?apartments a :Apartments .\n    ?blender p:hasApartments ?apartments .\n    ?blender p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which espresso machines are in high-end residential apartments and which blenders are located there?",
+      "qtype": "unambig",
+      "sql": "SELECT Espresso_Machine.model\nFROM Espresso_Machine JOIN Apartments ON Espresso_Machine.apartment_id = Apartments.id\nWHERE Apartments.name = \"High-end Residential\"\nUNION\nSELECT Blender.model\nFROM Blender JOIN Apartments ON Blender.apartment_id = Apartments.id\nWHERE Apartments.name = \"High-end Residential\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?espresso_machine a :Espresso_Machine .\n    ?apartments a :Apartments .\n    ?espresso_machine p:hasApartments ?apartments .\n    ?espresso_machine p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?blender a :Blender .\n    ?apartments a :Apartments .\n    ?blender p:hasApartments ?apartments .\n    ?blender p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all espresso machines and blenders in high-end residential apartments.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?espresso_machine a :Espresso_Machine .\n    ?apartments a :Apartments .\n    ?espresso_machine p:hasApartments ?apartments .\n    ?espresso_machine p:model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?blender a :Blender .\n    ?apartments a :Apartments .\n    ?blender p:hasApartments ?apartments .\n    ?blender p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?espresso_machine a :Espresso_Machine .\n    ?apartments a :Apartments .\n    ?espresso_machine p:hasApartments ?apartments .\n    ?espresso_machine p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?blender a :Blender .\n    ?apartments a :Apartments .\n    ?blender p:hasApartments ?apartments .\n    ?blender p:model ?model .\n    ?apartments p:name ?name_f .\n    FILTER(STR(?name_f) = \"High-end Residential\")\n    BIND(?model AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

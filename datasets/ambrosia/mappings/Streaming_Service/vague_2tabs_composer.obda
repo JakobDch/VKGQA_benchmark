@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Musician_base
+target		ex:Musician/{id} a :Musician ; p:id {id} ; p:name {name} ; p:birth_date {birth_date} .
+source		SELECT `id`, `name`, `birth_date` FROM `Musician`
+
+mappingId	Band_base
+target		ex:Band/{id} a :Band ; p:id {id} ; p:name {name} ; p:genre {genre} .
+source		SELECT `id`, `name`, `genre` FROM `Band`
+
+mappingId	Soundtrack_base
+target		ex:Soundtrack/{id} a :Soundtrack ; p:id {id} ; p:title {title} ; p:release_date {release_date} ; p:band_id {band_id} ; p:musician_id {musician_id} .
+source		SELECT `id`, `title`, `release_date`, `band_id`, `musician_id` FROM `Soundtrack`
+
+mappingId	Soundtrack_musician_id_fk
+target		ex:Soundtrack/{id} p:hasMusician ex:Musician/{musician_id} .
+source		SELECT `id`, `musician_id` FROM `Soundtrack` WHERE `musician_id` IS NOT NULL
+
+mappingId	Soundtrack_band_id_fk
+target		ex:Soundtrack/{id} p:hasBand ex:Band/{band_id} .
+source		SELECT `id`, `band_id` FROM `Soundtrack` WHERE `band_id` IS NOT NULL
+
+mappingId	Song_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:title {title} ; p:duration {duration} ; p:soundtrack_id {soundtrack_id} .
+source		SELECT `id`, `title`, `duration`, `soundtrack_id` FROM `Song`
+
+mappingId	Song_soundtrack_id_fk
+target		ex:Song/{id} p:hasSoundtrack ex:Soundtrack/{soundtrack_id} .
+source		SELECT `id`, `soundtrack_id` FROM `Song` WHERE `soundtrack_id` IS NOT NULL
+
+mappingId	Performance_base
+target		ex:Performance/{id} a :Performance ; p:id {id} ; p:date {date} ; p:location {location} ; p:song_id {song_id} .
+source		SELECT `id`, `date`, `location`, `song_id` FROM `Performance`
+
+mappingId	Performance_song_id_fk
+target		ex:Performance/{id} p:hasSong ex:Song/{song_id} .
+source		SELECT `id`, `song_id` FROM `Performance` WHERE `song_id` IS NOT NULL
+
+mappingId	Fan_base
+target		ex:Fan/{id} a :Fan ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Fan`
+
+]]

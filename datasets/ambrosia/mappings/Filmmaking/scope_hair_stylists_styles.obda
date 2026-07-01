@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hair_Stylists_base
+target		ex:Hair_Stylists/{id} a :Hair_Stylists ; p:id {id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `id`, `name`, `experience` FROM `Hair_Stylists`
+
+mappingId	Styles_base
+target		ex:Styles/{style_id} a :Styles ; p:style_id {style_id} ; p:style_name {style_name} ; p:description {description} .
+source		SELECT `style_id`, `style_name`, `description` FROM `Styles`
+
+mappingId	Hair_Stylists_Styles_base
+target		ex:Hair_Stylists_Styles/{_amb_rowid} a :Hair_Stylists_Styles ; p:hairdresser_id {hairdresser_id} ; p:style_id {style_id} .
+source		SELECT `_amb_rowid`, `hairdresser_id`, `style_id` FROM `Hair_Stylists_Styles`
+
+mappingId	Hair_Stylists_Styles_style_id_fk
+target		ex:Hair_Stylists_Styles/{_amb_rowid} p:hasStyles ex:Styles/{style_id} .
+source		SELECT `_amb_rowid`, `style_id` FROM `Hair_Stylists_Styles` WHERE `style_id` IS NOT NULL
+
+mappingId	Hair_Stylists_Styles_hairdresser_id_fk
+target		ex:Hair_Stylists_Styles/{_amb_rowid} p:hasHair_Stylists ex:Hair_Stylists/{hairdresser_id} .
+source		SELECT `_amb_rowid`, `hairdresser_id` FROM `Hair_Stylists_Styles` WHERE `hairdresser_id` IS NOT NULL
+
+mappingId	Film_Projects_base
+target		ex:Film_Projects/{project_id} a :Film_Projects ; p:project_id {project_id} ; p:title {title} ; p:release_date {release_date} .
+source		SELECT `project_id`, `title`, `release_date` FROM `Film_Projects`
+
+mappingId	Actors_base
+target		ex:Actors/{actor_id} a :Actors ; p:actor_id {actor_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birth_date {birth_date} .
+source		SELECT `actor_id`, `first_name`, `last_name`, `birth_date` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{role_id} a :Roles ; p:role_id {role_id} ; p:character_name {character_name} ; p:film_project_id {film_project_id} .
+source		SELECT `role_id`, `character_name`, `film_project_id` FROM `Roles`
+
+mappingId	Roles_film_project_id_fk
+target		ex:Roles/{role_id} p:hasFilm_Projects ex:Film_Projects/{film_project_id} .
+source		SELECT `role_id`, `film_project_id` FROM `Roles` WHERE `film_project_id` IS NOT NULL
+
+mappingId	Casting_base
+target		ex:Casting/{casting_id} a :Casting ; p:casting_id {casting_id} ; p:actor_id {actor_id} ; p:role_id {role_id} .
+source		SELECT `casting_id`, `actor_id`, `role_id` FROM `Casting`
+
+mappingId	Casting_role_id_fk
+target		ex:Casting/{casting_id} p:hasRoles ex:Roles/{role_id} .
+source		SELECT `casting_id`, `role_id` FROM `Casting` WHERE `role_id` IS NOT NULL
+
+mappingId	Casting_actor_id_fk
+target		ex:Casting/{casting_id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `casting_id`, `actor_id` FROM `Casting` WHERE `actor_id` IS NOT NULL
+
+]]

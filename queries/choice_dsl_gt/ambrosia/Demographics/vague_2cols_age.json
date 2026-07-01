@@ -1,0 +1,42 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_age",
+  "schema": "amb_vague_2cols_age",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the median age and population group for the most recent year for New York.",
+      "qtype": "unambig",
+      "sql": "select MedianAge, PopulationGroup from AgeDemographics JOIN Cities ON AgeDemographics.CityId = Cities.id where Cities.CityName = 'New York' ORDER BY Year DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?medianage ?populationgroup WHERE {\n  ?agedemographics a :AgeDemographics .\n  ?cities a :Cities .\n  ?agedemographics p:hasCities ?cities .\n  ?agedemographics p:MedianAge ?medianage .\n  ?agedemographics p:PopulationGroup ?populationgroup .\n  ?cities p:CityName ?cityname_f .\n  ?agedemographics p:Year ?year_o .\n  FILTER(?cityname_f = \"New York\")\n}\nORDER BY DESC(?year_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the age and population group for the most recent year for New York?",
+      "qtype": "ambig",
+      "sql": "select AgeRange, PopulationGroup from AgeDemographics JOIN Cities ON AgeDemographics.CityId = Cities.id where Cities.CityName = 'New York' ORDER BY Year DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?agerange ?populationgroup WHERE {\n  ?agedemographics a :AgeDemographics .\n  ?cities a :Cities .\n  ?agedemographics p:hasCities ?cities .\n  ?agedemographics p:AgeRange ?agerange .\n  ?agedemographics p:PopulationGroup ?populationgroup .\n  ?cities p:CityName ?cityname_f .\n  ?agedemographics p:Year ?year_o .\n  FILTER(?cityname_f = \"New York\")\n}\nORDER BY DESC(?year_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the age and population group for the most recent year for New York?",
+      "ambig_type": "vague",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?medianage ?populationgroup WHERE {\n  ?agedemographics a :AgeDemographics .\n  ?cities a :Cities .\n  ?agedemographics p:hasCities ?cities .\n  ?agedemographics p:MedianAge ?medianage .\n  ?agedemographics p:PopulationGroup ?populationgroup .\n  ?cities p:CityName ?cityname_f .\n  ?agedemographics p:Year ?year_o .\n  FILTER(?cityname_f = \"New York\")\n}\nORDER BY DESC(?year_o)\nLIMIT 1 }\n  component_2: { SELECT ?agerange ?populationgroup WHERE {\n  ?agedemographics a :AgeDemographics .\n  ?cities a :Cities .\n  ?agedemographics p:hasCities ?cities .\n  ?agedemographics p:AgeRange ?agerange .\n  ?agedemographics p:PopulationGroup ?populationgroup .\n  ?cities p:CityName ?cityname_f .\n  ?agedemographics p:Year ?year_o .\n  FILTER(?cityname_f = \"New York\")\n}\nORDER BY DESC(?year_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

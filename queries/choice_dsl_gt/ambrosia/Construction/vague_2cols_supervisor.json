@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_supervisor",
+  "schema": "amb_vague_2cols_supervisor",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the project and construction managers and their responsible projects.",
+      "qtype": "unambig",
+      "sql": "Select Projects.Project_Manager, Construction_Manager, Projects.ProjectName From Projects",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_manager ?construction_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:name ?projectname .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which project manager and construction manager has the highest budget?",
+      "qtype": "unambig",
+      "sql": "Select Projects.Project_Manager, Construction_Manager, Projects.Budget  From Projects ORDER BY budget DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_manager ?construction_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What supervisors are on what projects?",
+      "qtype": "ambig",
+      "sql": "Select Projects.Project_Manager, Projects.ProjectName From Projects",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:name ?projectname .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "What supervisors are on what projects?",
+      "qtype": "ambig",
+      "sql": "Select Projects.Construction_Manager, Projects.ProjectName From Projects",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?construction_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:name ?projectname .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "Which construction manager has the highest budget?",
+      "qtype": "unambig",
+      "sql": "Select Projects.Construction_Manager, Projects.Budget  From Projects ORDER BY budget DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?construction_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which supervisor has the highest budget?",
+      "qtype": "ambig",
+      "sql": "Select Projects.Project_Manager, Projects.Budget  From Projects ORDER BY budget DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What supervisors are on what projects?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?project_manager ?construction_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:name ?projectname .\n} }\n  component: { SELECT ?project_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:name ?projectname .\n} }\n  component_2: { SELECT ?construction_manager ?projectname WHERE {\n  ?projects a :Projects .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:name ?projectname .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which supervisor has the highest budget?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?project_manager ?construction_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n  component: { SELECT ?construction_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Construction_Manager ?construction_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n  component_2: { SELECT ?project_manager ?budget WHERE {\n  ?projects a :Projects .\n  ?projects p:Project_Manager ?project_manager .\n  ?projects p:budget ?budget .\n  ?projects p:budget ?budget_o .\n}\nORDER BY DESC(?budget_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

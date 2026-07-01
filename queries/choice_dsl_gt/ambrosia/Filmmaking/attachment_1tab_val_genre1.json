@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_genre1",
+  "schema": "amb_attachment_1tab_val_genre1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the action movies and romantic comedies lasting 2 hours.",
+      "qtype": "ambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE (Movies.genre = \"Action Movie\" OR Movies.genre = \"Romantic Comedy\") AND Movies.duration = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:title ?title .\n  ?movies p:genre ?genre_w .\n  ?movies p:genre ?genre_w2 .\n  ?movies p:duration ?duration_w .\n  FILTER((((STR(?genre_w) = \"Action Movie\" || STR(?genre_w2) = \"Romantic Comedy\")) && (STR(?duration_w) = \"120\" || STR(?duration_w) = \"120.0\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the action movies and romantic comedies lasting 2 hours.",
+      "qtype": "ambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE Movies.genre = \"Action Movie\" OR Movies.genre = \"Romantic Comedy\" AND Movies.duration = 120",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:title ?title .\n  ?movies p:genre ?genre_w .\n  ?movies p:genre ?genre_w2 .\n  ?movies p:duration ?duration_w .\n  FILTER((STR(?genre_w) = \"Action Movie\" || (STR(?genre_w2) = \"Romantic Comedy\" && (STR(?duration_w) = \"120\" || STR(?duration_w) = \"120.0\"))))\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all the action movies and romantic comedies lasting 2 hours.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:title ?title .\n  ?movies p:genre ?genre_w .\n  ?movies p:genre ?genre_w2 .\n  ?movies p:duration ?duration_w .\n  FILTER((((STR(?genre_w) = \"Action Movie\" || STR(?genre_w2) = \"Romantic Comedy\")) && (STR(?duration_w) = \"120\" || STR(?duration_w) = \"120.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:title ?title .\n  ?movies p:genre ?genre_w .\n  ?movies p:genre ?genre_w2 .\n  ?movies p:duration ?duration_w .\n  FILTER((STR(?genre_w) = \"Action Movie\" || (STR(?genre_w2) = \"Romantic Comedy\" && (STR(?duration_w) = \"120\" || STR(?duration_w) = \"120.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

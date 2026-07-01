@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_trades_jobs",
+  "schema": "amb_attachment_1tab_ref_trades_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which construction positions are associated with yourcompany1 and which electrician positions are from the same company?",
+      "qtype": "unambig",
+      "sql": "SELECT Position.position_title \nFROM Position JOIN Company ON Position.company_id = Company.id\nWHERE (Position.trades_jobs = \"Construction worker\" OR Position.trades_jobs = \"Electrician\") AND Company.name = \"yourcompany1\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_title WHERE {\n  ?position a :Position .\n  ?company a :Companies .\n  ?position p:hasCompany ?company .\n  ?position p:position_title ?position_title .\n  ?position p:trades_jobs ?trades_jobs_w .\n  ?position p:trades_jobs ?trades_jobs_w2 .\n  ?company p:name ?name_w .\n  FILTER((((STR(?trades_jobs_w) = \"Construction worker\" || STR(?trades_jobs_w2) = \"Electrician\")) && STR(?name_w) = \"yourcompany1\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show construction positions and electrician positions in yourcompany1.",
+      "qtype": "ambig",
+      "sql": "SELECT Position.position_title \nFROM Position JOIN Company ON Position.company_id = Company.id\nWHERE Position.trades_jobs = \"Construction worker\" OR Position.trades_jobs = \"Electrician\" AND Company.name = \"yourcompany1\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_title WHERE {\n  ?position a :Position .\n  ?company a :Companies .\n  ?position p:hasCompany ?company .\n  ?position p:position_title ?position_title .\n  ?position p:trades_jobs ?trades_jobs_w .\n  ?position p:trades_jobs ?trades_jobs_w2 .\n  ?company p:name ?name_w .\n  FILTER((STR(?trades_jobs_w) = \"Construction worker\" || (STR(?trades_jobs_w2) = \"Electrician\" && STR(?name_w) = \"yourcompany1\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show construction positions and electrician positions in yourcompany1.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?position_title WHERE {\n  ?position a :Position .\n  ?company a :Companies .\n  ?position p:hasCompany ?company .\n  ?position p:position_title ?position_title .\n  ?position p:trades_jobs ?trades_jobs_w .\n  ?position p:trades_jobs ?trades_jobs_w2 .\n  ?company p:name ?name_w .\n  FILTER((((STR(?trades_jobs_w) = \"Construction worker\" || STR(?trades_jobs_w2) = \"Electrician\")) && STR(?name_w) = \"yourcompany1\"))\n} }\n  low: { SELECT ?position_title WHERE {\n  ?position a :Position .\n  ?company a :Companies .\n  ?position p:hasCompany ?company .\n  ?position p:position_title ?position_title .\n  ?position p:trades_jobs ?trades_jobs_w .\n  ?position p:trades_jobs ?trades_jobs_w2 .\n  ?company p:name ?name_w .\n  FILTER((STR(?trades_jobs_w) = \"Construction worker\" || (STR(?trades_jobs_w2) = \"Electrician\" && STR(?name_w) = \"yourcompany1\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

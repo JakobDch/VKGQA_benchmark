@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_education_programs",
+  "schema": "amb_attachment_1tab_val_education_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all international baccalaureate programs and advanced placement programs with 30 credits.",
+      "qtype": "ambig",
+      "sql": "SELECT Education_Programs.name \nFROM Education_Programs\nWHERE (Education_Programs.Type = \"International Baccalaureate Program\" OR Education_Programs.Type = \"Advanced Placement Program\") AND Education_Programs.Credits = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?education_programs a :Education_Programs .\n  ?education_programs p:name ?name .\n  ?education_programs p:Type ?type_w .\n  ?education_programs p:Type ?type_w2 .\n  ?education_programs p:Credits ?credits_w .\n  FILTER((((STR(?type_w) = \"International Baccalaureate Program\" || STR(?type_w2) = \"Advanced Placement Program\")) && (STR(?credits_w) = \"30\" || STR(?credits_w) = \"30.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all international baccalaureate programs and advanced placement programs with 30 credits.",
+      "qtype": "ambig",
+      "sql": "SELECT Education_Programs.name \nFROM Education_Programs\nWHERE Education_Programs.Type = \"International Baccalaureate Program\" OR Education_Programs.Type = \"Advanced Placement Program\" AND Education_Programs.Credits = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?education_programs a :Education_Programs .\n  ?education_programs p:name ?name .\n  ?education_programs p:Type ?type_w .\n  ?education_programs p:Type ?type_w2 .\n  ?education_programs p:Credits ?credits_w .\n  FILTER((STR(?type_w) = \"International Baccalaureate Program\" || (STR(?type_w2) = \"Advanced Placement Program\" && (STR(?credits_w) = \"30\" || STR(?credits_w) = \"30.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all international baccalaureate programs and advanced placement programs with 30 credits.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?education_programs a :Education_Programs .\n  ?education_programs p:name ?name .\n  ?education_programs p:Type ?type_w .\n  ?education_programs p:Type ?type_w2 .\n  ?education_programs p:Credits ?credits_w .\n  FILTER((STR(?type_w) = \"International Baccalaureate Program\" || (STR(?type_w2) = \"Advanced Placement Program\" && (STR(?credits_w) = \"30\" || STR(?credits_w) = \"30.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?education_programs a :Education_Programs .\n  ?education_programs p:name ?name .\n  ?education_programs p:Type ?type_w .\n  ?education_programs p:Type ?type_w2 .\n  ?education_programs p:Credits ?credits_w .\n  FILTER((((STR(?type_w) = \"International Baccalaureate Program\" || STR(?type_w2) = \"Advanced Placement Program\")) && (STR(?credits_w) = \"30\" || STR(?credits_w) = \"30.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

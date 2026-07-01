@@ -1,0 +1,108 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_hospitals_procedures",
+  "schema": "amb_scope_hospitals_procedures",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Describe the procedures that each hospital offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Procedures.Description  from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Procedures.ProcedureID HAVING COUNT(DISTINCT Hospitals_Procedures.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Describe the procedures that each hospital offers.",
+      "qtype": "ambig",
+      "sql": "select hospitals.name , procedures.description from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "what procedure name and description of procedures are available for each hospital?",
+      "qtype": "ambig",
+      "sql": "SELECT Procedures.ProcedureName, Procedures.Description  from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Procedures.ProcedureID HAVING COUNT(DISTINCT Hospitals_Procedures.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?procedurename ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:ProcedureName ?procedurename .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "what procedure name and description of procedures are available for each hospital?",
+      "qtype": "ambig",
+      "sql": "select hospitals.name , procedures.procedurename , procedures.description from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?procedurename ?description WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:ProcedureName ?procedurename .\n  ?procedures p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the procedures every hospital uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Procedures.ProcedureName  from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID   GROUP BY Hospitals_Procedures.ProcedureID HAVING COUNT(DISTINCT Hospitals_Procedures.HospitalID) = (SELECT COUNT(*) FROM  Hospitals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?procedurename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:ProcedureName ?procedurename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the procedures every hospital uses.",
+      "qtype": "ambig",
+      "sql": "select hospitals.name , procedures.procedurename from Hospitals_Procedures join Procedures on Hospitals_Procedures.ProcedureID = Procedures.ProcedureID join Hospitals on Hospitals_Procedures.HospitalID = Hospitals.HospitalID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?procedurename WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:ProcedureName ?procedurename .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Describe the procedures that each hospital offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:Description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what procedure name and description of procedures are available for each hospital?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?procedurename ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:ProcedureName ?procedurename .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?procedurename ?description WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:ProcedureName ?procedurename .\n  ?procedures p:Description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the procedures every hospital uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?procedurename WHERE {\n  ?hospitals_procedures a :Hospitals_Procedures .\n  ?procedures a :Procedures .\n  ?hospitals_procedures p:hasProcedures ?procedures .\n  ?hospitals a :Hospitals .\n  ?hospitals_procedures p:hasHospitals ?hospitals .\n  ?hospitals p:name ?name .\n  ?procedures p:ProcedureName ?procedurename .\n} }\n  collective: { SELECT ?procedurename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcedures ?child ; p:hasHospitals ?parent . } GROUP BY ?child }\n  ?child p:ProcedureName ?procedurename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hospitals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

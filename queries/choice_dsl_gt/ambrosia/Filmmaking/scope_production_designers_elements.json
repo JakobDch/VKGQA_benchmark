@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_production_designers_elements",
+  "schema": "amb_scope_production_designers_elements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each production designer, list the element types they produce",
+      "qtype": "unambig",
+      "sql": "select production_designers.name , elements.element_type from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?element_type WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:element_type ?element_type .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "List the element types that every production designer has.",
+      "qtype": "ambig",
+      "sql": "SELECT Elements.element_type  from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id   GROUP BY Production_Designers_Elements.element_id HAVING COUNT(DISTINCT Production_Designers_Elements.production_designer_id) = (SELECT COUNT(*) FROM  Production_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?element_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:element_type ?element_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For every designer, what are the descriptions for elements they use",
+      "qtype": "unambig",
+      "sql": "select production_designers.name , elements.description from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "What are the element descriptions that are common to all designers",
+      "qtype": "unambig",
+      "sql": "SELECT Elements.description  from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id   GROUP BY Production_Designers_Elements.element_id HAVING COUNT(DISTINCT Production_Designers_Elements.production_designer_id) = (SELECT COUNT(*) FROM  Production_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the element types and descriptions of elements common to all production designers?",
+      "qtype": "unambig",
+      "sql": "SELECT Elements.element_type, Elements.description  from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id   GROUP BY Production_Designers_Elements.element_id HAVING COUNT(DISTINCT Production_Designers_Elements.production_designer_id) = (SELECT COUNT(*) FROM  Production_Designers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?element_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:element_type ?element_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each production designer, list the element types and descriptions of elements used.",
+      "qtype": "unambig",
+      "sql": "select production_designers.name , elements.element_type , elements.description from Production_Designers_Elements join Elements on Production_Designers_Elements.element_id = Elements.id join Production_Designers on Production_Designers_Elements.production_designer_id = Production_Designers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?element_type ?description WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:element_type ?element_type .\n  ?elements p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the element types that every production designer has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?element_type WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:element_type ?element_type .\n} }\n  collective: { SELECT ?element_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:element_type ?element_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What element descriptions do we have for every designer?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the element types and descriptions of elements every production designer uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?element_type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasProduction_Designers ?parent . } GROUP BY ?child }\n  ?child p:element_type ?element_type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Production_Designers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?element_type ?description WHERE {\n  ?production_designers_elements a :Production_Designers_Elements .\n  ?elements a :Elements .\n  ?production_designers_elements p:hasElements ?elements .\n  ?production_designers a :Production_Designers .\n  ?production_designers_elements p:hasProduction_Designers ?production_designers .\n  ?production_designers p:name ?name .\n  ?elements p:element_type ?element_type .\n  ?elements p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

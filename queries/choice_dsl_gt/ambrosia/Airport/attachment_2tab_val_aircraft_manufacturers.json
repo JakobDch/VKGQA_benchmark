@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_aircraft_manufacturers",
+  "schema": "amb_attachment_2tab_val_aircraft_manufacturers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of Boeing aircraft and also display airbus aircraft with 180 seats.",
+      "qtype": "unambig",
+      "sql": "SELECT Boeing.Model\nFROM Boeing\nUNION\nSELECT Airbus.Model\nFROM Airbus\nWHERE Airbus.Number_of_seats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?boeing a :Boeing .\n    ?boeing p:Model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?airbus a :Airbus .\n    ?airbus p:Model ?model .\n    ?airbus p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display Boeing aircrafts and Airbus aircrafts with 180 seats.",
+      "qtype": "ambig",
+      "sql": "SELECT Boeing.Model\nFROM Boeing\nWHERE Boeing.Number_of_seats = 180\nUNION\nSELECT Airbus.Model\nFROM Airbus\nWHERE Airbus.Number_of_seats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?boeing a :Boeing .\n    ?boeing p:Model ?model .\n    ?boeing p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?airbus a :Airbus .\n    ?airbus p:Model ?model .\n    ?airbus p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display Boeing aircrafts and Airbus aircrafts with 180 seats.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?boeing a :Boeing .\n    ?boeing p:Model ?model .\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?airbus a :Airbus .\n    ?airbus p:Model ?model .\n    ?airbus p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?boeing a :Boeing .\n    ?boeing p:Model ?model .\n    ?boeing p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n  UNION\n  {\n    ?airbus a :Airbus .\n    ?airbus p:Model ?model .\n    ?airbus p:Number_of_seats ?number_of_seats_f .\n    FILTER((STR(?number_of_seats_f) = \"180\" || STR(?number_of_seats_f) = \"180.0\"))\n    BIND(?model AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_location2",
+  "schema": "amb_vague_2cols_location2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In what terminal building and on what floor level can a newspaper be found?",
+      "qtype": "unambig",
+      "sql": "SELECT Terminal_Building, Floor_Level FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID WHERE ItemName = 'Newspaper'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?terminal_building ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "On what floor level can a newspaper be found?",
+      "qtype": "unambig",
+      "sql": "SELECT Floor_Level FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID WHERE ItemName = 'Newspaper'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the most expensive item and where can you buy it?",
+      "qtype": "ambig",
+      "sql": "SELECT ItemName, Terminal_Building FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID ORDER BY Price DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?itemname ?terminal_building WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the most expensive item and where can you buy it?",
+      "qtype": "ambig",
+      "sql": "SELECT ItemName, Floor_Level FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID ORDER BY Price DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?itemname ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What is the most expensive item and where can you buy it?",
+      "qtype": "ambig",
+      "sql": "SELECT ItemName, Terminal_Building, Floor_Level FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID ORDER BY Price DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?itemname ?terminal_building ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Where can I find a newspaper",
+      "qtype": "ambig",
+      "sql": "SELECT Terminal_Building FROM Shops JOIN ShopItems ON ShopItems.Shop_ID = Shops.Shop_ID WHERE ItemName = 'Newspaper'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?terminal_building WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where can I find a newspaper",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?terminal_building ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n} }\n  component: { SELECT ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n} }\n  component_2: { SELECT ?terminal_building WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shopitems p:ItemName ?itemname_f .\n  FILTER(STR(?itemname_f) = \"Newspaper\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the most expensive item and where can you buy it?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?itemname ?terminal_building WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1 }\n  component_2: { SELECT ?itemname ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1 }\n  full: { SELECT ?itemname ?terminal_building ?floor_level WHERE {\n  ?shops a :Shops .\n  ?shopitems a :ShopItems .\n  ?shopitems p:hasShops ?shops .\n  ?shopitems p:ItemName ?itemname .\n  ?shops p:Terminal_Building ?terminal_building .\n  ?shops p:Floor_Level ?floor_level .\n  ?shopitems p:Price ?price_o .\n}\nORDER BY DESC(?price_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

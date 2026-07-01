@@ -1,0 +1,77 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	ProductionHouse_base
+target		ex:ProductionHouses/{HouseID} a :ProductionHouses ; p:HouseID {HouseID} ; p:name {Name} .
+source		SELECT `HouseID`, `Name` FROM `ProductionHouse`
+
+mappingId	Film_base
+target		ex:Films/{FilmID} a :Films ; p:FilmID {FilmID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Budget {Budget} ; p:BoxOffice {BoxOffice} ; p:HouseID {HouseID} .
+source		SELECT `FilmID`, `Title`, `ReleaseYear`, `Budget`, `BoxOffice`, `HouseID` FROM `Film`
+
+mappingId	Film_HouseID_fk
+target		ex:Films/{FilmID} p:hasProductionHouses ex:ProductionHouses/{HouseID} .
+source		SELECT `FilmID`, `HouseID` FROM `Film` WHERE `HouseID` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actors/{ActorID} a :Actors ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:RoleInFilm {RoleInFilm} ; p:FilmID {FilmID} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `BirthDate`, `RoleInFilm`, `FilmID` FROM `Actor`
+
+mappingId	Actor_FilmID_fk
+target		ex:Actors/{ActorID} p:hasFilms_FilmID ex:Films/{FilmID} .
+source		SELECT `ActorID`, `FilmID` FROM `Actor` WHERE `FilmID` IS NOT NULL
+
+mappingId	Actor_RoleInFilm_fk
+target		ex:Actors/{ActorID} p:hasFilms_RoleInFilm ex:Films/{RoleInFilm} .
+source		SELECT `ActorID`, `RoleInFilm` FROM `Actor` WHERE `RoleInFilm` IS NOT NULL
+
+mappingId	Director_base
+target		ex:Directors/{DirectorID} a :Directors ; p:DirectorID {DirectorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:DirectedFilm {DirectedFilm} ; p:FilmID {FilmID} .
+source		SELECT `DirectorID`, `FirstName`, `LastName`, `BirthDate`, `DirectedFilm`, `FilmID` FROM `Director`
+
+mappingId	Director_FilmID_fk
+target		ex:Directors/{DirectorID} p:hasFilms_FilmID ex:Films/{FilmID} .
+source		SELECT `DirectorID`, `FilmID` FROM `Director` WHERE `FilmID` IS NOT NULL
+
+mappingId	Director_DirectedFilm_fk
+target		ex:Directors/{DirectorID} p:hasFilms_DirectedFilm ex:Films/{DirectedFilm} .
+source		SELECT `DirectorID`, `DirectedFilm` FROM `Director` WHERE `DirectedFilm` IS NOT NULL
+
+mappingId	Producer_base
+target		ex:Producers/{ProducerID} a :Producers ; p:ProducerID {ProducerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:ProducedFilm {ProducedFilm} ; p:FilmID {FilmID} .
+source		SELECT `ProducerID`, `FirstName`, `LastName`, `BirthDate`, `ProducedFilm`, `FilmID` FROM `Producer`
+
+mappingId	Producer_FilmID_fk
+target		ex:Producers/{ProducerID} p:hasFilms_FilmID ex:Films/{FilmID} .
+source		SELECT `ProducerID`, `FilmID` FROM `Producer` WHERE `FilmID` IS NOT NULL
+
+mappingId	Producer_ProducedFilm_fk
+target		ex:Producers/{ProducerID} p:hasFilms_ProducedFilm ex:Films/{ProducedFilm} .
+source		SELECT `ProducerID`, `ProducedFilm` FROM `Producer` WHERE `ProducedFilm` IS NOT NULL
+
+mappingId	Stunts_base
+target		ex:Stunts/{StuntID} a :Stunts ; p:StuntID {StuntID} ; p:Coordinator {Coordinator} ; p:Experience {Experience} ; p:SceneID {SceneID} ; p:FilmID {FilmID} .
+source		SELECT `StuntID`, `Coordinator`, `Experience`, `SceneID`, `FilmID` FROM `Stunts`
+
+mappingId	Stunts_FilmID_fk
+target		ex:Stunts/{StuntID} p:hasFilms_FilmID ex:Films/{FilmID} .
+source		SELECT `StuntID`, `FilmID` FROM `Stunts` WHERE `FilmID` IS NOT NULL
+
+mappingId	Stunts_SceneID_fk
+target		ex:Stunts/{StuntID} p:hasFilms_SceneID ex:Films/{SceneID} .
+source		SELECT `StuntID`, `SceneID` FROM `Stunts` WHERE `SceneID` IS NOT NULL
+
+mappingId	FightScenes_base
+target		ex:FightScenes/{SceneID} a :FightScenes ; p:SceneID {SceneID} ; p:Choreographer {Choreographer} ; p:Experience {Experience} ; p:SceneDescription {SceneDescription} ; p:FilmID {FilmID} .
+source		SELECT `SceneID`, `Choreographer`, `Experience`, `SceneDescription`, `FilmID` FROM `FightScenes`
+
+mappingId	FightScenes_FilmID_fk
+target		ex:FightScenes/{SceneID} p:hasFilms ex:Films/{FilmID} .
+source		SELECT `SceneID`, `FilmID` FROM `FightScenes` WHERE `FilmID` IS NOT NULL
+
+]]

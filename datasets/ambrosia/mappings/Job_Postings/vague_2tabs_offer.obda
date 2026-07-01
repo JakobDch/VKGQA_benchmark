@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Companies`
+
+mappingId	Base_Pay_Range_base
+target		ex:Base_Pay_Range/{id} a :Base_Pay_Range ; p:id {id} ; p:min_pay {min_pay} ; p:max_pay {max_pay} .
+source		SELECT `id`, `min_pay`, `max_pay` FROM `Base_Pay_Range`
+
+mappingId	Benefits_base
+target		ex:Benefits/{id} a :Benefits ; p:id {id} ; p:health_insurance {health_insurance} ; p:dental_insurance {dental_insurance} ; p:vision_insurance {vision_insurance} .
+source		SELECT `id`, `health_insurance`, `dental_insurance`, `vision_insurance` FROM `Benefits`
+
+mappingId	Job_Post_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:base_pay_id {base_pay_id} ; p:benefit_package_id {benefit_package_id} .
+source		SELECT `id`, `title`, `description`, `base_pay_id`, `benefit_package_id` FROM `Job_Post`
+
+mappingId	Job_Post_benefit_package_id_fk
+target		ex:JobPostings/{id} p:hasBenefits ex:Benefits/{benefit_package_id} .
+source		SELECT `id`, `benefit_package_id` FROM `Job_Post` WHERE `benefit_package_id` IS NOT NULL
+
+mappingId	Job_Post_base_pay_id_fk
+target		ex:JobPostings/{id} p:hasBase_Pay_Range ex:Base_Pay_Range/{base_pay_id} .
+source		SELECT `id`, `base_pay_id` FROM `Job_Post` WHERE `base_pay_id` IS NOT NULL
+
+]]

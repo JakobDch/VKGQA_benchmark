@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_written_work",
+  "schema": "amb_attachment_1tab_ref_written_work",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display all essays and letters for authors born on June 23rd 1970.",
+      "qtype": "ambig",
+      "sql": "SELECT WrittenWorks.Title \nFROM TypesOfWork JOIN WrittenWorks ON TypesOfWork.Type = WrittenWorks.TypeOfWork JOIN Writes ON WrittenWorks.WorkID = Writes.WorkID JOIN Authors ON Writes.AuthorID = Authors.AuthorID\nWHERE (TypesOfWork.Type = \"Essay\" OR TypesOfWork.Type = \"Letter\") AND Authors.BirthDate = \"1970-06-23\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?typesofwork a :TypesOfWork .\n  ?writtenworks a :WrittenWorks .\n  ?typesofwork p:Type ?type_l .\n  ?writtenworks p:TypeOfWork ?typeofwork_r .\n  ?writes a :Writes .\n  ?writes p:hasWrittenWorks ?writtenworks .\n  ?authors a :Author .\n  ?writes p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?typesofwork p:Type ?type_w .\n  ?typesofwork p:Type ?type_w2 .\n  ?authors p:BirthDate ?birthdate_w .\n  FILTER(STR(?type_l) = STR(?typeofwork_r))\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Letter\")) && STR(?birthdate_w) = \"1970-06-23\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display all essays and letters for authors born on June 23rd 1970.",
+      "qtype": "ambig",
+      "sql": "SELECT WrittenWorks.Title \nFROM TypesOfWork JOIN WrittenWorks ON TypesOfWork.Type = WrittenWorks.TypeOfWork JOIN Writes ON WrittenWorks.WorkID = Writes.WorkID JOIN Authors ON Writes.AuthorID = Authors.AuthorID\nWHERE TypesOfWork.Type = \"Essay\" OR TypesOfWork.Type = \"Letter\" AND Authors.BirthDate = \"1970-06-23\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?typesofwork a :TypesOfWork .\n  ?writtenworks a :WrittenWorks .\n  ?typesofwork p:Type ?type_l .\n  ?writtenworks p:TypeOfWork ?typeofwork_r .\n  ?writes a :Writes .\n  ?writes p:hasWrittenWorks ?writtenworks .\n  ?authors a :Author .\n  ?writes p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?typesofwork p:Type ?type_w .\n  ?typesofwork p:Type ?type_w2 .\n  ?authors p:BirthDate ?birthdate_w .\n  FILTER(STR(?type_l) = STR(?typeofwork_r))\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Letter\" && STR(?birthdate_w) = \"1970-06-23\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all essays and letters for authors born on June 23rd 1970.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?typesofwork a :TypesOfWork .\n  ?writtenworks a :WrittenWorks .\n  ?typesofwork p:Type ?type_l .\n  ?writtenworks p:TypeOfWork ?typeofwork_r .\n  ?writes a :Writes .\n  ?writes p:hasWrittenWorks ?writtenworks .\n  ?authors a :Author .\n  ?writes p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?typesofwork p:Type ?type_w .\n  ?typesofwork p:Type ?type_w2 .\n  ?authors p:BirthDate ?birthdate_w .\n  FILTER(STR(?type_l) = STR(?typeofwork_r))\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Letter\")) && STR(?birthdate_w) = \"1970-06-23\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?typesofwork a :TypesOfWork .\n  ?writtenworks a :WrittenWorks .\n  ?typesofwork p:Type ?type_l .\n  ?writtenworks p:TypeOfWork ?typeofwork_r .\n  ?writes a :Writes .\n  ?writes p:hasWrittenWorks ?writtenworks .\n  ?authors a :Author .\n  ?writes p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?typesofwork p:Type ?type_w .\n  ?typesofwork p:Type ?type_w2 .\n  ?authors p:BirthDate ?birthdate_w .\n  FILTER(STR(?type_l) = STR(?typeofwork_r))\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Letter\" && STR(?birthdate_w) = \"1970-06-23\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

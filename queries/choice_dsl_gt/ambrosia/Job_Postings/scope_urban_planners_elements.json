@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_urban_planners_elements",
+  "schema": "amb_scope_urban_planners_elements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me the elements each planner uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Elements.element_name  from Urban_Planners_Elements join Elements on Urban_Planners_Elements.element_id = Elements.id join Urban_Planners on Urban_Planners_Elements.urban_planner_id = Urban_Planners.id   GROUP BY Urban_Planners_Elements.element_id HAVING COUNT(DISTINCT Urban_Planners_Elements.urban_planner_id) = (SELECT COUNT(*) FROM  Urban_Planners)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?element_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:element_id ?cg . ?child a :Elements ; p:id ?cg . ?l p:urban_planner_id ?pg . ?parent a :Urban_Planners ; p:id ?pg . } GROUP BY ?child }\n  ?child p:element_name ?element_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Urban_Planners } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the elements each planner uses.",
+      "qtype": "ambig",
+      "sql": "select urban_planners.name , elements.element_name from Urban_Planners_Elements join Elements on Urban_Planners_Elements.element_id = Elements.id join Urban_Planners on Urban_Planners_Elements.urban_planner_id = Urban_Planners.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?element_name WHERE {\n  ?urban_planners_elements a :Urban_Planners_Elements .\n  ?elements a :Elements .\n  ?urban_planners_elements p:hasElements ?elements .\n  ?urban_planners a :Urban_Planners .\n  ?urban_planners_elements p:hasUrban_Planners ?urban_planners .\n  ?urban_planners p:name ?name .\n  ?elements p:element_name ?element_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the elements each planner uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?element_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:element_id ?cg . ?child a :Elements ; p:id ?cg . ?l p:urban_planner_id ?pg . ?parent a :Urban_Planners ; p:id ?pg . } GROUP BY ?child }\n  ?child p:element_name ?element_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Urban_Planners } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?element_name WHERE {\n  ?urban_planners_elements a :Urban_Planners_Elements .\n  ?elements a :Elements .\n  ?urban_planners_elements p:hasElements ?elements .\n  ?urban_planners a :Urban_Planners .\n  ?urban_planners_elements p:hasUrban_Planners ?urban_planners .\n  ?urban_planners p:name ?name .\n  ?elements p:element_name ?element_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

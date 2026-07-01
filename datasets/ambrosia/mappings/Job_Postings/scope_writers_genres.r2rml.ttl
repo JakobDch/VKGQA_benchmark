@@ -1,0 +1,35 @@
+@prefix : <http://ambrosia.example.org/jobpostings#> .
+@prefix p: <http://ambrosia.example.org/jobpostings/prop#> .
+@prefix ex: <http://ambrosia.example.org/jobpostings/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_writers_genres_0_Writers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"writerID\", \"fullName\" FROM \"Writers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Writers/{writerID}" ; rr:class :Writers ] ;
+  rr:predicateObjectMap [ rr:predicate p:writerID ; rr:objectMap [ rr:column "writerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "fullName" ] ] .
+
+<#tm_scope_writers_genres_1_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"genreID\", \"name\" FROM \"Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Genres/{genreID}" ; rr:class :Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:genreID ; rr:objectMap [ rr:column "genreID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] .
+
+<#tm_scope_writers_genres_2_Writers_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"writerID\", \"genreID\" FROM \"Writers_Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Writers_Genres/{writerID}/{genreID}" ; rr:class :Writers_Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:writerID ; rr:objectMap [ rr:column "writerID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:genreID ; rr:objectMap [ rr:column "genreID" ] ] .
+
+<#tm_scope_writers_genres_3_Writers_Genres_genreID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"writerID\", \"genreID\" FROM \"Writers_Genres\" WHERE \"genreID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Writers_Genres/{writerID}/{genreID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasGenres ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Genres/{genreID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_writers_genres_4_Writers_Genres_writerID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"writerID\", \"genreID\" FROM \"Writers_Genres\" WHERE \"writerID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Writers_Genres/{writerID}/{genreID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasWriters ; rr:objectMap [ rr:template "http://ambrosia.example.org/jobpostings/id/Writers/{writerID}" ; rr:termType rr:IRI ] ] .
+

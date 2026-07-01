@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_special_care_passengers",
+  "schema": "amb_attachment_1tab_ref_special_care_passengers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide all the unaccompanied minors and people requiring tailored assistance that Claire Allen helps.",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.FullName\nFROM PassengerAssistanceRequests JOIN Assistants ON PassengerAssistanceRequests.AssistantID = Assistants.AssistantID JOIN Passengers ON Passengers.PassengerID = PassengerAssistanceRequests.PassengerID\nWHERE (PassengerAssistanceRequests.Type = \"Unaccompanied Minor\" OR PassengerAssistanceRequests.Type = \"Tailored Assistance\") AND Assistants.Name = \"Claire Allen\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?passengerassistancerequests a :PassengerAssistanceRequests .\n  ?assistants a :Assistant .\n  ?passengerassistancerequests p:hasAssistants ?assistants .\n  ?passengers a :Passengers .\n  ?passengerassistancerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?passengerassistancerequests p:Type ?type_w .\n  ?passengerassistancerequests p:Type ?type_w2 .\n  ?assistants p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Unaccompanied Minor\" || STR(?type_w2) = \"Tailored Assistance\")) && STR(?name_w) = \"Claire Allen\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide all the unaccompanied minors and people requiring tailored assistance that Claire Allen helps.",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.FullName\nFROM PassengerAssistanceRequests JOIN Assistants ON PassengerAssistanceRequests.AssistantID = Assistants.AssistantID JOIN Passengers ON Passengers.PassengerID = PassengerAssistanceRequests.PassengerID\nWHERE PassengerAssistanceRequests.Type = \"Unaccompanied Minor\" OR PassengerAssistanceRequests.Type = \"Tailored Assistance\" AND Assistants.Name = \"Claire Allen\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?passengerassistancerequests a :PassengerAssistanceRequests .\n  ?assistants a :Assistant .\n  ?passengerassistancerequests p:hasAssistants ?assistants .\n  ?passengers a :Passengers .\n  ?passengerassistancerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?passengerassistancerequests p:Type ?type_w .\n  ?passengerassistancerequests p:Type ?type_w2 .\n  ?assistants p:name ?name_w .\n  FILTER((STR(?type_w) = \"Unaccompanied Minor\" || (STR(?type_w2) = \"Tailored Assistance\" && STR(?name_w) = \"Claire Allen\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide all the unaccompanied minors and people requiring tailored assistance that Claire Allen helps.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?passengerassistancerequests a :PassengerAssistanceRequests .\n  ?assistants a :Assistant .\n  ?passengerassistancerequests p:hasAssistants ?assistants .\n  ?passengers a :Passengers .\n  ?passengerassistancerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?passengerassistancerequests p:Type ?type_w .\n  ?passengerassistancerequests p:Type ?type_w2 .\n  ?assistants p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Unaccompanied Minor\" || STR(?type_w2) = \"Tailored Assistance\")) && STR(?name_w) = \"Claire Allen\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?passengerassistancerequests a :PassengerAssistanceRequests .\n  ?assistants a :Assistant .\n  ?passengerassistancerequests p:hasAssistants ?assistants .\n  ?passengers a :Passengers .\n  ?passengerassistancerequests p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?passengerassistancerequests p:Type ?type_w .\n  ?passengerassistancerequests p:Type ?type_w2 .\n  ?assistants p:name ?name_w .\n  FILTER((STR(?type_w) = \"Unaccompanied Minor\" || (STR(?type_w2) = \"Tailored Assistance\" && STR(?name_w) = \"Claire Allen\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

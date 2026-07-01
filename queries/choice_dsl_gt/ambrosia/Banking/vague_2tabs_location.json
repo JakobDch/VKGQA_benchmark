@@ -1,0 +1,80 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2tabs_location",
+  "schema": "amb_vague_2tabs_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the top 3 cities and countries by the total number of bank accounts.",
+      "qtype": "unambig",
+      "sql": "SELECT c.name, l.name, COUNT(a.account_number) AS total_accounts\nFROM City l\nJOIN Banks b ON l.id = b.city_id\nJOIN Accounts a ON b.id = a.owner_id JOIN Country c ON c.id = b.country_id\nGROUP BY l.name\nORDER BY total_accounts DESC\nLIMIT 3",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name_g (COUNT(?account_number_a) AS ?agg) WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?a a :Accounts .\n  ?a p:hasBanks ?b .\n  ?c a :Country .\n  ?b p:hasCountry ?c .\n  ?l p:name ?name_g .\n  ?c p:name ?name .\n  ?a p:account_number ?account_number_a .\n}\nGROUP BY ?name_g ?name\nORDER BY DESC(?agg)\nLIMIT 3",
+      "status": "exception",
+      "note": "non-deterministic gold: ORDER BY total_accounts DESC LIMIT 3 with a 5-way tie (all groups COUNT=1) -> SQLite returns an arbitrary 3 of 5; no well-defined answer set"
+    },
+    {
+      "qid": 1,
+      "question": "Show the top 3 cities by the total number of bank accounts.",
+      "qtype": "unambig",
+      "sql": "SELECT l.name, COUNT(a.account_number) AS total_accounts\nFROM City l\nJOIN Banks b ON l.id = b.city_id\nJOIN Accounts a ON b.id = a.owner_id\nGROUP BY l.name\nORDER BY total_accounts DESC\nLIMIT 3",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name_g (COUNT(?account_number_a) AS ?agg) WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?a a :Accounts .\n  ?a p:hasBanks ?b .\n  ?l p:name ?name_g .\n  ?a p:account_number ?account_number_a .\n}\nGROUP BY ?name_g\nORDER BY DESC(?agg)\nLIMIT 3",
+      "status": "exception",
+      "note": "non-deterministic gold: ORDER BY total_accounts DESC LIMIT 3 with a 5-way tie (all groups COUNT=1) -> SQLite returns an arbitrary 3 of 5; no well-defined answer set"
+    },
+    {
+      "qid": 2,
+      "question": "Show the top 3 locations by the total number of bank accounts.",
+      "qtype": "ambig",
+      "sql": "SELECT l.name, COUNT(a.account_number) AS total_accounts\nFROM Country l\nJOIN Banks b ON l.id = b.country_id\nJOIN Accounts a ON b.id = a.owner_id\nGROUP BY l.name\nORDER BY total_accounts DESC\nLIMIT 3",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name_g (COUNT(?account_number_a) AS ?agg) WHERE {\n  ?l a :Country .\n  ?b a :Banks .\n  ?b p:hasCountry ?l .\n  ?a a :Accounts .\n  ?a p:hasBanks ?b .\n  ?l p:name ?name_g .\n  ?a p:account_number ?account_number_a .\n}\nGROUP BY ?name_g\nORDER BY DESC(?agg)\nLIMIT 3",
+      "status": "exception",
+      "note": "non-deterministic gold: ORDER BY total_accounts DESC LIMIT 3 with a 5-way tie (all groups COUNT=1) -> SQLite returns an arbitrary 3 of 5; no well-defined answer set"
+    },
+    {
+      "qid": 3,
+      "question": "Provide a list of cities and countries and the banks located in each of those locations.",
+      "qtype": "unambig",
+      "sql": "SELECT c.name, l.name, b.bank_name\nFROM City l\nJOIN Banks b ON l.id = b.city_id JOIN Country c ON c.id = b.country_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?bank_name WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?c a :Country .\n  ?b p:hasCountry ?c .\n  ?c p:name ?name .\n  ?l p:name ?name2 .\n  ?b p:bank_name ?bank_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Provide a list of cities and the banks located in each of those locations.",
+      "qtype": "unambig",
+      "sql": "SELECT l.name, b.bank_name\nFROM City l\nJOIN Banks b ON l.id = b.city_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?bank_name WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?l p:name ?name .\n  ?b p:bank_name ?bank_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Provide a list of locations and the banks located in each of those locations.",
+      "qtype": "ambig",
+      "sql": "SELECT l.name, b.bank_name\nFROM Country l\nJOIN Banks b ON l.id = b.country_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?bank_name WHERE {\n  ?l a :Country .\n  ?b a :Banks .\n  ?b p:hasCountry ?l .\n  ?l p:name ?name .\n  ?b p:bank_name ?bank_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide a list of locations and the banks located in each of those locations.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?name2 ?bank_name WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?c a :Country .\n  ?b p:hasCountry ?c .\n  ?c p:name ?name .\n  ?l p:name ?name2 .\n  ?b p:bank_name ?bank_name .\n} }\n  component: { SELECT ?name ?bank_name WHERE {\n  ?l a :City .\n  ?b a :Banks .\n  ?b p:hasCity ?l .\n  ?l p:name ?name .\n  ?b p:bank_name ?bank_name .\n} }\n  component_2: { SELECT ?name ?bank_name WHERE {\n  ?l a :Country .\n  ?b a :Banks .\n  ?b p:hasCountry ?l .\n  ?l p:name ?name .\n  ?b p:bank_name ?bank_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

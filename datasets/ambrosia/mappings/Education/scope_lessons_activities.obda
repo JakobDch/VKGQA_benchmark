@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Lessons_base
+target		ex:Lessons/{id} a :Lessons ; p:id {id} ; p:lessonName {lessonName} ; p:teacherId {teacherId} .
+source		SELECT `id`, `lessonName`, `teacherId` FROM `Lessons`
+
+mappingId	Activities_base
+target		ex:Activities/{activityType} a :Activities ; p:activityType {activityType} ; p:description {description} .
+source		SELECT `activityType`, `description` FROM `Activities`
+
+mappingId	Students_base
+target		ex:Students/{studentId} a :Students ; p:studentId {studentId} ; p:name {name} ; p:age {age} .
+source		SELECT `studentId`, `name`, `age` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{teacherId} a :Teachers ; p:teacherId {teacherId} ; p:name {name} ; p:subject {subject} .
+source		SELECT `teacherId`, `name`, `subject` FROM `Teachers`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollmentId} a :Enrollments ; p:enrollmentId {enrollmentId} ; p:studentId {studentId} ; p:classId {classId} .
+source		SELECT `enrollmentId`, `studentId`, `classId` FROM `Enrollments`
+
+mappingId	Enrollments_classId_fk
+target		ex:Enrollments/{enrollmentId} p:hasLessons ex:Lessons/{classId} .
+source		SELECT `enrollmentId`, `classId` FROM `Enrollments` WHERE `classId` IS NOT NULL
+
+mappingId	Enrollments_studentId_fk
+target		ex:Enrollments/{enrollmentId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `enrollmentId`, `studentId` FROM `Enrollments` WHERE `studentId` IS NOT NULL
+
+mappingId	Lessons_Activities_base
+target		ex:Lessons_Activities/{lessonsActivityId} a :Lessons_Activities ; p:lessonsActivityId {lessonsActivityId} ; p:lessonsId {lessonsId} ; p:activitiesType {activitiesType} .
+source		SELECT `lessonsActivityId`, `lessonsId`, `activitiesType` FROM `Lessons_Activities`
+
+mappingId	Lessons_Activities_activitiesType_fk
+target		ex:Lessons_Activities/{lessonsActivityId} p:hasActivities ex:Activities/{activitiesType} .
+source		SELECT `lessonsActivityId`, `activitiesType` FROM `Lessons_Activities` WHERE `activitiesType` IS NOT NULL
+
+mappingId	Lessons_Activities_lessonsId_fk
+target		ex:Lessons_Activities/{lessonsActivityId} p:hasLessons ex:Lessons/{lessonsId} .
+source		SELECT `lessonsActivityId`, `lessonsId` FROM `Lessons_Activities` WHERE `lessonsId` IS NOT NULL
+
+]]

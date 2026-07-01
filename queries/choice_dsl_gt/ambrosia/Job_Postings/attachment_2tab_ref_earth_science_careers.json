@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_earth_science_careers",
+  "schema": "amb_attachment_2tab_ref_earth_science_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What chemists are from MIT and what geoscientists are also from there?",
+      "qtype": "unambig",
+      "sql": "SELECT Chemist.FullName\nFROM University JOIN Chemist ON University.id = Chemist.university_id\nWHERE University.name = \"MIT\"\nUNION\nSELECT Geoscientist.FullName\nFROM University JOIN Geoscientist ON University.id = Geoscientist.university_id\nWHERE University.name = \"MIT\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?university a :University .\n    ?chemist a :Chemist .\n    ?chemist p:hasUniversity ?university .\n    ?chemist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?university a :University .\n    ?geoscientist a :Geoscientist .\n    ?geoscientist p:hasUniversity ?university .\n    ?geoscientist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all chemists and also provide a list of geoscientists from MIT.",
+      "qtype": "unambig",
+      "sql": "SELECT Chemist.FullName\nFROM University JOIN Chemist ON University.id = Chemist.university_id\nUNION\nSELECT Geoscientist.FullName\nFROM University JOIN Geoscientist ON University.id = Geoscientist.university_id\nWHERE University.name = \"MIT\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?university a :University .\n    ?chemist a :Chemist .\n    ?chemist p:hasUniversity ?university .\n    ?chemist p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?university a :University .\n    ?geoscientist a :Geoscientist .\n    ?geoscientist p:hasUniversity ?university .\n    ?geoscientist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show chemists and geoscientists from MIT.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?university a :University .\n    ?chemist a :Chemist .\n    ?chemist p:hasUniversity ?university .\n    ?chemist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?university a :University .\n    ?geoscientist a :Geoscientist .\n    ?geoscientist p:hasUniversity ?university .\n    ?geoscientist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?university a :University .\n    ?chemist a :Chemist .\n    ?chemist p:hasUniversity ?university .\n    ?chemist p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?university a :University .\n    ?geoscientist a :Geoscientist .\n    ?geoscientist p:hasUniversity ?university .\n    ?geoscientist p:name ?fullname .\n    ?university p:name ?name_f .\n    FILTER(STR(?name_f) = \"MIT\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

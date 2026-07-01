@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	StudyHalls_base
+target		ex:StudyHalls/{id} a :StudyHalls ; p:id {id} ; p:building {building} ; p:capacity {capacity} ; p:available_hours {available_hours} ; p:number_of_students {number_of_students} .
+source		SELECT `id`, `building`, `capacity`, `available_hours`, `number_of_students` FROM `StudyHalls`
+
+mappingId	Teachers_base
+target		ex:Teachers/{id} a :Teachers ; p:id {id} ; p:name {name} ; p:subject {subject} ; p:years_experience {years_experience} ; p:office_number {office_number} .
+source		SELECT `id`, `name`, `subject`, `years_experience`, `office_number` FROM `Teachers`
+
+mappingId	Classes_base
+target		ex:Classes/{id} a :Classes ; p:id {id} ; p:teacher_id {teacher_id} ; p:class_name {class_name} ; p:grade_level {grade_level} .
+source		SELECT `id`, `teacher_id`, `class_name`, `grade_level` FROM `Classes`
+
+mappingId	Classes_teacher_id_fk
+target		ex:Classes/{id} p:hasTeachers ex:Teachers/{teacher_id} .
+source		SELECT `id`, `teacher_id` FROM `Classes` WHERE `teacher_id` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:studentId {studentId} ; p:birthDate {birthDate} ; p:fieldtrip_participant {fieldtrip_participant} ; p:studyhall_user {studyhall_user} ; p:class_id {class_id} .
+source		SELECT `id`, `firstName`, `lastName`, `studentId`, `birthDate`, `fieldtrip_participant`, `studyhall_user`, `class_id` FROM `Students`
+
+mappingId	Students_class_id_fk
+target		ex:Students/{id} p:hasClasses ex:Classes/{class_id} .
+source		SELECT `id`, `class_id` FROM `Students` WHERE `class_id` IS NOT NULL
+
+mappingId	FieldTrips_base
+target		ex:Field_Trips/{id} a :Field_Trips ; p:id {id} ; p:trip {trip} ; p:destination {destination} ; p:date {date} ; p:budget {budget} ; p:Number_of_students {Number_of_students} .
+source		SELECT `id`, `trip`, `destination`, `date`, `budget`, `Number_of_students` FROM `FieldTrips`
+
+]]

@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Internships_base
+target		ex:Internships/{id} a :Internships ; p:id {id} ; p:title {title} ; p:description {description} .
+source		SELECT `id`, `title`, `description` FROM `Internships`
+
+mappingId	Responsibilities_base
+target		ex:Responsibilities/{id} a :Responsibilities ; p:id {id} ; p:responsibility {responsibility} .
+source		SELECT `id`, `responsibility` FROM `Responsibilities`
+
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Companies`
+
+mappingId	Locations_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `id`, `city`, `state`, `country` FROM `Locations`
+
+mappingId	Applications_base
+target		ex:Application/{id} a :Application ; p:id {id} ; p:applicantName {applicantName} ; p:applicationDate {applicationDate} .
+source		SELECT `id`, `applicantName`, `applicationDate` FROM `Applications`
+
+mappingId	CompanyLocations_base
+target		ex:CompanyLocations/{companyId}/{locationId} a :CompanyLocations ; p:companyId {companyId} ; p:locationId {locationId} .
+source		SELECT `companyId`, `locationId` FROM `CompanyLocations`
+
+mappingId	CompanyLocations_locationId_fk
+target		ex:CompanyLocations/{companyId}/{locationId} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `companyId`, `locationId` FROM `CompanyLocations` WHERE `locationId` IS NOT NULL
+
+mappingId	CompanyLocations_companyId_fk
+target		ex:CompanyLocations/{companyId}/{locationId} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `companyId`, `locationId` FROM `CompanyLocations` WHERE `companyId` IS NOT NULL
+
+mappingId	InternshipApplications_base
+target		ex:InternshipApplications/{internshipId}/{applicationId} a :InternshipApplications ; p:internshipId {internshipId} ; p:applicationId {applicationId} .
+source		SELECT `internshipId`, `applicationId` FROM `InternshipApplications`
+
+mappingId	InternshipApplications_applicationId_fk
+target		ex:InternshipApplications/{internshipId}/{applicationId} p:hasApplication ex:Application/{applicationId} .
+source		SELECT `internshipId`, `applicationId` FROM `InternshipApplications` WHERE `applicationId` IS NOT NULL
+
+mappingId	InternshipApplications_internshipId_fk
+target		ex:InternshipApplications/{internshipId}/{applicationId} p:hasInternships ex:Internships/{internshipId} .
+source		SELECT `internshipId`, `applicationId` FROM `InternshipApplications` WHERE `internshipId` IS NOT NULL
+
+mappingId	Internships_Responsibilities_base
+target		ex:Internships_Responsibilities/{internshipId}/{responsibilityId} a :Internships_Responsibilities ; p:internshipId {internshipId} ; p:responsibilityId {responsibilityId} .
+source		SELECT `internshipId`, `responsibilityId` FROM `Internships_Responsibilities`
+
+mappingId	Internships_Responsibilities_responsibilityId_fk
+target		ex:Internships_Responsibilities/{internshipId}/{responsibilityId} p:hasResponsibilities ex:Responsibilities/{responsibilityId} .
+source		SELECT `internshipId`, `responsibilityId` FROM `Internships_Responsibilities` WHERE `responsibilityId` IS NOT NULL
+
+mappingId	Internships_Responsibilities_internshipId_fk
+target		ex:Internships_Responsibilities/{internshipId}/{responsibilityId} p:hasInternships ex:Internships/{internshipId} .
+source		SELECT `internshipId`, `responsibilityId` FROM `Internships_Responsibilities` WHERE `internshipId` IS NOT NULL
+
+]]

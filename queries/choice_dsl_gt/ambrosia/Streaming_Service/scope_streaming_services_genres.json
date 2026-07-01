@@ -1,0 +1,42 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_genres",
+  "schema": "amb_scope_streaming_services_genres",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What genres are available on each streaming service?",
+      "qtype": "ambig",
+      "sql": "SELECT Genres.name  from Streaming_Services_Genres join Genres on Streaming_Services_Genres.genres_id = Genres.id join Streaming_Services on Streaming_Services_Genres.streaming_services_id = Streaming_Services.id   GROUP BY Streaming_Services_Genres.genres_id HAVING COUNT(DISTINCT Streaming_Services_Genres.streaming_services_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What genres are available on each streaming service?",
+      "qtype": "ambig",
+      "sql": "select streaming_services.service_name , genres.name from Streaming_Services_Genres join Genres on Streaming_Services_Genres.genres_id = Genres.id join Streaming_Services on Streaming_Services_Genres.streaming_services_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?name WHERE {\n  ?streaming_services_genres a :Streaming_Services_Genres .\n  ?genres a :Genres .\n  ?streaming_services_genres p:hasGenres ?genres .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_genres p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?genres p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What genres are available on each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?name WHERE {\n  ?streaming_services_genres a :Streaming_Services_Genres .\n  ?genres a :Genres .\n  ?streaming_services_genres p:hasGenres ?genres .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_genres p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?genres p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Persons_base
+target		ex:Person/{person_id} a :Person ; p:person_id {person_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birthdate {birthdate} .
+source		SELECT `person_id`, `first_name`, `last_name`, `birthdate` FROM `Persons`
+
+mappingId	Regions_base
+target		ex:Regions/{region_id} a :Regions ; p:region_id {region_id} ; p:name {name} ; p:population {population} .
+source		SELECT `region_id`, `name`, `population` FROM `Regions`
+
+mappingId	LifeExpectancies_base
+target		ex:LifeExpectancies/{id} a :LifeExpectancies ; p:id {id} ; p:average_years_of_life {average_years_of_life} ; p:gender_specific_life_expectancy {gender_specific_life_expectancy} ; p:region_id {region_id} .
+source		SELECT `id`, `average_years_of_life`, `gender_specific_life_expectancy`, `region_id` FROM `LifeExpectancies`
+
+mappingId	LifeExpectancies_region_id_fk
+target		ex:LifeExpectancies/{id} p:hasRegions ex:Regions/{region_id} .
+source		SELECT `id`, `region_id` FROM `LifeExpectancies` WHERE `region_id` IS NOT NULL
+
+mappingId	Occupations_base
+target		ex:Occupations/{occupation_id} a :Occupations ; p:occupation_id {occupation_id} ; p:job_title {job_title} ; p:industry {industry} .
+source		SELECT `occupation_id`, `job_title`, `industry` FROM `Occupations`
+
+mappingId	EducationLevels_base
+target		ex:EducationLevel/{education_level_id} a :EducationLevel ; p:education_level_id {education_level_id} ; p:level_name {level_name} ; p:years_of_education {years_of_education} .
+source		SELECT `education_level_id`, `level_name`, `years_of_education` FROM `EducationLevels`
+
+mappingId	PersonOccupation_base
+target		ex:PersonOccupation/{person_occupation_id} a :PersonOccupation ; p:person_occupation_id {person_occupation_id} ; p:persons_id {persons_id} ; p:occupations_id {occupations_id} .
+source		SELECT `person_occupation_id`, `persons_id`, `occupations_id` FROM `PersonOccupation`
+
+mappingId	PersonOccupation_occupations_id_fk
+target		ex:PersonOccupation/{person_occupation_id} p:hasOccupations ex:Occupations/{occupations_id} .
+source		SELECT `person_occupation_id`, `occupations_id` FROM `PersonOccupation` WHERE `occupations_id` IS NOT NULL
+
+mappingId	PersonOccupation_persons_id_fk
+target		ex:PersonOccupation/{person_occupation_id} p:hasPerson ex:Person/{persons_id} .
+source		SELECT `person_occupation_id`, `persons_id` FROM `PersonOccupation` WHERE `persons_id` IS NOT NULL
+
+mappingId	PersonEducation_base
+target		ex:PersonEducation/{person_education_id} a :PersonEducation ; p:person_education_id {person_education_id} ; p:persons_id {persons_id} ; p:education_levels_id {education_levels_id} .
+source		SELECT `person_education_id`, `persons_id`, `education_levels_id` FROM `PersonEducation`
+
+mappingId	PersonEducation_education_levels_id_fk
+target		ex:PersonEducation/{person_education_id} p:hasEducationLevel ex:EducationLevel/{education_levels_id} .
+source		SELECT `person_education_id`, `education_levels_id` FROM `PersonEducation` WHERE `education_levels_id` IS NOT NULL
+
+mappingId	PersonEducation_persons_id_fk
+target		ex:PersonEducation/{person_education_id} p:hasPerson ex:Person/{persons_id} .
+source		SELECT `person_education_id`, `persons_id` FROM `PersonEducation` WHERE `persons_id` IS NOT NULL
+
+]]

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Individuals_base
+target		ex:Person/{id} a :Person ; p:id {id} ; p:name {name} ; p:age {age} .
+source		SELECT `id`, `name`, `age` FROM `Individuals`
+
+mappingId	VotingRecords_base
+target		ex:VotingRecords/{recordID} a :VotingRecords ; p:recordID {recordID} ; p:individualId {individualId} ; p:party {party} .
+source		SELECT `recordID`, `individualId`, `party` FROM `VotingRecords`
+
+mappingId	VotingRecords_individualId_fk
+target		ex:VotingRecords/{recordID} p:hasPerson ex:Person/{individualId} .
+source		SELECT `recordID`, `individualId` FROM `VotingRecords` WHERE `individualId` IS NOT NULL
+
+mappingId	Districts_base
+target		ex:Districts/{districtID} a :Districts ; p:districtID {districtID} ; p:name {name} ; p:totalPopulation {totalPopulation} .
+source		SELECT `districtID`, `name`, `totalPopulation` FROM `Districts`
+
+mappingId	Dominating_Party_base
+target		ex:Dominating_Party/{districtID}/{partyName} a :Dominating_Party ; p:districtID {districtID} ; p:partyName {partyName} ; p:percentageVotes {percentageVotes} .
+source		SELECT `districtID`, `partyName`, `percentageVotes` FROM `Dominating_Party`
+
+mappingId	Dominating_Party_districtID_fk
+target		ex:Dominating_Party/{districtID}/{partyName} p:hasDistricts ex:Districts/{districtID} .
+source		SELECT `districtID`, `partyName` FROM `Dominating_Party` WHERE `districtID` IS NOT NULL
+
+mappingId	Prevalent_Ideology_base
+target		ex:Prevalent_Ideology/{districtID}/{ideologyName} a :Prevalent_Ideology ; p:districtID {districtID} ; p:ideologyName {ideologyName} ; p:percentageVotes {percentageVotes} .
+source		SELECT `districtID`, `ideologyName`, `percentageVotes` FROM `Prevalent_Ideology`
+
+mappingId	Prevalent_Ideology_districtID_fk
+target		ex:Prevalent_Ideology/{districtID}/{ideologyName} p:hasDistricts ex:Districts/{districtID} .
+source		SELECT `districtID`, `ideologyName` FROM `Prevalent_Ideology` WHERE `districtID` IS NOT NULL
+
+]]

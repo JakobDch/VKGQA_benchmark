@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Culinary_Schools_base
+target		ex:Culinary_Schools/{id} a :Culinary_Schools ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Culinary_Schools`
+
+mappingId	Cuisine_Types_base
+target		ex:Cuisine_Types/{cuisine_id} a :Cuisine_Types ; p:cuisine_id {cuisine_id} ; p:type {type} .
+source		SELECT `cuisine_id`, `type` FROM `Cuisine_Types`
+
+mappingId	Culinary_Schools_Cuisine_Types_base
+target		ex:Culinary_Schools_Cuisine_Types/{_amb_rowid} a :Culinary_Schools_Cuisine_Types ; p:culinary_school_id {culinary_school_id} ; p:cuisine_type_id {cuisine_type_id} .
+source		SELECT `_amb_rowid`, `culinary_school_id`, `cuisine_type_id` FROM `Culinary_Schools_Cuisine_Types`
+
+mappingId	Culinary_Schools_Cuisine_Types_cuisine_type_id_fk
+target		ex:Culinary_Schools_Cuisine_Types/{_amb_rowid} p:hasCuisine_Types ex:Cuisine_Types/{cuisine_type_id} .
+source		SELECT `_amb_rowid`, `cuisine_type_id` FROM `Culinary_Schools_Cuisine_Types` WHERE `cuisine_type_id` IS NOT NULL
+
+mappingId	Culinary_Schools_Cuisine_Types_culinary_school_id_fk
+target		ex:Culinary_Schools_Cuisine_Types/{_amb_rowid} p:hasCulinary_Schools ex:Culinary_Schools/{culinary_school_id} .
+source		SELECT `_amb_rowid`, `culinary_school_id` FROM `Culinary_Schools_Cuisine_Types` WHERE `culinary_school_id` IS NOT NULL
+
+]]

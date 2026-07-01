@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Movie_sets_base
+target		ex:Movie_sets/{id} a :Movie_sets ; p:id {id} ; p:title {title} ; p:director {director} ; p:release_date {release_date} .
+source		SELECT `id`, `title`, `director`, `release_date` FROM `Movie_sets`
+
+mappingId	Equipment_base
+target		ex:Equipment/{id} a :Equipment ; p:id {id} ; p:name {name} ; p:type {type} .
+source		SELECT `id`, `name`, `type` FROM `Equipment`
+
+mappingId	Movie_sets_equipment_base
+target		ex:Movie_sets_equipment/{_amb_rowid} a :Movie_sets_equipment ; p:movie_set_id {movie_set_id} ; p:equipment_id {equipment_id} ; p:quantity {quantity} .
+source		SELECT `_amb_rowid`, `movie_set_id`, `equipment_id`, `quantity` FROM `Movie_sets_equipment`
+
+mappingId	Movie_sets_equipment_equipment_id_fk
+target		ex:Movie_sets_equipment/{_amb_rowid} p:hasEquipment ex:Equipment/{equipment_id} .
+source		SELECT `_amb_rowid`, `equipment_id` FROM `Movie_sets_equipment` WHERE `equipment_id` IS NOT NULL
+
+mappingId	Movie_sets_equipment_movie_set_id_fk
+target		ex:Movie_sets_equipment/{_amb_rowid} p:hasMovie_sets ex:Movie_sets/{movie_set_id} .
+source		SELECT `_amb_rowid`, `movie_set_id` FROM `Movie_sets_equipment` WHERE `movie_set_id` IS NOT NULL
+
+]]

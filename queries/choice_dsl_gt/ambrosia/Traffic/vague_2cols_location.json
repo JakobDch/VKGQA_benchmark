@@ -1,0 +1,53 @@
+{
+  "domain": "Traffic",
+  "db_base": "vague_2cols_location",
+  "schema": "amb_vague_2cols_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which block number is having the street resurfaced?",
+      "qtype": "unambig",
+      "sql": "select Block_Number from streets join roadworks on Streets.StreetID = roadworks.StreetID where WorkType = 'Resurfacing'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?block_number WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Block_Number ?block_number .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "where does the resurfacing take place?",
+      "qtype": "ambig",
+      "sql": "select Street_Name from streets join roadworks on Streets.StreetID = roadworks.StreetID where WorkType = 'Resurfacing'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Street_Name ?street_name .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "where does the resurfacing take place?",
+      "qtype": "ambig",
+      "sql": "select Street_Name, Block_Number from streets join roadworks on Streets.StreetID = roadworks.StreetID where WorkType = 'Resurfacing'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?street_name ?block_number WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Street_Name ?street_name .\n  ?streets p:Block_Number ?block_number .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "where does the resurfacing take place?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?block_number WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Block_Number ?block_number .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n} }\n  full: { SELECT ?street_name ?block_number WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Street_Name ?street_name .\n  ?streets p:Block_Number ?block_number .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n} }\n  component_2: { SELECT ?street_name WHERE {\n  ?streets a :Streets .\n  ?roadworks a :RoadWorks .\n  ?roadworks p:hasStreets ?streets .\n  ?streets p:Street_Name ?street_name .\n  ?roadworks p:WorkType ?worktype_f .\n  FILTER(?worktype_f = \"Resurfacing\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

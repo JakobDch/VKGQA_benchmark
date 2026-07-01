@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Major {Major} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth`, `Major` FROM `Students`
+
+mappingId	Professors_base
+target		ex:Professors/{ProfessorID} a :Professors ; p:ProfessorID {ProfessorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Department {Department} .
+source		SELECT `ProfessorID`, `FirstName`, `LastName`, `Department` FROM `Professors`
+
+mappingId	Papers_base
+target		ex:Research_Papers/{PaperID} a :Research_Papers ; p:PaperID {PaperID} ; p:Title {Title} ; p:AbstractText {AbstractText} ; p:Academic_PaperType {Academic_PaperType} ; p:Citation_Style {Citation_Style} ; p:AuthorID {AuthorID} .
+source		SELECT `PaperID`, `Title`, `AbstractText`, `Academic_PaperType`, `Citation_Style`, `AuthorID` FROM `Papers`
+
+mappingId	Papers_AuthorID_fk
+target		ex:Research_Papers/{PaperID} p:hasProfessors ex:Professors/{AuthorID} .
+source		SELECT `PaperID`, `AuthorID` FROM `Papers` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Papers_AuthorID_fk
+target		ex:Research_Papers/{PaperID} p:hasStudents ex:Students/{AuthorID} .
+source		SELECT `PaperID`, `AuthorID` FROM `Papers` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Conferences_base
+target		ex:Conferences/{ConferenceID} a :Conferences ; p:ConferenceID {ConferenceID} ; p:name {Name} ; p:location {Location} ; p:Year {Year} .
+source		SELECT `ConferenceID`, `Name`, `Location`, `Year` FROM `Conferences`
+
+mappingId	Presentations_base
+target		ex:Presentations/{PresentationID} a :Presentations ; p:PresentationID {PresentationID} ; p:PaperID {PaperID} ; p:ConferenceID {ConferenceID} ; p:Date {Date} .
+source		SELECT `PresentationID`, `PaperID`, `ConferenceID`, `Date` FROM `Presentations`
+
+mappingId	Presentations_ConferenceID_fk
+target		ex:Presentations/{PresentationID} p:hasConferences ex:Conferences/{ConferenceID} .
+source		SELECT `PresentationID`, `ConferenceID` FROM `Presentations` WHERE `ConferenceID` IS NOT NULL
+
+mappingId	Presentations_PaperID_fk
+target		ex:Presentations/{PresentationID} p:hasResearch_Papers ex:Research_Papers/{PaperID} .
+source		SELECT `PresentationID`, `PaperID` FROM `Presentations` WHERE `PaperID` IS NOT NULL
+
+mappingId	CourseEnrollments_base
+target		ex:CourseEnrollments/{EnrollmentID} a :CourseEnrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Grade {Grade} ; p:Semester {Semester} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Grade`, `Semester` FROM `CourseEnrollments`
+
+mappingId	CourseEnrollments_CourseID_fk
+target		ex:CourseEnrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `CourseEnrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	CourseEnrollments_StudentID_fk
+target		ex:CourseEnrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `CourseEnrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:CourseTitle {CourseTitle} ; p:InstructorID {InstructorID} .
+source		SELECT `CourseID`, `CourseTitle`, `InstructorID` FROM `Courses`
+
+mappingId	Courses_InstructorID_fk
+target		ex:Courses/{CourseID} p:hasProfessors ex:Professors/{InstructorID} .
+source		SELECT `CourseID`, `InstructorID` FROM `Courses` WHERE `InstructorID` IS NOT NULL
+
+]]

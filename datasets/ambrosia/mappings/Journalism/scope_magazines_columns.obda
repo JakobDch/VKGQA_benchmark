@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Magazines_base
+target		ex:Magazines/{id} a :Magazines ; p:id {id} ; p:name {name} ; p:publication_date {publication_date} ; p:editor_name {editor_name} .
+source		SELECT `id`, `name`, `publication_date`, `editor_name` FROM `Magazines`
+
+mappingId	Columns_base
+target		ex:Columns/{id} a :Columns ; p:id {id} ; p:column_name {column_name} .
+source		SELECT `id`, `column_name` FROM `Columns`
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publish_date {publish_date} ; p:magazine_id {magazine_id} ; p:author_id {author_id} .
+source		SELECT `id`, `title`, `content`, `publish_date`, `magazine_id`, `author_id` FROM `Articles`
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Articles_magazine_id_fk
+target		ex:Articles/{id} p:hasMagazines ex:Magazines/{magazine_id} .
+source		SELECT `id`, `magazine_id` FROM `Articles` WHERE `magazine_id` IS NOT NULL
+
+mappingId	Magazine_Authors_base
+target		ex:Magazine_Authors/{magazine_id}/{author_id} a :Magazine_Authors ; p:magazine_id {magazine_id} ; p:author_id {author_id} .
+source		SELECT `magazine_id`, `author_id` FROM `Magazine_Authors`
+
+mappingId	Magazine_Authors_author_id_fk
+target		ex:Magazine_Authors/{magazine_id}/{author_id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `magazine_id`, `author_id` FROM `Magazine_Authors` WHERE `author_id` IS NOT NULL
+
+mappingId	Magazine_Authors_magazine_id_fk
+target		ex:Magazine_Authors/{magazine_id}/{author_id} p:hasMagazines ex:Magazines/{magazine_id} .
+source		SELECT `magazine_id`, `author_id` FROM `Magazine_Authors` WHERE `magazine_id` IS NOT NULL
+
+mappingId	Magazines_Columns_base
+target		ex:Magazines_Columns/{magazine_id}/{column_id}/{issue_date} a :Magazines_Columns ; p:magazine_id {magazine_id} ; p:column_id {column_id} ; p:issue_date {issue_date} .
+source		SELECT `magazine_id`, `column_id`, `issue_date` FROM `Magazines_Columns`
+
+mappingId	Magazines_Columns_column_id_fk
+target		ex:Magazines_Columns/{magazine_id}/{column_id}/{issue_date} p:hasColumns ex:Columns/{column_id} .
+source		SELECT `magazine_id`, `column_id`, `issue_date` FROM `Magazines_Columns` WHERE `column_id` IS NOT NULL
+
+mappingId	Magazines_Columns_magazine_id_fk
+target		ex:Magazines_Columns/{magazine_id}/{column_id}/{issue_date} p:hasMagazines ex:Magazines/{magazine_id} .
+source		SELECT `magazine_id`, `column_id`, `issue_date` FROM `Magazines_Columns` WHERE `magazine_id` IS NOT NULL
+
+]]

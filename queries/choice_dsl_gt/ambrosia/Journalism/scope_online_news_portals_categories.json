@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_online_news_portals_categories",
+  "schema": "amb_scope_online_news_portals_categories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every news portal, show me the categories they show",
+      "qtype": "unambig",
+      "sql": "select online_news_portals.name , categories.category_name from Online_News_Portals_Categories join Categories on Online_News_Portals_Categories.category_id = Categories.id join Online_News_Portals on Online_News_Portals_Categories.online_news_portal_id = Online_News_Portals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?category_name WHERE {\n  ?online_news_portals_categories a :Online_News_Portals_Categories .\n  ?categories a :Category .\n  ?online_news_portals_categories p:hasCategories ?categories .\n  ?online_news_portals a :Online_News_Portals .\n  ?online_news_portals_categories p:hasOnline_News_Portals ?online_news_portals .\n  ?online_news_portals p:name ?name .\n  ?categories p:category_name ?category_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the categories that are common to all news portals",
+      "qtype": "unambig",
+      "sql": "SELECT Categories.category_name  from Online_News_Portals_Categories join Categories on Online_News_Portals_Categories.category_id = Categories.id join Online_News_Portals on Online_News_Portals_Categories.online_news_portal_id = Online_News_Portals.id   GROUP BY Online_News_Portals_Categories.category_id HAVING COUNT(DISTINCT Online_News_Portals_Categories.online_news_portal_id) = (SELECT COUNT(*) FROM  Online_News_Portals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?category_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasOnline_News_Portals ?parent . } GROUP BY ?child }\n  ?child p:category_name ?category_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_News_Portals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What categories do we have for every news portal?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?category_name WHERE {\n  ?online_news_portals_categories a :Online_News_Portals_Categories .\n  ?categories a :Category .\n  ?online_news_portals_categories p:hasCategories ?categories .\n  ?online_news_portals a :Online_News_Portals .\n  ?online_news_portals_categories p:hasOnline_News_Portals ?online_news_portals .\n  ?online_news_portals p:name ?name .\n  ?categories p:category_name ?category_name .\n} }\n  collective: { SELECT ?category_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCategories ?child ; p:hasOnline_News_Portals ?parent . } GROUP BY ?child }\n  ?child p:category_name ?category_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_News_Portals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+@prefix : <http://ambrosia.example.org/entertainment#> .
+@prefix p: <http://ambrosia.example.org/entertainment/prop#> .
+@prefix ex: <http://ambrosia.example.org/entertainment/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_rating_0_Movie_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"title\", \"releaseYear\", \"directorId\" FROM \"Movie\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Movie/{id}" ; rr:class :Movie ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:releaseYear ; rr:objectMap [ rr:column "releaseYear" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:directorId ; rr:objectMap [ rr:column "directorId" ] ] .
+
+<#tm_vague_2tabs_rating_1_Actor_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"firstName\", \"lastName\" FROM \"Actor\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Actor/{id}" ; rr:class :Actor ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:firstName ; rr:objectMap [ rr:column "firstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lastName ; rr:objectMap [ rr:column "lastName" ] ] .
+
+<#tm_vague_2tabs_rating_2_Cast_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"movieId\", \"actorId\", \"role\" FROM \"Cast\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Cast/{_amb_rowid}" ; rr:class :Cast ] ;
+  rr:predicateObjectMap [ rr:predicate p:movieId ; rr:objectMap [ rr:column "movieId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:actorId ; rr:objectMap [ rr:column "actorId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:role ; rr:objectMap [ rr:column "role" ] ] .
+
+<#tm_vague_2tabs_rating_3_Cast_actorId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"actorId\" FROM \"Cast\" WHERE \"actorId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Cast/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasActor ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Actor/{actorId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_rating_4_Cast_movieId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"movieId\" FROM \"Cast\" WHERE \"movieId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Cast/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMovie ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Movie/{movieId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_rating_5_Genre_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"genreText\" FROM \"Genre\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Genre/{id}" ; rr:class :Genre ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:genreText ; rr:objectMap [ rr:column "genreText" ] ] .
+
+<#tm_vague_2tabs_rating_6_Movie_Genre_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"movieId\", \"genreId\" FROM \"Movie_Genre\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/MovieGenre/{_amb_rowid}" ; rr:class :MovieGenre ] ;
+  rr:predicateObjectMap [ rr:predicate p:movieId ; rr:objectMap [ rr:column "movieId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:genreId ; rr:objectMap [ rr:column "genreId" ] ] .
+
+<#tm_vague_2tabs_rating_7_Movie_Genre_genreId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"genreId\" FROM \"Movie_Genre\" WHERE \"genreId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/MovieGenre/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasGenre ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Genre/{genreId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_rating_8_Movie_Genre_movieId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"movieId\" FROM \"Movie_Genre\" WHERE \"movieId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/MovieGenre/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMovie ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Movie/{movieId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_rating_9_Age_Rating_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ratingId\", \"ageMinimum\" FROM \"Age_Rating\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Age_Rating/{ratingId}" ; rr:class :Age_Rating ] ;
+  rr:predicateObjectMap [ rr:predicate p:ratingId ; rr:objectMap [ rr:column "ratingId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ageMinimum ; rr:objectMap [ rr:column "ageMinimum" ] ] .
+
+<#tm_vague_2tabs_rating_10_Critical_Rating_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ratingId\", \"score\" FROM \"Critical_Rating\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Critical_Rating/{ratingId}" ; rr:class :Critical_Rating ] ;
+  rr:predicateObjectMap [ rr:predicate p:ratingId ; rr:objectMap [ rr:column "ratingId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:score ; rr:objectMap [ rr:column "score" ] ] .
+
+<#tm_vague_2tabs_rating_11_Tv_Show_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"showId\", \"title\", \"network\", \"premiereDate\", \"ageRatingId\", \"criticalScoreId\" FROM \"Tv_Show\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Tv_Show/{showId}" ; rr:class :Tv_Show ] ;
+  rr:predicateObjectMap [ rr:predicate p:showId ; rr:objectMap [ rr:column "showId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:network ; rr:objectMap [ rr:column "network" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:premiereDate ; rr:objectMap [ rr:column "premiereDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ageRatingId ; rr:objectMap [ rr:column "ageRatingId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:criticalScoreId ; rr:objectMap [ rr:column "criticalScoreId" ] ] .
+
+<#tm_vague_2tabs_rating_12_Tv_Show_criticalScoreId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"showId\", \"criticalScoreId\" FROM \"Tv_Show\" WHERE \"criticalScoreId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Tv_Show/{showId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCritical_Rating ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Critical_Rating/{criticalScoreId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_rating_13_Tv_Show_ageRatingId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"showId\", \"ageRatingId\" FROM \"Tv_Show\" WHERE \"ageRatingId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Tv_Show/{showId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAge_Rating ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Age_Rating/{ageRatingId}" ; rr:termType rr:IRI ] ] .
+

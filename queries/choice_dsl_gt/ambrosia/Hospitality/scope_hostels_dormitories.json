@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_hostels_dormitories",
+  "schema": "amb_scope_hostels_dormitories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every hostel, provide me the dormitories it contains",
+      "qtype": "unambig",
+      "sql": "select hostels.name , dormitories.type from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 1,
+      "question": "For every hostel list all of the dormitory types and capacities.",
+      "qtype": "unambig",
+      "sql": "select hostels.name , dormitories.type , dormitories.capacity from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?capacity WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:type ?type .\n  ?dormitories p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 2,
+      "question": "what are the capacities of dormitories associated with every hostel?",
+      "qtype": "ambig",
+      "sql": "SELECT Dormitories.capacity  from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id   GROUP BY Hostels_Dormitories.dormitory_id HAVING COUNT(DISTINCT Hostels_Dormitories.hostel_id) = (SELECT COUNT(*) FROM  Hostels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "what are the capacities of dormitories associated with every hostel?",
+      "qtype": "ambig",
+      "sql": "select hostels.name , dormitories.capacity from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?capacity WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 4,
+      "question": "What type of dormitory does each hostel have?",
+      "qtype": "ambig",
+      "sql": "SELECT Dormitories.type  from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id   GROUP BY Hostels_Dormitories.dormitory_id HAVING COUNT(DISTINCT Hostels_Dormitories.hostel_id) = (SELECT COUNT(*) FROM  Hostels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What dormitory types and capacities are common to every hostel?",
+      "qtype": "unambig",
+      "sql": "SELECT Dormitories.type, Dormitories.capacity  from Hostels_Dormitories join Dormitories on Hostels_Dormitories.dormitory_id = Dormitories.dormitory_id join Hostels on Hostels_Dormitories.hostel_id = Hostels.id   GROUP BY Hostels_Dormitories.dormitory_id HAVING COUNT(DISTINCT Hostels_Dormitories.hostel_id) = (SELECT COUNT(*) FROM  Hostels)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of dormitory does each hostel have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What dormitory types and capacities are there for every hostel?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?capacity WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:type ?type .\n  ?dormitories p:capacity ?capacity .\n} }\n  collective: { SELECT ?type ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what are the capacities of dormitories associated with every hostel?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?capacity WHERE {\n  ?hostels_dormitories a :Hostels_Dormitories .\n  ?dormitories a :Dormitories .\n  ?hostels_dormitories p:hasDormitories ?dormitories .\n  ?hostels a :Hostels .\n  ?hostels_dormitories p:hasHostels ?hostels .\n  ?hostels p:name ?name .\n  ?dormitories p:capacity ?capacity .\n} }\n  collective: { SELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDormitories ?child ; p:hasHostels ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Hostels } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

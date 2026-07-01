@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_written_journalism",
+  "schema": "amb_attachment_2tab_val_written_journalism",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all news articles and also list feature articles with word count of 1000.",
+      "qtype": "unambig",
+      "sql": "SELECT News_Articles.title\nFROM News_Articles\nUNION\nSELECT Feature_Articles.title\nFROM Feature_Articles\nWHERE Feature_Articles.Word_Count = 1000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?news_articles a :Articles .\n    ?news_articles p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show news articles and feature articles with 1000 word count.",
+      "qtype": "ambig",
+      "sql": "SELECT News_Articles.title\nFROM News_Articles\nWHERE News_Articles.Word_Count = 1000\nUNION\nSELECT Feature_Articles.title\nFROM Feature_Articles\nWHERE Feature_Articles.Word_Count = 1000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?news_articles a :Articles .\n    ?news_articles p:Title ?title .\n    ?news_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show news articles and feature articles with 1000 word count.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?news_articles a :Articles .\n    ?news_articles p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?news_articles a :Articles .\n    ?news_articles p:Title ?title .\n    ?news_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?feature_articles a :Feature_Articles .\n    ?feature_articles p:Title ?title .\n    ?feature_articles p:Word_Count ?word_count_f .\n    FILTER((STR(?word_count_f) = \"1000\" || STR(?word_count_f) = \"1000.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

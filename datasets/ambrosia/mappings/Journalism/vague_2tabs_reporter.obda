@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Journalist_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:name {fullname} .
+source		SELECT `id`, `fullname` FROM `Journalist`
+
+mappingId	News_Agency_base
+target		ex:News_Agency/{id} a :News_Agency ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `News_Agency`
+
+mappingId	Story_base
+target		ex:Stories/{id} a :Stories ; p:id {id} ; p:title {title} ; p:content {content} ; p:publishedDate {publishedDate} ; p:journalistId {journalistId} ; p:agencyId {agencyId} ; p:categoryId {categoryId} .
+source		SELECT `id`, `title`, `content`, `publishedDate`, `journalistId`, `agencyId`, `categoryId` FROM `Story`
+
+mappingId	Story_categoryId_fk
+target		ex:Stories/{id} p:hasCategory ex:Category/{categoryId} .
+source		SELECT `id`, `categoryId` FROM `Story` WHERE `categoryId` IS NOT NULL
+
+mappingId	Story_agencyId_fk
+target		ex:Stories/{id} p:hasNews_Agency ex:News_Agency/{agencyId} .
+source		SELECT `id`, `agencyId` FROM `Story` WHERE `agencyId` IS NOT NULL
+
+mappingId	Story_journalistId_fk
+target		ex:Stories/{id} p:hasJournalists ex:Journalists/{journalistId} .
+source		SELECT `id`, `journalistId` FROM `Story` WHERE `journalistId` IS NOT NULL
+
+mappingId	Category_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Category`
+
+]]

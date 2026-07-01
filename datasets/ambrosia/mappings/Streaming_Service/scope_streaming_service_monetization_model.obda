@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Monetization_Model_base
+target		ex:Monetization_Model/{id} a :Monetization_Model ; p:id {id} ; p:model_name {model_name} .
+source		SELECT `id`, `model_name` FROM `Monetization_Model`
+
+mappingId	Streaming_Service_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:description {description} ; p:launch_date {launch_date} .
+source		SELECT `id`, `name`, `description`, `launch_date` FROM `Streaming_Service`
+
+mappingId	Content_Category_base
+target		ex:Content_Category/{id} a :Content_Category ; p:id {id} ; p:category_name {category_name} .
+source		SELECT `id`, `category_name` FROM `Content_Category`
+
+mappingId	Channel_base
+target		ex:Channel/{id} a :Channel ; p:id {id} ; p:streaming_service_id {streaming_service_id} ; p:content_category_id {content_category_id} ; p:channel_name {channel_name} ; p:channel_description {channel_description} .
+source		SELECT `id`, `streaming_service_id`, `content_category_id`, `channel_name`, `channel_description` FROM `Channel`
+
+mappingId	Channel_content_category_id_fk
+target		ex:Channel/{id} p:hasContent_Category ex:Content_Category/{content_category_id} .
+source		SELECT `id`, `content_category_id` FROM `Channel` WHERE `content_category_id` IS NOT NULL
+
+mappingId	Channel_streaming_service_id_fk
+target		ex:Channel/{id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `id`, `streaming_service_id` FROM `Channel` WHERE `streaming_service_id` IS NOT NULL
+
+mappingId	Subscription_Plan_base
+target		ex:Subscription_Plan/{id} a :Subscription_Plan ; p:id {id} ; p:streaming_service_id {streaming_service_id} ; p:price {price} ; p:duration {duration} ; p:plan_details {plan_details} .
+source		SELECT `id`, `streaming_service_id`, `price`, `duration`, `plan_details` FROM `Subscription_Plan`
+
+mappingId	Subscription_Plan_streaming_service_id_fk
+target		ex:Subscription_Plan/{id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `id`, `streaming_service_id` FROM `Subscription_Plan` WHERE `streaming_service_id` IS NOT NULL
+
+mappingId	Streaming_Service_Monetization_Model_base
+target		ex:Streaming_Service_Monetization_Model/{streaming_service_id}/{monetization_model_id} a :Streaming_Service_Monetization_Model ; p:streaming_service_id {streaming_service_id} ; p:monetization_model_id {monetization_model_id} .
+source		SELECT `streaming_service_id`, `monetization_model_id` FROM `Streaming_Service_Monetization_Model`
+
+mappingId	Streaming_Service_Monetization_Model_monetization_model_id_fk
+target		ex:Streaming_Service_Monetization_Model/{streaming_service_id}/{monetization_model_id} p:hasMonetization_Model ex:Monetization_Model/{monetization_model_id} .
+source		SELECT `streaming_service_id`, `monetization_model_id` FROM `Streaming_Service_Monetization_Model` WHERE `monetization_model_id` IS NOT NULL
+
+mappingId	Streaming_Service_Monetization_Model_streaming_service_id_fk
+target		ex:Streaming_Service_Monetization_Model/{streaming_service_id}/{monetization_model_id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `streaming_service_id`, `monetization_model_id` FROM `Streaming_Service_Monetization_Model` WHERE `streaming_service_id` IS NOT NULL
+
+mappingId	Viewer_Stats_base
+target		ex:Viewer_Stats/{id} a :Viewer_Stats ; p:id {id} ; p:streaming_service_id {streaming_service_id} ; p:channel_id {channel_id} ; p:views {views} ; p:unique_viewers {unique_viewers} .
+source		SELECT `id`, `streaming_service_id`, `channel_id`, `views`, `unique_viewers` FROM `Viewer_Stats`
+
+mappingId	Viewer_Stats_channel_id_fk
+target		ex:Viewer_Stats/{id} p:hasChannel ex:Channel/{channel_id} .
+source		SELECT `id`, `channel_id` FROM `Viewer_Stats` WHERE `channel_id` IS NOT NULL
+
+mappingId	Viewer_Stats_streaming_service_id_fk
+target		ex:Viewer_Stats/{id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `id`, `streaming_service_id` FROM `Viewer_Stats` WHERE `streaming_service_id` IS NOT NULL
+
+]]

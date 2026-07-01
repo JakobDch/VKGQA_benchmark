@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_aircraft_manufacturers",
+  "schema": "amb_attachment_1tab_val_aircraft_manufacturers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What Airbus aircrafts have 180 seats and what Boeing aircrafts have the same number of seats?",
+      "qtype": "unambig",
+      "sql": "SELECT Manufactures.aircraftModel \nFROM Manufactures\nWHERE (Manufactures.manufacturers = \"Airbus\" OR Manufactures.manufacturers = \"Boeing\") AND Manufactures.numberOfSeats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?aircraftmodel WHERE {\n  ?manufactures a :Manufactures .\n  ?manufactures p:aircraftModel ?aircraftmodel .\n  ?manufactures p:manufacturers ?manufacturers_w .\n  ?manufactures p:manufacturers ?manufacturers_w2 .\n  ?manufactures p:numberOfSeats ?numberofseats_w .\n  FILTER((((STR(?manufacturers_w) = \"Airbus\" || STR(?manufacturers_w2) = \"Boeing\")) && (STR(?numberofseats_w) = \"180\" || STR(?numberofseats_w) = \"180.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all Airbus aircrafts and also provide a list of Boeing aircrafts with 180 seats.",
+      "qtype": "unambig",
+      "sql": "SELECT Manufactures.aircraftModel \nFROM Manufactures\nWHERE Manufactures.manufacturers = \"Airbus\" OR Manufactures.manufacturers = \"Boeing\" AND Manufactures.numberOfSeats = 180",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?aircraftmodel WHERE {\n  ?manufactures a :Manufactures .\n  ?manufactures p:aircraftModel ?aircraftmodel .\n  ?manufactures p:manufacturers ?manufacturers_w .\n  ?manufactures p:manufacturers ?manufacturers_w2 .\n  ?manufactures p:numberOfSeats ?numberofseats_w .\n  FILTER((STR(?manufacturers_w) = \"Airbus\" || (STR(?manufacturers_w2) = \"Boeing\" && (STR(?numberofseats_w) = \"180\" || STR(?numberofseats_w) = \"180.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me Airbus aircrafts and Boeing aircrafts with 180 seats.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?aircraftmodel WHERE {\n  ?manufactures a :Manufactures .\n  ?manufactures p:aircraftModel ?aircraftmodel .\n  ?manufactures p:manufacturers ?manufacturers_w .\n  ?manufactures p:manufacturers ?manufacturers_w2 .\n  ?manufactures p:numberOfSeats ?numberofseats_w .\n  FILTER((((STR(?manufacturers_w) = \"Airbus\" || STR(?manufacturers_w2) = \"Boeing\")) && (STR(?numberofseats_w) = \"180\" || STR(?numberofseats_w) = \"180.0\")))\n} }\n  low: { SELECT ?aircraftmodel WHERE {\n  ?manufactures a :Manufactures .\n  ?manufactures p:aircraftModel ?aircraftmodel .\n  ?manufactures p:manufacturers ?manufacturers_w .\n  ?manufactures p:manufacturers ?manufacturers_w2 .\n  ?manufactures p:numberOfSeats ?numberofseats_w .\n  FILTER((STR(?manufacturers_w) = \"Airbus\" || (STR(?manufacturers_w2) = \"Boeing\" && (STR(?numberofseats_w) = \"180\" || STR(?numberofseats_w) = \"180.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_newsroom_roles",
+  "schema": "amb_attachment_1tab_val_newsroom_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all reports and photographers with a deadline of 2021-03-18 16:30:00.",
+      "qtype": "ambig",
+      "sql": "SELECT reporters.Name \nFROM reporters\nWHERE (reporters.role = \"Reporter\" OR reporters.role = \"Photographer\") AND reporters.deadline = \"2021-03-18 16:30:00\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?reporters a :Reporters .\n  ?reporters p:name ?name .\n  ?reporters p:role ?role_w .\n  ?reporters p:role ?role_w2 .\n  ?reporters p:deadline ?deadline_w .\n  FILTER((((STR(?role_w) = \"Reporter\" || STR(?role_w2) = \"Photographer\")) && STR(?deadline_w) = \"2021-03-18 16:30:00\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all reports and photographers with a deadline of 2021-03-18 16:30:00.",
+      "qtype": "ambig",
+      "sql": "SELECT reporters.Name \nFROM reporters\nWHERE reporters.role = \"Reporter\" OR reporters.role = \"Photographer\" AND reporters.deadline = \"2021-03-18 16:30:00\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?reporters a :Reporters .\n  ?reporters p:name ?name .\n  ?reporters p:role ?role_w .\n  ?reporters p:role ?role_w2 .\n  ?reporters p:deadline ?deadline_w .\n  FILTER((STR(?role_w) = \"Reporter\" || (STR(?role_w2) = \"Photographer\" && STR(?deadline_w) = \"2021-03-18 16:30:00\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all reports and photographers with a deadline of 2021-03-18 16:30:00.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?reporters a :Reporters .\n  ?reporters p:name ?name .\n  ?reporters p:role ?role_w .\n  ?reporters p:role ?role_w2 .\n  ?reporters p:deadline ?deadline_w .\n  FILTER((((STR(?role_w) = \"Reporter\" || STR(?role_w2) = \"Photographer\")) && STR(?deadline_w) = \"2021-03-18 16:30:00\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?reporters a :Reporters .\n  ?reporters p:name ?name .\n  ?reporters p:role ?role_w .\n  ?reporters p:role ?role_w2 .\n  ?reporters p:deadline ?deadline_w .\n  FILTER((STR(?role_w) = \"Reporter\" || (STR(?role_w2) = \"Photographer\" && STR(?deadline_w) = \"2021-03-18 16:30:00\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

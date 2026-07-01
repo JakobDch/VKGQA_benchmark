@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Photographers_base
+target		ex:Photographers/{id} a :Photographers ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Photographers`
+
+mappingId	Subjects_base
+target		ex:Subjects/{id} a :Subjects ; p:id {id} ; p:subject_name {subject_name} .
+source		SELECT `id`, `subject_name` FROM `Subjects`
+
+mappingId	Photographers_Subjects_base
+target		ex:Photographers_Subjects/{photographer_id}/{subject_id} a :Photographers_Subjects ; p:photographer_id {photographer_id} ; p:subject_id {subject_id} .
+source		SELECT `photographer_id`, `subject_id` FROM `Photographers_Subjects`
+
+mappingId	Photographers_Subjects_subject_id_fk
+target		ex:Photographers_Subjects/{photographer_id}/{subject_id} p:hasSubjects ex:Subjects/{subject_id} .
+source		SELECT `photographer_id`, `subject_id` FROM `Photographers_Subjects` WHERE `subject_id` IS NOT NULL
+
+mappingId	Photographers_Subjects_photographer_id_fk
+target		ex:Photographers_Subjects/{photographer_id}/{subject_id} p:hasPhotographers ex:Photographers/{photographer_id} .
+source		SELECT `photographer_id`, `subject_id` FROM `Photographers_Subjects` WHERE `photographer_id` IS NOT NULL
+
+]]

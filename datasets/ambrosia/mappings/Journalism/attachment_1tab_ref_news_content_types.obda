@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	News_Contents_base
+target		ex:News_Contents/{id} a :News_Contents ; p:id {id} ; p:Title {Title} ; p:Content {Content} ; p:News_Type {News_Type} ; p:Volume_ID {Volume_ID} .
+source		SELECT `id`, `Title`, `Content`, `News_Type`, `Volume_ID` FROM `News_Contents`
+
+mappingId	News_Contents_Volume_ID_fk
+target		ex:News_Contents/{id} p:hasVolumes ex:Volumes/{Volume_ID} .
+source		SELECT `id`, `Volume_ID` FROM `News_Contents` WHERE `Volume_ID` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:Author_ID {Author_ID} ; p:Published_Date {Published_Date} .
+source		SELECT `id`, `Author_ID`, `Published_Date` FROM `Articles`
+
+mappingId	Articles_Author_ID_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{Author_ID} .
+source		SELECT `id`, `Author_ID` FROM `Articles` WHERE `Author_ID` IS NOT NULL
+
+mappingId	Volumes_base
+target		ex:Volumes/{id} a :Volumes ; p:id {id} ; p:Issue_Number {Issue_Number} .
+source		SELECT `id`, `Issue_Number` FROM `Volumes`
+
+mappingId	Publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:Volume_ID {Volume_ID} ; p:Publisher_Name {Publisher_Name} .
+source		SELECT `id`, `Volume_ID`, `Publisher_Name` FROM `Publications`
+
+mappingId	Publications_Volume_ID_fk
+target		ex:Publications/{id} p:hasVolumes ex:Volumes/{Volume_ID} .
+source		SELECT `id`, `Volume_ID` FROM `Publications` WHERE `Volume_ID` IS NOT NULL
+
+]]

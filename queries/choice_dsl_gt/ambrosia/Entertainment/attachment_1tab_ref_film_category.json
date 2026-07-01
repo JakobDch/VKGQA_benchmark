@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_film_category",
+  "schema": "amb_attachment_1tab_ref_film_category",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all fantasy films, also show all horrors with a 20000000.0 budget.",
+      "qtype": "unambig",
+      "sql": "SELECT Films.title \nFROM Categories JOIN Films ON Categories.id = Films.categoryId\nWHERE Categories.categoryName = \"Fantasy\" OR Categories.categoryName = \"Horror\" AND Films.budget = 20000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?categories a :Categories .\n  ?films a :Film .\n  ?films p:hasCategories ?categories .\n  ?films p:title ?title .\n  ?categories p:categoryName ?categoryname_w .\n  ?categories p:categoryName ?categoryname_w2 .\n  ?films p:budget ?budget_w .\n  FILTER((STR(?categoryname_w) = \"Fantasy\" || (STR(?categoryname_w2) = \"Horror\" && (STR(?budget_w) = \"20000000\" || STR(?budget_w) = \"20000000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide all fantasy with a budget of 20000000.0 and horrors with the same budget.",
+      "qtype": "unambig",
+      "sql": "SELECT Films.title \nFROM Categories JOIN Films ON Categories.id = Films.categoryId\nWHERE (Categories.categoryName = \"Fantasy\" OR Categories.categoryName = \"Horror\") AND Films.budget = 20000000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?categories a :Categories .\n  ?films a :Film .\n  ?films p:hasCategories ?categories .\n  ?films p:title ?title .\n  ?categories p:categoryName ?categoryname_w .\n  ?categories p:categoryName ?categoryname_w2 .\n  ?films p:budget ?budget_w .\n  FILTER((((STR(?categoryname_w) = \"Fantasy\" || STR(?categoryname_w2) = \"Horror\")) && (STR(?budget_w) = \"20000000\" || STR(?budget_w) = \"20000000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all fantasy films and horrors with a 20000000 budget.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?categories a :Categories .\n  ?films a :Film .\n  ?films p:hasCategories ?categories .\n  ?films p:title ?title .\n  ?categories p:categoryName ?categoryname_w .\n  ?categories p:categoryName ?categoryname_w2 .\n  ?films p:budget ?budget_w .\n  FILTER((STR(?categoryname_w) = \"Fantasy\" || (STR(?categoryname_w2) = \"Horror\" && (STR(?budget_w) = \"20000000\" || STR(?budget_w) = \"20000000.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?categories a :Categories .\n  ?films a :Film .\n  ?films p:hasCategories ?categories .\n  ?films p:title ?title .\n  ?categories p:categoryName ?categoryname_w .\n  ?categories p:categoryName ?categoryname_w2 .\n  ?films p:budget ?budget_w .\n  FILTER((((STR(?categoryname_w) = \"Fantasy\" || STR(?categoryname_w2) = \"Horror\")) && (STR(?budget_w) = \"20000000\" || STR(?budget_w) = \"20000000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

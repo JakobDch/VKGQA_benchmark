@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:directorId {directorId} .
+source		SELECT `id`, `title`, `releaseYear`, `directorId` FROM `Movie`
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Actor`
+
+mappingId	Cast_base
+target		ex:Cast/{_amb_rowid} a :Cast ; p:movieId {movieId} ; p:actorId {actorId} ; p:role {role} .
+source		SELECT `_amb_rowid`, `movieId`, `actorId`, `role` FROM `Cast`
+
+mappingId	Cast_actorId_fk
+target		ex:Cast/{_amb_rowid} p:hasActor ex:Actor/{actorId} .
+source		SELECT `_amb_rowid`, `actorId` FROM `Cast` WHERE `actorId` IS NOT NULL
+
+mappingId	Cast_movieId_fk
+target		ex:Cast/{_amb_rowid} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `_amb_rowid`, `movieId` FROM `Cast` WHERE `movieId` IS NOT NULL
+
+mappingId	Genre_base
+target		ex:Genre/{id} a :Genre ; p:id {id} ; p:genreText {genreText} .
+source		SELECT `id`, `genreText` FROM `Genre`
+
+mappingId	Movie_Genre_base
+target		ex:MovieGenre/{_amb_rowid} a :MovieGenre ; p:movieId {movieId} ; p:genreId {genreId} .
+source		SELECT `_amb_rowid`, `movieId`, `genreId` FROM `Movie_Genre`
+
+mappingId	Movie_Genre_genreId_fk
+target		ex:MovieGenre/{_amb_rowid} p:hasGenre ex:Genre/{genreId} .
+source		SELECT `_amb_rowid`, `genreId` FROM `Movie_Genre` WHERE `genreId` IS NOT NULL
+
+mappingId	Movie_Genre_movieId_fk
+target		ex:MovieGenre/{_amb_rowid} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `_amb_rowid`, `movieId` FROM `Movie_Genre` WHERE `movieId` IS NOT NULL
+
+mappingId	Age_Rating_base
+target		ex:Age_Rating/{ratingId} a :Age_Rating ; p:ratingId {ratingId} ; p:ageMinimum {ageMinimum} .
+source		SELECT `ratingId`, `ageMinimum` FROM `Age_Rating`
+
+mappingId	Critical_Rating_base
+target		ex:Critical_Rating/{ratingId} a :Critical_Rating ; p:ratingId {ratingId} ; p:score {score} .
+source		SELECT `ratingId`, `score` FROM `Critical_Rating`
+
+mappingId	Tv_Show_base
+target		ex:Tv_Show/{showId} a :Tv_Show ; p:showId {showId} ; p:title {title} ; p:network {network} ; p:premiereDate {premiereDate} ; p:ageRatingId {ageRatingId} ; p:criticalScoreId {criticalScoreId} .
+source		SELECT `showId`, `title`, `network`, `premiereDate`, `ageRatingId`, `criticalScoreId` FROM `Tv_Show`
+
+mappingId	Tv_Show_criticalScoreId_fk
+target		ex:Tv_Show/{showId} p:hasCritical_Rating ex:Critical_Rating/{criticalScoreId} .
+source		SELECT `showId`, `criticalScoreId` FROM `Tv_Show` WHERE `criticalScoreId` IS NOT NULL
+
+mappingId	Tv_Show_ageRatingId_fk
+target		ex:Tv_Show/{showId} p:hasAge_Rating ex:Age_Rating/{ageRatingId} .
+source		SELECT `showId`, `ageRatingId` FROM `Tv_Show` WHERE `ageRatingId` IS NOT NULL
+
+]]

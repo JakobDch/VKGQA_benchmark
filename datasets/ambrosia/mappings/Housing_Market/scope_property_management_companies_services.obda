@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Property_Management_Companies_base
+target		ex:Property_Management_Companies/{id} a :Property_Management_Companies ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Property_Management_Companies`
+
+mappingId	Services_base
+target		ex:Services/{id} a :Services ; p:id {id} ; p:service_name {service_name} .
+source		SELECT `id`, `service_name` FROM `Services`
+
+mappingId	Properties_base
+target		ex:Properties/{id} a :Properties ; p:id {id} ; p:property_address {property_address} ; p:price {price} .
+source		SELECT `id`, `property_address`, `price` FROM `Properties`
+
+mappingId	Clients_base
+target		ex:Clients/{id} a :Clients ; p:id {id} ; p:client_name {client_name} ; p:contact {contact} .
+source		SELECT `id`, `client_name`, `contact` FROM `Clients`
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:property_id {property_id} ; p:client_id {client_id} ; p:management_company_id {management_company_id} ; p:service_id {service_id} .
+source		SELECT `transaction_id`, `property_id`, `client_id`, `management_company_id`, `service_id` FROM `Transactions`
+
+mappingId	Transactions_service_id_fk
+target		ex:Transactions/{transaction_id} p:hasServices ex:Services/{service_id} .
+source		SELECT `transaction_id`, `service_id` FROM `Transactions` WHERE `service_id` IS NOT NULL
+
+mappingId	Transactions_management_company_id_fk
+target		ex:Transactions/{transaction_id} p:hasProperty_Management_Companies ex:Property_Management_Companies/{management_company_id} .
+source		SELECT `transaction_id`, `management_company_id` FROM `Transactions` WHERE `management_company_id` IS NOT NULL
+
+mappingId	Transactions_client_id_fk
+target		ex:Transactions/{transaction_id} p:hasClients ex:Clients/{client_id} .
+source		SELECT `transaction_id`, `client_id` FROM `Transactions` WHERE `client_id` IS NOT NULL
+
+mappingId	Transactions_property_id_fk
+target		ex:Transactions/{transaction_id} p:hasProperties ex:Properties/{property_id} .
+source		SELECT `transaction_id`, `property_id` FROM `Transactions` WHERE `property_id` IS NOT NULL
+
+mappingId	Property_Management_Companies_Services_base
+target		ex:Property_Management_Companies_Services/{company_id}/{service_id} a :Property_Management_Companies_Services ; p:company_id {company_id} ; p:service_id {service_id} .
+source		SELECT `company_id`, `service_id` FROM `Property_Management_Companies_Services`
+
+mappingId	Property_Management_Companies_Services_service_id_fk
+target		ex:Property_Management_Companies_Services/{company_id}/{service_id} p:hasServices ex:Services/{service_id} .
+source		SELECT `company_id`, `service_id` FROM `Property_Management_Companies_Services` WHERE `service_id` IS NOT NULL
+
+mappingId	Property_Management_Companies_Services_company_id_fk
+target		ex:Property_Management_Companies_Services/{company_id}/{service_id} p:hasProperty_Management_Companies ex:Property_Management_Companies/{company_id} .
+source		SELECT `company_id`, `service_id` FROM `Property_Management_Companies_Services` WHERE `company_id` IS NOT NULL
+
+]]

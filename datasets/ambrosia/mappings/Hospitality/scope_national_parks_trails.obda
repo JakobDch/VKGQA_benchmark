@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	National_Parks_base
+target		ex:National_Parks/{park_id} a :National_Parks ; p:park_id {park_id} ; p:name {name} ; p:location {location} .
+source		SELECT `park_id`, `name`, `location` FROM `National_Parks`
+
+mappingId	Trails_base
+target		ex:Trails/{trail_id} a :Trails ; p:trail_id {trail_id} ; p:difficulty {difficulty} ; p:length {length} .
+source		SELECT `trail_id`, `difficulty`, `length` FROM `Trails`
+
+mappingId	National_Parks_Trails_base
+target		ex:National_Parks_Trails/{national_park_id}/{trail_id} a :National_Parks_Trails ; p:national_park_id {national_park_id} ; p:trail_id {trail_id} .
+source		SELECT `national_park_id`, `trail_id` FROM `National_Parks_Trails`
+
+mappingId	National_Parks_Trails_trail_id_fk
+target		ex:National_Parks_Trails/{national_park_id}/{trail_id} p:hasTrails ex:Trails/{trail_id} .
+source		SELECT `national_park_id`, `trail_id` FROM `National_Parks_Trails` WHERE `trail_id` IS NOT NULL
+
+mappingId	National_Parks_Trails_national_park_id_fk
+target		ex:National_Parks_Trails/{national_park_id}/{trail_id} p:hasNational_Parks ex:National_Parks/{national_park_id} .
+source		SELECT `national_park_id`, `trail_id` FROM `National_Parks_Trails` WHERE `national_park_id` IS NOT NULL
+
+]]

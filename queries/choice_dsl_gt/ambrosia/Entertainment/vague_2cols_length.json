@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_length",
+  "schema": "amb_vague_2cols_length",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the three longest-running shows and number of their episodes.",
+      "qtype": "unambig",
+      "sql": "SELECT title, Number_of_episodes FROM Show ORDER BY Number_of_episodes DESC LIMIT 3;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_episodes WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:Number_of_episodes ?number_of_episodes_o .\n}\nORDER BY DESC(?number_of_episodes_o)\nLIMIT 3",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List the three longest-running shows and number of their seasons and episodes.",
+      "qtype": "unambig",
+      "sql": "SELECT title, Number_of_seasons, Number_of_episodes FROM Show ORDER BY Number_of_seasons, Number_of_episodes DESC LIMIT 3;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_seasons ?number_of_episodes WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:Number_of_seasons ?number_of_seasons_o .\n  ?show p:Number_of_episodes ?number_of_episodes_o .\n}\nORDER BY ASC(?number_of_seasons_o) DESC(?number_of_episodes_o)\nLIMIT 3",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the title, number of seasons and release year of all comedy shows",
+      "qtype": "unambig",
+      "sql": "SELECT title, Number_of_seasons, release_year FROM Show WHERE genre = 'Comedy';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_seasons ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List the three longest-running shows and their duration.",
+      "qtype": "ambig",
+      "sql": "SELECT title, Number_of_seasons FROM Show ORDER BY Number_of_seasons DESC LIMIT 3;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_seasons WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_seasons ?number_of_seasons_o .\n}\nORDER BY DESC(?number_of_seasons_o)\nLIMIT 3",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the title, number of seasons and episodes, and release year of all comedy shows",
+      "qtype": "unambig",
+      "sql": "SELECT title, Number_of_seasons, Number_of_episodes, release_year FROM Show WHERE genre = 'Comedy';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_seasons ?number_of_episodes ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the title, number of episodes and release year of all comedy shows",
+      "qtype": "unambig",
+      "sql": "SELECT title, Number_of_episodes, release_year FROM Show WHERE genre = 'Comedy';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?number_of_episodes ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the three longest-running shows and their duration.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?number_of_episodes WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:Number_of_episodes ?number_of_episodes_o .\n}\nORDER BY DESC(?number_of_episodes_o)\nLIMIT 3 }\n  full: { SELECT ?title ?number_of_seasons ?number_of_episodes WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:Number_of_seasons ?number_of_seasons_o .\n  ?show p:Number_of_episodes ?number_of_episodes_o .\n}\nORDER BY ASC(?number_of_seasons_o) DESC(?number_of_episodes_o)\nLIMIT 3 }\n  component_2: { SELECT ?title ?number_of_seasons WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_seasons ?number_of_seasons_o .\n}\nORDER BY DESC(?number_of_seasons_o)\nLIMIT 3 }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the titles, durations and release years of all comedy shows?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?number_of_seasons ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n} }\n  full: { SELECT ?title ?number_of_seasons ?number_of_episodes ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_seasons ?number_of_seasons .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n} }\n  component_2: { SELECT ?title ?number_of_episodes ?release_year WHERE {\n  ?show a :Show .\n  ?show p:title ?title .\n  ?show p:Number_of_episodes ?number_of_episodes .\n  ?show p:release_year ?release_year .\n  ?show p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Comedy\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

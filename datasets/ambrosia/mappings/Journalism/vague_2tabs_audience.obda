@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Demographic_Groups_base
+target		ex:Demographic_Groups/{id} a :Demographic_Groups ; p:id {id} ; p:group_name {group_name} ; p:population {population} .
+source		SELECT `id`, `group_name`, `population` FROM `Demographic_Groups`
+
+mappingId	Professional_Fields_base
+target		ex:Professional_Fields/{field_id} a :Professional_Fields ; p:field_id {field_id} ; p:field_name {field_name} .
+source		SELECT `field_id`, `field_name` FROM `Professional_Fields`
+
+mappingId	Magazines_base
+target		ex:Magazines/{magazine_id} a :Magazines ; p:magazine_id {magazine_id} ; p:title {title} ; p:publication_date {publication_date} ; p:demographic_group_id {demographic_group_id} ; p:professional_field_id {professional_field_id} .
+source		SELECT `magazine_id`, `title`, `publication_date`, `demographic_group_id`, `professional_field_id` FROM `Magazines`
+
+mappingId	Magazines_professional_field_id_fk
+target		ex:Magazines/{magazine_id} p:hasProfessional_Fields ex:Professional_Fields/{professional_field_id} .
+source		SELECT `magazine_id`, `professional_field_id` FROM `Magazines` WHERE `professional_field_id` IS NOT NULL
+
+mappingId	Magazines_demographic_group_id_fk
+target		ex:Magazines/{magazine_id} p:hasDemographic_Groups ex:Demographic_Groups/{demographic_group_id} .
+source		SELECT `magazine_id`, `demographic_group_id` FROM `Magazines` WHERE `demographic_group_id` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{article_id} a :Articles ; p:article_id {article_id} ; p:title {title} ; p:content {content} ; p:author_id {author_id} ; p:magazine_id {magazine_id} .
+source		SELECT `article_id`, `title`, `content`, `author_id`, `magazine_id` FROM `Articles`
+
+mappingId	Articles_magazine_id_fk
+target		ex:Articles/{article_id} p:hasMagazines ex:Magazines/{magazine_id} .
+source		SELECT `article_id`, `magazine_id` FROM `Articles` WHERE `magazine_id` IS NOT NULL
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{article_id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `article_id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{author_id} a :Authors ; p:author_id {author_id} ; p:name {name} ; p:occupation {occupation} ; p:demographic_group_id {demographic_group_id} .
+source		SELECT `author_id`, `name`, `occupation`, `demographic_group_id` FROM `Authors`
+
+mappingId	Authors_demographic_group_id_fk
+target		ex:Authors/{author_id} p:hasDemographic_Groups ex:Demographic_Groups/{demographic_group_id} .
+source		SELECT `author_id`, `demographic_group_id` FROM `Authors` WHERE `demographic_group_id` IS NOT NULL
+
+mappingId	Readers_base
+target		ex:Readers/{reader_id} a :Readers ; p:reader_id {reader_id} ; p:name {name} ; p:email {email} ; p:preferred_magazine_id {preferred_magazine_id} ; p:demographic_group_id {demographic_group_id} .
+source		SELECT `reader_id`, `name`, `email`, `preferred_magazine_id`, `demographic_group_id` FROM `Readers`
+
+mappingId	Readers_demographic_group_id_fk
+target		ex:Readers/{reader_id} p:hasDemographic_Groups ex:Demographic_Groups/{demographic_group_id} .
+source		SELECT `reader_id`, `demographic_group_id` FROM `Readers` WHERE `demographic_group_id` IS NOT NULL
+
+mappingId	Readers_preferred_magazine_id_fk
+target		ex:Readers/{reader_id} p:hasMagazines ex:Magazines/{preferred_magazine_id} .
+source		SELECT `reader_id`, `preferred_magazine_id` FROM `Readers` WHERE `preferred_magazine_id` IS NOT NULL
+
+]]

@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_adventure_tour_operators_activities",
+  "schema": "amb_scope_adventure_tour_operators_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each tour operator, describe the activities that they offer.",
+      "qtype": "unambig",
+      "sql": "select adventure_tour_operators.name , activities.description from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me activities each tour operator organises.",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.activity_name  from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id   GROUP BY Adventure_Tour_Operators_Activities.activity_id HAVING COUNT(DISTINCT Adventure_Tour_Operators_Activities.adventure_tour_operator_id) = (SELECT COUNT(*) FROM  Adventure_Tour_Operators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activity_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me activities each tour operator organises.",
+      "qtype": "ambig",
+      "sql": "select adventure_tour_operators.name , activities.activity_name from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?activity_name WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:activity_name ?activity_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "which activity names and descriptions are associated with each adventure tour operator?",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.activity_name, Activities.description  from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id   GROUP BY Adventure_Tour_Operators_Activities.activity_id HAVING COUNT(DISTINCT Adventure_Tour_Operators_Activities.adventure_tour_operator_id) = (SELECT COUNT(*) FROM  Adventure_Tour_Operators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activity_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "which activity names and descriptions are associated with each adventure tour operator?",
+      "qtype": "ambig",
+      "sql": "select adventure_tour_operators.name , activities.activity_name , activities.description from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?activity_name ?description WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:activity_name ?activity_name .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Describe the activities that each tour operator offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.description  from Adventure_Tour_Operators_Activities join Activities on Adventure_Tour_Operators_Activities.activity_id = Activities.id join Adventure_Tour_Operators on Adventure_Tour_Operators_Activities.adventure_tour_operator_id = Adventure_Tour_Operators.id   GROUP BY Adventure_Tour_Operators_Activities.activity_id HAVING COUNT(DISTINCT Adventure_Tour_Operators_Activities.adventure_tour_operator_id) = (SELECT COUNT(*) FROM  Adventure_Tour_Operators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Describe the activities that each tour operator offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me activities each tour operator organises.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?activity_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?activity_name WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:activity_name ?activity_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which activity names and descriptions are associated with each adventure tour operator?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?activity_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasAdventure_Tour_Operators ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Adventure_Tour_Operators } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?activity_name ?description WHERE {\n  ?adventure_tour_operators_activities a :Adventure_Tour_Operators_Activities .\n  ?activities a :Activities .\n  ?adventure_tour_operators_activities p:hasActivities ?activities .\n  ?adventure_tour_operators a :Adventure_Tour_Operators .\n  ?adventure_tour_operators_activities p:hasAdventure_Tour_Operators ?adventure_tour_operators .\n  ?adventure_tour_operators p:name ?name .\n  ?activities p:activity_name ?activity_name .\n  ?activities p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

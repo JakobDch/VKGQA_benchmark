@@ -1,0 +1,74 @@
+@prefix : <http://ambrosia.example.org/filmmaking#> .
+@prefix p: <http://ambrosia.example.org/filmmaking/prop#> .
+@prefix ex: <http://ambrosia.example.org/filmmaking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_duration_0_Directors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DirectorID\", \"Name\" FROM \"Directors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Directors/{DirectorID}" ; rr:class :Directors ] ;
+  rr:predicateObjectMap [ rr:predicate p:DirectorID ; rr:objectMap [ rr:column "DirectorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_vague_2cols_duration_1_Movies_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MovieID\", \"Title\", \"Running_Time\", \"Extended_Version_Length\", \"DirectorID\" FROM \"Movies\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movies/{MovieID}" ; rr:class :Movies ] ;
+  rr:predicateObjectMap [ rr:predicate p:MovieID ; rr:objectMap [ rr:column "MovieID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Running_Time ; rr:objectMap [ rr:column "Running_Time" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Extended_Version_Length ; rr:objectMap [ rr:column "Extended_Version_Length" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DirectorID ; rr:objectMap [ rr:column "DirectorID" ] ] .
+
+<#tm_vague_2cols_duration_2_Movies_DirectorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MovieID\", \"DirectorID\" FROM \"Movies\" WHERE \"DirectorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movies/{MovieID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDirectors ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Directors/{DirectorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_duration_3_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"GenreID\", \"Type\" FROM \"Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Genres/{GenreID}" ; rr:class :Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:GenreID ; rr:objectMap [ rr:column "GenreID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Type ; rr:objectMap [ rr:column "Type" ] ] .
+
+<#tm_vague_2cols_duration_4_Movie_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MovieID\", \"GenreID\" FROM \"Movie_Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movie_Genres/{MovieID}/{GenreID}" ; rr:class :Movie_Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:MovieID ; rr:objectMap [ rr:column "MovieID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:GenreID ; rr:objectMap [ rr:column "GenreID" ] ] .
+
+<#tm_vague_2cols_duration_5_Movie_Genres_GenreID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MovieID\", \"GenreID\" FROM \"Movie_Genres\" WHERE \"GenreID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movie_Genres/{MovieID}/{GenreID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasGenres ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Genres/{GenreID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_duration_6_Movie_Genres_MovieID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MovieID\", \"GenreID\" FROM \"Movie_Genres\" WHERE \"MovieID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movie_Genres/{MovieID}/{GenreID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMovies ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movies/{MovieID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_duration_7_Actors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ActorID\", \"FirstName\", \"LastName\" FROM \"Actors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Actors/{ActorID}" ; rr:class :Actors ] ;
+  rr:predicateObjectMap [ rr:predicate p:ActorID ; rr:objectMap [ rr:column "ActorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] .
+
+<#tm_vague_2cols_duration_8_Roles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"CharacterName\", \"ActorID\", \"MOVIEID\" FROM \"Roles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Roles/{RoleID}" ; rr:class :Roles ] ;
+  rr:predicateObjectMap [ rr:predicate p:RoleID ; rr:objectMap [ rr:column "RoleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CharacterName ; rr:objectMap [ rr:column "CharacterName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ActorID ; rr:objectMap [ rr:column "ActorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:MOVIEID ; rr:objectMap [ rr:column "MOVIEID" ] ] .
+
+<#tm_vague_2cols_duration_9_Roles_MOVIEID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"MOVIEID\" FROM \"Roles\" WHERE \"MOVIEID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Roles/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMovies ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Movies/{MOVIEID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_duration_10_Roles_ActorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RoleID\", \"ActorID\" FROM \"Roles\" WHERE \"ActorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Roles/{RoleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasActors ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Actors/{ActorID}" ; rr:termType rr:IRI ] ] .
+

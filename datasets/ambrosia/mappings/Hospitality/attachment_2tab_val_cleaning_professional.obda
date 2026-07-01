@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Housekeeping_base
+target		ex:Housekeeping/{id} a :Housekeeping ; p:id {id} ; p:housekeeper {housekeeper} ; p:hotel {hotel} ; p:shift_start {shift_start} ; p:shift_end {shift_end} .
+source		SELECT `id`, `housekeeper`, `hotel`, `shift_start`, `shift_end` FROM `Housekeeping`
+
+mappingId	LaundryService_base
+target		ex:LaundryService/{id} a :LaundryService ; p:id {id} ; p:laundry_attendant {laundry_attendant} ; p:hotel {hotel} ; p:shift_start {shift_start} ; p:shift_end {shift_end} .
+source		SELECT `id`, `laundry_attendant`, `hotel`, `shift_start`, `shift_end` FROM `LaundryService`
+
+mappingId	GuestRooms_base
+target		ex:GuestRooms/{room_id} a :GuestRooms ; p:room_id {room_id} ; p:hotel_name {hotel_name} ; p:room_number {room_number} ; p:capacity {capacity} ; p:amenities {amenities} .
+source		SELECT `room_id`, `hotel_name`, `room_number`, `capacity`, `amenities` FROM `GuestRooms`
+
+mappingId	Reservations_base
+target		ex:Reservations/{reservation_id} a :Reservations ; p:reservation_id {reservation_id} ; p:guest_name {guest_name} ; p:email {email} ; p:phone_number {phone_number} ; p:checkin_date {checkin_date} ; p:checkout_date {checkout_date} ; p:room_id {room_id} .
+source		SELECT `reservation_id`, `guest_name`, `email`, `phone_number`, `checkin_date`, `checkout_date`, `room_id` FROM `Reservations`
+
+mappingId	Reservations_room_id_fk
+target		ex:Reservations/{reservation_id} p:hasGuestRooms ex:GuestRooms/{room_id} .
+source		SELECT `reservation_id`, `room_id` FROM `Reservations` WHERE `room_id` IS NOT NULL
+
+mappingId	MaintenanceRequests_base
+target		ex:MaintenanceRequests/{request_id} a :MaintenanceRequests ; p:request_id {request_id} ; p:description {description} ; p:requested_at {requested_at} ; p:resolved_at {resolved_at} ; p:status {status} .
+source		SELECT `request_id`, `description`, `requested_at`, `resolved_at`, `status` FROM `MaintenanceRequests`
+
+]]

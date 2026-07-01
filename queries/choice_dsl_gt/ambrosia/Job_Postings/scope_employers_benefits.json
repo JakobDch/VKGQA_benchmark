@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_employers_benefits",
+  "schema": "amb_scope_employers_benefits",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Describe the benefit we have for every employer.",
+      "qtype": "ambig",
+      "sql": "SELECT Benefits.description  from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id   GROUP BY Employers_Benefits.benefit_id HAVING COUNT(DISTINCT Employers_Benefits.employer_id) = (SELECT COUNT(*) FROM  Employers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Describe the benefit we have for every employer.",
+      "qtype": "ambig",
+      "sql": "select employers.name , benefits.description from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What are the names and descriptions of the benefits that are common to all employers?",
+      "qtype": "unambig",
+      "sql": "SELECT Benefits.benefit_name, Benefits.description  from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id   GROUP BY Employers_Benefits.benefit_id HAVING COUNT(DISTINCT Employers_Benefits.employer_id) = (SELECT COUNT(*) FROM  Employers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?benefit_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:benefit_name ?benefit_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are all of the benefits listed against every single employer?",
+      "qtype": "unambig",
+      "sql": "select employers.name , benefits.benefit_name from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?benefit_name WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:benefit_name ?benefit_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every employer, list the names and descriptions of the benefits they offer.",
+      "qtype": "unambig",
+      "sql": "select employers.name , benefits.benefit_name , benefits.description from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?benefit_name ?description WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:benefit_name ?benefit_name .\n  ?benefits p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What benefits are listed for all employers?",
+      "qtype": "ambig",
+      "sql": "SELECT Benefits.benefit_name  from Employers_Benefits join Benefits on Employers_Benefits.benefit_id = Benefits.id join Employers on Employers_Benefits.employer_id = Employers.id   GROUP BY Employers_Benefits.benefit_id HAVING COUNT(DISTINCT Employers_Benefits.employer_id) = (SELECT COUNT(*) FROM  Employers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?benefit_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:benefit_name ?benefit_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Describe the benefit we have for every employer.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the names and descriptions of the benefits each employer offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?benefit_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:benefit_name ?benefit_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?benefit_name ?description WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:benefit_name ?benefit_name .\n  ?benefits p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What benefits are listed for all employers?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?benefit_name WHERE {\n  ?employers_benefits a :Employers_Benefits .\n  ?benefits a :Benefits .\n  ?employers_benefits p:hasBenefits ?benefits .\n  ?employers a :Employers .\n  ?employers_benefits p:hasEmployers ?employers .\n  ?employers p:name ?name .\n  ?benefits p:benefit_name ?benefit_name .\n} }\n  collective: { SELECT ?benefit_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:benefit_id ?cg . ?child a :Benefits ; p:id ?cg . ?l p:employer_id ?pg . ?parent a :Employers ; p:id ?pg . } GROUP BY ?child }\n  ?child p:benefit_name ?benefit_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Employers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

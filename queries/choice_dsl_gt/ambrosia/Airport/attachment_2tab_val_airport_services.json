@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_airport_services",
+  "schema": "amb_attachment_2tab_val_airport_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all people who have ever lost property and also list customers who filed complaints on January 5, 2024.",
+      "qtype": "unambig",
+      "sql": "SELECT Lost_Property.Owner as FullName\nFROM Lost_Property\nUNION\nSELECT Customer_Complaints.CustomerName as FullName\nFROM Customer_Complaints\nWHERE Customer_Complaints.Date = \"January 5, 2024\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lost_property a :LostProperties .\n    ?lost_property p:Owner ?owner .\n    BIND(?owner AS ?o0)\n  }\n  UNION\n  {\n    ?customer_complaints a :Complaints .\n    ?customer_complaints p:CustomerName ?customername .\n    ?customer_complaints p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?customername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Who lost something or wrote a complaint on January 5, 2024?",
+      "qtype": "ambig",
+      "sql": "SELECT Lost_Property.Owner as FullName\nFROM Lost_Property\nWHERE Lost_Property.Date = \"January 5, 2024\"\nUNION\nSELECT Customer_Complaints.CustomerName as FullName\nFROM Customer_Complaints\nWHERE Customer_Complaints.Date = \"January 5, 2024\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lost_property a :LostProperties .\n    ?lost_property p:Owner ?owner .\n    ?lost_property p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?owner AS ?o0)\n  }\n  UNION\n  {\n    ?customer_complaints a :Complaints .\n    ?customer_complaints p:CustomerName ?customername .\n    ?customer_complaints p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?customername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who lost something or wrote a complaint on January 5, 2024?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lost_property a :LostProperties .\n    ?lost_property p:Owner ?owner .\n    BIND(?owner AS ?o0)\n  }\n  UNION\n  {\n    ?customer_complaints a :Complaints .\n    ?customer_complaints p:CustomerName ?customername .\n    ?customer_complaints p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?customername AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lost_property a :LostProperties .\n    ?lost_property p:Owner ?owner .\n    ?lost_property p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?owner AS ?o0)\n  }\n  UNION\n  {\n    ?customer_complaints a :Complaints .\n    ?customer_complaints p:CustomerName ?customername .\n    ?customer_complaints p:Date ?date_f .\n    FILTER(STR(?date_f) = \"January 5, 2024\")\n    BIND(?customername AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

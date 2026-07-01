@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Creators_base
+target		ex:Creators/{id} a :Creators ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Creators`
+
+mappingId	Films_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:title {title} ; p:releaseDate {releaseDate} ; p:soundDesign {soundDesign} ; p:musicScore {musicScore} .
+source		SELECT `id`, `title`, `releaseDate`, `soundDesign`, `musicScore` FROM `Films`
+
+mappingId	Films_musicScore_fk
+target		ex:Films/{id} p:hasSoundDesigns ex:SoundDesigns/{musicScore} .
+source		SELECT `id`, `musicScore` FROM `Films` WHERE `musicScore` IS NOT NULL
+
+mappingId	Films_soundDesign_fk
+target		ex:Films/{id} p:hasSoundDesigns ex:SoundDesigns/{soundDesign} .
+source		SELECT `id`, `soundDesign` FROM `Films` WHERE `soundDesign` IS NOT NULL
+
+mappingId	SoundDesigns_base
+target		ex:SoundDesigns/{id} a :SoundDesigns ; p:id {id} ; p:description {description} ; p:creatorId {creatorId} ; p:filmId {filmId} .
+source		SELECT `id`, `description`, `creatorId`, `filmId` FROM `SoundDesigns`
+
+mappingId	SoundDesigns_filmId_fk
+target		ex:SoundDesigns/{id} p:hasFilms ex:Films/{filmId} .
+source		SELECT `id`, `filmId` FROM `SoundDesigns` WHERE `filmId` IS NOT NULL
+
+mappingId	SoundDesigns_creatorId_fk
+target		ex:SoundDesigns/{id} p:hasCreators ex:Creators/{creatorId} .
+source		SELECT `id`, `creatorId` FROM `SoundDesigns` WHERE `creatorId` IS NOT NULL
+
+mappingId	MusicScores_base
+target		ex:SoundDesigns/{id} a :SoundDesigns ; p:id {id} ; p:description {description} ; p:creatorId {creatorId} ; p:filmId {filmId} .
+source		SELECT `id`, `description`, `creatorId`, `filmId` FROM `MusicScores`
+
+mappingId	MusicScores_filmId_fk
+target		ex:SoundDesigns/{id} p:hasFilms ex:Films/{filmId} .
+source		SELECT `id`, `filmId` FROM `MusicScores` WHERE `filmId` IS NOT NULL
+
+mappingId	MusicScores_creatorId_fk
+target		ex:SoundDesigns/{id} p:hasCreators ex:Creators/{creatorId} .
+source		SELECT `id`, `creatorId` FROM `MusicScores` WHERE `creatorId` IS NOT NULL
+
+]]

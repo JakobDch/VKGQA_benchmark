@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Fertilizers_base
+target		ex:Fertilizers/{id} a :Fertilizers ; p:id {id} ; p:name {name} ; p:quantity {quantity} .
+source		SELECT `id`, `name`, `quantity` FROM `Fertilizers`
+
+mappingId	Components_base
+target		ex:Components/{id} a :Components ; p:id {id} ; p:name {componentName} .
+source		SELECT `id`, `componentName` FROM `Components`
+
+mappingId	FarmerInfo_base
+target		ex:Farmer/{id} a :Farmer ; p:id {id} ; p:name {farmerName} ; p:location {farmLocation} .
+source		SELECT `id`, `farmerName`, `farmLocation` FROM `FarmerInfo`
+
+mappingId	Crops_base
+target		ex:Crop/{id} a :Crop ; p:id {id} ; p:name {cropName} ; p:yieldPerAcre {yield} .
+source		SELECT `id`, `cropName`, `yield` FROM `Crops`
+
+mappingId	Farmers_Crops_base
+target		ex:Farmers_Crops/{_amb_rowid} a :Farmers_Crops ; p:farmerId {farmerId} ; p:cropId {cropId} .
+source		SELECT `_amb_rowid`, `farmerId`, `cropId` FROM `Farmers_Crops`
+
+mappingId	Farmers_Crops_cropId_fk
+target		ex:Farmers_Crops/{_amb_rowid} p:hasCrop ex:Crop/{cropId} .
+source		SELECT `_amb_rowid`, `cropId` FROM `Farmers_Crops` WHERE `cropId` IS NOT NULL
+
+mappingId	Farmers_Crops_farmerId_fk
+target		ex:Farmers_Crops/{_amb_rowid} p:hasFarmer ex:Farmer/{farmerId} .
+source		SELECT `_amb_rowid`, `farmerId` FROM `Farmers_Crops` WHERE `farmerId` IS NOT NULL
+
+mappingId	Fertilizers_Components_base
+target		ex:Fertilizers_Components/{_amb_rowid} a :Fertilizers_Components ; p:fertilizerId {fertilizerId} ; p:componentId {componentId} .
+source		SELECT `_amb_rowid`, `fertilizerId`, `componentId` FROM `Fertilizers_Components`
+
+mappingId	Fertilizers_Components_componentId_fk
+target		ex:Fertilizers_Components/{_amb_rowid} p:hasComponents ex:Components/{componentId} .
+source		SELECT `_amb_rowid`, `componentId` FROM `Fertilizers_Components` WHERE `componentId` IS NOT NULL
+
+mappingId	Fertilizers_Components_fertilizerId_fk
+target		ex:Fertilizers_Components/{_amb_rowid} p:hasFertilizers ex:Fertilizers/{fertilizerId} .
+source		SELECT `_amb_rowid`, `fertilizerId` FROM `Fertilizers_Components` WHERE `fertilizerId` IS NOT NULL
+
+]]

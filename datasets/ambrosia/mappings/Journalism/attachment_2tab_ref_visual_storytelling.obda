@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	authors_base
+target		ex:Authors/{authorID} a :Authors ; p:authorID {authorID} ; p:name {name} .
+source		SELECT `authorID`, `name` FROM `authors`
+
+mappingId	articles_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:title {title} ; p:content {content} ; p:publishDate {publishDate} ; p:author {author} .
+source		SELECT `articleID`, `title`, `content`, `publishDate`, `author` FROM `articles`
+
+mappingId	articles_author_fk
+target		ex:Articles/{articleID} p:hasAuthors ex:Authors/{author} .
+source		SELECT `articleID`, `author` FROM `articles` WHERE `author` IS NOT NULL
+
+mappingId	photos_base
+target		ex:photos/{photoID} a :photos ; p:photoID {photoID} ; p:photo {photo} ; p:description {description} ; p:articleID {articleID} .
+source		SELECT `photoID`, `photo`, `description`, `articleID` FROM `photos`
+
+mappingId	photos_photoID_fk
+target		ex:photos/{photoID} p:hasphotos ex:photos/{photoID} .
+source		SELECT `photoID` FROM `photos` WHERE `photoID` IS NOT NULL
+
+mappingId	photos_articleID_fk
+target		ex:photos/{photoID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `photoID`, `articleID` FROM `photos` WHERE `articleID` IS NOT NULL
+
+mappingId	videos_base
+target		ex:videos/{videoID} a :videos ; p:videoID {videoID} ; p:video {video} ; p:description {description} ; p:articleID {articleID} .
+source		SELECT `videoID`, `video`, `description`, `articleID` FROM `videos`
+
+mappingId	videos_videoID_fk
+target		ex:videos/{videoID} p:hasvideos ex:videos/{videoID} .
+source		SELECT `videoID` FROM `videos` WHERE `videoID` IS NOT NULL
+
+mappingId	videos_articleID_fk
+target		ex:videos/{videoID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `videoID`, `articleID` FROM `videos` WHERE `articleID` IS NOT NULL
+
+mappingId	article_details_base
+target		ex:article_details/{detailID} a :article_details ; p:detailID {detailID} ; p:details {details} ; p:articleID {articleID} .
+source		SELECT `detailID`, `details`, `articleID` FROM `article_details`
+
+mappingId	article_details_articleID_fk
+target		ex:article_details/{detailID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `detailID`, `articleID` FROM `article_details` WHERE `articleID` IS NOT NULL
+
+]]

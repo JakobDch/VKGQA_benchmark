@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:written_by {written_by} ; p:Written_journalism {Written_journalism} ; p:word_count {word_count} .
+source		SELECT `id`, `title`, `written_by`, `Written_journalism`, `word_count` FROM `Articles`
+
+mappingId	Articles_word_count_fk
+target		ex:Articles/{id} p:hasWordCounts ex:WordCounts/{word_count} .
+source		SELECT `id`, `word_count` FROM `Articles` WHERE `word_count` IS NOT NULL
+
+mappingId	Articles_written_by_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{written_by} .
+source		SELECT `id`, `written_by` FROM `Articles` WHERE `written_by` IS NOT NULL
+
+mappingId	WordCounts_base
+target		ex:WordCounts/{id} a :WordCounts ; p:id {id} ; p:column {column} .
+source		SELECT `id`, `column` FROM `WordCounts`
+
+mappingId	Publishers_base
+target		ex:Publishers/{id} a :Publishers ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Publishers`
+
+mappingId	Publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:article_id {article_id} ; p:publisher_id {publisher_id} ; p:publication_date {publication_date} .
+source		SELECT `id`, `article_id`, `publisher_id`, `publication_date` FROM `Publications`
+
+mappingId	Publications_publisher_id_fk
+target		ex:Publications/{id} p:hasPublishers ex:Publishers/{publisher_id} .
+source		SELECT `id`, `publisher_id` FROM `Publications` WHERE `publisher_id` IS NOT NULL
+
+mappingId	Publications_article_id_fk
+target		ex:Publications/{id} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `id`, `article_id` FROM `Publications` WHERE `article_id` IS NOT NULL
+
+mappingId	Comments_base
+target		ex:Comments/{id} a :Comments ; p:id {id} ; p:comment {comment} ; p:article_id {article_id} .
+source		SELECT `id`, `comment`, `article_id` FROM `Comments`
+
+mappingId	Comments_article_id_fk
+target		ex:Comments/{id} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `id`, `article_id` FROM `Comments` WHERE `article_id` IS NOT NULL
+
+]]

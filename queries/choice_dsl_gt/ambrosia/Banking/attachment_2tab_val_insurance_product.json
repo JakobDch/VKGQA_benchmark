@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_val_insurance_product",
+  "schema": "amb_attachment_2tab_val_insurance_product",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show life insurances and annuities with the payout of 100000.0.",
+      "qtype": "ambig",
+      "sql": "SELECT life_insurances.policy_number as number\nFROM life_insurances\nWHERE life_insurances.payout = 100000.0\nUNION\nSELECT annuities.contract_number as number\nFROM annuities\nWHERE annuities.payout = 100000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?life_insurances a :life_insurances .\n    ?life_insurances p:policy_number ?policy_number .\n    ?life_insurances p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?policy_number AS ?o0)\n  }\n  UNION\n  {\n    ?annuities a :annuities .\n    ?annuities p:contract_number ?contract_number .\n    ?annuities p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?contract_number AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show life insurances and annuities with the payout of 100000.0.",
+      "qtype": "ambig",
+      "sql": "SELECT life_insurances.policy_number as number\nFROM life_insurances\nUNION\nSELECT annuities.contract_number as number\nFROM annuities\nWHERE annuities.payout = 100000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?life_insurances a :life_insurances .\n    ?life_insurances p:policy_number ?policy_number .\n    BIND(?policy_number AS ?o0)\n  }\n  UNION\n  {\n    ?annuities a :annuities .\n    ?annuities p:contract_number ?contract_number .\n    ?annuities p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?contract_number AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show life insurances and annuities with the payout of 100000.0.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?life_insurances a :life_insurances .\n    ?life_insurances p:policy_number ?policy_number .\n    ?life_insurances p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?policy_number AS ?o0)\n  }\n  UNION\n  {\n    ?annuities a :annuities .\n    ?annuities p:contract_number ?contract_number .\n    ?annuities p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?contract_number AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?life_insurances a :life_insurances .\n    ?life_insurances p:policy_number ?policy_number .\n    BIND(?policy_number AS ?o0)\n  }\n  UNION\n  {\n    ?annuities a :annuities .\n    ?annuities p:contract_number ?contract_number .\n    ?annuities p:payout ?payout_f .\n    FILTER((STR(?payout_f) = \"100000\" || STR(?payout_f) = \"100000.0\"))\n    BIND(?contract_number AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

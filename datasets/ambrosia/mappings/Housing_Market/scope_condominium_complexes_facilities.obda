@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Condominium_Complexes_base
+target		ex:Condominium_Complexes/{id} a :Condominium_Complexes ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Condominium_Complexes`
+
+mappingId	Facilities_base
+target		ex:Facilities/{id} a :Facilities ; p:id {id} ; p:facilityName {facilityName} .
+source		SELECT `id`, `facilityName` FROM `Facilities`
+
+mappingId	Condominium_Complexes_Facilities_base
+target		ex:Condominium_Complexes_Facilities/{_amb_rowid} a :Condominium_Complexes_Facilities ; p:condoId {condoId} ; p:facilityId {facilityId} .
+source		SELECT `_amb_rowid`, `condoId`, `facilityId` FROM `Condominium_Complexes_Facilities`
+
+mappingId	Condominium_Complexes_Facilities_facilityId_fk
+target		ex:Condominium_Complexes_Facilities/{_amb_rowid} p:hasFacilities ex:Facilities/{facilityId} .
+source		SELECT `_amb_rowid`, `facilityId` FROM `Condominium_Complexes_Facilities` WHERE `facilityId` IS NOT NULL
+
+mappingId	Condominium_Complexes_Facilities_condoId_fk
+target		ex:Condominium_Complexes_Facilities/{_amb_rowid} p:hasCondominium_Complexes ex:Condominium_Complexes/{condoId} .
+source		SELECT `_amb_rowid`, `condoId` FROM `Condominium_Complexes_Facilities` WHERE `condoId` IS NOT NULL
+
+]]

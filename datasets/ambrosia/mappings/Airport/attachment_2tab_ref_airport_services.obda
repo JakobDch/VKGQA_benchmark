@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `EmailAddress` FROM `Customers`
+
+mappingId	Flights_base
+target		ex:Flights/{FlightNumber} a :Flights ; p:FlightNumber {FlightNumber} ; p:DepartureAirport {DepartureAirport} ; p:ArrivalAirport {ArrivalAirport} ; p:DepartureTime {DepartureTime} ; p:EstimatedArrivalTime {EstimatedArrivalTime} .
+source		SELECT `FlightNumber`, `DepartureAirport`, `ArrivalAirport`, `DepartureTime`, `EstimatedArrivalTime` FROM `Flights`
+
+mappingId	LostProperties_base
+target		ex:LostProperties/{PropertyID} a :LostProperties ; p:PropertyID {PropertyID} ; p:ItemDescription {ItemDescription} ; p:DateOfLoss {DateOfLoss} ; p:Found {Found} .
+source		SELECT `PropertyID`, `ItemDescription`, `DateOfLoss`, `Found` FROM `LostProperties`
+
+mappingId	LostProperties_DateOfLoss_fk
+target		ex:LostProperties/{PropertyID} p:hasCalendar ex:Calendar/{DateOfLoss} .
+source		SELECT `PropertyID`, `DateOfLoss` FROM `LostProperties` WHERE `DateOfLoss` IS NOT NULL
+
+mappingId	Complaints_base
+target		ex:Complaints/{ComplaintID} a :Complaints ; p:ComplaintID {ComplaintID} ; p:Description {Description} ; p:Severity {Severity} ; p:Resolved {Resolved} ; p:SubmissionDate {SubmissionDate} ; p:CustomerId {CustomerId} ; p:FlightNumber {FlightNumber} .
+source		SELECT `ComplaintID`, `Description`, `Severity`, `Resolved`, `SubmissionDate`, `CustomerId`, `FlightNumber` FROM `Complaints`
+
+mappingId	Complaints_FlightNumber_fk
+target		ex:Complaints/{ComplaintID} p:hasFlights ex:Flights/{FlightNumber} .
+source		SELECT `ComplaintID`, `FlightNumber` FROM `Complaints` WHERE `FlightNumber` IS NOT NULL
+
+mappingId	Complaints_CustomerId_fk
+target		ex:Complaints/{ComplaintID} p:hasCustomers ex:Customers/{CustomerId} .
+source		SELECT `ComplaintID`, `CustomerId` FROM `Complaints` WHERE `CustomerId` IS NOT NULL
+
+mappingId	Complaints_SubmissionDate_fk
+target		ex:Complaints/{ComplaintID} p:hasCalendar ex:Calendar/{SubmissionDate} .
+source		SELECT `ComplaintID`, `SubmissionDate` FROM `Complaints` WHERE `SubmissionDate` IS NOT NULL
+
+mappingId	Calendar_base
+target		ex:Calendar/{CalendarID} a :Calendar ; p:CalendarID {CalendarID} ; p:Year {Year} ; p:Month {Month} ; p:Day {Day} ; p:Date {Date} .
+source		SELECT `CalendarID`, `Year`, `Month`, `Day`, `Date` FROM `Calendar`
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_roles",
+  "schema": "amb_attachment_1tab_ref_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both economist positions  that require financial analysis and statistician positions that require the same.",
+      "qtype": "unambig",
+      "sql": "SELECT Jobs.title \nFROM Roles JOIN Jobs ON Roles.RoleID = Jobs.ROLEID JOIN DataTypes ON Jobs.DATAID = DataTypes.DataTypeID\nWHERE (Roles.RoleName = \"Economist\" OR Roles.RoleName = \"Statistician\") AND DataTypes.DataTypeName = \"Financial Analysis\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?roles a :Roles .\n  ?jobs a :Jobs .\n  ?jobs p:hasRoles ?roles .\n  ?datatypes a :DataTypes .\n  ?jobs p:hasDataTypes ?datatypes .\n  ?jobs p:Title ?title .\n  ?roles p:RoleName ?rolename_w .\n  ?roles p:RoleName ?rolename_w2 .\n  ?datatypes p:DataTypeName ?datatypename_w .\n  FILTER((((STR(?rolename_w) = \"Economist\" || STR(?rolename_w2) = \"Statistician\")) && STR(?datatypename_w) = \"Financial Analysis\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List economist positions and statistician positions that require financial analysis.",
+      "qtype": "ambig",
+      "sql": "SELECT Jobs.title \nFROM Roles JOIN Jobs ON Roles.RoleID = Jobs.ROLEID JOIN DataTypes ON Jobs.DATAID = DataTypes.DataTypeID\nWHERE Roles.RoleName = \"Economist\" OR Roles.RoleName = \"Statistician\" AND DataTypes.DataTypeName = \"Financial Analysis\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?roles a :Roles .\n  ?jobs a :Jobs .\n  ?jobs p:hasRoles ?roles .\n  ?datatypes a :DataTypes .\n  ?jobs p:hasDataTypes ?datatypes .\n  ?jobs p:Title ?title .\n  ?roles p:RoleName ?rolename_w .\n  ?roles p:RoleName ?rolename_w2 .\n  ?datatypes p:DataTypeName ?datatypename_w .\n  FILTER((STR(?rolename_w) = \"Economist\" || (STR(?rolename_w2) = \"Statistician\" && STR(?datatypename_w) = \"Financial Analysis\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List economist positions and statistician positions that require financial analysis.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?roles a :Roles .\n  ?jobs a :Jobs .\n  ?jobs p:hasRoles ?roles .\n  ?datatypes a :DataTypes .\n  ?jobs p:hasDataTypes ?datatypes .\n  ?jobs p:Title ?title .\n  ?roles p:RoleName ?rolename_w .\n  ?roles p:RoleName ?rolename_w2 .\n  ?datatypes p:DataTypeName ?datatypename_w .\n  FILTER((((STR(?rolename_w) = \"Economist\" || STR(?rolename_w2) = \"Statistician\")) && STR(?datatypename_w) = \"Financial Analysis\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?roles a :Roles .\n  ?jobs a :Jobs .\n  ?jobs p:hasRoles ?roles .\n  ?datatypes a :DataTypes .\n  ?jobs p:hasDataTypes ?datatypes .\n  ?jobs p:Title ?title .\n  ?roles p:RoleName ?rolename_w .\n  ?roles p:RoleName ?rolename_w2 .\n  ?datatypes p:DataTypeName ?datatypename_w .\n  FILTER((STR(?rolename_w) = \"Economist\" || (STR(?rolename_w2) = \"Statistician\" && STR(?datatypename_w) = \"Financial Analysis\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_broadcasts_formats",
+  "schema": "amb_scope_broadcasts_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with the format names common to all broadcasts",
+      "qtype": "unambig",
+      "sql": "SELECT Formats.format_name  from Broadcasts_Formats join Formats on Broadcasts_Formats.format_id = Formats.id join Broadcasts on Broadcasts_Formats.broadcast_id = Broadcasts.id   GROUP BY Broadcasts_Formats.format_id HAVING COUNT(DISTINCT Broadcasts_Formats.broadcast_id) = (SELECT COUNT(*) FROM  Broadcasts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFormats ?child ; p:hasBroadcasts ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Broadcasts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For all broadcasts, provide the format names associated with that broadcast",
+      "qtype": "unambig",
+      "sql": "select broadcasts.title , formats.format_name from Broadcasts_Formats join Formats on Broadcasts_Formats.format_id = Formats.id join Broadcasts on Broadcasts_Formats.broadcast_id = Broadcasts.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?format_name WHERE {\n  ?broadcasts_formats a :Broadcasts_Formats .\n  ?formats a :Formats .\n  ?broadcasts_formats p:hasFormats ?formats .\n  ?broadcasts a :Broadcasts .\n  ?broadcasts_formats p:hasBroadcasts ?broadcasts .\n  ?broadcasts p:title ?title .\n  ?formats p:format_name ?format_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What format is used in each broadcast?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFormats ?child ; p:hasBroadcasts ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Broadcasts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?format_name WHERE {\n  ?broadcasts_formats a :Broadcasts_Formats .\n  ?formats a :Formats .\n  ?broadcasts_formats p:hasFormats ?formats .\n  ?broadcasts a :Broadcasts .\n  ?broadcasts_formats p:hasBroadcasts ?broadcasts .\n  ?broadcasts p:title ?title .\n  ?formats p:format_name ?format_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

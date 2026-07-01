@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Grade_base
+target		ex:Grade/{id} a :Grade ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Grade`
+
+mappingId	Department_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:departmentName {departmentName} .
+source		SELECT `id`, `departmentName` FROM `Department`
+
+mappingId	Position_base
+target		ex:Position/{id} a :Position ; p:id {id} ; p:positionName {positionName} .
+source		SELECT `id`, `positionName` FROM `Position`
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:gradeId {gradeId} ; p:departmentId {departmentId} ; p:positionId {positionId} ; p:name {FullName} .
+source		SELECT `id`, `gradeId`, `departmentId`, `positionId`, `FullName` FROM `Employee`
+
+mappingId	Employee_positionId_fk
+target		ex:Employees/{id} p:hasPosition ex:Position/{positionId} .
+source		SELECT `id`, `positionId` FROM `Employee` WHERE `positionId` IS NOT NULL
+
+mappingId	Employee_departmentId_fk
+target		ex:Employees/{id} p:hasDepartments ex:Departments/{departmentId} .
+source		SELECT `id`, `departmentId` FROM `Employee` WHERE `departmentId` IS NOT NULL
+
+mappingId	Employee_gradeId_fk
+target		ex:Employees/{id} p:hasGrade ex:Grade/{gradeId} .
+source		SELECT `id`, `gradeId` FROM `Employee` WHERE `gradeId` IS NOT NULL
+
+mappingId	Software_Developer_base
+target		ex:Software_Developers/{id} a :Software_Developers ; p:id {id} ; p:employeeId {employeeId} ; p:experience {experience} ; p:programmingLanguages {programmingLanguages} ; p:toolsUsed {toolsUsed} .
+source		SELECT `id`, `employeeId`, `experience`, `programmingLanguages`, `toolsUsed` FROM `Software_Developer`
+
+mappingId	Software_Developer_employeeId_fk
+target		ex:Software_Developers/{id} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `id`, `employeeId` FROM `Software_Developer` WHERE `employeeId` IS NOT NULL
+
+mappingId	Data_Analyst_base
+target		ex:Data_Analysts/{id} a :Data_Analysts ; p:id {id} ; p:employeeId {employeeId} ; p:experience {experience} ; p:analyticalTools {analyticalTools} ; p:dataSources {dataSources} .
+source		SELECT `id`, `employeeId`, `experience`, `analyticalTools`, `dataSources` FROM `Data_Analyst`
+
+mappingId	Data_Analyst_employeeId_fk
+target		ex:Data_Analysts/{id} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `id`, `employeeId` FROM `Data_Analyst` WHERE `employeeId` IS NOT NULL
+
+]]

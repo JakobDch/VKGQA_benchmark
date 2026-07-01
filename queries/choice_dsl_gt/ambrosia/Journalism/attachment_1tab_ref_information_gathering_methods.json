@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_information_gathering_methods",
+  "schema": "amb_attachment_1tab_ref_information_gathering_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What press conferences were attended by politicians and what interviews did they also attend?",
+      "qtype": "unambig",
+      "sql": "SELECT News_Article.Title \nFROM Information_Gathering_Method JOIN News_Article ON Information_Gathering_Method.id = News_Article.information_gathering_method_id JOIN Participant_Type ON News_Article.participant_type_id = Participant_Type.id\nWHERE (Information_Gathering_Method.method = \"Press Conference\" OR Information_Gathering_Method.method = \"Interview\") AND Participant_Type.type = \"Politician\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?information_gathering_method a :Information_Gathering_Method .\n  ?news_article a :Articles .\n  ?news_article p:hasInformation_Gathering_Method ?information_gathering_method .\n  ?participant_type a :Participant_Type .\n  ?news_article p:hasParticipant_Type ?participant_type .\n  ?news_article p:title ?title .\n  ?information_gathering_method p:method ?method_w .\n  ?information_gathering_method p:method ?method_w2 .\n  ?participant_type p:type ?type_w .\n  FILTER((((STR(?method_w) = \"Press Conference\" || STR(?method_w2) = \"Interview\")) && STR(?type_w) = \"Politician\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show press conferences and interviews attended by politicians.",
+      "qtype": "ambig",
+      "sql": "SELECT News_Article.Title \nFROM Information_Gathering_Method JOIN News_Article ON Information_Gathering_Method.id = News_Article.information_gathering_method_id JOIN Participant_Type ON News_Article.participant_type_id = Participant_Type.id\nWHERE Information_Gathering_Method.method = \"Press Conference\" OR Information_Gathering_Method.method = \"Interview\" AND Participant_Type.type = \"Politician\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?information_gathering_method a :Information_Gathering_Method .\n  ?news_article a :Articles .\n  ?news_article p:hasInformation_Gathering_Method ?information_gathering_method .\n  ?participant_type a :Participant_Type .\n  ?news_article p:hasParticipant_Type ?participant_type .\n  ?news_article p:title ?title .\n  ?information_gathering_method p:method ?method_w .\n  ?information_gathering_method p:method ?method_w2 .\n  ?participant_type p:type ?type_w .\n  FILTER((STR(?method_w) = \"Press Conference\" || (STR(?method_w2) = \"Interview\" && STR(?type_w) = \"Politician\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show press conferences and interviews attended by politicians.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?information_gathering_method a :Information_Gathering_Method .\n  ?news_article a :Articles .\n  ?news_article p:hasInformation_Gathering_Method ?information_gathering_method .\n  ?participant_type a :Participant_Type .\n  ?news_article p:hasParticipant_Type ?participant_type .\n  ?news_article p:title ?title .\n  ?information_gathering_method p:method ?method_w .\n  ?information_gathering_method p:method ?method_w2 .\n  ?participant_type p:type ?type_w .\n  FILTER((((STR(?method_w) = \"Press Conference\" || STR(?method_w2) = \"Interview\")) && STR(?type_w) = \"Politician\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?information_gathering_method a :Information_Gathering_Method .\n  ?news_article a :Articles .\n  ?news_article p:hasInformation_Gathering_Method ?information_gathering_method .\n  ?participant_type a :Participant_Type .\n  ?news_article p:hasParticipant_Type ?participant_type .\n  ?news_article p:title ?title .\n  ?information_gathering_method p:method ?method_w .\n  ?information_gathering_method p:method ?method_w2 .\n  ?participant_type p:type ?type_w .\n  FILTER((STR(?method_w) = \"Press Conference\" || (STR(?method_w2) = \"Interview\" && STR(?type_w) = \"Politician\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

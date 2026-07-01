@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_marketing_agency_creative_position",
+  "schema": "amb_scope_marketing_agency_creative_position",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What creative position is common to all marketing agencies?",
+      "qtype": "unambig",
+      "sql": "SELECT Creative_Position.position  from Marketing_Agency_Creative_Positions join Creative_Position on Marketing_Agency_Creative_Positions.position_id = Creative_Position.id join Marketing_Agency on Marketing_Agency_Creative_Positions.agency_id = Marketing_Agency.id   GROUP BY Marketing_Agency_Creative_Positions.position_id HAVING COUNT(DISTINCT Marketing_Agency_Creative_Positions.agency_id) = (SELECT COUNT(*) FROM  Marketing_Agency)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Creative_Position ; p:id ?cg . ?l p:agency_id ?pg . ?parent a :Marketing_Agency ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position ?position .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Marketing_Agency } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the creative position for each marketing agency.",
+      "qtype": "ambig",
+      "sql": "select marketing_agency.name , creative_position.position from Marketing_Agency_Creative_Positions join Creative_Position on Marketing_Agency_Creative_Positions.position_id = Creative_Position.id join Marketing_Agency on Marketing_Agency_Creative_Positions.agency_id = Marketing_Agency.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?position WHERE {\n  ?marketing_agency_creative_positions a :Marketing_Agency_Creative_Positions .\n  ?creative_position a :Creative_Position .\n  ?marketing_agency_creative_positions p:hasCreative_Position ?creative_position .\n  ?marketing_agency a :Marketing_Agency .\n  ?marketing_agency_creative_positions p:hasMarketing_Agency ?marketing_agency .\n  ?marketing_agency p:name ?name .\n  ?creative_position p:position ?position .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the creative position for each marketing agency.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?position WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:position_id ?cg . ?child a :Creative_Position ; p:id ?cg . ?l p:agency_id ?pg . ?parent a :Marketing_Agency ; p:id ?pg . } GROUP BY ?child }\n  ?child p:position ?position .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Marketing_Agency } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?position WHERE {\n  ?marketing_agency_creative_positions a :Marketing_Agency_Creative_Positions .\n  ?creative_position a :Creative_Position .\n  ?marketing_agency_creative_positions p:hasCreative_Position ?creative_position .\n  ?marketing_agency a :Marketing_Agency .\n  ?marketing_agency_creative_positions p:hasMarketing_Agency ?marketing_agency .\n  ?marketing_agency p:name ?name .\n  ?creative_position p:position ?position .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

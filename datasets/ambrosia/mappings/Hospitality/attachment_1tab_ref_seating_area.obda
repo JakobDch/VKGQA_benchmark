@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:PhoneNumber {PhoneNumber} ; p:email {EmailAddress} ; p:name {FullName} .
+source		SELECT `CustomerID`, `PhoneNumber`, `EmailAddress`, `FullName` FROM `Customers`
+
+mappingId	Tables_base
+target		ex:Tables/{TableID} a :Tables ; p:TableID {TableID} ; p:SeatingArea {SeatingArea} ; p:Capacity {Capacity} .
+source		SELECT `TableID`, `SeatingArea`, `Capacity` FROM `Tables`
+
+mappingId	FloorPlan_base
+target		ex:FloorPlan/{FloorplanID} a :FloorPlan ; p:FloorplanID {FloorplanID} ; p:NumberOfSeats {NumberOfSeats} ; p:TableId {TableId} .
+source		SELECT `FloorplanID`, `NumberOfSeats`, `TableId` FROM `FloorPlan`
+
+mappingId	FloorPlan_TableId_fk
+target		ex:FloorPlan/{FloorplanID} p:hasTables ex:Tables/{TableId} .
+source		SELECT `FloorplanID`, `TableId` FROM `FloorPlan` WHERE `TableId` IS NOT NULL
+
+mappingId	FloorPlan_TableId_fk
+target		ex:FloorPlan/{FloorplanID} p:hasTables ex:Tables/{TableId} .
+source		SELECT `FloorplanID`, `TableId` FROM `FloorPlan` WHERE `TableId` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{ReservationID} a :Reservations ; p:ReservationID {ReservationID} ; p:CustomerID {CustomerID} ; p:ReservedDate {ReservedDate} ; p:ReservedTime {ReservedTime} ; p:NumGuests {NumGuests} ; p:TableId {TableId} .
+source		SELECT `ReservationID`, `CustomerID`, `ReservedDate`, `ReservedTime`, `NumGuests`, `TableId` FROM `Reservations`
+
+mappingId	Reservations_TableId_fk
+target		ex:Reservations/{ReservationID} p:hasTables ex:Tables/{TableId} .
+source		SELECT `ReservationID`, `TableId` FROM `Reservations` WHERE `TableId` IS NOT NULL
+
+mappingId	Reservations_CustomerID_fk
+target		ex:Reservations/{ReservationID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `ReservationID`, `CustomerID` FROM `Reservations` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Reservations_TableId_fk
+target		ex:Reservations/{ReservationID} p:hasTables ex:Tables/{TableId} .
+source		SELECT `ReservationID`, `TableId` FROM `Reservations` WHERE `TableId` IS NOT NULL
+
+mappingId	FoodOrders_base
+target		ex:FoodOrders/{OrderID} a :FoodOrders ; p:OrderID {OrderID} ; p:ReservationID {ReservationID} ; p:MenuItem {MenuItem} ; p:Quantity {Quantity} ; p:SpecialInstructions {SpecialInstructions} ; p:TotalPrice {TotalPrice} ; p:PaymentStatus {PaymentStatus} .
+source		SELECT `OrderID`, `ReservationID`, `MenuItem`, `Quantity`, `SpecialInstructions`, `TotalPrice`, `PaymentStatus` FROM `FoodOrders`
+
+mappingId	FoodOrders_ReservationID_fk
+target		ex:FoodOrders/{OrderID} p:hasReservations ex:Reservations/{ReservationID} .
+source		SELECT `OrderID`, `ReservationID` FROM `FoodOrders` WHERE `ReservationID` IS NOT NULL
+
+]]

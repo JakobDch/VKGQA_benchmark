@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_sequential_art",
+  "schema": "amb_attachment_1tab_ref_sequential_art",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all comic books and graphic novels published by BOOM Studios.",
+      "qtype": "ambig",
+      "sql": "SELECT ArtWork.Title \nFROM SequentialArtType JOIN ArtWork ON SequentialArtType.id = ArtWork.sequentialArtTypeId JOIN Publisher ON ArtWork.publisherId = Publisher.id\nWHERE (SequentialArtType.type = \"Comic Book\" OR SequentialArtType.type = \"Graphic Novel\") AND Publisher.name = \"BOOM Studios\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?sequentialarttype a :SequentialArtType .\n  ?artwork a :ArtWork .\n  ?artwork p:hasSequentialArtType ?sequentialarttype .\n  ?publisher a :Publisher .\n  ?artwork p:hasPublisher ?publisher .\n  ?artwork p:title ?title .\n  ?sequentialarttype p:type ?type_w .\n  ?sequentialarttype p:type ?type_w2 .\n  ?publisher p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Comic Book\" || STR(?type_w2) = \"Graphic Novel\")) && STR(?name_w) = \"BOOM Studios\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all comic books and graphic novels published by BOOM Studios.",
+      "qtype": "ambig",
+      "sql": "SELECT ArtWork.Title \nFROM SequentialArtType JOIN ArtWork ON SequentialArtType.id = ArtWork.sequentialArtTypeId JOIN Publisher ON ArtWork.publisherId = Publisher.id\nWHERE SequentialArtType.type = \"\" OR SequentialArtType.type = \"Graphic Novel\" AND Publisher.name = \"BOOM Studios\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?sequentialarttype a :SequentialArtType .\n  ?artwork a :ArtWork .\n  ?artwork p:hasSequentialArtType ?sequentialarttype .\n  ?publisher a :Publisher .\n  ?artwork p:hasPublisher ?publisher .\n  ?artwork p:title ?title .\n  ?sequentialarttype p:type ?type_w .\n  ?sequentialarttype p:type ?type_w2 .\n  ?publisher p:name ?name_w .\n  FILTER((STR(?type_w) = \"\" || (STR(?type_w2) = \"Graphic Novel\" && STR(?name_w) = \"BOOM Studios\")))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all comic books and graphic novels published by BOOM Studios.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?sequentialarttype a :SequentialArtType .\n  ?artwork a :ArtWork .\n  ?artwork p:hasSequentialArtType ?sequentialarttype .\n  ?publisher a :Publisher .\n  ?artwork p:hasPublisher ?publisher .\n  ?artwork p:title ?title .\n  ?sequentialarttype p:type ?type_w .\n  ?sequentialarttype p:type ?type_w2 .\n  ?publisher p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Comic Book\" || STR(?type_w2) = \"Graphic Novel\")) && STR(?name_w) = \"BOOM Studios\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?sequentialarttype a :SequentialArtType .\n  ?artwork a :ArtWork .\n  ?artwork p:hasSequentialArtType ?sequentialarttype .\n  ?publisher a :Publisher .\n  ?artwork p:hasPublisher ?publisher .\n  ?artwork p:title ?title .\n  ?sequentialarttype p:type ?type_w .\n  ?sequentialarttype p:type ?type_w2 .\n  ?publisher p:name ?name_w .\n  FILTER((STR(?type_w) = \"\" || (STR(?type_w2) = \"Graphic Novel\" && STR(?name_w) = \"BOOM Studios\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

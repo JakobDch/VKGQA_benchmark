@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_film_style",
+  "schema": "amb_attachment_2tab_val_film_style",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What adventure movies and action movies are directed by Sofia Martinez?",
+      "qtype": "unambig",
+      "sql": "SELECT Adventure_Movies.title\nFROM Adventure_Movies\nWHERE Adventure_Movies.Director = \"Sofia Martinez\"\nUNION\nSELECT Action_Movies.title\nFROM Action_Movies\nWHERE Action_Movies.Director = \"Sofia Martinez\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?adventure_movies a :Adventure_Movies .\n    ?adventure_movies p:title ?title .\n    ?adventure_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:title ?title .\n    ?action_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display adventure movies and action movies directed by Sofia Martinez.",
+      "qtype": "ambig",
+      "sql": "SELECT Adventure_Movies.title\nFROM Adventure_Movies\nUNION\nSELECT Action_Movies.title\nFROM Action_Movies\nWHERE Action_Movies.Director = \"Sofia Martinez\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?adventure_movies a :Adventure_Movies .\n    ?adventure_movies p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:title ?title .\n    ?action_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display adventure movies and action movies directed by Sofia Martinez.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?adventure_movies a :Adventure_Movies .\n    ?adventure_movies p:title ?title .\n    ?adventure_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:title ?title .\n    ?action_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?adventure_movies a :Adventure_Movies .\n    ?adventure_movies p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?action_movies a :Action_Movies .\n    ?action_movies p:title ?title .\n    ?action_movies p:Director ?director_f .\n    FILTER(STR(?director_f) = \"Sofia Martinez\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

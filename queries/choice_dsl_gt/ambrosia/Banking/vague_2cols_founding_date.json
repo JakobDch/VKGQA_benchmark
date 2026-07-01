@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_founding_date",
+  "schema": "amb_vague_2cols_founding_date",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which financial institution has the best total liabilities and what year and decade was it founded?",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Founding_Year, Founding_Decade\nFROM Financial_Institutions\nORDER BY Total_Liabilities\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_year ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List all names and founding years",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Founding_Year\nFROM Financial_Institutions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_year WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Which financial institution has the best total liabilities and what year was it founded?",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Founding_Year\nFROM Financial_Institutions\nORDER BY Total_Liabilities\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_year WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which financial institution has the best total liabilities and when was it founded?",
+      "qtype": "ambig",
+      "sql": "SELECT Name, Founding_Decade\nFROM Financial_Institutions\nORDER BY Total_Liabilities\nLIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "List all names and founding decades",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Founding_Decade\nFROM Financial_Institutions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "List all names, founding years and decades",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Founding_Year, Founding_Decade\nFROM Financial_Institutions",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?founding_year ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which financial institution has the best total liabilities and when was it founded?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?founding_year ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1 }\n  component: { SELECT ?name ?founding_year WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1 }\n  component_2: { SELECT ?name ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n  ?financial_institutions p:Total_Liabilities ?total_liabilities_o .\n}\nORDER BY ASC(?total_liabilities_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all names and founding dates",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?founding_year WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n} }\n  component_2: { SELECT ?name ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n} }\n  full: { SELECT ?name ?founding_year ?founding_decade WHERE {\n  ?financial_institutions a :Financial_Institutions .\n  ?financial_institutions p:name ?name .\n  ?financial_institutions p:Founding_Year ?founding_year .\n  ?financial_institutions p:Founding_Decade ?founding_decade .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

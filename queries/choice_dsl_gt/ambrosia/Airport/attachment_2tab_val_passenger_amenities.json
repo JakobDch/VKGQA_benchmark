@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_passenger_amenities",
+  "schema": "amb_attachment_2tab_val_passenger_amenities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List lounges and observation decks with accessibility options for all people.",
+      "qtype": "ambig",
+      "sql": "SELECT Lounge.name\nFROM Lounge\nWHERE Lounge.Accessibility = \"All\"\nUNION\nSELECT ObservationDeck.name\nFROM ObservationDeck\nWHERE ObservationDeck.Accessibility = \"All\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lounge a :Lounge .\n    ?lounge p:name ?name .\n    ?lounge p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?observationdeck a :ObservationDeck .\n    ?observationdeck p:name ?name .\n    ?observationdeck p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "List lounges and observation decks with accessibility options for all people.",
+      "qtype": "ambig",
+      "sql": "SELECT Lounge.name\nFROM Lounge\nUNION\nSELECT ObservationDeck.name\nFROM ObservationDeck\nWHERE ObservationDeck.Accessibility = \"All\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lounge a :Lounge .\n    ?lounge p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?observationdeck a :ObservationDeck .\n    ?observationdeck p:name ?name .\n    ?observationdeck p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List lounges and observation decks with accessibility options for all people.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lounge a :Lounge .\n    ?lounge p:name ?name .\n    ?lounge p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?observationdeck a :ObservationDeck .\n    ?observationdeck p:name ?name .\n    ?observationdeck p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lounge a :Lounge .\n    ?lounge p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?observationdeck a :ObservationDeck .\n    ?observationdeck p:name ?name .\n    ?observationdeck p:Accessibility ?accessibility_f .\n    FILTER(STR(?accessibility_f) = \"All\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

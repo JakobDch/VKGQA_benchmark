@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_divorce_rate",
+  "schema": "amb_vague_2cols_divorce_rate",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the percentage of divorces in villages with less than 300 people?",
+      "qtype": "unambig",
+      "sql": "SELECT Divorced_Percentage FROM VillageDemographics WHERE TotalPopulation < 300",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_percentage WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give the divorce percentage of Village 1.",
+      "qtype": "unambig",
+      "sql": "SELECT Divorced_Percentage  FROM VillageDemographics  WHERE Village = 'Village1'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_percentage WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the divorce rate in villages with less than 300 people?",
+      "qtype": "ambig",
+      "sql": "SELECT Divorced_Count FROM VillageDemographics WHERE TotalPopulation < 300",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the divorce rate in villages with less than 300 people?",
+      "qtype": "ambig",
+      "sql": "SELECT Divorced_Percentage, Divorced_Count FROM VillageDemographics WHERE TotalPopulation < 300",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_percentage ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Give the divorce count of Village 1.",
+      "qtype": "unambig",
+      "sql": "SELECT Divorced_Count  FROM VillageDemographics  WHERE Village = 'Village1'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the divorce rate in Village 1?",
+      "qtype": "ambig",
+      "sql": "SELECT Divorced_Percentage, Divorced_Count  FROM VillageDemographics  WHERE Village = 'Village1'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?divorced_percentage ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the divorce rate in villages with less than 300 people?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?divorced_percentage WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n} }\n  component_2: { SELECT ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n} }\n  full: { SELECT ?divorced_percentage ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:TotalPopulation ?totalpopulation_f .\n  FILTER(?totalpopulation_f < 300)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the divorce rate in Village 1?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?divorced_percentage WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n} }\n  component_2: { SELECT ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n} }\n  full: { SELECT ?divorced_percentage ?divorced_count WHERE {\n  ?villagedemographics a :VillageDemographics .\n  ?villagedemographics p:Divorced_Percentage ?divorced_percentage .\n  ?villagedemographics p:Divorced_Count ?divorced_count .\n  ?villagedemographics p:Village ?village_f .\n  FILTER(?village_f = \"Village1\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

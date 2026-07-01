@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Real_Estate_Developer_base
+target		ex:Real_Estate_Developer/{id} a :Real_Estate_Developer ; p:id {id} ; p:name {name} ; p:contact_info {contact_info} .
+source		SELECT `id`, `name`, `contact_info` FROM `Real_Estate_Developer`
+
+mappingId	Contractor_base
+target		ex:Contractors/{id} a :Contractors ; p:id {id} ; p:name {name} ; p:specialty {specialty} ; p:license_number {license_number} .
+source		SELECT `id`, `name`, `specialty`, `license_number` FROM `Contractor`
+
+mappingId	Development_Project_base
+target		ex:Development_Project/{id} a :Development_Project ; p:id {id} ; p:project_name {project_name} ; p:developer_id {developer_id} ; p:contractor_id {contractor_id} .
+source		SELECT `id`, `project_name`, `developer_id`, `contractor_id` FROM `Development_Project`
+
+mappingId	Development_Project_contractor_id_fk
+target		ex:Development_Project/{id} p:hasContractors ex:Contractors/{contractor_id} .
+source		SELECT `id`, `contractor_id` FROM `Development_Project` WHERE `contractor_id` IS NOT NULL
+
+mappingId	Development_Project_developer_id_fk
+target		ex:Development_Project/{id} p:hasReal_Estate_Developer ex:Real_Estate_Developer/{developer_id} .
+source		SELECT `id`, `developer_id` FROM `Development_Project` WHERE `developer_id` IS NOT NULL
+
+mappingId	Project_Milestone_base
+target		ex:Project_Milestone/{id} a :Project_Milestone ; p:id {id} ; p:milestone_description {milestone_description} ; p:start_date {start_date} ; p:end_date {end_date} ; p:development_project_id {development_project_id} .
+source		SELECT `id`, `milestone_description`, `start_date`, `end_date`, `development_project_id` FROM `Project_Milestone`
+
+mappingId	Project_Milestone_development_project_id_fk
+target		ex:Project_Milestone/{id} p:hasDevelopment_Project ex:Development_Project/{development_project_id} .
+source		SELECT `id`, `development_project_id` FROM `Project_Milestone` WHERE `development_project_id` IS NOT NULL
+
+mappingId	Materials_base
+target		ex:Materials/{id} a :Materials ; p:id {id} ; p:material_type {material_type} ; p:quantity {quantity} ; p:unit_price {unit_price} ; p:contractor_id {contractor_id} .
+source		SELECT `id`, `material_type`, `quantity`, `unit_price`, `contractor_id` FROM `Materials`
+
+mappingId	Materials_contractor_id_fk
+target		ex:Materials/{id} p:hasContractors ex:Contractors/{contractor_id} .
+source		SELECT `id`, `contractor_id` FROM `Materials` WHERE `contractor_id` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:position {position} ; p:contractor_id {contractor_id} .
+source		SELECT `id`, `first_name`, `last_name`, `position`, `contractor_id` FROM `Employee`
+
+mappingId	Employee_contractor_id_fk
+target		ex:Employees/{id} p:hasContractors ex:Contractors/{contractor_id} .
+source		SELECT `id`, `contractor_id` FROM `Employee` WHERE `contractor_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_events",
+  "schema": "amb_attachment_1tab_ref_events",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show press conferences and media scrums attended by John Doe.",
+      "qtype": "ambig",
+      "sql": "SELECT Events.EventName \nFROM Events JOIN Persons ON Events.PersonID = Persons.PersonID\nWHERE (Events.EventType = \"Press Conference\" OR Events.EventType = \"Media Scrum\") AND Persons.FullName = \"John Doe\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?eventname WHERE {\n  ?events a :Events .\n  ?persons a :Persons .\n  ?events p:hasPersons ?persons .\n  ?events p:EventName ?eventname .\n  ?events p:EventType ?eventtype_w .\n  ?events p:EventType ?eventtype_w2 .\n  ?persons p:name ?fullname_w .\n  FILTER((((STR(?eventtype_w) = \"Press Conference\" || STR(?eventtype_w2) = \"Media Scrum\")) && STR(?fullname_w) = \"John Doe\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show press conferences and media scrums attended by John Doe.",
+      "qtype": "ambig",
+      "sql": "SELECT Events.EventName \nFROM Events JOIN Persons ON Events.PersonID = Persons.PersonID\nWHERE Events.EventType = \"Press Conference\" OR Events.EventType = \"Media Scrum\" AND Persons.FullName = \"John Doe\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?eventname WHERE {\n  ?events a :Events .\n  ?persons a :Persons .\n  ?events p:hasPersons ?persons .\n  ?events p:EventName ?eventname .\n  ?events p:EventType ?eventtype_w .\n  ?events p:EventType ?eventtype_w2 .\n  ?persons p:name ?fullname_w .\n  FILTER((STR(?eventtype_w) = \"Press Conference\" || (STR(?eventtype_w2) = \"Media Scrum\" && STR(?fullname_w) = \"John Doe\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show press conferences and media scrums attended by John Doe.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?eventname WHERE {\n  ?events a :Events .\n  ?persons a :Persons .\n  ?events p:hasPersons ?persons .\n  ?events p:EventName ?eventname .\n  ?events p:EventType ?eventtype_w .\n  ?events p:EventType ?eventtype_w2 .\n  ?persons p:name ?fullname_w .\n  FILTER((STR(?eventtype_w) = \"Press Conference\" || (STR(?eventtype_w2) = \"Media Scrum\" && STR(?fullname_w) = \"John Doe\")))\n} }\n  high: { SELECT ?eventname WHERE {\n  ?events a :Events .\n  ?persons a :Persons .\n  ?events p:hasPersons ?persons .\n  ?events p:EventName ?eventname .\n  ?events p:EventType ?eventtype_w .\n  ?events p:EventType ?eventtype_w2 .\n  ?persons p:name ?fullname_w .\n  FILTER((((STR(?eventtype_w) = \"Press Conference\" || STR(?eventtype_w2) = \"Media Scrum\")) && STR(?fullname_w) = \"John Doe\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

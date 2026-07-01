@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {EmailAddress} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth`, `EmailAddress` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{TeacherID} a :Teachers ; p:TeacherID {TeacherID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {EmailAddress} .
+source		SELECT `TeacherID`, `FirstName`, `LastName`, `DateOfBirth`, `EmailAddress` FROM `Teachers`
+
+mappingId	Classes_base
+target		ex:Classes/{ClassID} a :Classes ; p:ClassID {ClassID} ; p:ClassName {ClassName} ; p:TeacherID {TeacherID} .
+source		SELECT `ClassID`, `ClassName`, `TeacherID` FROM `Classes`
+
+mappingId	Classes_TeacherID_fk
+target		ex:Classes/{ClassID} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `ClassID`, `TeacherID` FROM `Classes` WHERE `TeacherID` IS NOT NULL
+
+mappingId	ResourceAllocation_base
+target		ex:ResourceAllocation/{AllocationID} a :ResourceAllocation ; p:AllocationID {AllocationID} ; p:ClassID {ClassID} ; p:ResourceType {ResourceType} ; p:Quantity {Quantity} .
+source		SELECT `AllocationID`, `ClassID`, `ResourceType`, `Quantity` FROM `ResourceAllocation`
+
+mappingId	ResourceAllocation_ClassID_fk
+target		ex:ResourceAllocation/{AllocationID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `AllocationID`, `ClassID` FROM `ResourceAllocation` WHERE `ClassID` IS NOT NULL
+
+mappingId	Learning_Spaces_base
+target		ex:Learning_Spaces/{SpaceID} a :Learning_Spaces ; p:SpaceID {SpaceID} ; p:name {Name} ; p:Type {Type} ; p:AvailableResources {AvailableResources} ; p:Capacity {Capacity} .
+source		SELECT `SpaceID`, `Name`, `Type`, `AvailableResources`, `Capacity` FROM `Learning_Spaces`
+
+]]

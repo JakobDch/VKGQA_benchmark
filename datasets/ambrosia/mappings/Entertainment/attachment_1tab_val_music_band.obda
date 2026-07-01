@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Music_Bands_base
+target		ex:Music_Bands/{id} a :Music_Bands ; p:id {id} ; p:name {Name} ; p:Genre {Genre} ; p:Founding_Year {Founding_Year} ; p:Country {Country} .
+source		SELECT `id`, `Name`, `Genre`, `Founding_Year`, `Country` FROM `Music_Bands`
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:Title {Title} ; p:Release_Date {Release_Date} ; p:Label {Label} ; p:Genre {Genre} .
+source		SELECT `id`, `Title`, `Release_Date`, `Label`, `Genre` FROM `Albums`
+
+mappingId	Albums_Genre_fk
+target		ex:Album/{id} p:hasMusic_Bands ex:Music_Bands/{Genre} .
+source		SELECT `id`, `Genre` FROM `Albums` WHERE `Genre` IS NOT NULL
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:Title {Title} ; p:Length {Length} ; p:Album_id {Album_id} .
+source		SELECT `id`, `Title`, `Length`, `Album_id` FROM `Songs`
+
+mappingId	Songs_Album_id_fk
+target		ex:Song/{id} p:hasAlbum ex:Album/{Album_id} .
+source		SELECT `id`, `Album_id` FROM `Songs` WHERE `Album_id` IS NOT NULL
+
+mappingId	Concerts_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:Date {Date} ; p:Venue {Venue} ; p:Ticket_Price {Ticket_Price} ; p:Band_id {Band_id} .
+source		SELECT `id`, `Date`, `Venue`, `Ticket_Price`, `Band_id` FROM `Concerts`
+
+mappingId	Concerts_Band_id_fk
+target		ex:Concert/{id} p:hasMusic_Bands ex:Music_Bands/{Band_id} .
+source		SELECT `id`, `Band_id` FROM `Concerts` WHERE `Band_id` IS NOT NULL
+
+mappingId	Fans_base
+target		ex:Fans/{id} a :Fans ; p:id {id} ; p:First_name {First_name} ; p:Last_name {Last_name} ; p:Age {Age} ; p:email {Email} ; p:Favorite_band_id {Favorite_band_id} .
+source		SELECT `id`, `First_name`, `Last_name`, `Age`, `Email`, `Favorite_band_id` FROM `Fans`
+
+mappingId	Fans_Favorite_band_id_fk
+target		ex:Fans/{id} p:hasMusic_Bands ex:Music_Bands/{Favorite_band_id} .
+source		SELECT `id`, `Favorite_band_id` FROM `Fans` WHERE `Favorite_band_id` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:Rating {Rating} ; p:Review_text {Review_text} ; p:Song_id {Song_id} .
+source		SELECT `id`, `Rating`, `Review_text`, `Song_id` FROM `Reviews`
+
+mappingId	Reviews_Song_id_fk
+target		ex:Review/{id} p:hasSong ex:Song/{Song_id} .
+source		SELECT `id`, `Song_id` FROM `Reviews` WHERE `Song_id` IS NOT NULL
+
+]]

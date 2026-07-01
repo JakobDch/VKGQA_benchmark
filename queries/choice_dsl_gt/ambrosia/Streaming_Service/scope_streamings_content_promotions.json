@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streamings_content_promotions",
+  "schema": "amb_scope_streamings_content_promotions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me about the types and descriptions of the promotions every streaming company is running.",
+      "qtype": "ambig",
+      "sql": "SELECT Content_Promotions.type, Content_Promotions.description  from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id   GROUP BY Streamings_Content_Promotions.content_promotion_type_id HAVING COUNT(DISTINCT Streamings_Content_Promotions.streaming_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me about the types and descriptions of the promotions every streaming company is running.",
+      "qtype": "ambig",
+      "sql": "select streamings.title , content_promotions.type , content_promotions.description from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type ?description WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:type ?type .\n  ?content_promotions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "Please provide the description of content promotions that is consistent across all streamings",
+      "qtype": "unambig",
+      "sql": "SELECT Content_Promotions.description  from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id   GROUP BY Streamings_Content_Promotions.content_promotion_type_id HAVING COUNT(DISTINCT Streamings_Content_Promotions.streaming_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What promotions are available for each streaming service",
+      "qtype": "ambig",
+      "sql": "SELECT Content_Promotions.type  from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id   GROUP BY Streamings_Content_Promotions.content_promotion_type_id HAVING COUNT(DISTINCT Streamings_Content_Promotions.streaming_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What promotions are available for each streaming service",
+      "qtype": "ambig",
+      "sql": "select streamings.title , content_promotions.type from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "What descriptions of content promotions are associated with each streaming service?",
+      "qtype": "ambig",
+      "sql": "select streamings.title , content_promotions.description from Streamings_Content_Promotions join Content_Promotions on Streamings_Content_Promotions.content_promotion_type_id = Content_Promotions.id join Streamings on Streamings_Content_Promotions.streaming_id = Streamings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?description WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What descriptions of content promotions are associated with each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?description WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What promotions are available for each streaming service",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?type WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:type ?type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me about the types and descriptions of the promotions every streaming company is running.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type ?description WHERE {\n  ?streamings_content_promotions a :Streamings_Content_Promotions .\n  ?content_promotions a :Content_Promotions .\n  ?streamings_content_promotions p:hasContent_Promotions ?content_promotions .\n  ?streamings a :Streamings .\n  ?streamings_content_promotions p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?content_promotions p:type ?type .\n  ?content_promotions p:description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent_Promotions ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

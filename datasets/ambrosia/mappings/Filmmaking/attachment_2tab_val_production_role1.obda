@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Scripts_base
+target		ex:Scripts/{ID} a :Scripts ; p:ID {ID} ; p:Title {Title} ; p:Genre {Genre} ; p:Duration {Duration} ; p:Scriptwriter {Scriptwriter} ; p:Deadline {Deadline} .
+source		SELECT `ID`, `Title`, `Genre`, `Duration`, `Scriptwriter`, `Deadline` FROM `Scripts`
+
+mappingId	Editors_base
+target		ex:Editors/{ID} a :Editors ; p:ID {ID} ; p:name {Name} ; p:Specialization {Specialization} ; p:Experience {Experience} ; p:Editor {Editor} ; p:Deadline {Deadline} .
+source		SELECT `ID`, `Name`, `Specialization`, `Experience`, `Editor`, `Deadline` FROM `Editors`
+
+mappingId	Actors_base
+target		ex:Actors/{ID} a :Actors ; p:ID {ID} ; p:name {Name} ; p:Age {Age} ; p:Role {Role} .
+source		SELECT `ID`, `Name`, `Age`, `Role` FROM `Actors`
+
+mappingId	Directors_base
+target		ex:Directors/{ID} a :Directors ; p:ID {ID} ; p:name {Name} ; p:Movies_Directed {Movies_Directed} ; p:Director {Director} .
+source		SELECT `ID`, `Name`, `Movies_Directed`, `Director` FROM `Directors`
+
+mappingId	ProductionHouses_base
+target		ex:ProductionHouses/{ID} a :ProductionHouses ; p:ID {ID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `ID`, `Name`, `Location` FROM `ProductionHouses`
+
+mappingId	MovieCrew_base
+target		ex:MovieCrew/{ID} a :MovieCrew ; p:ID {ID} ; p:Position {Position} ; p:PersonID {PersonID} ; p:HouseID {HouseID} .
+source		SELECT `ID`, `Position`, `PersonID`, `HouseID` FROM `MovieCrew`
+
+mappingId	MovieCrew_HouseID_fk
+target		ex:MovieCrew/{ID} p:hasProductionHouses ex:ProductionHouses/{HouseID} .
+source		SELECT `ID`, `HouseID` FROM `MovieCrew` WHERE `HouseID` IS NOT NULL
+
+mappingId	MovieCrew_PersonID_fk
+target		ex:MovieCrew/{ID} p:hasActors ex:Actors/{PersonID} .
+source		SELECT `ID`, `PersonID` FROM `MovieCrew` WHERE `PersonID` IS NOT NULL
+
+]]

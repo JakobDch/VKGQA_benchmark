@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_software_engineers_languages",
+  "schema": "amb_scope_software_engineers_languages",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every software engineer, list the corresponding language.",
+      "qtype": "unambig",
+      "sql": "select software_engineers.name , languages.languagename from Software_Engineers_Languages join Software_Engineers on Software_Engineers_Languages.SE_Id = Software_Engineers.EngineerID join Languages on Software_Engineers_Languages.SE_LanguageID = Languages.LanguageID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?languagename WHERE {\n  ?software_engineers_languages a :Software_Engineers_Languages .\n  ?software_engineers a :Software_Engineers .\n  ?software_engineers_languages p:hasSoftware_Engineers ?software_engineers .\n  ?languages a :Languages .\n  ?software_engineers_languages p:hasLanguages ?languages .\n  ?software_engineers p:name ?name .\n  ?languages p:LanguageName ?languagename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What languages does each software engineer know?",
+      "qtype": "ambig",
+      "sql": "SELECT Languages.LanguageName  from Software_Engineers_Languages join Software_Engineers on Software_Engineers_Languages.SE_Id = Software_Engineers.EngineerID join Languages on Software_Engineers_Languages.SE_LanguageID = Languages.LanguageID   GROUP BY Software_Engineers_Languages.SE_LanguageID HAVING COUNT(DISTINCT Software_Engineers_Languages.SE_Id) = (SELECT COUNT(*) FROM  Software_Engineers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?languagename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:SE_LanguageID ?cg . ?child a :Languages ; p:LanguageID ?cg . ?l p:SE_Id ?pg . ?parent a :Software_Engineers ; p:EngineerID ?pg . } GROUP BY ?child }\n  ?child p:LanguageName ?languagename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Engineers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What languages does each software engineer know?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?languagename WHERE {\n  ?software_engineers_languages a :Software_Engineers_Languages .\n  ?software_engineers a :Software_Engineers .\n  ?software_engineers_languages p:hasSoftware_Engineers ?software_engineers .\n  ?languages a :Languages .\n  ?software_engineers_languages p:hasLanguages ?languages .\n  ?software_engineers p:name ?name .\n  ?languages p:LanguageName ?languagename .\n} }\n  collective: { SELECT ?languagename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:SE_LanguageID ?cg . ?child a :Languages ; p:LanguageID ?cg . ?l p:SE_Id ?pg . ?parent a :Software_Engineers ; p:EngineerID ?pg . } GROUP BY ?child }\n  ?child p:LanguageName ?languagename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Software_Engineers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

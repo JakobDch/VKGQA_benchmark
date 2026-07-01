@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Doctors_base
+target		ex:Doctors/{DoctorID} a :Doctors ; p:DoctorID {DoctorID} ; p:name {Name} ; p:Specialty {Specialty} ; p:Founding_Year {Founding_Year} ; p:Past_Owners {Past_Owners} ; p:Healthcare_Facility {Healthcare_Facility} .
+source		SELECT `DoctorID`, `Name`, `Specialty`, `Founding_Year`, `Past_Owners`, `Healthcare_Facility` FROM `Doctors`
+
+mappingId	Patients_base
+target		ex:Patients/{PatientID} a :Patients ; p:PatientID {PatientID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `PatientID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{AppointmentID} a :Appointments ; p:AppointmentID {AppointmentID} ; p:PatientID {PatientID} ; p:DoctorID {DoctorID} ; p:Date {Date} ; p:Time {Time} .
+source		SELECT `AppointmentID`, `PatientID`, `DoctorID`, `Date`, `Time` FROM `Appointments`
+
+mappingId	Appointments_DoctorID_fk
+target		ex:Appointments/{AppointmentID} p:hasDoctors ex:Doctors/{DoctorID} .
+source		SELECT `AppointmentID`, `DoctorID` FROM `Appointments` WHERE `DoctorID` IS NOT NULL
+
+mappingId	Appointments_PatientID_fk
+target		ex:Appointments/{AppointmentID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `AppointmentID`, `PatientID` FROM `Appointments` WHERE `PatientID` IS NOT NULL
+
+mappingId	Medications_base
+target		ex:Medications/{MedicationID} a :Medications ; p:MedicationID {MedicationID} ; p:MedicineName {MedicineName} ; p:DrugClass {DrugClass} ; p:Instructions {Instructions} .
+source		SELECT `MedicationID`, `MedicineName`, `DrugClass`, `Instructions` FROM `Medications`
+
+mappingId	Prescriptions_base
+target		ex:Prescriptions/{PrescriptionID} a :Prescriptions ; p:PrescriptionID {PrescriptionID} ; p:PatientID {PatientID} ; p:MedicationID {MedicationID} ; p:IssueDate {IssueDate} ; p:ExpiryDate {ExpiryDate} ; p:Quantity {Quantity} .
+source		SELECT `PrescriptionID`, `PatientID`, `MedicationID`, `IssueDate`, `ExpiryDate`, `Quantity` FROM `Prescriptions`
+
+mappingId	Prescriptions_MedicationID_fk
+target		ex:Prescriptions/{PrescriptionID} p:hasMedications ex:Medications/{MedicationID} .
+source		SELECT `PrescriptionID`, `MedicationID` FROM `Prescriptions` WHERE `MedicationID` IS NOT NULL
+
+mappingId	Prescriptions_PatientID_fk
+target		ex:Prescriptions/{PrescriptionID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `PrescriptionID`, `PatientID` FROM `Prescriptions` WHERE `PatientID` IS NOT NULL
+
+mappingId	Insurances_base
+target		ex:Insurances/{InsuranceID} a :Insurances ; p:InsuranceID {InsuranceID} ; p:PolicyNumber {PolicyNumber} ; p:Provider {Provider} ; p:CoverageAmount {CoverageAmount} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:PatientID {PatientID} .
+source		SELECT `InsuranceID`, `PolicyNumber`, `Provider`, `CoverageAmount`, `StartDate`, `EndDate`, `PatientID` FROM `Insurances`
+
+mappingId	Insurances_PatientID_fk
+target		ex:Insurances/{InsuranceID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `InsuranceID`, `PatientID` FROM `Insurances` WHERE `PatientID` IS NOT NULL
+
+]]

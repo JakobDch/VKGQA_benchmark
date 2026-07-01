@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:CustomerID {CustomerID} .
+source		SELECT `AccountNumber`, `Balance`, `CustomerID` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	InvestmentCompanies_base
+target		ex:InvestmentCompanies/{CompanyID} a :InvestmentCompanies ; p:CompanyID {CompanyID} ; p:name {Name} ; p:Type {Type} ; p:FundingAmount {FundingAmount} .
+source		SELECT `CompanyID`, `Name`, `Type`, `FundingAmount` FROM `InvestmentCompanies`
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:Date {Date} ; p:Amount {Amount} ; p:AccountNumber {AccountNumber} ; p:CompanyID {CompanyID} .
+source		SELECT `TransactionID`, `Date`, `Amount`, `AccountNumber`, `CompanyID` FROM `Transactions`
+
+mappingId	Transactions_CompanyID_fk
+target		ex:Transactions/{TransactionID} p:hasInvestmentCompanies ex:InvestmentCompanies/{CompanyID} .
+source		SELECT `TransactionID`, `CompanyID` FROM `Transactions` WHERE `CompanyID` IS NOT NULL
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+]]

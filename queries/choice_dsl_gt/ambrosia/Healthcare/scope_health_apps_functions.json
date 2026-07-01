@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_health_apps_functions",
+  "schema": "amb_scope_health_apps_functions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What functions do all health apps have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Functions.value  from Health_Apps_Functions join Functions on Health_Apps_Functions.functionID = Functions.functionID join Health_Apps on Health_Apps_Functions.healthAppID = Health_Apps.appID   GROUP BY Health_Apps_Functions.functionID HAVING COUNT(DISTINCT Health_Apps_Functions.healthAppID) = (SELECT COUNT(*) FROM  Health_Apps)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFunctions ?child ; p:hasHealth_Apps ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Apps } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the functions of each health app.",
+      "qtype": "ambig",
+      "sql": "select health_apps.name , functions.value from Health_Apps_Functions join Functions on Health_Apps_Functions.functionID = Functions.functionID join Health_Apps on Health_Apps_Functions.healthAppID = Health_Apps.appID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?value WHERE {\n  ?health_apps_functions a :Health_Apps_Functions .\n  ?functions a :Functions .\n  ?health_apps_functions p:hasFunctions ?functions .\n  ?health_apps a :Health_Apps .\n  ?health_apps_functions p:hasHealth_Apps ?health_apps .\n  ?health_apps p:name ?name .\n  ?functions p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the functions of each health app.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFunctions ?child ; p:hasHealth_Apps ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Apps } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?value WHERE {\n  ?health_apps_functions a :Health_Apps_Functions .\n  ?functions a :Functions .\n  ?health_apps_functions p:hasFunctions ?functions .\n  ?health_apps a :Health_Apps .\n  ?health_apps_functions p:hasHealth_Apps ?health_apps .\n  ?health_apps p:name ?name .\n  ?functions p:value ?value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:country {country} ; p:city {city} .
+source		SELECT `id`, `name`, `country`, `city` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:name {name} ; p:headquartered_at {headquartered_at} .
+source		SELECT `id`, `name`, `headquartered_at` FROM `Airlines`
+
+mappingId	Airlines_headquartered_at_fk
+target		ex:Airlines/{id} p:hasAirports ex:Airports/{headquartered_at} .
+source		SELECT `id`, `headquartered_at` FROM `Airlines` WHERE `headquartered_at` IS NOT NULL
+
+mappingId	Aircrafts_base
+target		ex:Aircraft/{id} a :Aircraft ; p:id {id} ; p:model {model} ; p:max_passengers {max_passengers} ; p:max_range {max_range} ; p:airline_id {airline_id} .
+source		SELECT `id`, `model`, `max_passengers`, `max_range`, `airline_id` FROM `Aircrafts`
+
+mappingId	Aircrafts_airline_id_fk
+target		ex:Aircraft/{id} p:hasAirlines ex:Airlines/{airline_id} .
+source		SELECT `id`, `airline_id` FROM `Aircrafts` WHERE `airline_id` IS NOT NULL
+
+mappingId	OnboardServices_base
+target		ex:OnboardServices/{id} a :OnboardServices ; p:id {id} ; p:service_name {service_name} ; p:description {description} ; p:aircraft_id {aircraft_id} .
+source		SELECT `id`, `service_name`, `description`, `aircraft_id` FROM `OnboardServices`
+
+mappingId	OnboardServices_aircraft_id_fk
+target		ex:OnboardServices/{id} p:hasAircraft ex:Aircraft/{aircraft_id} .
+source		SELECT `id`, `aircraft_id` FROM `OnboardServices` WHERE `aircraft_id` IS NOT NULL
+
+mappingId	InflightEntertainments_base
+target		ex:InflightEntertainments/{id} a :InflightEntertainments ; p:id {id} ; p:entertainment_name {entertainment_name} ; p:description {description} ; p:aircraft_id {aircraft_id} .
+source		SELECT `id`, `entertainment_name`, `description`, `aircraft_id` FROM `InflightEntertainments`
+
+mappingId	InflightEntertainments_aircraft_id_fk
+target		ex:InflightEntertainments/{id} p:hasAircraft ex:Aircraft/{aircraft_id} .
+source		SELECT `id`, `aircraft_id` FROM `InflightEntertainments` WHERE `aircraft_id` IS NOT NULL
+
+]]

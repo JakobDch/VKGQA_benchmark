@@ -1,0 +1,64 @@
+@prefix : <http://ambrosia.example.org/student#> .
+@prefix p: <http://ambrosia.example.org/student/prop#> .
+@prefix ex: <http://ambrosia.example.org/student/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_curriculum_topics_0_Students_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"age\" FROM \"Students\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Students/{id}" ; rr:class :Students ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_1_Core_Concepts_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"concept_id\", \"concept_name\", \"description\" FROM \"Core_Concepts\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Core_Concepts/{concept_id}" ; rr:class :Core_Concepts ] ;
+  rr:predicateObjectMap [ rr:predicate p:concept_id ; rr:objectMap [ rr:column "concept_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:concept_name ; rr:objectMap [ rr:column "concept_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_2_Advanced_Topics_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"topic_id\", \"topic_name\", \"difficulty\" FROM \"Advanced_Topics\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Advanced_Topics/{topic_id}" ; rr:class :Advanced_Topics ] ;
+  rr:predicateObjectMap [ rr:predicate p:topic_id ; rr:objectMap [ rr:column "topic_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:topic_name ; rr:objectMap [ rr:column "topic_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:difficulty ; rr:objectMap [ rr:column "difficulty" ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_3_School_Subjects_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"subject_id\", \"subject_name\", \"core_concept_id\", \"advanced_topic_id\" FROM \"School_Subjects\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/School_Subjects/{subject_id}" ; rr:class :School_Subjects ] ;
+  rr:predicateObjectMap [ rr:predicate p:subject_id ; rr:objectMap [ rr:column "subject_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:subject_name ; rr:objectMap [ rr:column "subject_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:core_concept_id ; rr:objectMap [ rr:column "core_concept_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:advanced_topic_id ; rr:objectMap [ rr:column "advanced_topic_id" ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_4_School_Subjects_advanced_topic_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"subject_id\", \"advanced_topic_id\" FROM \"School_Subjects\" WHERE \"advanced_topic_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/School_Subjects/{subject_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAdvanced_Topics ; rr:objectMap [ rr:template "http://ambrosia.example.org/student/id/Advanced_Topics/{advanced_topic_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_5_School_Subjects_core_concept_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"subject_id\", \"core_concept_id\" FROM \"School_Subjects\" WHERE \"core_concept_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/School_Subjects/{subject_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCore_Concepts ; rr:objectMap [ rr:template "http://ambrosia.example.org/student/id/Core_Concepts/{core_concept_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_6_EnrolledStudents_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollment_id\", \"student_id\", \"subject_id\", \"grade\" FROM \"EnrolledStudents\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Enrollments/{enrollment_id}" ; rr:class :Enrollments ] ;
+  rr:predicateObjectMap [ rr:predicate p:enrollment_id ; rr:objectMap [ rr:column "enrollment_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:student_id ; rr:objectMap [ rr:column "student_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:subject_id ; rr:objectMap [ rr:column "subject_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:grade ; rr:objectMap [ rr:column "grade" ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_7_EnrolledStudents_subject_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollment_id\", \"subject_id\" FROM \"EnrolledStudents\" WHERE \"subject_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Enrollments/{enrollment_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSchool_Subjects ; rr:objectMap [ rr:template "http://ambrosia.example.org/student/id/School_Subjects/{subject_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_curriculum_topics_8_EnrolledStudents_student_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"enrollment_id\", \"student_id\" FROM \"EnrolledStudents\" WHERE \"student_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/student/id/Enrollments/{enrollment_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStudents ; rr:objectMap [ rr:template "http://ambrosia.example.org/student/id/Students/{student_id}" ; rr:termType rr:IRI ] ] .
+

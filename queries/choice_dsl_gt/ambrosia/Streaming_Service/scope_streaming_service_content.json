@@ -1,0 +1,174 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_service_content",
+  "schema": "amb_scope_streaming_service_content",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each streaming service, what are the corresponding content descriptions?",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , content.description from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=13"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the type, description and price of the content that we have for every streaming service",
+      "qtype": "ambig",
+      "sql": "SELECT Content.type, Content.description, Content.price  from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Content.content_id HAVING COUNT(DISTINCT Streaming_Service_Content.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the type, description and price of the content that we have for every streaming service",
+      "qtype": "ambig",
+      "sql": "select streaming_service.name , content.type , content.description , content.price from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n  ?content p:description ?description .\n  ?content p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=13"
+    },
+    {
+      "qid": 3,
+      "question": "For each streaming service, what is the corresponding content type and price?",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , content.type , content.price from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n  ?content p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=13"
+    },
+    {
+      "qid": 4,
+      "question": "For every streaming service, list the corresponding descriptions and prices of content.",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , content.description , content.price from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:description ?description .\n  ?content p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=13"
+    },
+    {
+      "qid": 5,
+      "question": "what descriptions and prices are associated with each streaming service's content?",
+      "qtype": "ambig",
+      "sql": "SELECT Content.description, Content.price  from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Content.content_id HAVING COUNT(DISTINCT Streaming_Service_Content.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "Provide the content description that is common for all streaming services.",
+      "qtype": "unambig",
+      "sql": "SELECT Content.description  from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Content.content_id HAVING COUNT(DISTINCT Streaming_Service_Content.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "Give me the content types and prices for each streaming service.",
+      "qtype": "ambig",
+      "sql": "SELECT Content.type, Content.price  from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Content.content_id HAVING COUNT(DISTINCT Streaming_Service_Content.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 8,
+      "question": "What content do all streaming services equally offer?",
+      "qtype": "unambig",
+      "sql": "SELECT Content.type  from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id   GROUP BY Streaming_Service_Content.content_id HAVING COUNT(DISTINCT Streaming_Service_Content.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Service)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 9,
+      "question": "For every streaming service, list the content offered.",
+      "qtype": "unambig",
+      "sql": "select streaming_service.name , content.type from Streaming_Service_Content join Content on Streaming_Service_Content.content_id = Content.content_id join Streaming_Service on Streaming_Service_Content.streaming_service_id = Streaming_Service.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=13"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which content descriptions are associated with every streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        6
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the content types and prices for each streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        7
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n  ?content p:price ?price .\n} }\n  collective: { SELECT ?type ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the type, description and price of the content that we have for every streaming service",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?description ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n  ?content p:description ?description .\n  ?content p:price ?price .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what descriptions and prices are associated with each streaming service's content?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description ?price WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:description ?description .\n  ?content p:price ?price .\n} }\n  collective: { SELECT ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the content each streaming service offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        8,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasContent ?child ; p:hasStreaming_Service ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?streaming_service_content a :Streaming_Service_Content .\n  ?content a :Content .\n  ?streaming_service_content p:hasContent ?content .\n  ?streaming_service a :Streaming_Services .\n  ?streaming_service_content p:hasStreaming_Service ?streaming_service .\n  ?streaming_service p:name ?name .\n  ?content p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

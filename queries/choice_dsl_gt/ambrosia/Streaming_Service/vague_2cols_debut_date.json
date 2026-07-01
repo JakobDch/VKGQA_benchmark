@@ -1,0 +1,97 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2cols_debut_date",
+  "schema": "amb_vague_2cols_debut_date",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What day did Health Matters debut?",
+      "qtype": "unambig",
+      "sql": "SELECT Debut_Day FROM Podcast WHERE Title = 'Health Matters'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_day WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What day did the podcast that Bob subscribed to debut?",
+      "qtype": "unambig",
+      "sql": "SELECT Debut_Day FROM Podcast JOIN Subscription ON Subscription.Podcast_id = Podcast.id JOIN Subscriber ON Subscription.Subscriber_id = Subscriber.id WHERE email  LIKE '%bob%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_day WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Day ?debut_day .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What year did the podcast that Bob subscribed to debut?",
+      "qtype": "unambig",
+      "sql": "SELECT Debut_Year FROM Podcast JOIN Subscription ON Subscription.Podcast_id = Podcast.id JOIN Subscriber ON Subscription.Subscriber_id = Subscriber.id WHERE email  LIKE '%bob%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Year ?debut_year .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What year did Health Matters debut?",
+      "qtype": "unambig",
+      "sql": "SELECT Debut_Year FROM Podcast WHERE Title = 'Health Matters'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Year ?debut_year .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What day and year did the podcast that Bob subscribed to debut?",
+      "qtype": "unambig",
+      "sql": "SELECT Debut_Day, Debut_Year FROM Podcast JOIN Subscription ON Subscription.Podcast_id = Podcast.id JOIN Subscriber ON Subscription.Subscriber_id = Subscriber.id WHERE email  LIKE '%bob%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_day ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Debut_Year ?debut_year .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "When did Health Matters debut?",
+      "qtype": "ambig",
+      "sql": "SELECT Debut_Day, Debut_Year FROM Podcast WHERE Title = 'Health Matters'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?debut_day ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Debut_Year ?debut_year .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When did Health Matters debut?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?debut_day WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n} }\n  component_2: { SELECT ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Year ?debut_year .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n} }\n  full: { SELECT ?debut_day ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Debut_Year ?debut_year .\n  ?podcast p:Title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Health Matters\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "When did the podcast that Bob subscribed to come out?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?debut_day WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Day ?debut_day .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n} }\n  component_2: { SELECT ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Year ?debut_year .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n} }\n  full: { SELECT ?debut_day ?debut_year WHERE {\n  ?podcast a :Podcast .\n  ?subscription a :Subscription .\n  ?subscription p:hasPodcast ?podcast .\n  ?subscriber a :Subscribers .\n  ?subscription p:hasSubscriber ?subscriber .\n  ?podcast p:Debut_Day ?debut_day .\n  ?podcast p:Debut_Year ?debut_year .\n  ?subscriber p:email ?email_lk .\n  FILTER(REGEX(STR(?email_lk), \"^.*bob.*$\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

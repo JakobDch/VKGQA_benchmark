@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genre_base
+target		ex:Genre/{id} a :Genre ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Genre`
+
+mappingId	MediaType_base
+target		ex:MediaType/{id} a :MediaType ; p:id {id} ; p:typeName {typeName} .
+source		SELECT `id`, `typeName` FROM `MediaType`
+
+mappingId	EntertainmentItem_base
+target		ex:EntertainmentItem/{id} a :EntertainmentItem ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:genreId {genreId} ; p:mediaTypeId {mediaTypeId} .
+source		SELECT `id`, `title`, `releaseYear`, `genreId`, `mediaTypeId` FROM `EntertainmentItem`
+
+mappingId	EntertainmentItem_mediaTypeId_fk
+target		ex:EntertainmentItem/{id} p:hasMediaType ex:MediaType/{mediaTypeId} .
+source		SELECT `id`, `mediaTypeId` FROM `EntertainmentItem` WHERE `mediaTypeId` IS NOT NULL
+
+mappingId	EntertainmentItem_genreId_fk
+target		ex:EntertainmentItem/{id} p:hasGenre ex:Genre/{genreId} .
+source		SELECT `id`, `genreId` FROM `EntertainmentItem` WHERE `genreId` IS NOT NULL
+
+mappingId	Author_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Author`
+
+mappingId	Novel_base
+target		ex:Novel/{id} a :Novel ; p:id {id} ; p:authorId {authorId} ; p:publicationYear {publicationYear} .
+source		SELECT `id`, `authorId`, `publicationYear` FROM `Novel`
+
+mappingId	Novel_authorId_fk
+target		ex:Novel/{id} p:hasAuthor ex:Author/{authorId} .
+source		SELECT `id`, `authorId` FROM `Novel` WHERE `authorId` IS NOT NULL
+
+mappingId	Film_base
+target		ex:Film/{id} a :Film ; p:id {id} ; p:director {director} ; p:filmId {filmId} .
+source		SELECT `id`, `director`, `filmId` FROM `Film`
+
+mappingId	Film_filmId_fk
+target		ex:Film/{id} p:hasEntertainmentItem ex:EntertainmentItem/{filmId} .
+source		SELECT `id`, `filmId` FROM `Film` WHERE `filmId` IS NOT NULL
+
+]]

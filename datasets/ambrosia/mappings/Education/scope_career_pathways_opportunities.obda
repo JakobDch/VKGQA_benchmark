@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Career_Pathways_base
+target		ex:Career_Pathways/{PathwayID} a :Career_Pathways ; p:PathwayID {PathwayID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `PathwayID`, `Name`, `Description` FROM `Career_Pathways`
+
+mappingId	Opportunities_base
+target		ex:Opportunities/{OpportunityID} a :Opportunities ; p:OpportunityID {OpportunityID} ; p:Value {Value} .
+source		SELECT `OpportunityID`, `Value` FROM `Opportunities`
+
+mappingId	Career_Pathways_Opportunities_base
+target		ex:Career_Pathways_Opportunities/{CareerPathwayID}/{OpportunityID} a :Career_Pathways_Opportunities ; p:CareerPathwayID {CareerPathwayID} ; p:OpportunityID {OpportunityID} .
+source		SELECT `CareerPathwayID`, `OpportunityID` FROM `Career_Pathways_Opportunities`
+
+mappingId	Career_Pathways_Opportunities_OpportunityID_fk
+target		ex:Career_Pathways_Opportunities/{CareerPathwayID}/{OpportunityID} p:hasOpportunities ex:Opportunities/{OpportunityID} .
+source		SELECT `CareerPathwayID`, `OpportunityID` FROM `Career_Pathways_Opportunities` WHERE `OpportunityID` IS NOT NULL
+
+mappingId	Career_Pathways_Opportunities_CareerPathwayID_fk
+target		ex:Career_Pathways_Opportunities/{CareerPathwayID}/{OpportunityID} p:hasCareer_Pathways ex:Career_Pathways/{CareerPathwayID} .
+source		SELECT `CareerPathwayID`, `OpportunityID` FROM `Career_Pathways_Opportunities` WHERE `CareerPathwayID` IS NOT NULL
+
+]]

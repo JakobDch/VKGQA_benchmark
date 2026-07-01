@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_land_trusts_properties",
+  "schema": "amb_scope_land_trusts_properties",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the type of property that every land trust has.",
+      "qtype": "ambig",
+      "sql": "SELECT Properties.typeOfProperty  from Land_Trusts_Properties join Properties on Land_Trusts_Properties.propertyId = Properties.propertyId join Land_Trusts on Land_Trusts_Properties.landTrustId = Land_Trusts.id   GROUP BY Land_Trusts_Properties.propertyId HAVING COUNT(DISTINCT Land_Trusts_Properties.landTrustId) = (SELECT COUNT(*) FROM  Land_Trusts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?typeofproperty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProperties ?child ; p:hasLand_Trusts ?parent . } GROUP BY ?child }\n  ?child p:typeOfProperty ?typeofproperty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Land_Trusts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the type of property that every land trust has.",
+      "qtype": "ambig",
+      "sql": "select land_trusts.trustname , properties.typeofproperty from Land_Trusts_Properties join Properties on Land_Trusts_Properties.propertyId = Properties.propertyId join Land_Trusts on Land_Trusts_Properties.landTrustId = Land_Trusts.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?trustname ?typeofproperty WHERE {\n  ?land_trusts_properties a :Land_Trusts_Properties .\n  ?properties a :Properties .\n  ?land_trusts_properties p:hasProperties ?properties .\n  ?land_trusts a :Land_Trusts .\n  ?land_trusts_properties p:hasLand_Trusts ?land_trusts .\n  ?land_trusts p:trustName ?trustname .\n  ?properties p:typeOfProperty ?typeofproperty .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the type of property that every land trust has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?typeofproperty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProperties ?child ; p:hasLand_Trusts ?parent . } GROUP BY ?child }\n  ?child p:typeOfProperty ?typeofproperty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Land_Trusts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?trustname ?typeofproperty WHERE {\n  ?land_trusts_properties a :Land_Trusts_Properties .\n  ?properties a :Properties .\n  ?land_trusts_properties p:hasProperties ?properties .\n  ?land_trusts a :Land_Trusts .\n  ?land_trusts_properties p:hasLand_Trusts ?land_trusts .\n  ?land_trusts p:trustName ?trustname .\n  ?properties p:typeOfProperty ?typeofproperty .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

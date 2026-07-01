@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {EmailAddress} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `DateOfBirth`, `EmailAddress` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:InterestRate {InterestRate} ; p:OpenDate {OpenDate} ; p:CustomerID {CustomerID} .
+source		SELECT `AccountNumber`, `Balance`, `InterestRate`, `OpenDate`, `CustomerID` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Products_base
+target		ex:Products/{ProductID} a :Products ; p:ProductID {ProductID} ; p:name {Name} ; p:Type {Type} ; p:Description {Description} .
+source		SELECT `ProductID`, `Name`, `Type`, `Description` FROM `Products`
+
+mappingId	CustomerAccounts_base
+target		ex:CustomerAccounts/{CustomerAccountID} a :CustomerAccounts ; p:CustomerAccountID {CustomerAccountID} ; p:CustomerID {CustomerID} ; p:AccountNumber {AccountNumber} ; p:OpenDate {OpenDate} .
+source		SELECT `CustomerAccountID`, `CustomerID`, `AccountNumber`, `OpenDate` FROM `CustomerAccounts`
+
+mappingId	CustomerAccounts_AccountNumber_fk
+target		ex:CustomerAccounts/{CustomerAccountID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `CustomerAccountID`, `AccountNumber` FROM `CustomerAccounts` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	CustomerAccounts_CustomerID_fk
+target		ex:CustomerAccounts/{CustomerAccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `CustomerAccountID`, `CustomerID` FROM `CustomerAccounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	CardFees_base
+target		ex:CardFees/{_amb_rowid} a :CardFees ; p:Fee {Fee} ; p:FeeType {FeeType} ; p:ProductID {ProductID} .
+source		SELECT `_amb_rowid`, `Fee`, `FeeType`, `ProductID` FROM `CardFees`
+
+mappingId	CardFees_ProductID_fk
+target		ex:CardFees/{_amb_rowid} p:hasProducts ex:Products/{ProductID} .
+source		SELECT `_amb_rowid`, `ProductID` FROM `CardFees` WHERE `ProductID` IS NOT NULL
+
+mappingId	MonthlyInterestRates_base
+target		ex:MonthlyInterestRates/{_amb_rowid} a :MonthlyInterestRates ; p:Rate {Rate} ; p:RateType {RateType} ; p:EffectiveDate {EffectiveDate} ; p:ExpirationDate {ExpirationDate} ; p:ProductID {ProductID} .
+source		SELECT `_amb_rowid`, `Rate`, `RateType`, `EffectiveDate`, `ExpirationDate`, `ProductID` FROM `MonthlyInterestRates`
+
+mappingId	MonthlyInterestRates_ProductID_fk
+target		ex:MonthlyInterestRates/{_amb_rowid} p:hasProducts ex:Products/{ProductID} .
+source		SELECT `_amb_rowid`, `ProductID` FROM `MonthlyInterestRates` WHERE `ProductID` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Onboard_Entertainment_System_base
+target		ex:Onboard_Entertainment_System/{id} a :Onboard_Entertainment_System ; p:id {id} ; p:airline {airline} ; p:aircraft_model {aircraft_model} .
+source		SELECT `id`, `airline`, `aircraft_model` FROM `Onboard_Entertainment_System`
+
+mappingId	Features_base
+target		ex:Features/{feature_id} a :Features ; p:feature_id {feature_id} ; p:feature_name {feature_name} .
+source		SELECT `feature_id`, `feature_name` FROM `Features`
+
+mappingId	Onboard_Entertainment_System_Features_base
+target		ex:Onboard_Entertainment_System_Features/{_amb_rowid} a :Onboard_Entertainment_System_Features ; p:onboard_entertainment_system_id {onboard_entertainment_system_id} ; p:features_feature_id {features_feature_id} .
+source		SELECT `_amb_rowid`, `onboard_entertainment_system_id`, `features_feature_id` FROM `Onboard_Entertainment_System_Features`
+
+mappingId	Onboard_Entertainment_System_Features_features_feature_id_fk
+target		ex:Onboard_Entertainment_System_Features/{_amb_rowid} p:hasFeatures ex:Features/{features_feature_id} .
+source		SELECT `_amb_rowid`, `features_feature_id` FROM `Onboard_Entertainment_System_Features` WHERE `features_feature_id` IS NOT NULL
+
+mappingId	Onboard_Entertainment_System_Features_onboard_entertainment_system_id_fk
+target		ex:Onboard_Entertainment_System_Features/{_amb_rowid} p:hasOnboard_Entertainment_System ex:Onboard_Entertainment_System/{onboard_entertainment_system_id} .
+source		SELECT `_amb_rowid`, `onboard_entertainment_system_id` FROM `Onboard_Entertainment_System_Features` WHERE `onboard_entertainment_system_id` IS NOT NULL
+
+]]

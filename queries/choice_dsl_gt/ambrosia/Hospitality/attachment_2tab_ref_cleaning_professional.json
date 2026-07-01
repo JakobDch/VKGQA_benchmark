@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_ref_cleaning_professional",
+  "schema": "amb_attachment_2tab_ref_cleaning_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both housekeepers and laundry attendants who work at the hotel located at 789 River Road.",
+      "qtype": "unambig",
+      "sql": "SELECT HouseKeepers.FullName\nFROM Hotels JOIN HouseKeepers ON Hotels.id = HouseKeepers.hotelId\nWHERE Hotels.address = \"789 River Rd\"\nUNION\nSELECT LaundryAttendants.FullName\nFROM Hotels JOIN LaundryAttendants ON Hotels.id = LaundryAttendants.hotelId\nWHERE Hotels.address = \"789 River Rd\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotels a :Hotels .\n    ?housekeepers a :HouseKeepers .\n    ?housekeepers p:hasHotels ?hotels .\n    ?housekeepers p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hotels a :Hotels .\n    ?laundryattendants a :LaundryAttendants .\n    ?laundryattendants p:hasHotels ?hotels .\n    ?laundryattendants p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List every housekeeper and also show the laundry attendants who work at the hotel located at 789 River Road.",
+      "qtype": "unambig",
+      "sql": "SELECT HouseKeepers.FullName\nFROM Hotels JOIN HouseKeepers ON Hotels.id = HouseKeepers.hotelId\nUNION\nSELECT LaundryAttendants.FullName\nFROM Hotels JOIN LaundryAttendants ON Hotels.id = LaundryAttendants.hotelId\nWHERE Hotels.address = \"789 River Rd\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotels a :Hotels .\n    ?housekeepers a :HouseKeepers .\n    ?housekeepers p:hasHotels ?hotels .\n    ?housekeepers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hotels a :Hotels .\n    ?laundryattendants a :LaundryAttendants .\n    ?laundryattendants p:hasHotels ?hotels .\n    ?laundryattendants p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show housekeepers and laundry attendants who work at the hotel located at 789 River Road.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotels a :Hotels .\n    ?housekeepers a :HouseKeepers .\n    ?housekeepers p:hasHotels ?hotels .\n    ?housekeepers p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hotels a :Hotels .\n    ?laundryattendants a :LaundryAttendants .\n    ?laundryattendants p:hasHotels ?hotels .\n    ?laundryattendants p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?hotels a :Hotels .\n    ?housekeepers a :HouseKeepers .\n    ?housekeepers p:hasHotels ?hotels .\n    ?housekeepers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?hotels a :Hotels .\n    ?laundryattendants a :LaundryAttendants .\n    ?laundryattendants p:hasHotels ?hotels .\n    ?laundryattendants p:name ?fullname .\n    ?hotels p:address ?address_f .\n    FILTER(STR(?address_f) = \"789 River Rd\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

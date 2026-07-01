@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Newspapers_base
+target		ex:Newspapers/{ID} a :Newspapers ; p:ID {ID} ; p:name {Name} ; p:Circulation_Numbers {Circulation_Numbers} ; p:Founded_Year {Founded_Year} ; p:Headquarters {Headquarters} ; p:Editor_in_Chief {Editor_in_Chief} .
+source		SELECT `ID`, `Name`, `Circulation_Numbers`, `Founded_Year`, `Headquarters`, `Editor_in_Chief` FROM `Newspapers`
+
+mappingId	Magazines_base
+target		ex:Magazines/{ID} a :Magazines ; p:ID {ID} ; p:name {Name} ; p:Circulation_Numbers {Circulation_Numbers} ; p:Issue_Frequency {Issue_Frequency} ; p:Publisher {Publisher} ; p:Topic {Topic} .
+source		SELECT `ID`, `Name`, `Circulation_Numbers`, `Issue_Frequency`, `Publisher`, `Topic` FROM `Magazines`
+
+mappingId	Articles_base
+target		ex:Articles/{Article_ID} a :Articles ; p:Article_ID {Article_ID} ; p:Title {Title} ; p:Publication_Date {Publication_Date} ; p:Content_Length {Content_Length} ; p:Author_Name {Author_Name} ; p:Newspaper_ID {Newspaper_ID} ; p:Magazine_ID {Magazine_ID} .
+source		SELECT `Article_ID`, `Title`, `Publication_Date`, `Content_Length`, `Author_Name`, `Newspaper_ID`, `Magazine_ID` FROM `Articles`
+
+mappingId	Articles_Magazine_ID_fk
+target		ex:Articles/{Article_ID} p:hasMagazines ex:Magazines/{Magazine_ID} .
+source		SELECT `Article_ID`, `Magazine_ID` FROM `Articles` WHERE `Magazine_ID` IS NOT NULL
+
+mappingId	Articles_Newspaper_ID_fk
+target		ex:Articles/{Article_ID} p:hasNewspapers ex:Newspapers/{Newspaper_ID} .
+source		SELECT `Article_ID`, `Newspaper_ID` FROM `Articles` WHERE `Newspaper_ID` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{Author_ID} a :Authors ; p:Author_ID {Author_ID} ; p:First_Name {First_Name} ; p:Last_Name {Last_Name} ; p:Biography {Biography} ; p:email {Email} .
+source		SELECT `Author_ID`, `First_Name`, `Last_Name`, `Biography`, `Email` FROM `Authors`
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{Subscription_ID} a :Subscriptions ; p:Subscription_ID {Subscription_ID} ; p:Customer_Name {Customer_Name} ; p:Address {Address} ; p:Phone_Number {Phone_Number} ; p:Subscribed_To {Subscribed_To} ; p:Start_Date {Start_Date} ; p:End_Date {End_Date} .
+source		SELECT `Subscription_ID`, `Customer_Name`, `Address`, `Phone_Number`, `Subscribed_To`, `Start_Date`, `End_Date` FROM `Subscriptions`
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Distributor_base
+target		ex:Distributors/{ID} a :Distributors ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Distributor`
+
+mappingId	Broadsheet_base
+target		ex:Broadsheet/{NewspaperID} a :Broadsheet ; p:NewspaperID {NewspaperID} ; p:Title {Title} ; p:Content {Content} ; p:Price {Price} ; p:DistributorID {DistributorID} .
+source		SELECT `NewspaperID`, `Title`, `Content`, `Price`, `DistributorID` FROM `Broadsheet`
+
+mappingId	Broadsheet_DistributorID_fk
+target		ex:Broadsheet/{NewspaperID} p:hasDistributors ex:Distributors/{DistributorID} .
+source		SELECT `NewspaperID`, `DistributorID` FROM `Broadsheet` WHERE `DistributorID` IS NOT NULL
+
+mappingId	Tabloid_base
+target		ex:Tabloid/{NewspaperID} a :Tabloid ; p:NewspaperID {NewspaperID} ; p:Title {Title} ; p:Content {Content} ; p:Price {Price} ; p:DistributorID {DistributorID} .
+source		SELECT `NewspaperID`, `Title`, `Content`, `Price`, `DistributorID` FROM `Tabloid`
+
+mappingId	Tabloid_DistributorID_fk
+target		ex:Tabloid/{NewspaperID} p:hasDistributors ex:Distributors/{DistributorID} .
+source		SELECT `NewspaperID`, `DistributorID` FROM `Tabloid` WHERE `DistributorID` IS NOT NULL
+
+]]

@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Information_Gathering_Method_base
+target		ex:Information_Gathering_Method/{id} a :Information_Gathering_Method ; p:id {id} ; p:method {method} .
+source		SELECT `id`, `method` FROM `Information_Gathering_Method`
+
+mappingId	Participant_Type_base
+target		ex:Participant_Type/{id} a :Participant_Type ; p:id {id} ; p:type {type} .
+source		SELECT `id`, `type` FROM `Participant_Type`
+
+mappingId	News_Article_base
+target		ex:Articles/{article_id} a :Articles ; p:article_id {article_id} ; p:title {title} ; p:content {content} ; p:date {date} ; p:author_id {author_id} ; p:information_gathering_method_id {information_gathering_method_id} ; p:participant_type_id {participant_type_id} .
+source		SELECT `article_id`, `title`, `content`, `date`, `author_id`, `information_gathering_method_id`, `participant_type_id` FROM `News_Article`
+
+mappingId	News_Article_participant_type_id_fk
+target		ex:Articles/{article_id} p:hasParticipant_Type ex:Participant_Type/{participant_type_id} .
+source		SELECT `article_id`, `participant_type_id` FROM `News_Article` WHERE `participant_type_id` IS NOT NULL
+
+mappingId	News_Article_information_gathering_method_id_fk
+target		ex:Articles/{article_id} p:hasInformation_Gathering_Method ex:Information_Gathering_Method/{information_gathering_method_id} .
+source		SELECT `article_id`, `information_gathering_method_id` FROM `News_Article` WHERE `information_gathering_method_id` IS NOT NULL
+
+mappingId	Source_base
+target		ex:Sources/{source_id} a :Sources ; p:source_id {source_id} ; p:name {name} ; p:url {url} .
+source		SELECT `source_id`, `name`, `url` FROM `Source`
+
+mappingId	Article_Source_base
+target		ex:Article_Source/{article_source_id} a :Article_Source ; p:article_source_id {article_source_id} ; p:news_article_id {news_article_id} ; p:source_id {source_id} .
+source		SELECT `article_source_id`, `news_article_id`, `source_id` FROM `Article_Source`
+
+mappingId	Article_Source_source_id_fk
+target		ex:Article_Source/{article_source_id} p:hasSources ex:Sources/{source_id} .
+source		SELECT `article_source_id`, `source_id` FROM `Article_Source` WHERE `source_id` IS NOT NULL
+
+mappingId	Article_Source_news_article_id_fk
+target		ex:Article_Source/{article_source_id} p:hasArticles ex:Articles/{news_article_id} .
+source		SELECT `article_source_id`, `news_article_id` FROM `Article_Source` WHERE `news_article_id` IS NOT NULL
+
+mappingId	Quote_base
+target		ex:Quote/{quote_id} a :Quote ; p:quote_id {quote_id} ; p:text {text} ; p:start_time {start_time} ; p:end_time {end_time} ; p:news_article_id {news_article_id} ; p:speaker_id {speaker_id} .
+source		SELECT `quote_id`, `text`, `start_time`, `end_time`, `news_article_id`, `speaker_id` FROM `Quote`
+
+mappingId	Quote_speaker_id_fk
+target		ex:Quote/{quote_id} p:hasSpeaker ex:Speaker/{speaker_id} .
+source		SELECT `quote_id`, `speaker_id` FROM `Quote` WHERE `speaker_id` IS NOT NULL
+
+mappingId	Quote_news_article_id_fk
+target		ex:Quote/{quote_id} p:hasArticles ex:Articles/{news_article_id} .
+source		SELECT `quote_id`, `news_article_id` FROM `Quote` WHERE `news_article_id` IS NOT NULL
+
+mappingId	Speaker_base
+target		ex:Speaker/{speaker_id} a :Speaker ; p:speaker_id {speaker_id} ; p:name {name} ; p:role {role} .
+source		SELECT `speaker_id`, `name`, `role` FROM `Speaker`
+
+]]

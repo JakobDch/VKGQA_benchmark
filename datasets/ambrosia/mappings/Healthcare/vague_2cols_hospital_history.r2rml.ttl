@@ -1,0 +1,88 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_hospital_history_0_Doctors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DoctorID\", \"Name\", \"Specialty\", \"Founding_Year\", \"Past_Owners\", \"Healthcare_Facility\" FROM \"Doctors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{DoctorID}" ; rr:class :Doctors ] ;
+  rr:predicateObjectMap [ rr:predicate p:DoctorID ; rr:objectMap [ rr:column "DoctorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Specialty ; rr:objectMap [ rr:column "Specialty" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Founding_Year ; rr:objectMap [ rr:column "Founding_Year" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Past_Owners ; rr:objectMap [ rr:column "Past_Owners" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Healthcare_Facility ; rr:objectMap [ rr:column "Healthcare_Facility" ] ] .
+
+<#tm_vague_2cols_hospital_history_1_Patients_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PatientID\", \"FirstName\", \"LastName\", \"DateOfBirth\" FROM \"Patients\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:class :Patients ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DateOfBirth ; rr:objectMap [ rr:column "DateOfBirth" ] ] .
+
+<#tm_vague_2cols_hospital_history_2_Appointments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"PatientID\", \"DoctorID\", \"Date\", \"Time\" FROM \"Appointments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ; rr:class :Appointments ] ;
+  rr:predicateObjectMap [ rr:predicate p:AppointmentID ; rr:objectMap [ rr:column "AppointmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DoctorID ; rr:objectMap [ rr:column "DoctorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Date ; rr:objectMap [ rr:column "Date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Time ; rr:objectMap [ rr:column "Time" ] ] .
+
+<#tm_vague_2cols_hospital_history_3_Appointments_DoctorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"DoctorID\" FROM \"Appointments\" WHERE \"DoctorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDoctors ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Doctors/{DoctorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_hospital_history_4_Appointments_PatientID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AppointmentID\", \"PatientID\" FROM \"Appointments\" WHERE \"PatientID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Appointments/{AppointmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPatients ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_hospital_history_5_Medications_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"MedicationID\", \"MedicineName\", \"DrugClass\", \"Instructions\" FROM \"Medications\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medications/{MedicationID}" ; rr:class :Medications ] ;
+  rr:predicateObjectMap [ rr:predicate p:MedicationID ; rr:objectMap [ rr:column "MedicationID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:MedicineName ; rr:objectMap [ rr:column "MedicineName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:DrugClass ; rr:objectMap [ rr:column "DrugClass" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Instructions ; rr:objectMap [ rr:column "Instructions" ] ] .
+
+<#tm_vague_2cols_hospital_history_6_Prescriptions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PrescriptionID\", \"PatientID\", \"MedicationID\", \"IssueDate\", \"ExpiryDate\", \"Quantity\" FROM \"Prescriptions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{PrescriptionID}" ; rr:class :Prescriptions ] ;
+  rr:predicateObjectMap [ rr:predicate p:PrescriptionID ; rr:objectMap [ rr:column "PrescriptionID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:MedicationID ; rr:objectMap [ rr:column "MedicationID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:IssueDate ; rr:objectMap [ rr:column "IssueDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ExpiryDate ; rr:objectMap [ rr:column "ExpiryDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Quantity ; rr:objectMap [ rr:column "Quantity" ] ] .
+
+<#tm_vague_2cols_hospital_history_7_Prescriptions_MedicationID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PrescriptionID\", \"MedicationID\" FROM \"Prescriptions\" WHERE \"MedicationID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{PrescriptionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedications ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medications/{MedicationID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_hospital_history_8_Prescriptions_PatientID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PrescriptionID\", \"PatientID\" FROM \"Prescriptions\" WHERE \"PatientID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{PrescriptionID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPatients ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_hospital_history_9_Insurances_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"InsuranceID\", \"PolicyNumber\", \"Provider\", \"CoverageAmount\", \"StartDate\", \"EndDate\", \"PatientID\" FROM \"Insurances\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Insurances/{InsuranceID}" ; rr:class :Insurances ] ;
+  rr:predicateObjectMap [ rr:predicate p:InsuranceID ; rr:objectMap [ rr:column "InsuranceID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PolicyNumber ; rr:objectMap [ rr:column "PolicyNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Provider ; rr:objectMap [ rr:column "Provider" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CoverageAmount ; rr:objectMap [ rr:column "CoverageAmount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StartDate ; rr:objectMap [ rr:column "StartDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EndDate ; rr:objectMap [ rr:column "EndDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PatientID ; rr:objectMap [ rr:column "PatientID" ] ] .
+
+<#tm_vague_2cols_hospital_history_10_Insurances_PatientID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"InsuranceID\", \"PatientID\" FROM \"Insurances\" WHERE \"PatientID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Insurances/{InsuranceID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPatients ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Patients/{PatientID}" ; rr:termType rr:IRI ] ] .
+

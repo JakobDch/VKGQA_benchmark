@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Authors`
+
+mappingId	Illustrators_base
+target		ex:Illustrator/{id} a :Illustrator ; p:id {id} ; p:illustratorName {illustratorName} .
+source		SELECT `id`, `illustratorName` FROM `Illustrators`
+
+mappingId	ChildrensBooks_base
+target		ex:ChildrensBooks/{id} a :ChildrensBooks ; p:id {id} ; p:title {title} ; p:authorId {authorId} ; p:illustratorId {illustratorId} .
+source		SELECT `id`, `title`, `authorId`, `illustratorId` FROM `ChildrensBooks`
+
+mappingId	ChildrensBooks_illustratorId_fk
+target		ex:ChildrensBooks/{id} p:hasIllustrator ex:Illustrator/{illustratorId} .
+source		SELECT `id`, `illustratorId` FROM `ChildrensBooks` WHERE `illustratorId` IS NOT NULL
+
+mappingId	ChildrensBooks_authorId_fk
+target		ex:ChildrensBooks/{id} p:hasAuthor ex:Author/{authorId} .
+source		SELECT `id`, `authorId` FROM `ChildrensBooks` WHERE `authorId` IS NOT NULL
+
+mappingId	YoungAdultBooks_base
+target		ex:ChildrensBooks/{id} a :ChildrensBooks ; p:id {id} ; p:title {title} ; p:authorId {authorId} ; p:illustratorId {illustratorId} .
+source		SELECT `id`, `title`, `authorId`, `illustratorId` FROM `YoungAdultBooks`
+
+mappingId	YoungAdultBooks_illustratorId_fk
+target		ex:ChildrensBooks/{id} p:hasIllustrator ex:Illustrator/{illustratorId} .
+source		SELECT `id`, `illustratorId` FROM `YoungAdultBooks` WHERE `illustratorId` IS NOT NULL
+
+mappingId	YoungAdultBooks_authorId_fk
+target		ex:ChildrensBooks/{id} p:hasAuthor ex:Author/{authorId} .
+source		SELECT `id`, `authorId` FROM `YoungAdultBooks` WHERE `authorId` IS NOT NULL
+
+]]

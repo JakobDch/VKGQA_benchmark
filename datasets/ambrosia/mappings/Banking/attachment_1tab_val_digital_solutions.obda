@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:DateOfBirth {DateOfBirth} ; p:Digital_Solutions {Digital_Solutions} ; p:Sign_in_Options {Sign_in_Options} ; p:name {FullName} .
+source		SELECT `CustomerID`, `DateOfBirth`, `Digital_Solutions`, `Sign_in_Options`, `FullName` FROM `Customers`
+
+mappingId	AccountTypes_base
+target		ex:AccountTypes/{AccountTypeID} a :AccountTypes ; p:AccountTypeID {AccountTypeID} ; p:AccountTypeName {AccountTypeName} .
+source		SELECT `AccountTypeID`, `AccountTypeName` FROM `AccountTypes`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:AccountTypeID {AccountTypeID} ; p:OpenDate {OpenDate} ; p:Balance {Balance} .
+source		SELECT `AccountID`, `CustomerID`, `AccountTypeID`, `OpenDate`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_AccountTypeID_fk
+target		ex:Accounts/{AccountID} p:hasAccountTypes ex:AccountTypes/{AccountTypeID} .
+source		SELECT `AccountID`, `AccountTypeID` FROM `Accounts` WHERE `AccountTypeID` IS NOT NULL
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountID {AccountID} ; p:Amount {Amount} ; p:Type {Type} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountID`, `Amount`, `Type`, `Date` FROM `Transactions`
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+]]

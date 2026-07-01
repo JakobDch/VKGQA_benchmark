@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `id`, `first_name`, `last_name` FROM `Students`
+
+mappingId	Classes_base
+target		ex:Classes/{class_id} a :Classes ; p:class_id {class_id} ; p:course_title {course_title} ; p:instructor {instructor} .
+source		SELECT `class_id`, `course_title`, `instructor` FROM `Classes`
+
+mappingId	Date_base
+target		ex:Date/{date_id} a :Date ; p:date_id {date_id} ; p:year {year} ; p:month {month} ; p:day {day} .
+source		SELECT `date_id`, `year`, `month`, `day` FROM `Date`
+
+mappingId	Time_base
+target		ex:Time/{time_id} a :Time ; p:time_id {time_id} ; p:hour {hour} ; p:minute {minute} ; p:second {second} .
+source		SELECT `time_id`, `hour`, `minute`, `second` FROM `Time`
+
+mappingId	Enrollment_base
+target		ex:Enrollments/{enrollment_id} a :Enrollments ; p:enrollment_id {enrollment_id} ; p:student_id {student_id} ; p:class_id {class_id} .
+source		SELECT `enrollment_id`, `student_id`, `class_id` FROM `Enrollment`
+
+mappingId	Enrollment_class_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasClasses ex:Classes/{class_id} .
+source		SELECT `enrollment_id`, `class_id` FROM `Enrollment` WHERE `class_id` IS NOT NULL
+
+mappingId	Enrollment_student_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `enrollment_id`, `student_id` FROM `Enrollment` WHERE `student_id` IS NOT NULL
+
+mappingId	Assignments_base
+target		ex:Assignments/{assignment_id} a :Assignments ; p:assignment_id {assignment_id} ; p:due_date {due_date} ; p:due_time {due_time} ; p:description {description} .
+source		SELECT `assignment_id`, `due_date`, `due_time`, `description` FROM `Assignments`
+
+mappingId	Assignments_due_time_fk
+target		ex:Assignments/{assignment_id} p:hasTime ex:Time/{due_time} .
+source		SELECT `assignment_id`, `due_time` FROM `Assignments` WHERE `due_time` IS NOT NULL
+
+mappingId	Assignments_due_date_fk
+target		ex:Assignments/{assignment_id} p:hasDate ex:Date/{due_date} .
+source		SELECT `assignment_id`, `due_date` FROM `Assignments` WHERE `due_date` IS NOT NULL
+
+]]

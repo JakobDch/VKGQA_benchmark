@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `BirthDate`, `Country` FROM `Authors`
+
+mappingId	News_Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:Word_Count {Word_Count} ; p:Published_Date {Published_Date} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `Word_Count`, `Published_Date`, `AuthorID` FROM `News_Articles`
+
+mappingId	News_Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `News_Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Feature_Articles_base
+target		ex:Feature_Articles/{ArticleID} a :Feature_Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:Word_Count {Word_Count} ; p:Published_Date {Published_Date} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `Word_Count`, `Published_Date`, `AuthorID` FROM `Feature_Articles`
+
+mappingId	Feature_Articles_AuthorID_fk
+target		ex:Feature_Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Feature_Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Publications_base
+target		ex:Publications/{PublisherID} a :Publications ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} ; p:Website {Website} .
+source		SELECT `PublisherID`, `Name`, `Address`, `Website` FROM `Publications`
+
+mappingId	Publishers_and_Authors_base
+target		ex:Publishers_and_Authors/{PublisherID}/{AuthorID} a :Publishers_and_Authors ; p:PublisherID {PublisherID} ; p:AuthorID {AuthorID} .
+source		SELECT `PublisherID`, `AuthorID` FROM `Publishers_and_Authors`
+
+mappingId	Publishers_and_Authors_AuthorID_fk
+target		ex:Publishers_and_Authors/{PublisherID}/{AuthorID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `PublisherID`, `AuthorID` FROM `Publishers_and_Authors` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Publishers_and_Authors_PublisherID_fk
+target		ex:Publishers_and_Authors/{PublisherID}/{AuthorID} p:hasPublications ex:Publications/{PublisherID} .
+source		SELECT `PublisherID`, `AuthorID` FROM `Publishers_and_Authors` WHERE `PublisherID` IS NOT NULL
+
+]]

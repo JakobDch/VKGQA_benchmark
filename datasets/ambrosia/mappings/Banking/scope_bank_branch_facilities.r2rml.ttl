@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_bank_branch_facilities_0_Bank_Branch_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"BranchID\", \"BranchName\", \"BranchAddress\" FROM \"Bank_Branch\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Branches/{BranchID}" ; rr:class :Branches ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchID ; rr:objectMap [ rr:column "BranchID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchName ; rr:objectMap [ rr:column "BranchName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchAddress ; rr:objectMap [ rr:column "BranchAddress" ] ] .
+
+<#tm_scope_bank_branch_facilities_1_Facilities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FacilityID\", \"FacilityType\" FROM \"Facilities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Facilities/{FacilityID}" ; rr:class :Facilities ] ;
+  rr:predicateObjectMap [ rr:predicate p:FacilityID ; rr:objectMap [ rr:column "FacilityID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FacilityType ; rr:objectMap [ rr:column "FacilityType" ] ] .
+
+<#tm_scope_bank_branch_facilities_2_Bank_Branch_Facilities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ID\", \"BranchID\", \"FacilityID\" FROM \"Bank_Branch_Facilities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Branch_Facilities/{ID}" ; rr:class :Bank_Branch_Facilities ] ;
+  rr:predicateObjectMap [ rr:predicate p:ID ; rr:objectMap [ rr:column "ID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BranchID ; rr:objectMap [ rr:column "BranchID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FacilityID ; rr:objectMap [ rr:column "FacilityID" ] ] .
+
+<#tm_scope_bank_branch_facilities_3_Bank_Branch_Facilities_FacilityID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ID\", \"FacilityID\" FROM \"Bank_Branch_Facilities\" WHERE \"FacilityID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Branch_Facilities/{ID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFacilities ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Facilities/{FacilityID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_bank_branch_facilities_4_Bank_Branch_Facilities_BranchID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ID\", \"BranchID\" FROM \"Bank_Branch_Facilities\" WHERE \"BranchID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Bank_Branch_Facilities/{ID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasBranches ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Branches/{BranchID}" ; rr:termType rr:IRI ] ] .
+

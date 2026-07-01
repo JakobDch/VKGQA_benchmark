@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_magazines_categories_0_Categories_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"categoryName\" FROM \"Categories\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Category/{id}" ; rr:class :Category ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:categoryName ; rr:objectMap [ rr:column "categoryName" ] ] .
+
+<#tm_scope_magazines_categories_1_Magazines_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"magazineId\", \"magazineTitle\", \"publicationYear\", \"websiteUrl\" FROM \"Magazines\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Magazines/{magazineId}" ; rr:class :Magazines ] ;
+  rr:predicateObjectMap [ rr:predicate p:magazineId ; rr:objectMap [ rr:column "magazineId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:magazineTitle ; rr:objectMap [ rr:column "magazineTitle" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:publicationYear ; rr:objectMap [ rr:column "publicationYear" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:websiteUrl ; rr:objectMap [ rr:column "websiteUrl" ] ] .
+
+<#tm_scope_magazines_categories_2_Magazines_Categories_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"magazineId\", \"categoryId\" FROM \"Magazines_Categories\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Magazines_Categories/{magazineId}/{categoryId}" ; rr:class :Magazines_Categories ] ;
+  rr:predicateObjectMap [ rr:predicate p:magazineId ; rr:objectMap [ rr:column "magazineId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:categoryId ; rr:objectMap [ rr:column "categoryId" ] ] .
+
+<#tm_scope_magazines_categories_3_Magazines_Categories_categoryId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"magazineId\", \"categoryId\" FROM \"Magazines_Categories\" WHERE \"categoryId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Magazines_Categories/{magazineId}/{categoryId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCategory ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Category/{categoryId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_magazines_categories_4_Magazines_Categories_magazineId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"magazineId\", \"categoryId\" FROM \"Magazines_Categories\" WHERE \"magazineId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Magazines_Categories/{magazineId}/{categoryId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMagazines ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Magazines/{magazineId}" ; rr:termType rr:IRI ] ] .
+

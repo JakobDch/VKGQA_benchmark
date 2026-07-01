@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_crew",
+  "schema": "amb_attachment_2tab_ref_crew",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you list all directors and also all editors of Episode 2?",
+      "qtype": "unambig",
+      "sql": "SELECT Directors.name\nFROM Episodes JOIN Directors ON Episodes.DirectorID = Directors.ID\nUNION\nSELECT Editors.name\nFROM Episodes JOIN Editors ON Episodes.EditorID = Editors.ID\nWHERE Episodes.Title = 'Episode 2'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?episodes a :Episodes .\n    ?directors a :Directors .\n    ?episodes p:hasDirectors ?directors .\n    ?directors p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?episodes a :Episodes .\n    ?editors a :Editors .\n    ?episodes p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?episodes p:Title ?title_f .\n    FILTER(STR(?title_f) = \"Episode 2\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display all directors and editors of Episode 2.",
+      "qtype": "ambig",
+      "sql": "SELECT Directors.name\nFROM Episodes JOIN Directors ON Episodes.DirectorID = Directors.ID\nWHERE Episodes.DirectorID = 2\nUNION\nSELECT Editors.name\nFROM Episodes JOIN Editors ON Episodes.EditorID = Editors.ID\nWHERE Episodes.Title = 'Episode 2'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?episodes a :Episodes .\n    ?directors a :Directors .\n    ?episodes p:hasDirectors ?directors .\n    ?directors p:name ?name .\n    ?episodes p:DirectorID ?directorid_f .\n    FILTER((STR(?directorid_f) = \"2\" || STR(?directorid_f) = \"2.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?episodes a :Episodes .\n    ?editors a :Editors .\n    ?episodes p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?episodes p:Title ?title_f .\n    FILTER(STR(?title_f) = \"Episode 2\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all directors and editors of Episode 2.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?episodes a :Episodes .\n    ?directors a :Directors .\n    ?episodes p:hasDirectors ?directors .\n    ?directors p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?episodes a :Episodes .\n    ?editors a :Editors .\n    ?episodes p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?episodes p:Title ?title_f .\n    FILTER(STR(?title_f) = \"Episode 2\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?episodes a :Episodes .\n    ?directors a :Directors .\n    ?episodes p:hasDirectors ?directors .\n    ?directors p:name ?name .\n    ?episodes p:DirectorID ?directorid_f .\n    FILTER((STR(?directorid_f) = \"2\" || STR(?directorid_f) = \"2.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?episodes a :Episodes .\n    ?editors a :Editors .\n    ?episodes p:hasEditors ?editors .\n    ?editors p:name ?name .\n    ?episodes p:Title ?title_f .\n    FILTER(STR(?title_f) = \"Episode 2\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_release_timeframe2",
+  "schema": "amb_vague_2cols_release_timeframe2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In what year was the earliest game released with a rating above 8.5?",
+      "qtype": "unambig",
+      "sql": "SELECT MIN(Release_Year) FROM VideoGames JOIN GameReviews ON GameReviews.GameId = VideoGames.id WHERE Rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MIN(?release_year_a) AS ?agg) WHERE {\n  ?videogames a :VideoGames .\n  ?gamereviews a :GameReviews .\n  ?gamereviews p:hasVideoGames ?videogames .\n  ?gamereviews p:Rating ?rating_f .\n  ?videogames p:Release_Year ?release_year_a .\n  FILTER(xsd:double(?rating_f) > 8.5)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "When was the earliest game released with a rating above 8.5?",
+      "qtype": "ambig",
+      "sql": "SELECT MIN(Release_Date) FROM VideoGames JOIN GameReviews ON GameReviews.GameId = VideoGames.id WHERE Rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MIN(?release_date_a) AS ?agg) WHERE {\n  ?videogames a :VideoGames .\n  ?gamereviews a :GameReviews .\n  ?gamereviews p:hasVideoGames ?videogames .\n  ?gamereviews p:Rating ?rating_f .\n  ?videogames p:Release_Date ?release_date_a .\n  FILTER(xsd:double(?rating_f) > 8.5)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "When was the earliest game released with a rating above 8.5?",
+      "qtype": "ambig",
+      "sql": "SELECT MIN(Release_Year, Release_Date) FROM VideoGames JOIN GameReviews ON GameReviews.GameId = VideoGames.id WHERE Rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mn WHERE { ?gr a :GameReviews ; p:hasVideoGames ?g ; p:Rating ?r . ?g p:Release_Year ?ry ; p:Release_Date ?rd . BIND(IF(STR(?ry) < STR(?rd), ?ry, ?rd) AS ?mn) FILTER(xsd:double(?r) > 8.5) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SQLite 2-arg MIN row-wise -> IF; GT uses MySQL LEAST; films rated>8.5"
+    },
+    {
+      "qid": 3,
+      "question": "What games are suitable for PS and what year and date were they released?",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Release_Year, Release_Date FROM VideoGames WHERE Platform LIKE '%PlayStation%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?release_year ?release_date WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Year ?release_year .\n  ?videogames p:Release_Date ?release_date .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "What games are suitable for PS and what year were they released?",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Release_Year FROM VideoGames WHERE Platform LIKE '%PlayStation%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?release_year WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Year ?release_year .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "What games are suitable for PS and when are they released?",
+      "qtype": "ambig",
+      "sql": "SELECT Name, Release_Date FROM VideoGames WHERE Platform LIKE '%PlayStation%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?release_date WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Date ?release_date .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When was the earliest game released with a rating above 8.5?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT (MIN(?release_year_a) AS ?agg) WHERE {\n  ?videogames a :VideoGames .\n  ?gamereviews a :GameReviews .\n  ?gamereviews p:hasVideoGames ?videogames .\n  ?gamereviews p:Rating ?rating_f .\n  ?videogames p:Release_Year ?release_year_a .\n  FILTER(xsd:double(?rating_f) > 8.5)\n} }\n  component_2: { SELECT (MIN(?release_date_a) AS ?agg) WHERE {\n  ?videogames a :VideoGames .\n  ?gamereviews a :GameReviews .\n  ?gamereviews p:hasVideoGames ?videogames .\n  ?gamereviews p:Rating ?rating_f .\n  ?videogames p:Release_Date ?release_date_a .\n  FILTER(xsd:double(?rating_f) > 8.5)\n} }\n  full: { SELECT ?mn WHERE { ?gr a :GameReviews ; p:hasVideoGames ?g ; p:Rating ?r . ?g p:Release_Year ?ry ; p:Release_Date ?rd . BIND(IF(STR(?ry) < STR(?rd), ?ry, ?rd) AS ?mn) FILTER(xsd:double(?r) > 8.5) } }\n}",
+      "verified": true
+    },
+    {
+      "question": "What games are suitable for PS and when are they released?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?release_year ?release_date WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Year ?release_year .\n  ?videogames p:Release_Date ?release_date .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n} }\n  component: { SELECT ?name ?release_year WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Year ?release_year .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n} }\n  component_2: { SELECT ?name ?release_date WHERE {\n  ?videogames a :VideoGames .\n  ?videogames p:name ?name .\n  ?videogames p:Release_Date ?release_date .\n  ?videogames p:Platform ?platform_lk .\n  FILTER(REGEX(STR(?platform_lk), \"^.*PlayStation.*$\", \"i\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_debit_cards_fees",
+  "schema": "amb_scope_debit_cards_fees",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Present to me the fee value that is most popular for all debit cards.",
+      "qtype": "unambig",
+      "sql": "SELECT Fees.FeeValue  from Debit_Card_Fees join Fees on Debit_Card_Fees.FeeType = Fees.FeeType join Debit_Cards on Debit_Card_Fees.CardID = Debit_Cards.CardID   GROUP BY Debit_Card_Fees.FeeType HAVING COUNT(DISTINCT Debit_Card_Fees.CardID) = (SELECT COUNT(*) FROM  Debit_Cards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?feevalue WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFees ?child ; p:hasDebit_Cards ?parent . } GROUP BY ?child }\n  ?child p:FeeValue ?feevalue .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Debit_Cards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each debit card, give me the related fee value.",
+      "qtype": "unambig",
+      "sql": "select debit_cards.customername , fees.feevalue from Debit_Card_Fees join Fees on Debit_Card_Fees.FeeType = Fees.FeeType join Debit_Cards on Debit_Card_Fees.CardID = Debit_Cards.CardID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?customername ?feevalue WHERE {\n  ?debit_card_fees a :Debit_Card_Fees .\n  ?fees a :Fees .\n  ?debit_card_fees p:hasFees ?fees .\n  ?debit_cards a :Debit_Cards .\n  ?debit_card_fees p:hasDebit_Cards ?debit_cards .\n  ?debit_cards p:CustomerName ?customername .\n  ?fees p:FeeValue ?feevalue .\n}",
+      "status": "pass",
+      "note": "n=13"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the fee value for every debit card?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?feevalue WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFees ?child ; p:hasDebit_Cards ?parent . } GROUP BY ?child }\n  ?child p:FeeValue ?feevalue .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Debit_Cards } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?customername ?feevalue WHERE {\n  ?debit_card_fees a :Debit_Card_Fees .\n  ?fees a :Fees .\n  ?debit_card_fees p:hasFees ?fees .\n  ?debit_cards a :Debit_Cards .\n  ?debit_card_fees p:hasDebit_Cards ?debit_cards .\n  ?debit_cards p:CustomerName ?customername .\n  ?fees p:FeeValue ?feevalue .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

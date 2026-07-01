@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{student_id} a :Students ; p:student_id {student_id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `student_id`, `first_name`, `last_name` FROM `Students`
+
+mappingId	Classes_base
+target		ex:Classes/{class_id} a :Classes ; p:class_id {class_id} ; p:course_name {course_name} ; p:teacher_name {teacher_name} .
+source		SELECT `class_id`, `course_name`, `teacher_name` FROM `Classes`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollment_id} a :Enrollments ; p:enrollment_id {enrollment_id} ; p:student_id {student_id} ; p:class_id {class_id} .
+source		SELECT `enrollment_id`, `student_id`, `class_id` FROM `Enrollments`
+
+mappingId	Enrollments_class_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasClasses ex:Classes/{class_id} .
+source		SELECT `enrollment_id`, `class_id` FROM `Enrollments` WHERE `class_id` IS NOT NULL
+
+mappingId	Enrollments_student_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `enrollment_id`, `student_id` FROM `Enrollments` WHERE `student_id` IS NOT NULL
+
+mappingId	Attendance_base
+target		ex:Attendance/{attendance_id} a :Attendance ; p:attendance_id {attendance_id} ; p:student_id {student_id} ; p:date_attended {date_attended} .
+source		SELECT `attendance_id`, `student_id`, `date_attended` FROM `Attendance`
+
+mappingId	Attendance_student_id_fk
+target		ex:Attendance/{attendance_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `attendance_id`, `student_id` FROM `Attendance` WHERE `student_id` IS NOT NULL
+
+mappingId	Grades_base
+target		ex:Grades/{grade_id} a :Grades ; p:grade_id {grade_id} ; p:student_id {student_id} ; p:class_id {class_id} ; p:grade {grade} .
+source		SELECT `grade_id`, `student_id`, `class_id`, `grade` FROM `Grades`
+
+mappingId	Grades_class_id_fk
+target		ex:Grades/{grade_id} p:hasClasses ex:Classes/{class_id} .
+source		SELECT `grade_id`, `class_id` FROM `Grades` WHERE `class_id` IS NOT NULL
+
+mappingId	Grades_student_id_fk
+target		ex:Grades/{grade_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `grade_id`, `student_id` FROM `Grades` WHERE `student_id` IS NOT NULL
+
+]]

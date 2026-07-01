@@ -1,0 +1,35 @@
+@prefix : <http://ambrosia.example.org/traffic#> .
+@prefix p: <http://ambrosia.example.org/traffic/prop#> .
+@prefix ex: <http://ambrosia.example.org/traffic/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_traffic_engineers_tools_0_Traffic_Engineers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"years_of_experience\" FROM \"Traffic_Engineers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Engineers/{id}" ; rr:class :Traffic_Engineers ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:yearsOfExperience ; rr:objectMap [ rr:column "years_of_experience" ] ] .
+
+<#tm_scope_traffic_engineers_tools_1_Tools_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"tool_id\", \"tool_name\", \"type\" FROM \"Tools\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Tools/{tool_id}" ; rr:class :Tools ] ;
+  rr:predicateObjectMap [ rr:predicate p:tool_id ; rr:objectMap [ rr:column "tool_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "tool_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "type" ] ] .
+
+<#tm_scope_traffic_engineers_tools_2_Traffic_Engineers_Tools_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"engineer_id\", \"tool_id\" FROM \"Traffic_Engineers_Tools\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Engineers_Tools/{tool_id}/{engineer_id}" ; rr:class :Traffic_Engineers_Tools ] .
+
+<#tm_scope_traffic_engineers_tools_3_Traffic_Engineers_Tools_tool_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"tool_id\", \"engineer_id\" FROM \"Traffic_Engineers_Tools\" WHERE \"tool_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Engineers_Tools/{tool_id}/{engineer_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTools ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Tools/{tool_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_traffic_engineers_tools_4_Traffic_Engineers_Tools_engineer_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"tool_id\", \"engineer_id\" FROM \"Traffic_Engineers_Tools\" WHERE \"engineer_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Engineers_Tools/{tool_id}/{engineer_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTraffic_Engineers ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Traffic_Engineers/{engineer_id}" ; rr:termType rr:IRI ] ] .
+

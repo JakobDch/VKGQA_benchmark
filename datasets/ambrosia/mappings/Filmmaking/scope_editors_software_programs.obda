@@ -1,0 +1,77 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Editors_base
+target		ex:Editors/{editor_id} a :Editors ; p:editor_id {editor_id} ; p:name {full_name} .
+source		SELECT `editor_id`, `full_name` FROM `Editors`
+
+mappingId	Software_Programs_base
+target		ex:Software_Programs/{program_id} a :Software_Programs ; p:program_id {program_id} ; p:name {name} ; p:version {version} .
+source		SELECT `program_id`, `name`, `version` FROM `Software_Programs`
+
+mappingId	FilmProjects_base
+target		ex:Film_Projects/{project_id} a :Film_Projects ; p:project_id {project_id} ; p:title {title} ; p:release_date {release_date} .
+source		SELECT `project_id`, `title`, `release_date` FROM `FilmProjects`
+
+mappingId	Directors_base
+target		ex:Directors/{director_id} a :Directors ; p:director_id {director_id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `director_id`, `first_name`, `last_name` FROM `Directors`
+
+mappingId	Actors_base
+target		ex:Actors/{actor_id} a :Actors ; p:actor_id {actor_id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `actor_id`, `first_name`, `last_name` FROM `Actors`
+
+mappingId	EditorDirectorRelationship_base
+target		ex:EditorDirectorRelationship/{relationship_id} a :EditorDirectorRelationship ; p:relationship_id {relationship_id} ; p:director_id {director_id} ; p:editor_id {editor_id} .
+source		SELECT `relationship_id`, `director_id`, `editor_id` FROM `EditorDirectorRelationship`
+
+mappingId	EditorDirectorRelationship_editor_id_fk
+target		ex:EditorDirectorRelationship/{relationship_id} p:hasEditors ex:Editors/{editor_id} .
+source		SELECT `relationship_id`, `editor_id` FROM `EditorDirectorRelationship` WHERE `editor_id` IS NOT NULL
+
+mappingId	EditorDirectorRelationship_director_id_fk
+target		ex:EditorDirectorRelationship/{relationship_id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `relationship_id`, `director_id` FROM `EditorDirectorRelationship` WHERE `director_id` IS NOT NULL
+
+mappingId	ProjectActors_base
+target		ex:Films_and_Actors/{project_actor_id} a :Films_and_Actors ; p:project_actor_id {project_actor_id} ; p:film_project_id {film_project_id} ; p:actor_id {actor_id} .
+source		SELECT `project_actor_id`, `film_project_id`, `actor_id` FROM `ProjectActors`
+
+mappingId	ProjectActors_actor_id_fk
+target		ex:Films_and_Actors/{project_actor_id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `project_actor_id`, `actor_id` FROM `ProjectActors` WHERE `actor_id` IS NOT NULL
+
+mappingId	ProjectActors_film_project_id_fk
+target		ex:Films_and_Actors/{project_actor_id} p:hasFilm_Projects ex:Film_Projects/{film_project_id} .
+source		SELECT `project_actor_id`, `film_project_id` FROM `ProjectActors` WHERE `film_project_id` IS NOT NULL
+
+mappingId	DirectorFilmProjects_base
+target		ex:Films_and_Directors/{director_film_project_id} a :Films_and_Directors ; p:director_film_project_id {director_film_project_id} ; p:director_id {director_id} ; p:film_project_id {film_project_id} .
+source		SELECT `director_film_project_id`, `director_id`, `film_project_id` FROM `DirectorFilmProjects`
+
+mappingId	DirectorFilmProjects_film_project_id_fk
+target		ex:Films_and_Directors/{director_film_project_id} p:hasFilm_Projects ex:Film_Projects/{film_project_id} .
+source		SELECT `director_film_project_id`, `film_project_id` FROM `DirectorFilmProjects` WHERE `film_project_id` IS NOT NULL
+
+mappingId	DirectorFilmProjects_director_id_fk
+target		ex:Films_and_Directors/{director_film_project_id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `director_film_project_id`, `director_id` FROM `DirectorFilmProjects` WHERE `director_id` IS NOT NULL
+
+mappingId	EditorSoftwarePrograms_base
+target		ex:EditorSoftwarePrograms/{editor_software_program_id} a :EditorSoftwarePrograms ; p:editor_software_program_id {editor_software_program_id} ; p:editor_id {editor_id} ; p:software_program_id {software_program_id} .
+source		SELECT `editor_software_program_id`, `editor_id`, `software_program_id` FROM `EditorSoftwarePrograms`
+
+mappingId	EditorSoftwarePrograms_software_program_id_fk
+target		ex:EditorSoftwarePrograms/{editor_software_program_id} p:hasSoftware_Programs ex:Software_Programs/{software_program_id} .
+source		SELECT `editor_software_program_id`, `software_program_id` FROM `EditorSoftwarePrograms` WHERE `software_program_id` IS NOT NULL
+
+mappingId	EditorSoftwarePrograms_editor_id_fk
+target		ex:EditorSoftwarePrograms/{editor_software_program_id} p:hasEditors ex:Editors/{editor_id} .
+source		SELECT `editor_software_program_id`, `editor_id` FROM `EditorSoftwarePrograms` WHERE `editor_id` IS NOT NULL
+
+]]

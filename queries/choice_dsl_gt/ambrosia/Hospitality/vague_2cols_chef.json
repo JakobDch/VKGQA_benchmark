@@ -1,0 +1,97 @@
+{
+  "domain": "Hospitality",
+  "db_base": "vague_2cols_chef",
+  "schema": "amb_vague_2cols_chef",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who is the chef and sous chef at any restaurant in the database?",
+      "qtype": "unambig",
+      "sql": "SELECT executive_chef, sous_chef\nFROM Restaurants;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?executive_chef ?sous_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:executive_chef ?executive_chef .\n  ?restaurants p:sous_chef ?sous_chef .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who is the executive chef at any restaurant in the database",
+      "qtype": "unambig",
+      "sql": "SELECT executive_chef\nFROM Restaurants;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?executive_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:executive_chef ?executive_chef .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who is the chef at any restaurant in the database?",
+      "qtype": "ambig",
+      "sql": "SELECT sous_chef\nFROM Restaurants;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sous_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:sous_chef ?sous_chef .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who are the executive and sous chefs at the restaurant serving grilled steak with garlic butter?",
+      "qtype": "unambig",
+      "sql": "SELECT r.executive_chef, sous_chef\nFROM Restaurants r, MenuItems m\nWHERE r.restaurant_id = m.restaurant_id\nAND m.item_name = 'Steak';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?executive_chef ?sous_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:executive_chef ?executive_chef .\n  ?r p:sous_chef ?sous_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who is the chef at the restaurant where you can find a grilled steak with garlic butter on the menu?",
+      "qtype": "ambig",
+      "sql": "SELECT r.executive_chef\nFROM Restaurants r, MenuItems m\nWHERE r.restaurant_id = m.restaurant_id\nAND m.item_name = 'Steak';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?executive_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:executive_chef ?executive_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who is the chef at the restaurant where you can find a grilled steak with garlic butter on the menu?",
+      "qtype": "ambig",
+      "sql": "SELECT r.sous_chef\nFROM Restaurants r, MenuItems m\nWHERE r.restaurant_id = m.restaurant_id\nAND m.item_name = 'Steak';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?sous_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:sous_chef ?sous_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who is the chef at any restaurant in the database?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?executive_chef ?sous_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:executive_chef ?executive_chef .\n  ?restaurants p:sous_chef ?sous_chef .\n} }\n  component: { SELECT ?executive_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:executive_chef ?executive_chef .\n} }\n  component_2: { SELECT ?sous_chef WHERE {\n  ?restaurants a :Restaurants .\n  ?restaurants p:sous_chef ?sous_chef .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who is the chef at the restaurant where you can find a grilled steak with garlic butter on the menu?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?executive_chef ?sous_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:executive_chef ?executive_chef .\n  ?r p:sous_chef ?sous_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n} }\n  component: { SELECT ?sous_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:sous_chef ?sous_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n} }\n  component_2: { SELECT ?executive_chef WHERE {\n  ?r a :Restaurants .\n  ?m a :MenuItems .\n  ?r p:executive_chef ?executive_chef .\n  ?m p:hasRestaurants ?r .\n  ?m p:item_name ?item_name_f .\n  FILTER(STR(?item_name_f) = \"Steak\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

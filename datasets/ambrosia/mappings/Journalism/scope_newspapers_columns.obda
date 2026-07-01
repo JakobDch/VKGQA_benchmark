@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Newspapers_base
+target		ex:Newspapers/{id} a :Newspapers ; p:id {id} ; p:name {name} ; p:publication_date {publication_date} .
+source		SELECT `id`, `name`, `publication_date` FROM `Newspapers`
+
+mappingId	Columns_base
+target		ex:Columns/{id} a :Columns ; p:id {id} ; p:column_name {column_name} .
+source		SELECT `id`, `column_name` FROM `Columns`
+
+mappingId	Writers_base
+target		ex:Writers/{id} a :Writers ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Writers`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:publish_date {publish_date} ; p:newspaper_id {newspaper_id} ; p:writer_id {writer_id} .
+source		SELECT `id`, `title`, `content`, `publish_date`, `newspaper_id`, `writer_id` FROM `Articles`
+
+mappingId	Articles_writer_id_fk
+target		ex:Articles/{id} p:hasWriters ex:Writers/{writer_id} .
+source		SELECT `id`, `writer_id` FROM `Articles` WHERE `writer_id` IS NOT NULL
+
+mappingId	Articles_newspaper_id_fk
+target		ex:Articles/{id} p:hasNewspapers ex:Newspapers/{newspaper_id} .
+source		SELECT `id`, `newspaper_id` FROM `Articles` WHERE `newspaper_id` IS NOT NULL
+
+mappingId	Newspapers_Columns_base
+target		ex:Newspapers_Columns/{newspaper_id}/{column_id} a :Newspapers_Columns ; p:newspaper_id {newspaper_id} ; p:column_id {column_id} .
+source		SELECT `newspaper_id`, `column_id` FROM `Newspapers_Columns`
+
+mappingId	Newspapers_Columns_column_id_fk
+target		ex:Newspapers_Columns/{newspaper_id}/{column_id} p:hasColumns ex:Columns/{column_id} .
+source		SELECT `newspaper_id`, `column_id` FROM `Newspapers_Columns` WHERE `column_id` IS NOT NULL
+
+mappingId	Newspapers_Columns_newspaper_id_fk
+target		ex:Newspapers_Columns/{newspaper_id}/{column_id} p:hasNewspapers ex:Newspapers/{newspaper_id} .
+source		SELECT `newspaper_id`, `column_id` FROM `Newspapers_Columns` WHERE `newspaper_id` IS NOT NULL
+
+]]

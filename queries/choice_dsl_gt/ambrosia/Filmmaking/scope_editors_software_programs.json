@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_editors_software_programs",
+  "schema": "amb_scope_editors_software_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each editor, what is the name and version of the corresponding program?",
+      "qtype": "unambig",
+      "sql": "select editors.full_name , software_programs.name , software_programs.version from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?name ?version WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:name ?name .\n  ?software_programs p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the name of software programs that we have for every editor",
+      "qtype": "ambig",
+      "sql": "SELECT Software_Programs.name  from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id   GROUP BY EditorSoftwarePrograms.software_program_id HAVING COUNT(DISTINCT EditorSoftwarePrograms.editor_id) = (SELECT COUNT(*) FROM  Editors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the name of software programs that we have for every editor",
+      "qtype": "ambig",
+      "sql": "select editors.full_name , software_programs.name from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?name WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "What is the version of the program that is most popular among all editors?",
+      "qtype": "unambig",
+      "sql": "SELECT Software_Programs.version  from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id   GROUP BY EditorSoftwarePrograms.software_program_id HAVING COUNT(DISTINCT EditorSoftwarePrograms.editor_id) = (SELECT COUNT(*) FROM  Editors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the name and version of programs for each editor.",
+      "qtype": "ambig",
+      "sql": "SELECT Software_Programs.name, Software_Programs.version  from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id   GROUP BY EditorSoftwarePrograms.software_program_id HAVING COUNT(DISTINCT EditorSoftwarePrograms.editor_id) = (SELECT COUNT(*) FROM  Editors)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every editor, list the version of programs that are used.",
+      "qtype": "unambig",
+      "sql": "select editors.full_name , software_programs.version from EditorSoftwarePrograms join Software_Programs on EditorSoftwarePrograms.software_program_id = Software_Programs.program_id join Editors on EditorSoftwarePrograms.editor_id = Editors.editor_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?version WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the name and version of programs for each editor.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?full_name ?name ?version WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:name ?name .\n  ?software_programs p:version ?version .\n} }\n  collective: { SELECT ?name ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the name of software programs that we have for every editor",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?full_name ?name WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the version of programs each editor uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSoftware_Programs ?child ; p:hasEditors ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editors } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?version WHERE {\n  ?editorsoftwareprograms a :EditorSoftwarePrograms .\n  ?software_programs a :Software_Programs .\n  ?editorsoftwareprograms p:hasSoftware_Programs ?software_programs .\n  ?editors a :Editors .\n  ?editorsoftwareprograms p:hasEditors ?editors .\n  ?editors p:name ?full_name .\n  ?software_programs p:version ?version .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

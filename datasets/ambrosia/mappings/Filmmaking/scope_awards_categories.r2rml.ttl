@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/filmmaking#> .
+@prefix p: <http://ambrosia.example.org/filmmaking/prop#> .
+@prefix ex: <http://ambrosia.example.org/filmmaking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_awards_categories_0_Awards_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"awardName\", \"year\" FROM \"Awards\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Awards/{id}" ; rr:class :Awards ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:awardName ; rr:objectMap [ rr:column "awardName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:year ; rr:objectMap [ rr:column "year" ] ] .
+
+<#tm_scope_awards_categories_1_Categories_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"categoryId\", \"categoryName\" FROM \"Categories\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Categories/{categoryId}" ; rr:class :Categories ] ;
+  rr:predicateObjectMap [ rr:predicate p:categoryId ; rr:objectMap [ rr:column "categoryId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:categoryName ; rr:objectMap [ rr:column "categoryName" ] ] .
+
+<#tm_scope_awards_categories_2_Awards_Categories_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"awardsID\", \"categoriesID\" FROM \"Awards_Categories\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Awards_Categories/{awardsID}/{categoriesID}" ; rr:class :Awards_Categories ] ;
+  rr:predicateObjectMap [ rr:predicate p:awardsID ; rr:objectMap [ rr:column "awardsID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:categoriesID ; rr:objectMap [ rr:column "categoriesID" ] ] .
+
+<#tm_scope_awards_categories_3_Awards_Categories_categoriesID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"awardsID\", \"categoriesID\" FROM \"Awards_Categories\" WHERE \"categoriesID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Awards_Categories/{awardsID}/{categoriesID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCategories ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Categories/{categoriesID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_awards_categories_4_Awards_Categories_awardsID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"awardsID\", \"categoriesID\" FROM \"Awards_Categories\" WHERE \"awardsID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Awards_Categories/{awardsID}/{categoriesID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAwards ; rr:objectMap [ rr:template "http://ambrosia.example.org/filmmaking/id/Awards/{awardsID}" ; rr:termType rr:IRI ] ] .
+

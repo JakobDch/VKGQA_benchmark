@@ -1,0 +1,141 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_sales_representatives_territories",
+  "schema": "amb_scope_sales_representatives_territories",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the territories and cities that each sales representative is responsible for.",
+      "qtype": "ambig",
+      "sql": "SELECT Territories.Name, Territories.OtherColumn1  from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID   GROUP BY Sales_Representatives_Territories.TerritoryID HAVING COUNT(DISTINCT Sales_Representatives_Territories.SalesRepID) = (SELECT COUNT(*) FROM  Sales_Representatives)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?othercolumn1 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:OtherColumn1 ?othercolumn1 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the territories and cities that each sales representative is responsible for.",
+      "qtype": "ambig",
+      "sql": "select sales_representatives.fullname , territories.name , territories.othercolumn1 from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name ?othercolumn1 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What are the territories and cities where all sales reps work in together?",
+      "qtype": "unambig",
+      "sql": "SELECT Territories.Name, Territories.OtherColumn1, Territories.OtherColumn2  from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID   GROUP BY Sales_Representatives_Territories.TerritoryID HAVING COUNT(DISTINCT Sales_Representatives_Territories.SalesRepID) = (SELECT COUNT(*) FROM  Sales_Representatives)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?othercolumn1 ?othercolumn2 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:OtherColumn1 ?othercolumn1 .\n  ?child p:OtherColumn2 ?othercolumn2 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the territory in which each sales rep works and the corresponding city.",
+      "qtype": "ambig",
+      "sql": "select sales_representatives.fullname , territories.name , territories.othercolumn1 , territories.othercolumn2 from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name ?othercolumn1 ?othercolumn2 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n  ?territories p:OtherColumn2 ?othercolumn2 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For each sales rep, list the cities of territories they cover.",
+      "qtype": "unambig",
+      "sql": "select sales_representatives.fullname , territories.othercolumn1 from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?othercolumn1 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "What are the cities of territories that are the same for all sales reps?",
+      "qtype": "unambig",
+      "sql": "SELECT Territories.OtherColumn1  from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID   GROUP BY Sales_Representatives_Territories.TerritoryID HAVING COUNT(DISTINCT Sales_Representatives_Territories.SalesRepID) = (SELECT COUNT(*) FROM  Sales_Representatives)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?othercolumn1 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:OtherColumn1 ?othercolumn1 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "For each sales rep, list the territories they cover.",
+      "qtype": "unambig",
+      "sql": "select sales_representatives.fullname , territories.name from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?name WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 7,
+      "question": "Tell me the territories every sales rep covers.",
+      "qtype": "ambig",
+      "sql": "SELECT Territories.Name  from Sales_Representatives_Territories join Territories on Sales_Representatives_Territories.TerritoryID = Territories.RegionID join Sales_Representatives on Sales_Representatives_Territories.SalesRepID = Sales_Representatives.ID   GROUP BY Sales_Representatives_Territories.TerritoryID HAVING COUNT(DISTINCT Sales_Representatives_Territories.SalesRepID) = (SELECT COUNT(*) FROM  Sales_Representatives)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the territory in which each sales rep works and the corresponding city.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name ?othercolumn1 ?othercolumn2 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:OtherColumn1 ?othercolumn1 .\n  ?child p:OtherColumn2 ?othercolumn2 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?fullname ?name ?othercolumn1 ?othercolumn2 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n  ?territories p:OtherColumn2 ?othercolumn2 .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the cities of territories every sales rep covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?othercolumn1 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n} }\n  collective: { SELECT ?othercolumn1 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:OtherColumn1 ?othercolumn1 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the territories and cities that each sales representative is responsible for.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?name ?othercolumn1 WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n  ?territories p:OtherColumn1 ?othercolumn1 .\n} }\n  collective: { SELECT ?name ?othercolumn1 WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:OtherColumn1 ?othercolumn1 .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the territories every sales rep covers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        6,
+        7
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?name WHERE {\n  ?sales_representatives_territories a :Sales_Representatives_Territories .\n  ?territories a :Territories .\n  ?sales_representatives_territories p:hasTerritories ?territories .\n  ?sales_representatives a :Sales_Representatives .\n  ?sales_representatives_territories p:hasSales_Representatives ?sales_representatives .\n  ?sales_representatives p:name ?fullname .\n  ?territories p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TerritoryID ?cg . ?child a :Territories ; p:RegionID ?cg . ?l p:SalesRepID ?pg . ?parent a :Sales_Representatives ; p:ID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Representatives } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

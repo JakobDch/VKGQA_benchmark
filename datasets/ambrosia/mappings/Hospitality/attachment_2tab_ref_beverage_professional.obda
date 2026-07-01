@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Restaurants_base
+target		ex:Restaurants/{id} a :Restaurants ; p:id {id} ; p:name {name} ; p:address {address} ; p:phoneNumber {phoneNumber} .
+source		SELECT `id`, `name`, `address`, `phoneNumber` FROM `Restaurants`
+
+mappingId	Sommeliers_base
+target		ex:Sommeliers/{id} a :Sommeliers ; p:id {id} ; p:restaurantId {restaurantId} ; p:name {FullName} .
+source		SELECT `id`, `restaurantId`, `FullName` FROM `Sommeliers`
+
+mappingId	Sommeliers_restaurantId_fk
+target		ex:Sommeliers/{id} p:hasRestaurants ex:Restaurants/{restaurantId} .
+source		SELECT `id`, `restaurantId` FROM `Sommeliers` WHERE `restaurantId` IS NOT NULL
+
+mappingId	Bartenders_base
+target		ex:Bartenders/{id} a :Bartenders ; p:id {id} ; p:restaurantId {restaurantId} ; p:name {FullName} .
+source		SELECT `id`, `restaurantId`, `FullName` FROM `Bartenders`
+
+mappingId	Bartenders_restaurantId_fk
+target		ex:Bartenders/{id} p:hasRestaurants ex:Restaurants/{restaurantId} .
+source		SELECT `id`, `restaurantId` FROM `Bartenders` WHERE `restaurantId` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:phoneNumber {phoneNumber} .
+source		SELECT `id`, `firstName`, `lastName`, `phoneNumber` FROM `Customers`
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_fitness_studio_exercise_program",
+  "schema": "amb_scope_fitness_studio_exercise_program",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Could you provide the types of exercise program for all fitness studios?",
+      "qtype": "unambig",
+      "sql": "select fitness_studio.name , exercise_program.type from Fitness_Studio_Exercise_Program join Exercise_Program on Fitness_Studio_Exercise_Program.ExerciseProgramID = Exercise_Program.ProgramID join Fitness_Studio on Fitness_Studio_Exercise_Program.FitnessStudioID = Fitness_Studio.StudioID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?fitness_studio_exercise_program a :Fitness_Studio_Exercise_Program .\n  ?exercise_program a :Exercise_Program .\n  ?fitness_studio_exercise_program p:hasExercise_Program ?exercise_program .\n  ?fitness_studio a :Fitness_Studio .\n  ?fitness_studio_exercise_program p:hasFitness_Studio ?fitness_studio .\n  ?fitness_studio p:name ?name .\n  ?exercise_program p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What exercise programs are available for each fitness studio?",
+      "qtype": "ambig",
+      "sql": "SELECT Exercise_Program.Type  from Fitness_Studio_Exercise_Program join Exercise_Program on Fitness_Studio_Exercise_Program.ExerciseProgramID = Exercise_Program.ProgramID join Fitness_Studio on Fitness_Studio_Exercise_Program.FitnessStudioID = Fitness_Studio.StudioID   GROUP BY Fitness_Studio_Exercise_Program.ExerciseProgramID HAVING COUNT(DISTINCT Fitness_Studio_Exercise_Program.FitnessStudioID) = (SELECT COUNT(*) FROM  Fitness_Studio)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExercise_Program ?child ; p:hasFitness_Studio ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Fitness_Studio } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What exercise programs are available for each fitness studio?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?fitness_studio_exercise_program a :Fitness_Studio_Exercise_Program .\n  ?exercise_program a :Exercise_Program .\n  ?fitness_studio_exercise_program p:hasExercise_Program ?exercise_program .\n  ?fitness_studio a :Fitness_Studio .\n  ?fitness_studio_exercise_program p:hasFitness_Studio ?fitness_studio .\n  ?fitness_studio p:name ?name .\n  ?exercise_program p:Type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasExercise_Program ?child ; p:hasFitness_Studio ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Fitness_Studio } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

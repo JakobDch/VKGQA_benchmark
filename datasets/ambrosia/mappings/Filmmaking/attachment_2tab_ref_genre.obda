@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Blockbusters_base
+target		ex:Blockbusters/{id} a :Blockbusters ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:director {director} ; p:budget {budget} ; p:boxOffice {boxOffice} ; p:film_festival_id {film_festival_id} .
+source		SELECT `id`, `title`, `releaseYear`, `director`, `budget`, `boxOffice`, `film_festival_id` FROM `Blockbusters`
+
+mappingId	Blockbusters_film_festival_id_fk
+target		ex:Blockbusters/{id} p:hasFestival ex:Festival/{film_festival_id} .
+source		SELECT `id`, `film_festival_id` FROM `Blockbusters` WHERE `film_festival_id` IS NOT NULL
+
+mappingId	Indies_base
+target		ex:Indies/{id} a :Indies ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:director {director} ; p:budget {budget} ; p:gross {gross} ; p:film_festival_id {film_festival_id} .
+source		SELECT `id`, `title`, `releaseYear`, `director`, `budget`, `gross`, `film_festival_id` FROM `Indies`
+
+mappingId	Indies_film_festival_id_fk
+target		ex:Indies/{id} p:hasFestival ex:Festival/{film_festival_id} .
+source		SELECT `id`, `film_festival_id` FROM `Indies` WHERE `film_festival_id` IS NOT NULL
+
+mappingId	Festivals_base
+target		ex:Festival/{id} a :Festival ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Festivals`
+
+mappingId	Directors_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:name {name} ; p:birthDate {birthDate} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birthDate`, `nationality` FROM `Directors`
+
+mappingId	Actors_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:name {name} ; p:dateOfBirth {dateOfBirth} ; p:gender {gender} ; p:ethnicity {ethnicity} .
+source		SELECT `id`, `name`, `dateOfBirth`, `gender`, `ethnicity` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{_amb_rowid} a :Roles ; p:actor_id {actor_id} ; p:film_id {film_id} ; p:characterName {characterName} .
+source		SELECT `_amb_rowid`, `actor_id`, `film_id`, `characterName` FROM `Roles`
+
+mappingId	Roles_film_id_fk
+target		ex:Roles/{_amb_rowid} p:hasAction_Films ex:Action_Films/{film_id} .
+source		SELECT `_amb_rowid`, `film_id` FROM `Roles` WHERE `film_id` IS NOT NULL
+
+mappingId	Roles_actor_id_fk
+target		ex:Roles/{_amb_rowid} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `_amb_rowid`, `actor_id` FROM `Roles` WHERE `actor_id` IS NOT NULL
+
+mappingId	Action_Films_base
+target		ex:Action_Films/{id} a :Action_Films ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:genre {genre} ; p:runtime {runtime} ; p:language {language} ; p:film_festival_id {film_festival_id} .
+source		SELECT `id`, `title`, `releaseYear`, `genre`, `runtime`, `language`, `film_festival_id` FROM `Action_Films`
+
+mappingId	Action_Films_film_festival_id_fk
+target		ex:Action_Films/{id} p:hasFestival ex:Festival/{film_festival_id} .
+source		SELECT `id`, `film_festival_id` FROM `Action_Films` WHERE `film_festival_id` IS NOT NULL
+
+]]

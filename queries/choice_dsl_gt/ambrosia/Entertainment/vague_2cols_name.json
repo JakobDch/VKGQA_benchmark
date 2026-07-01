@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_name",
+  "schema": "amb_vague_2cols_name",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What was the alias of the lead for \"Siamese Dream\"?",
+      "qtype": "unambig",
+      "sql": "SELECT a.alias FROM Artists a JOIN MusicAlbums m ON a.id = m.artistId WHERE m.albumTitle = 'Siamese Dream';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?alias WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  OPTIONAL { ?a p:alias ?alias . }\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Provide the names of artists who did not release any music before 1995.",
+      "qtype": "ambig",
+      "sql": "SELECT realName FROM Artists WHERE id NOT IN (SELECT artistId FROM MusicAlbums WHERE releaseYear < 1995);",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?realname WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:realName ?realname . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Provide the names of artists who did not release any music before 1995.",
+      "qtype": "ambig",
+      "sql": "SELECT alias FROM Artists WHERE id NOT IN (SELECT artistId FROM MusicAlbums WHERE releaseYear < 1995);",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?alias WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:alias ?alias . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Provide the names of artists who did not release any music before 1995.",
+      "qtype": "ambig",
+      "sql": "SELECT realName, alias FROM Artists WHERE id NOT IN (SELECT artistId FROM MusicAlbums WHERE releaseYear < 1995);",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?realname ?alias WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:realName ?realname . }\n  OPTIONAL { ?artists p:alias ?alias . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Who was the lead for \"Siamese Dream\"?",
+      "qtype": "ambig",
+      "sql": "SELECT a.realName FROM Artists a JOIN MusicAlbums m ON a.id = m.artistId WHERE m.albumTitle = 'Siamese Dream';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?realname WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  ?a p:realName ?realname .\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who was the lead for \"Siamese Dream\"?",
+      "qtype": "ambig",
+      "sql": "SELECT a.realName, alias FROM Artists a JOIN MusicAlbums m ON a.id = m.artistId WHERE m.albumTitle = 'Siamese Dream';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?realname ?alias WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  OPTIONAL { ?a p:realName ?realname . }\n  OPTIONAL { ?a p:alias ?alias . }\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who was the lead for \"Siamese Dream\"?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?alias WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  OPTIONAL { ?a p:alias ?alias . }\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n} }\n  full: { SELECT ?realname ?alias WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  OPTIONAL { ?a p:realName ?realname . }\n  OPTIONAL { ?a p:alias ?alias . }\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n} }\n  component_2: { SELECT ?realname WHERE {\n  ?a a :Artist .\n  ?m a :MusicAlbums .\n  ?m p:hasArtists ?a .\n  ?a p:realName ?realname .\n  ?m p:albumTitle ?albumtitle_f .\n  FILTER(STR(?albumtitle_f) = \"Siamese Dream\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Provide the names of artists who did not release any music before 1995.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?alias WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:alias ?alias . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n} }\n  component_2: { SELECT ?realname WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:realName ?realname . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n} }\n  full: { SELECT ?realname ?alias WHERE {\n  ?artists a :Artist .\n  OPTIONAL { ?artists p:realName ?realname . }\n  OPTIONAL { ?artists p:alias ?alias . }\n  ?artists p:id ?id_in .\n  FILTER NOT EXISTS { ?sub a :MusicAlbums . ?sub p:artistId ?id_in . ?sub p:releaseYear ?s_releaseyear . FILTER(xsd:double(?s_releaseyear) < 1995) }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

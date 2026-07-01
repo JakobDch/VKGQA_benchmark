@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_study_plan",
+  "schema": "amb_vague_2cols_study_plan",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the core courses in the Computer Science program?",
+      "qtype": "unambig",
+      "sql": "SELECT Core_Courses FROM Programs WHERE ProgramName = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_courses WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What are the electives of all engineering programs?",
+      "qtype": "unambig",
+      "sql": "SELECT Electives FROM Programs WHERE ProgramName LIKE '%Engineering%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "What are the core courses in the Computer Science program and electives in that program?",
+      "qtype": "unambig",
+      "sql": "SELECT Core_Courses, Electives FROM Programs WHERE ProgramName = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_courses ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are the study plans of computer science program?",
+      "qtype": "ambig",
+      "sql": "SELECT Electives FROM Programs WHERE ProgramName = 'Computer Science'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the study plans of all engineering programs?",
+      "qtype": "ambig",
+      "sql": "SELECT Core_Courses FROM Programs WHERE ProgramName LIKE '%Engineering%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_courses WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "What are the study plans of all engineering programs?",
+      "qtype": "ambig",
+      "sql": "SELECT Core_Courses, Electives FROM Programs WHERE ProgramName LIKE '%Engineering%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_courses ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the study plans of computer science program?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?core_courses WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n} }\n  full: { SELECT ?core_courses ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n} }\n  component_2: { SELECT ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_f .\n  FILTER(STR(?programname_f) = \"Computer Science\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the study plans of all engineering programs?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n} }\n  component_2: { SELECT ?core_courses WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n} }\n  full: { SELECT ?core_courses ?electives WHERE {\n  ?programs a :Programs .\n  ?programs p:Core_Courses ?core_courses .\n  ?programs p:Electives ?electives .\n  ?programs p:ProgramName ?programname_lk .\n  FILTER(REGEX(STR(?programname_lk), \"^.*Engineering.*$\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

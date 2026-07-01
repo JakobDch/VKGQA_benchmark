@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_genre",
+  "schema": "amb_attachment_2tab_ref_genre",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the blockbuster films and only those indie films which played at Sundance film festival.",
+      "qtype": "unambig",
+      "sql": "SELECT Blockbusters.title\nFROM Festivals JOIN Blockbusters ON Festivals.id = Blockbusters.film_festival_id\nUNION\nSELECT Indies.title\nFROM Festivals JOIN Indies ON Festivals.id = Indies.film_festival_id\nWHERE Festivals.name = \"Sundance Film Festival\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?festivals a :Festival .\n    ?blockbusters a :Blockbusters .\n    ?blockbusters p:hasFestivals ?festivals .\n    ?blockbusters p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?festivals a :Festival .\n    ?indies a :Indies .\n    ?indies p:hasFestivals ?festivals .\n    ?indies p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show blockbusters and indie films where either played at Sundance film festival.",
+      "qtype": "unambig",
+      "sql": "SELECT Blockbusters.title\nFROM Festivals JOIN Blockbusters ON Festivals.id = Blockbusters.film_festival_id\nWHERE Festivals.name = \"Sundance Film Festival\"\nUNION\nSELECT Indies.title\nFROM Festivals JOIN Indies ON Festivals.id = Indies.film_festival_id\nWHERE Festivals.name = \"Sundance Film Festival\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?festivals a :Festival .\n    ?blockbusters a :Blockbusters .\n    ?blockbusters p:hasFestivals ?festivals .\n    ?blockbusters p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?festivals a :Festival .\n    ?indies a :Indies .\n    ?indies p:hasFestivals ?festivals .\n    ?indies p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List blockbusters and indie films which played at Sundance film festival.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?festivals a :Festival .\n    ?blockbusters a :Blockbusters .\n    ?blockbusters p:hasFestivals ?festivals .\n    ?blockbusters p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?festivals a :Festival .\n    ?indies a :Indies .\n    ?indies p:hasFestivals ?festivals .\n    ?indies p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?festivals a :Festival .\n    ?blockbusters a :Blockbusters .\n    ?blockbusters p:hasFestivals ?festivals .\n    ?blockbusters p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?festivals a :Festival .\n    ?indies a :Indies .\n    ?indies p:hasFestivals ?festivals .\n    ?indies p:title ?title .\n    ?festivals p:name ?name_f .\n    FILTER(STR(?name_f) = \"Sundance Film Festival\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

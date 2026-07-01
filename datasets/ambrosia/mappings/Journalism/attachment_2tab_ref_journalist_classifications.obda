@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:published_date {published_date} ; p:author_id {author_id} ; p:stringer_id {stringer_id} ; p:editor_id {editor_id} .
+source		SELECT `id`, `title`, `content`, `published_date`, `author_id`, `stringer_id`, `editor_id` FROM `Articles`
+
+mappingId	Articles_editor_id_fk
+target		ex:Articles/{id} p:hasEditors ex:Editors/{editor_id} .
+source		SELECT `id`, `editor_id` FROM `Articles` WHERE `editor_id` IS NOT NULL
+
+mappingId	Articles_stringer_id_fk
+target		ex:Articles/{id} p:hasStringers ex:Stringers/{stringer_id} .
+source		SELECT `id`, `stringer_id` FROM `Articles` WHERE `stringer_id` IS NOT NULL
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Authors`
+
+mappingId	Stringers_base
+target		ex:Stringers/{id} a :Stringers ; p:id {id} ; p:email {email} ; p:phone_number {phone_number} ; p:name {FullName} .
+source		SELECT `id`, `email`, `phone_number`, `FullName` FROM `Stringers`
+
+mappingId	Editors_base
+target		ex:Editors/{id} a :Editors ; p:id {id} ; p:email {email} ; p:name {FullName} .
+source		SELECT `id`, `email`, `FullName` FROM `Editors`
+
+]]

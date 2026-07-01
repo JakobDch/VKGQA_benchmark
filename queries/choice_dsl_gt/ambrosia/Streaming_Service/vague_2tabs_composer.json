@@ -1,0 +1,97 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2tabs_composer",
+  "schema": "amb_vague_2tabs_composer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all the songs and their composers.",
+      "qtype": "ambig",
+      "sql": "SELECT song.title, Musician.name FROM  Musician JOIN Soundtrack on Soundtrack.Musician_id=Musician.id JOIN Song ON Song.soundtrack_id = Soundtrack.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?musician a :Musician .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:hasMusician ?musician .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?song p:title ?title .\n  ?musician p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all the songs and their composers.",
+      "qtype": "ambig",
+      "sql": "SELECT song.title, Band.name FROM  Band JOIN Soundtrack on Soundtrack.Band_id=Band.id JOIN Song ON Song.soundtrack_id = Soundtrack.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?band a :Band .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:hasBand ?band .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?song p:title ?title .\n  ?band p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 2,
+      "question": "Give me all the songs and their composers.",
+      "qtype": "ambig",
+      "sql": "SELECT song.title, Band.name, Musician.name FROM  Musician JOIN Soundtrack on Soundtrack.id=Musician.id JOIN Song ON Song.soundtrack_id = Soundtrack.id JOIN Band on Soundtrack.Band_id=Band.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?name2 WHERE {\n  ?musician a :Musician .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:id ?id_l .\n  ?musician p:id ?id_r .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?song p:title ?title .\n  ?band p:name ?name .\n  ?musician p:name ?name2 .\n  FILTER(STR(?id_l) = STR(?id_r))\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 3,
+      "question": "Which musician composed the songs played at the music festival?",
+      "qtype": "unambig",
+      "sql": "SELECT Band.name  FROM Soundtrack JOIN Band on Soundtrack.Band_id=Band.id WHERE Soundtrack.title= 'Music Festival'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?soundtrack a :Soundtrack .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?band p:name ?name .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show the band and musicians responsible for composing the music festival's program.",
+      "qtype": "unambig",
+      "sql": "SELECT Band.name, Musician.name  FROM Soundtrack JOIN Musician on Soundtrack.id=Musician.id JOIN Band on Soundtrack.Band_id=Band.id  WHERE Soundtrack.title= 'Music Festival'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?soundtrack a :Soundtrack .\n  ?musician a :Musician .\n  ?soundtrack p:id ?id_l .\n  ?musician p:id ?id_r .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?band p:name ?name .\n  ?musician p:name ?name2 .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who wrote the music for the music festival?",
+      "qtype": "ambig",
+      "sql": "SELECT Musician.name  FROM Soundtrack JOIN Musician on Soundtrack.Musician_id=Musician.id WHERE Soundtrack.title= 'Music Festival'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?soundtrack a :Soundtrack .\n  ?musician a :Musician .\n  ?soundtrack p:hasMusician ?musician .\n  ?musician p:name ?name .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who wrote the music for the music festival?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?soundtrack a :Soundtrack .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?band p:name ?name .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?soundtrack a :Soundtrack .\n  ?musician a :Musician .\n  ?soundtrack p:id ?id_l .\n  ?musician p:id ?id_r .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?band p:name ?name .\n  ?musician p:name ?name2 .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n} }\n  component_2: { SELECT ?name WHERE {\n  ?soundtrack a :Soundtrack .\n  ?musician a :Musician .\n  ?soundtrack p:hasMusician ?musician .\n  ?musician p:name ?name .\n  ?soundtrack p:title ?title_f .\n  FILTER(STR(?title_f) = STR(\"Music Festival\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me all the songs and their composers.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        0
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?name WHERE {\n  ?band a :Band .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:hasBand ?band .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?song p:title ?title .\n  ?band p:name ?name .\n} }\n  full: { SELECT ?title ?name ?name2 WHERE {\n  ?musician a :Musician .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:id ?id_l .\n  ?musician p:id ?id_r .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?band a :Band .\n  ?soundtrack p:hasBand ?band .\n  ?song p:title ?title .\n  ?band p:name ?name .\n  ?musician p:name ?name2 .\n  FILTER(STR(?id_l) = STR(?id_r))\n} }\n  component_2: { SELECT ?title ?name WHERE {\n  ?musician a :Musician .\n  ?soundtrack a :Soundtrack .\n  ?soundtrack p:hasMusician ?musician .\n  ?song a :Song .\n  ?song p:hasSoundtrack ?soundtrack .\n  ?song p:title ?title .\n  ?musician p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_learning_spaces",
+  "schema": "amb_attachment_1tab_val_learning_spaces",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all science labs and also list art studios that have computers.",
+      "qtype": "unambig",
+      "sql": "SELECT Learning_Spaces.Name \nFROM Learning_Spaces\nWHERE Learning_Spaces.Type = \"Science Lab\" OR Learning_Spaces.Type = \"Art Studio\" AND Learning_Spaces.AvailableResources = \"Computers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learning_spaces a :Learning_Spaces .\n  ?learning_spaces p:name ?name .\n  ?learning_spaces p:Type ?type_w .\n  ?learning_spaces p:Type ?type_w2 .\n  ?learning_spaces p:AvailableResources ?availableresources_w .\n  FILTER((STR(?type_w) = \"Science Lab\" || (STR(?type_w2) = \"Art Studio\" && STR(?availableresources_w) = \"Computers\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the science labs and art studios that have computers.",
+      "qtype": "ambig",
+      "sql": "SELECT Learning_Spaces.Name \nFROM Learning_Spaces\nWHERE (Learning_Spaces.Type = \"Science Lab\" OR Learning_Spaces.Type = \"Art Studio\") AND Learning_Spaces.AvailableResources = \"Computers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?learning_spaces a :Learning_Spaces .\n  ?learning_spaces p:name ?name .\n  ?learning_spaces p:Type ?type_w .\n  ?learning_spaces p:Type ?type_w2 .\n  ?learning_spaces p:AvailableResources ?availableresources_w .\n  FILTER((((STR(?type_w) = \"Science Lab\" || STR(?type_w2) = \"Art Studio\")) && STR(?availableresources_w) = \"Computers\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the science labs and art studios that have computers.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?learning_spaces a :Learning_Spaces .\n  ?learning_spaces p:name ?name .\n  ?learning_spaces p:Type ?type_w .\n  ?learning_spaces p:Type ?type_w2 .\n  ?learning_spaces p:AvailableResources ?availableresources_w .\n  FILTER((STR(?type_w) = \"Science Lab\" || (STR(?type_w2) = \"Art Studio\" && STR(?availableresources_w) = \"Computers\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?learning_spaces a :Learning_Spaces .\n  ?learning_spaces p:name ?name .\n  ?learning_spaces p:Type ?type_w .\n  ?learning_spaces p:Type ?type_w2 .\n  ?learning_spaces p:AvailableResources ?availableresources_w .\n  FILTER((((STR(?type_w) = \"Science Lab\" || STR(?type_w2) = \"Art Studio\")) && STR(?availableresources_w) = \"Computers\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

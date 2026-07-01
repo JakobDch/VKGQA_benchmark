@@ -1,0 +1,52 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_val_academic_writing_0_Students_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StudentID\", \"Academic_Writing\", \"Academic_Supervisor\", \"FullName\" FROM \"Students\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{StudentID}" ; rr:class :Students ] ;
+  rr:predicateObjectMap [ rr:predicate p:StudentID ; rr:objectMap [ rr:column "StudentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Academic_Writing ; rr:objectMap [ rr:column "Academic_Writing" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Academic_Supervisor ; rr:objectMap [ rr:column "Academic_Supervisor" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "FullName" ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_1_Courses_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CourseID\", \"Title\", \"Department\" FROM \"Courses\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{CourseID}" ; rr:class :Courses ] ;
+  rr:predicateObjectMap [ rr:predicate p:CourseID ; rr:objectMap [ rr:column "CourseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Department ; rr:objectMap [ rr:column "Department" ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_2_Enrollments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"StudentID\", \"CourseID\", \"Semester\" FROM \"Enrollments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ; rr:class :Enrollments ] ;
+  rr:predicateObjectMap [ rr:predicate p:EnrollmentID ; rr:objectMap [ rr:column "EnrollmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StudentID ; rr:objectMap [ rr:column "StudentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CourseID ; rr:objectMap [ rr:column "CourseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Semester ; rr:objectMap [ rr:column "Semester" ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_3_Enrollments_CourseID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"CourseID\" FROM \"Enrollments\" WHERE \"CourseID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{CourseID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_4_Enrollments_StudentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EnrollmentID\", \"StudentID\" FROM \"Enrollments\" WHERE \"StudentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStudents ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Students/{StudentID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_5_Grades_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"GradeID\", \"EnrollmentID\", \"Grade\" FROM \"Grades\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Grades/{GradeID}" ; rr:class :Grades ] ;
+  rr:predicateObjectMap [ rr:predicate p:GradeID ; rr:objectMap [ rr:column "GradeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EnrollmentID ; rr:objectMap [ rr:column "EnrollmentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Grade ; rr:objectMap [ rr:column "Grade" ] ] .
+
+<#tm_attachment_1tab_val_academic_writing_6_Grades_EnrollmentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"GradeID\", \"EnrollmentID\" FROM \"Grades\" WHERE \"EnrollmentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Grades/{GradeID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEnrollments ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Enrollments/{EnrollmentID}" ; rr:termType rr:IRI ] ] .
+

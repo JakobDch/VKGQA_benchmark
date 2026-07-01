@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:name {name} ; p:population {population} .
+source		SELECT `id`, `name`, `population` FROM `City`
+
+mappingId	State_base
+target		ex:State/{id} a :State ; p:id {id} ; p:name {full_name} .
+source		SELECT `id`, `full_name` FROM `State`
+
+mappingId	Campus_base
+target		ex:Campus/{id} a :Campus ; p:id {id} ; p:campus_name {campus_name} ; p:city_id {city_id} ; p:state_id {state_id} .
+source		SELECT `id`, `campus_name`, `city_id`, `state_id` FROM `Campus`
+
+mappingId	Campus_state_id_fk
+target		ex:Campus/{id} p:hasState ex:State/{state_id} .
+source		SELECT `id`, `state_id` FROM `Campus` WHERE `state_id` IS NOT NULL
+
+mappingId	Campus_city_id_fk
+target		ex:Campus/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Campus` WHERE `city_id` IS NOT NULL
+
+mappingId	Teacher_base
+target		ex:Teachers/{id} a :Teachers ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `id`, `firstName`, `lastName`, `email` FROM `Teacher`
+
+mappingId	teachesAt_base
+target		ex:teachesAt/{_amb_rowid} a :teachesAt ; p:teacherId {teacherId} ; p:campusId {campusId} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `_amb_rowid`, `teacherId`, `campusId`, `startDate`, `endDate` FROM `teachesAt`
+
+mappingId	teachesAt_campusId_fk
+target		ex:teachesAt/{_amb_rowid} p:hasCampus ex:Campus/{campusId} .
+source		SELECT `_amb_rowid`, `campusId` FROM `teachesAt` WHERE `campusId` IS NOT NULL
+
+mappingId	teachesAt_teacherId_fk
+target		ex:teachesAt/{_amb_rowid} p:hasTeachers ex:Teachers/{teacherId} .
+source		SELECT `_amb_rowid`, `teacherId` FROM `teachesAt` WHERE `teacherId` IS NOT NULL
+
+mappingId	Student_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `id`, `firstName`, `lastName`, `email` FROM `Student`
+
+mappingId	enrolledIn_base
+target		ex:enrolledIn/{_amb_rowid} a :enrolledIn ; p:studentId {studentId} ; p:campusId {campusId} ; p:enrollmentStartDate {enrollmentStartDate} .
+source		SELECT `_amb_rowid`, `studentId`, `campusId`, `enrollmentStartDate` FROM `enrolledIn`
+
+mappingId	enrolledIn_campusId_fk
+target		ex:enrolledIn/{_amb_rowid} p:hasCampus ex:Campus/{campusId} .
+source		SELECT `_amb_rowid`, `campusId` FROM `enrolledIn` WHERE `campusId` IS NOT NULL
+
+mappingId	enrolledIn_studentId_fk
+target		ex:enrolledIn/{_amb_rowid} p:hasStudents ex:Students/{studentId} .
+source		SELECT `_amb_rowid`, `studentId` FROM `enrolledIn` WHERE `studentId` IS NOT NULL
+
+]]

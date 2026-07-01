@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Techniques_base
+target		ex:Techniques/{technique_id} a :Techniques ; p:technique_id {technique_id} ; p:technique_name {technique_name} .
+source		SELECT `technique_id`, `technique_name` FROM `Techniques`
+
+mappingId	Photographers_base
+target		ex:Photographers/{photographer_id} a :Photographers ; p:photographer_id {photographer_id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `photographer_id`, `name`, `experience` FROM `Photographers`
+
+mappingId	Workshop_Sessions_base
+target		ex:Workshop_Sessions/{session_id} a :Workshop_Sessions ; p:session_id {session_id} ; p:workshop_title {workshop_title} ; p:start_time {start_time} ; p:end_time {end_time} .
+source		SELECT `session_id`, `workshop_title`, `start_time`, `end_time` FROM `Workshop_Sessions`
+
+mappingId	Photography_Workshops_Techniques_base
+target		ex:Photography_Workshops_Techniques/{id} a :Photography_Workshops_Techniques ; p:id {id} ; p:photography_workshop_id {photography_workshop_id} ; p:technique_id {technique_id} .
+source		SELECT `id`, `photography_workshop_id`, `technique_id` FROM `Photography_Workshops_Techniques`
+
+mappingId	Photography_Workshops_Techniques_technique_id_fk
+target		ex:Photography_Workshops_Techniques/{id} p:hasTechniques ex:Techniques/{technique_id} .
+source		SELECT `id`, `technique_id` FROM `Photography_Workshops_Techniques` WHERE `technique_id` IS NOT NULL
+
+mappingId	Photography_Workshops_Techniques_photography_workshop_id_fk
+target		ex:Photography_Workshops_Techniques/{id} p:hasPhotography_Workshops ex:Photography_Workshops/{photography_workshop_id} .
+source		SELECT `id`, `photography_workshop_id` FROM `Photography_Workshops_Techniques` WHERE `photography_workshop_id` IS NOT NULL
+
+mappingId	Participants_base
+target		ex:Participants/{participant_id} a :Participants ; p:participant_id {participant_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `participant_id`, `first_name`, `last_name`, `email` FROM `Participants`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollment_id} a :Enrollments ; p:enrollment_id {enrollment_id} ; p:participant_id {participant_id} ; p:workshop_session_id {workshop_session_id} .
+source		SELECT `enrollment_id`, `participant_id`, `workshop_session_id` FROM `Enrollments`
+
+mappingId	Enrollments_workshop_session_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasWorkshop_Sessions ex:Workshop_Sessions/{workshop_session_id} .
+source		SELECT `enrollment_id`, `workshop_session_id` FROM `Enrollments` WHERE `workshop_session_id` IS NOT NULL
+
+mappingId	Enrollments_participant_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasParticipants ex:Participants/{participant_id} .
+source		SELECT `enrollment_id`, `participant_id` FROM `Enrollments` WHERE `participant_id` IS NOT NULL
+
+mappingId	Photography_Workshops_base
+target		ex:Photography_Workshops/{workshop_id} a :Photography_Workshops ; p:workshop_id {workshop_id} ; p:workshop_leader_id {workshop_leader_id} .
+source		SELECT `workshop_id`, `workshop_leader_id` FROM `Photography_Workshops`
+
+mappingId	Photography_Workshops_workshop_leader_id_fk
+target		ex:Photography_Workshops/{workshop_id} p:hasPhotographers ex:Photographers/{workshop_leader_id} .
+source		SELECT `workshop_id`, `workshop_leader_id` FROM `Photography_Workshops` WHERE `workshop_leader_id` IS NOT NULL
+
+]]

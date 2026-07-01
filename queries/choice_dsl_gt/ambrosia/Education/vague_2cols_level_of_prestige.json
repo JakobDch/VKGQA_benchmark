@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_level_of_prestige",
+  "schema": "amb_vague_2cols_level_of_prestige",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "show me the top university",
+      "qtype": "ambig",
+      "sql": "select universityname from universities ORDER BY admissionRate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate_o .\n}\nORDER BY DESC(?admissionrate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "show me the top university",
+      "qtype": "ambig",
+      "sql": "select universityname from universities ORDER BY ranking DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:ranking ?ranking_o .\n}\nORDER BY DESC(?ranking_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "show me the top university",
+      "qtype": "ambig",
+      "sql": "select universityname from universities ORDER BY admissionRate, ranking DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate_o .\n  ?universities p:ranking ?ranking_o .\n}\nORDER BY ASC(?admissionrate_o) DESC(?ranking_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List the universities and their admission rate and ranking.",
+      "qtype": "unambig",
+      "sql": "select universityname, admissionRate, ranking from universities",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname ?admissionrate ?ranking WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate .\n  ?universities p:ranking ?ranking .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "what is the prestige level of a particular university",
+      "qtype": "ambig",
+      "sql": "select universityname, admissionRate from universities",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname ?admissionrate WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "what is the prestige level of a particular university",
+      "qtype": "ambig",
+      "sql": "select universityname, ranking from universities",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?universityname ?ranking WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:ranking ?ranking .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me the top university",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate_o .\n  ?universities p:ranking ?ranking_o .\n}\nORDER BY ASC(?admissionrate_o) DESC(?ranking_o)\nLIMIT 1 }\n  component: { SELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:ranking ?ranking_o .\n}\nORDER BY DESC(?ranking_o)\nLIMIT 1 }\n  component_2: { SELECT ?universityname WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate_o .\n}\nORDER BY DESC(?admissionrate_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "what is the prestige level of a particular university",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?universityname ?admissionrate ?ranking WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate .\n  ?universities p:ranking ?ranking .\n} }\n  component: { SELECT ?universityname ?admissionrate WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:admissionRate ?admissionrate .\n} }\n  component_2: { SELECT ?universityname ?ranking WHERE {\n  ?universities a :Universities .\n  ?universities p:universityName ?universityname .\n  ?universities p:ranking ?ranking .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_lab_technicians_instruments",
+  "schema": "amb_scope_lab_technicians_instruments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What instruments are associated with each lab technician?",
+      "qtype": "ambig",
+      "sql": "SELECT Instruments.instrumentName  from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id   GROUP BY Lab_Technicians_Instruments.instrumentId HAVING COUNT(DISTINCT Lab_Technicians_Instruments.technicianId) = (SELECT COUNT(*) FROM  Lab_Technicians)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?instrumentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrumentName ?instrumentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What instruments are associated with each lab technician?",
+      "qtype": "ambig",
+      "sql": "select lab_technicians.name , instruments.instrumentname from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?instrumentname WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:instrumentName ?instrumentname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What description of instruments is common for all lab technicians?",
+      "qtype": "unambig",
+      "sql": "SELECT Instruments.description  from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id   GROUP BY Lab_Technicians_Instruments.instrumentId HAVING COUNT(DISTINCT Lab_Technicians_Instruments.technicianId) = (SELECT COUNT(*) FROM  Lab_Technicians)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each lab technician, list information about the instruments they use (their names and descriptions).",
+      "qtype": "unambig",
+      "sql": "select lab_technicians.name , instruments.instrumentname , instruments.description from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?instrumentname ?description WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:instrumentName ?instrumentname .\n  ?instruments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me about the instruments every lab technician uses (their names and descriptions).",
+      "qtype": "ambig",
+      "sql": "SELECT Instruments.instrumentName, Instruments.description  from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id   GROUP BY Lab_Technicians_Instruments.instrumentId HAVING COUNT(DISTINCT Lab_Technicians_Instruments.technicianId) = (SELECT COUNT(*) FROM  Lab_Technicians)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?instrumentname ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrumentName ?instrumentname .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What description of instruments do we have for each laboratory technician?",
+      "qtype": "ambig",
+      "sql": "select lab_technicians.name , instruments.description from Lab_Technicians_Instruments join Instruments on Lab_Technicians_Instruments.instrumentId = Instruments.id join Lab_Technicians on Lab_Technicians_Instruments.technicianId = Lab_Technicians.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What description of instruments do we have for each laboratory technician?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me about the instruments every lab technician uses (their names and descriptions).",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?instrumentname ?description WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:instrumentName ?instrumentname .\n  ?instruments p:description ?description .\n} }\n  collective: { SELECT ?instrumentname ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrumentName ?instrumentname .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What instruments are associated with each lab technician?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?instrumentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:instrumentId ?cg . ?child a :Instruments ; p:id ?cg . ?l p:technicianId ?pg . ?parent a :Lab_Technicians ; p:id ?pg . } GROUP BY ?child }\n  ?child p:instrumentName ?instrumentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Lab_Technicians } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?instrumentname WHERE {\n  ?lab_technicians_instruments a :Lab_Technicians_Instruments .\n  ?instruments a :Instruments .\n  ?lab_technicians_instruments p:hasInstruments ?instruments .\n  ?lab_technicians a :Lab_Technicians .\n  ?lab_technicians_instruments p:hasLab_Technicians ?lab_technicians .\n  ?lab_technicians p:name ?name .\n  ?instruments p:instrumentName ?instrumentname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	NewsArticle_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:Title {Title} ; p:Content {Content} ; p:Website {Website} ; p:Mobile_App {Mobile_App} ; p:News_Agency {News_Agency} .
+source		SELECT `id`, `Title`, `Content`, `Website`, `Mobile_App`, `News_Agency` FROM `NewsArticle`
+
+mappingId	Author_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {Name} ; p:email {Email} .
+source		SELECT `id`, `Name`, `Email` FROM `Author`
+
+mappingId	Category_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Category`
+
+mappingId	ArticleCategoryRelationship_base
+target		ex:ArticleCategories/{_amb_rowid} a :ArticleCategories ; p:articleId {articleId} ; p:categoryId {categoryId} .
+source		SELECT `_amb_rowid`, `articleId`, `categoryId` FROM `ArticleCategoryRelationship`
+
+mappingId	ArticleCategoryRelationship_categoryId_fk
+target		ex:ArticleCategories/{_amb_rowid} p:hasCategory ex:Category/{categoryId} .
+source		SELECT `_amb_rowid`, `categoryId` FROM `ArticleCategoryRelationship` WHERE `categoryId` IS NOT NULL
+
+mappingId	ArticleCategoryRelationship_articleId_fk
+target		ex:ArticleCategories/{_amb_rowid} p:hasArticles ex:Articles/{articleId} .
+source		SELECT `_amb_rowid`, `articleId` FROM `ArticleCategoryRelationship` WHERE `articleId` IS NOT NULL
+
+mappingId	Comments_base
+target		ex:Comments/{id} a :Comments ; p:id {id} ; p:content {content} ; p:authorEmail {authorEmail} ; p:articleId {articleId} .
+source		SELECT `id`, `content`, `authorEmail`, `articleId` FROM `Comments`
+
+mappingId	Comments_articleId_fk
+target		ex:Comments/{id} p:hasArticles ex:Articles/{articleId} .
+source		SELECT `id`, `articleId` FROM `Comments` WHERE `articleId` IS NOT NULL
+
+]]

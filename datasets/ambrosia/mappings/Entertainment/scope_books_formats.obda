@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Formats_base
+target		ex:Formats/{id} a :Formats ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Formats`
+
+mappingId	Books_base
+target		ex:Book/{id} a :Book ; p:id {id} ; p:title {title} ; p:author {author} .
+source		SELECT `id`, `title`, `author` FROM `Books`
+
+mappingId	Authors_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:firstname {firstname} ; p:lastname {lastname} .
+source		SELECT `id`, `firstname`, `lastname` FROM `Authors`
+
+mappingId	Books_Authors_base
+target		ex:Book_Authors/{_amb_rowid} a :Book_Authors ; p:book_id {book_id} ; p:author_id {author_id} .
+source		SELECT `_amb_rowid`, `book_id`, `author_id` FROM `Books_Authors`
+
+mappingId	Books_Authors_author_id_fk
+target		ex:Book_Authors/{_amb_rowid} p:hasAuthor ex:Author/{author_id} .
+source		SELECT `_amb_rowid`, `author_id` FROM `Books_Authors` WHERE `author_id` IS NOT NULL
+
+mappingId	Books_Authors_book_id_fk
+target		ex:Book_Authors/{_amb_rowid} p:hasBook ex:Book/{book_id} .
+source		SELECT `_amb_rowid`, `book_id` FROM `Books_Authors` WHERE `book_id` IS NOT NULL
+
+mappingId	Book_Formats_base
+target		ex:Book_Formats/{_amb_rowid} a :Book_Formats ; p:book_id {book_id} ; p:format_id {format_id} .
+source		SELECT `_amb_rowid`, `book_id`, `format_id` FROM `Book_Formats`
+
+mappingId	Book_Formats_format_id_fk
+target		ex:Book_Formats/{_amb_rowid} p:hasFormats ex:Formats/{format_id} .
+source		SELECT `_amb_rowid`, `format_id` FROM `Book_Formats` WHERE `format_id` IS NOT NULL
+
+mappingId	Book_Formats_book_id_fk
+target		ex:Book_Formats/{_amb_rowid} p:hasBook ex:Book/{book_id} .
+source		SELECT `_amb_rowid`, `book_id` FROM `Book_Formats` WHERE `book_id` IS NOT NULL
+
+]]

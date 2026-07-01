@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_background",
+  "schema": "amb_vague_2cols_background",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the education and experience of the photojournalist?",
+      "qtype": "unambig",
+      "sql": "SELECT education, experience FROM Journalist WHERE photojournalist = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?education ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:experience ?experience .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the experience of the photojournalist?",
+      "qtype": "unambig",
+      "sql": "SELECT experience FROM Journalist WHERE photojournalist = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:experience ?experience .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the background of the journalist named Alice?",
+      "qtype": "ambig",
+      "sql": "SELECT education FROM Journalist WHERE name LIKE 'Alice%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?education WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the background of the journalist named Alice?",
+      "qtype": "ambig",
+      "sql": "SELECT experience FROM Journalist WHERE name LIKE 'Alice%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:experience ?experience .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What is the background of the journalist named Alice?",
+      "qtype": "ambig",
+      "sql": "SELECT education, experience FROM Journalist WHERE name LIKE 'Alice%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?education ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:experience ?experience .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the education of the photojournalist?",
+      "qtype": "unambig",
+      "sql": "SELECT education FROM Journalist WHERE photojournalist = 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?education WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the background of the photojournalist in the table?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?education ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:experience ?experience .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n} }\n  component: { SELECT ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:experience ?experience .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n} }\n  component_2: { SELECT ?education WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:photojournalist ?photojournalist_f .\n  FILTER((STR(?photojournalist_f) = \"1\" || STR(?photojournalist_f) = \"1.0\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the background of the journalist named Alice?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?education WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n} }\n  component_2: { SELECT ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:experience ?experience .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n} }\n  full: { SELECT ?education ?experience WHERE {\n  ?journalist a :Journalists .\n  ?journalist p:education ?education .\n  ?journalist p:experience ?experience .\n  ?journalist p:name ?name_lk .\n  FILTER(REGEX(STR(?name_lk), \"^Alice.*$\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

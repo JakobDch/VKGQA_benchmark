@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {Name} ; p:location {Location} ; p:YearEstablished {YearEstablished} .
+source		SELECT `id`, `Name`, `Location`, `YearEstablished` FROM `Airports`
+
+mappingId	Expansions_base
+target		ex:Expansions/{id} a :Expansions ; p:id {id} ; p:AirportID {AirportID} ; p:Airport_Expansion {Airport_Expansion} ; p:Increased_Capacity {Increased_Capacity} .
+source		SELECT `id`, `AirportID`, `Airport_Expansion`, `Increased_Capacity` FROM `Expansions`
+
+mappingId	Expansions_AirportID_fk
+target		ex:Expansions/{id} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `id`, `AirportID` FROM `Expansions` WHERE `AirportID` IS NOT NULL
+
+mappingId	Renovations_base
+target		ex:Renovations/{id} a :Renovations ; p:id {id} ; p:AirportID {AirportID} ; p:Renovation {Renovation} ; p:Increased_Capacity {Increased_Capacity} .
+source		SELECT `id`, `AirportID`, `Renovation`, `Increased_Capacity` FROM `Renovations`
+
+mappingId	Renovations_AirportID_fk
+target		ex:Renovations/{id} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `id`, `AirportID` FROM `Renovations` WHERE `AirportID` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:FlightNumber {FlightNumber} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:AirportID {AirportID} .
+source		SELECT `id`, `FlightNumber`, `DepartureTime`, `ArrivalTime`, `AirportID` FROM `Flights`
+
+mappingId	Flights_AirportID_fk
+target		ex:Flights/{id} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `id`, `AirportID` FROM `Flights` WHERE `AirportID` IS NOT NULL
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:AirlineName {AirlineName} ; p:HeadquartersLocation {HeadquartersLocation} ; p:FleetSize {FleetSize} ; p:AirportID {AirportID} .
+source		SELECT `id`, `AirlineName`, `HeadquartersLocation`, `FleetSize`, `AirportID` FROM `Airlines`
+
+mappingId	Airlines_AirportID_fk
+target		ex:Airlines/{id} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `id`, `AirportID` FROM `Airlines` WHERE `AirportID` IS NOT NULL
+
+]]

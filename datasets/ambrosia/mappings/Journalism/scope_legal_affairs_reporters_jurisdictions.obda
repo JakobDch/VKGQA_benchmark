@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Legal_Affairs_Reporters_base
+target		ex:Legal_Affairs_Reporters/{reporter_id} a :Legal_Affairs_Reporters ; p:reporter_id {reporter_id} ; p:name {name} ; p:email {email} .
+source		SELECT `reporter_id`, `name`, `email` FROM `Legal_Affairs_Reporters`
+
+mappingId	Jurisdictions_base
+target		ex:Jurisdictions/{jurisdiction_id} a :Jurisdictions ; p:jurisdiction_id {jurisdiction_id} ; p:jurisdiction_name {jurisdiction_name} .
+source		SELECT `jurisdiction_id`, `jurisdiction_name` FROM `Jurisdictions`
+
+mappingId	Legal_Affairs_Reporters_Jurisdictions_base
+target		ex:Legal_Affairs_Reporters_Jurisdictions/{_amb_rowid} a :Legal_Affairs_Reporters_Jurisdictions ; p:legal_affairs_reporter_id {legal_affairs_reporter_id} ; p:jurisdiction_id {jurisdiction_id} .
+source		SELECT `_amb_rowid`, `legal_affairs_reporter_id`, `jurisdiction_id` FROM `Legal_Affairs_Reporters_Jurisdictions`
+
+mappingId	Legal_Affairs_Reporters_Jurisdictions_jurisdiction_id_fk
+target		ex:Legal_Affairs_Reporters_Jurisdictions/{_amb_rowid} p:hasJurisdictions ex:Jurisdictions/{jurisdiction_id} .
+source		SELECT `_amb_rowid`, `jurisdiction_id` FROM `Legal_Affairs_Reporters_Jurisdictions` WHERE `jurisdiction_id` IS NOT NULL
+
+mappingId	Legal_Affairs_Reporters_Jurisdictions_legal_affairs_reporter_id_fk
+target		ex:Legal_Affairs_Reporters_Jurisdictions/{_amb_rowid} p:hasLegal_Affairs_Reporters ex:Legal_Affairs_Reporters/{legal_affairs_reporter_id} .
+source		SELECT `_amb_rowid`, `legal_affairs_reporter_id` FROM `Legal_Affairs_Reporters_Jurisdictions` WHERE `legal_affairs_reporter_id` IS NOT NULL
+
+]]

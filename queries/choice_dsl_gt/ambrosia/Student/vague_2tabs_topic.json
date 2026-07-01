@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_topic",
+  "schema": "amb_vague_2tabs_topic",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you find all internship topics?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    name\nFROM \n    Industry_Sector",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?industry_sector p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Can you find all internship topics?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    project_name\nFROM \n    Project_Name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name2 WHERE {\n  ?project_name a :Project_Name .\n  ?project_name p:project_name ?project_name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Can you find all internship topics?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    project_name, name\nFROM \n    Industry_Sector\nJOIN\n    Internship ON Internship.industry_sector_id = Industry_Sector.id\nJOIN\n  Project_Name ON Internship.project_id = Project_Name.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?project_name2 ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?project_name a :Project_Name .\n  ?internship p:hasProject_Name ?project_name .\n  ?project_name p:project_name ?project_name2 .\n  ?industry_sector p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List the students and their project names.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    Internship.student_id, \n    Project_Name.project_name\nFROM \n    Project_Name\nJOIN\n    Internship ON Internship.project_id = Project_Name.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?student_id ?project_name2 WHERE {\n  ?project_name a :Project_Name .\n  ?internship a :Internship .\n  ?internship p:hasProject_Name ?project_name .\n  ?internship p:student_id ?student_id .\n  ?project_name p:project_name ?project_name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "List the students and their industry sectors.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    Internship.student_id, \n    Industry_Sector.name\nFROM \n    Industry_Sector\nJOIN\n    Internship ON Internship.industry_sector_id = Industry_Sector.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?student_id ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?internship p:student_id ?student_id .\n  ?industry_sector p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the students along with their internship topics.",
+      "qtype": "ambig",
+      "sql": "SELECT \n    Internship.student_id, \n    Industry_Sector.name,\n    Project_Name.project_name\nFROM \n    Industry_Sector\nJOIN\n    Internship ON Internship.industry_sector_id = Industry_Sector.id\nJOIN\n Project_Name ON Internship.project_id = Project_Name.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?student_id ?name ?project_name2 WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?project_name a :Project_Name .\n  ?internship p:hasProject_Name ?project_name .\n  ?internship p:student_id ?student_id .\n  ?industry_sector p:name ?name .\n  ?project_name p:project_name ?project_name2 .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the students along with their internship topics.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?student_id ?project_name2 WHERE {\n  ?project_name a :Project_Name .\n  ?internship a :Internship .\n  ?internship p:hasProject_Name ?project_name .\n  ?internship p:student_id ?student_id .\n  ?project_name p:project_name ?project_name2 .\n} }\n  component_2: { SELECT ?student_id ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?internship p:student_id ?student_id .\n  ?industry_sector p:name ?name .\n} }\n  full: { SELECT ?student_id ?name ?project_name2 WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?project_name a :Project_Name .\n  ?internship p:hasProject_Name ?project_name .\n  ?internship p:student_id ?student_id .\n  ?industry_sector p:name ?name .\n  ?project_name p:project_name ?project_name2 .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Can you find all internship topics?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?industry_sector p:name ?name .\n} }\n  component_2: { SELECT ?project_name2 WHERE {\n  ?project_name a :Project_Name .\n  ?project_name p:project_name ?project_name2 .\n} }\n  full: { SELECT ?project_name2 ?name WHERE {\n  ?industry_sector a :Industry_Sector .\n  ?internship a :Internship .\n  ?internship p:hasIndustry_Sector ?industry_sector .\n  ?project_name a :Project_Name .\n  ?internship p:hasProject_Name ?project_name .\n  ?project_name p:project_name ?project_name2 .\n  ?industry_sector p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

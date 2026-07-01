@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_literature",
+  "schema": "amb_attachment_1tab_val_literature",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which fiction books have a rating of 2.5 and which non-fiction books have the same rating?",
+      "qtype": "unambig",
+      "sql": "SELECT Books.Title \nFROM Books\nWHERE (Books.Literature = \"Fiction Book\" OR Books.Literature = \"Non-fiction Book\") AND Books.Rating = 2.5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?books p:Title ?title .\n  ?books p:Literature ?literature_w .\n  ?books p:Literature ?literature_w2 .\n  ?books p:Rating ?rating_w .\n  FILTER((((STR(?literature_w) = \"Fiction Book\" || STR(?literature_w2) = \"Non-fiction Book\")) && (STR(?rating_w) = \"2.5\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show fiction books and non-fiction books with a rating of 2.5.",
+      "qtype": "ambig",
+      "sql": "SELECT Books.Title \nFROM Books\nWHERE Books.Literature = \"Fiction Book\" OR Books.Literature = \"Non-fiction Book\" AND Books.Rating = 2.5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?books p:Title ?title .\n  ?books p:Literature ?literature_w .\n  ?books p:Literature ?literature_w2 .\n  ?books p:Rating ?rating_w .\n  FILTER((STR(?literature_w) = \"Fiction Book\" || (STR(?literature_w2) = \"Non-fiction Book\" && (STR(?rating_w) = \"2.5\"))))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show fiction books and non-fiction books with a rating of 2.5.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?books p:Title ?title .\n  ?books p:Literature ?literature_w .\n  ?books p:Literature ?literature_w2 .\n  ?books p:Rating ?rating_w .\n  FILTER((((STR(?literature_w) = \"Fiction Book\" || STR(?literature_w2) = \"Non-fiction Book\")) && (STR(?rating_w) = \"2.5\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?books p:Title ?title .\n  ?books p:Literature ?literature_w .\n  ?books p:Literature ?literature_w2 .\n  ?books p:Rating ?rating_w .\n  FILTER((STR(?literature_w) = \"Fiction Book\" || (STR(?literature_w2) = \"Non-fiction Book\" && (STR(?rating_w) = \"2.5\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

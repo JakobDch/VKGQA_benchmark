@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_trades_jobs",
+  "schema": "amb_attachment_1tab_val_trades_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all of the construction worker salaries, also show the electrician salaries for those working for any of Derek Brown's companies.",
+      "qtype": "unambig",
+      "sql": "SELECT Trade_Jobs.salary \nFROM Trade_Jobs\nWHERE Trade_Jobs.trade_job = \"Construction Worker\" OR Trade_Jobs.trade_job = \"Electrician\" AND Trade_Jobs.company_owner = \"Derek Brown\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salary WHERE {\n  ?trade_jobs a :Trade_Jobs .\n  ?trade_jobs p:salary ?salary .\n  ?trade_jobs p:trade_job ?trade_job_w .\n  ?trade_jobs p:trade_job ?trade_job_w2 .\n  ?trade_jobs p:company_owner ?company_owner_w .\n  FILTER((STR(?trade_job_w) = \"Construction Worker\" || (STR(?trade_job_w2) = \"Electrician\" && STR(?company_owner_w) = \"Derek Brown\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List all construction worker salaries and electrician salaries for employees who work for any of Derek Brown's companies.",
+      "qtype": "ambig",
+      "sql": "SELECT Trade_Jobs.salary \nFROM Trade_Jobs\nWHERE (Trade_Jobs.trade_job = \"Construction Worker\" OR Trade_Jobs.trade_job = \"Electrician\") AND Trade_Jobs.company_owner = \"Derek Brown\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salary WHERE {\n  ?trade_jobs a :Trade_Jobs .\n  ?trade_jobs p:salary ?salary .\n  ?trade_jobs p:trade_job ?trade_job_w .\n  ?trade_jobs p:trade_job ?trade_job_w2 .\n  ?trade_jobs p:company_owner ?company_owner_w .\n  FILTER((((STR(?trade_job_w) = \"Construction Worker\" || STR(?trade_job_w2) = \"Electrician\")) && STR(?company_owner_w) = \"Derek Brown\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all construction worker salaries and electrician salaries for employees who work for any of Derek Brown's companies.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?salary WHERE {\n  ?trade_jobs a :Trade_Jobs .\n  ?trade_jobs p:salary ?salary .\n  ?trade_jobs p:trade_job ?trade_job_w .\n  ?trade_jobs p:trade_job ?trade_job_w2 .\n  ?trade_jobs p:company_owner ?company_owner_w .\n  FILTER((STR(?trade_job_w) = \"Construction Worker\" || (STR(?trade_job_w2) = \"Electrician\" && STR(?company_owner_w) = \"Derek Brown\")))\n} }\n  high: { SELECT ?salary WHERE {\n  ?trade_jobs a :Trade_Jobs .\n  ?trade_jobs p:salary ?salary .\n  ?trade_jobs p:trade_job ?trade_job_w .\n  ?trade_jobs p:trade_job ?trade_job_w2 .\n  ?trade_jobs p:company_owner ?company_owner_w .\n  FILTER((((STR(?trade_job_w) = \"Construction Worker\" || STR(?trade_job_w2) = \"Electrician\")) && STR(?company_owner_w) = \"Derek Brown\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

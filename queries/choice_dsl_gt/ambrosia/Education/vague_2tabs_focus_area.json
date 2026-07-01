@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2tabs_focus_area",
+  "schema": "amb_vague_2tabs_focus_area",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which field of study is the focus of project scoring more than 90 points?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    f.name \nFROM \n    Enrollment e\n    INNER JOIN Project p ON e.projectId = p.id\n    INNER JOIN Field_Of_Study f \nON p.FieldOfStudyId = f.id \nAND e.grade > 90;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?f .\n  ?f p:name ?name .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Which topic and field of study is the focus of project scoring more than 90 points?",
+      "qtype": "unambig",
+      "sql": "SELECT \n    f.name, fs.name\nFROM \n    Enrollment e\n    INNER JOIN Project p ON e.projectId = p.id\n    INNER JOIN Topic f \nON p.topicId = f.id \n INNER JOIN Field_Of_Study fs \nON p.FieldOfStudyId = fs.id \nAND e.grade > 90;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?fs a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?fs .\n  ?f p:name ?name .\n  ?fs p:name ?name2 .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What is the field of study of the Quantum Mechanics Experiment?",
+      "qtype": "unambig",
+      "sql": "SELECT \n   f.name\nFROM \n    Project p\n    INNER JOIN Field_Of_Study f \nON p.FieldOfStudyId = f.id \nAND p.title = 'Quantum Mechanics Experiment';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?p a :Projects .\n  ?f a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?f .\n  ?f p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the focus of projects that score more than 90 points?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    f.name\nFROM \n    Enrollment e\n    INNER JOIN Project p ON e.projectId = p.id\n    INNER JOIN Topic f \nON p.topicId = f.id \nAND e.grade > 90;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?f p:name ?name .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What is the topic of the Quantum Mechanics Experiment?",
+      "qtype": "unambig",
+      "sql": "SELECT \n   f.name\nFROM \n    Project p\n    INNER JOIN Topic f \nON p.topicId = f.id \nAND p.title = 'Quantum Mechanics Experiment';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?p a :Projects .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?f p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the topic and field of study of the Quantum Mechanics Experiment?",
+      "qtype": "unambig",
+      "sql": "SELECT \n   f.name, fs.name\nFROM \n    Project p\n    INNER JOIN Topic f \nON p.topicId = f.id \n INNER JOIN Field_Of_Study fs \nON p.FieldOfStudyId = fs.id \nAND p.title = 'Quantum Mechanics Experiment';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?p a :Projects .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?fs a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?fs .\n  ?f p:name ?name .\n  ?fs p:name ?name2 .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the focus of projects that score more than 90 points?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?f .\n  ?f p:name ?name .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?fs a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?fs .\n  ?f p:name ?name .\n  ?fs p:name ?name2 .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n} }\n  component_2: { SELECT ?name WHERE {\n  ?e a :Enrollments .\n  ?p a :Projects .\n  ?e p:hasProject ?p .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?f p:name ?name .\n  ?e p:grade ?grade_f .\n  FILTER(xsd:double(?grade_f) > 90)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the focus of Quantum Mechanics Experiment?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?p a :Projects .\n  ?f a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?f .\n  ?f p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?p a :Projects .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?f p:name ?name .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?p a :Projects .\n  ?f a :Topics .\n  ?p p:hasTopic ?f .\n  ?fs a :Field_Of_Study .\n  ?p p:hasField_Of_Study ?fs .\n  ?f p:name ?name .\n  ?fs p:name ?name2 .\n  ?p p:title ?title_f .\n  FILTER(STR(?title_f) = \"Quantum Mechanics Experiment\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

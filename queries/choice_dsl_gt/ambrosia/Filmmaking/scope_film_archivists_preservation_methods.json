@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_film_archivists_preservation_methods",
+  "schema": "amb_scope_film_archivists_preservation_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me descriptions of preservation methods each film archivist uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Preservation_Methods.description  from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id   GROUP BY Archived_Films.preservation_method_id HAVING COUNT(DISTINCT Archived_Films.archiver_id) = (SELECT COUNT(*) FROM  Film_Archivists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me descriptions of preservation methods each film archivist uses.",
+      "qtype": "ambig",
+      "sql": "select film_archivists.name , preservation_methods.description from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 2,
+      "question": "What methods are popular among all archivists?",
+      "qtype": "unambig",
+      "sql": "SELECT Preservation_Methods.method  from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id   GROUP BY Archived_Films.preservation_method_id HAVING COUNT(DISTINCT Archived_Films.archiver_id) = (SELECT COUNT(*) FROM  Film_Archivists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:method ?method .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For every film archivist, list the preservation methods used and their descriptions.",
+      "qtype": "unambig",
+      "sql": "select film_archivists.name , preservation_methods.method , preservation_methods.description from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?method ?description WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:method ?method .\n  ?preservation_methods p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me the preservation methods and their descriptions each film archivist uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Preservation_Methods.method, Preservation_Methods.description  from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id   GROUP BY Archived_Films.preservation_method_id HAVING COUNT(DISTINCT Archived_Films.archiver_id) = (SELECT COUNT(*) FROM  Film_Archivists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?method ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:method ?method .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each archivist, list the methods they use.",
+      "qtype": "unambig",
+      "sql": "select film_archivists.name , preservation_methods.method from Archived_Films join Preservation_Methods on Archived_Films.preservation_method_id = Preservation_Methods.id join Film_Archivists on Archived_Films.archiver_id = Film_Archivists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?method WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:method ?method .\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the methods every archivist uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?method WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:method ?method .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?method WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:method ?method .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the preservation methods and their descriptions each film archivist uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?method ?description WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:method ?method .\n  ?preservation_methods p:description ?description .\n} }\n  collective: { SELECT ?method ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:method ?method .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me descriptions of preservation methods each film archivist uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?archived_films a :Archived_Films .\n  ?preservation_methods a :Preservation_Methods .\n  ?archived_films p:hasPreservation_Methods ?preservation_methods .\n  ?film_archivists a :Film_Archivists .\n  ?archived_films p:hasFilm_Archivists ?film_archivists .\n  ?film_archivists p:name ?name .\n  ?preservation_methods p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPreservation_Methods ?child ; p:hasFilm_Archivists ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Film_Archivists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

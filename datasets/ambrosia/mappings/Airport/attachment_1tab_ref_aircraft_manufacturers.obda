@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `airports`
+
+mappingId	flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:from_airport_id {from_airport_id} ; p:to_airport_id {to_airport_id} .
+source		SELECT `id`, `from_airport_id`, `to_airport_id` FROM `flights`
+
+mappingId	flights_to_airport_id_fk
+target		ex:Flights/{id} p:hasAirports_to_airport_id ex:Airports/{to_airport_id} .
+source		SELECT `id`, `to_airport_id` FROM `flights` WHERE `to_airport_id` IS NOT NULL
+
+mappingId	flights_from_airport_id_fk
+target		ex:Flights/{id} p:hasAirports_from_airport_id ex:Airports/{from_airport_id} .
+source		SELECT `id`, `from_airport_id` FROM `flights` WHERE `from_airport_id` IS NOT NULL
+
+mappingId	manufacturers_base
+target		ex:manufacturers/{id} a :manufacturers ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `manufacturers`
+
+mappingId	plane_details_base
+target		ex:plane_details/{_amb_rowid} a :plane_details ; p:plane_id {plane_id} ; p:manufacturer_id {manufacturer_id} .
+source		SELECT `_amb_rowid`, `plane_id`, `manufacturer_id` FROM `plane_details`
+
+mappingId	plane_details_manufacturer_id_fk
+target		ex:plane_details/{_amb_rowid} p:hasmanufacturers ex:manufacturers/{manufacturer_id} .
+source		SELECT `_amb_rowid`, `manufacturer_id` FROM `plane_details` WHERE `manufacturer_id` IS NOT NULL
+
+mappingId	plane_details_plane_id_fk
+target		ex:plane_details/{_amb_rowid} p:hasPlanes ex:Planes/{plane_id} .
+source		SELECT `_amb_rowid`, `plane_id` FROM `plane_details` WHERE `plane_id` IS NOT NULL
+
+mappingId	planes_base
+target		ex:Planes/{id} a :Planes ; p:id {id} ; p:model {model} ; p:number_of_seats {number_of_seats} .
+source		SELECT `id`, `model`, `number_of_seats` FROM `planes`
+
+]]

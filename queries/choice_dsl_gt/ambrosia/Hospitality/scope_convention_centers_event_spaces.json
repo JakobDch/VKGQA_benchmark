@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_convention_centers_event_spaces",
+  "schema": "amb_scope_convention_centers_event_spaces",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide me with the names and types of spaces available at all convention centers.",
+      "qtype": "ambig",
+      "sql": "SELECT Event_Spaces.space_name, Event_Spaces.type  from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id   GROUP BY Convention_Centers_Event_Spaces.event_space_id HAVING COUNT(DISTINCT Convention_Centers_Event_Spaces.convention_center_id) = (SELECT COUNT(*) FROM  Convention_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?space_name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:space_name ?space_name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide me with the names and types of spaces available at all convention centers.",
+      "qtype": "ambig",
+      "sql": "select convention_centers.name , event_spaces.space_name , event_spaces.type from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?space_name ?type WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:space_name ?space_name .\n  ?event_spaces p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 2,
+      "question": "List the names of all spaces for each convention center.",
+      "qtype": "unambig",
+      "sql": "select convention_centers.name , event_spaces.space_name from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?space_name WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:space_name ?space_name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "Display the name of the spaces at each convention center.",
+      "qtype": "ambig",
+      "sql": "SELECT Event_Spaces.space_name  from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id   GROUP BY Convention_Centers_Event_Spaces.event_space_id HAVING COUNT(DISTINCT Convention_Centers_Event_Spaces.convention_center_id) = (SELECT COUNT(*) FROM  Convention_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?space_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:space_name ?space_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What type of event spaces are available for each convention center?",
+      "qtype": "ambig",
+      "sql": "SELECT Event_Spaces.type  from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id   GROUP BY Convention_Centers_Event_Spaces.event_space_id HAVING COUNT(DISTINCT Convention_Centers_Event_Spaces.convention_center_id) = (SELECT COUNT(*) FROM  Convention_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "What type of event spaces are available for each convention center?",
+      "qtype": "ambig",
+      "sql": "select convention_centers.name , event_spaces.type from Convention_Centers_Event_Spaces join Event_Spaces on Convention_Centers_Event_Spaces.event_space_id = Event_Spaces.id join Convention_Centers on Convention_Centers_Event_Spaces.convention_center_id = Convention_Centers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display the name of the spaces at each convention center.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?space_name WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:space_name ?space_name .\n} }\n  collective: { SELECT ?space_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:space_name ?space_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Provide me with the names and types of spaces available at all convention centers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?space_name ?type WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:space_name ?space_name .\n  ?event_spaces p:type ?type .\n} }\n  collective: { SELECT ?space_name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:space_name ?space_name .\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What type of event spaces are available for each convention center?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEvent_Spaces ?child ; p:hasConvention_Centers ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Convention_Centers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?convention_centers_event_spaces a :Convention_Centers_Event_Spaces .\n  ?event_spaces a :EventSpaces .\n  ?convention_centers_event_spaces p:hasEvent_Spaces ?event_spaces .\n  ?convention_centers a :Convention_Centers .\n  ?convention_centers_event_spaces p:hasConvention_Centers ?convention_centers .\n  ?convention_centers p:name ?name .\n  ?event_spaces p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

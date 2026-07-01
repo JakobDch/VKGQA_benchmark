@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Director_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} ; p:Award {Award} .
+source		SELECT `id`, `Name`, `BirthDate`, `Country`, `Award` FROM `Director`
+
+mappingId	Producer_base
+target		ex:Producer/{id} a :Producer ; p:id {id} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} ; p:Award {Award} .
+source		SELECT `id`, `Name`, `BirthDate`, `Country`, `Award` FROM `Producer`
+
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Genre {Genre} ; p:Rating {Rating} .
+source		SELECT `id`, `Title`, `ReleaseYear`, `Genre`, `Rating` FROM `Movie`
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `id`, `Name`, `BirthDate`, `Country` FROM `Actor`
+
+mappingId	Casting_base
+target		ex:Cast/{_amb_rowid} a :Cast ; p:movie_id {movie_id} ; p:actor_id {actor_id} ; p:role {role} .
+source		SELECT `_amb_rowid`, `movie_id`, `actor_id`, `role` FROM `Casting`
+
+mappingId	Casting_actor_id_fk
+target		ex:Cast/{_amb_rowid} p:hasActor ex:Actor/{actor_id} .
+source		SELECT `_amb_rowid`, `actor_id` FROM `Casting` WHERE `actor_id` IS NOT NULL
+
+mappingId	Casting_movie_id_fk
+target		ex:Cast/{_amb_rowid} p:hasMovie ex:Movie/{movie_id} .
+source		SELECT `_amb_rowid`, `movie_id` FROM `Casting` WHERE `movie_id` IS NOT NULL
+
+mappingId	Review_base
+target		ex:Review/{review_id} a :Review ; p:review_id {review_id} ; p:movie_id {movie_id} ; p:rating {rating} ; p:comment {comment} .
+source		SELECT `review_id`, `movie_id`, `rating`, `comment` FROM `Review`
+
+mappingId	Review_movie_id_fk
+target		ex:Review/{review_id} p:hasMovie ex:Movie/{movie_id} .
+source		SELECT `review_id`, `movie_id` FROM `Review` WHERE `movie_id` IS NOT NULL
+
+]]

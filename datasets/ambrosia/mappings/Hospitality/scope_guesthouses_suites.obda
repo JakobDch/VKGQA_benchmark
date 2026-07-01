@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	RoomAmenities_base
+target		ex:RoomAmenities/{amenID} a :RoomAmenities ; p:amenID {amenID} ; p:amenName {amenName} ; p:amenCost {amenCost} .
+source		SELECT `amenID`, `amenName`, `amenCost` FROM `RoomAmenities`
+
+mappingId	Guests_base
+target		ex:Guests/{guestID} a :Guests ; p:guestID {guestID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} .
+source		SELECT `guestID`, `firstName`, `lastName`, `email`, `phoneNumber` FROM `Guests`
+
+mappingId	GuestHouses_base
+target		ex:GuestHouses/{houseID} a :GuestHouses ; p:houseID {houseID} ; p:houseName {houseName} ; p:location {location} ; p:capacity {capacity} ; p:pricePerNight {pricePerNight} .
+source		SELECT `houseID`, `houseName`, `location`, `capacity`, `pricePerNight` FROM `GuestHouses`
+
+mappingId	Suites_base
+target		ex:Suites/{suiteType} a :Suites ; p:suiteType {suiteType} .
+source		SELECT `suiteType` FROM `Suites`
+
+mappingId	GuestHouseSuites_base
+target		ex:GuestHouseSuites/{_amb_rowid} a :GuestHouseSuites ; p:guesthouseID {guesthouseID} ; p:suiteType {suiteType} .
+source		SELECT `_amb_rowid`, `guesthouseID`, `suiteType` FROM `GuestHouseSuites`
+
+mappingId	GuestHouseSuites_suiteType_fk
+target		ex:GuestHouseSuites/{_amb_rowid} p:hasSuites ex:Suites/{suiteType} .
+source		SELECT `_amb_rowid`, `suiteType` FROM `GuestHouseSuites` WHERE `suiteType` IS NOT NULL
+
+mappingId	GuestHouseSuites_guesthouseID_fk
+target		ex:GuestHouseSuites/{_amb_rowid} p:hasGuestHouses ex:GuestHouses/{guesthouseID} .
+source		SELECT `_amb_rowid`, `guesthouseID` FROM `GuestHouseSuites` WHERE `guesthouseID` IS NOT NULL
+
+]]

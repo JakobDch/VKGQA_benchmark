@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_visual_art",
+  "schema": "amb_attachment_1tab_ref_visual_art",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the photography pieces, also show all the paintings hosted at MoMA.",
+      "qtype": "unambig",
+      "sql": "SELECT VisualArt.Title \nFROM ArtType JOIN VisualArt ON ArtType.id = VisualArt.ArtTypeId JOIN ArtworkInExhibition ON VisualArt.id = ArtworkInExhibition.VisualArtId JOIN Exhibit ON ArtworkInExhibition.ExhibitId = Exhibit.id JOIN Gallery ON Exhibit.GalleryId = Gallery.id\nWHERE ArtType.TypeName = \"Photography\" OR ArtType.TypeName = \"Painting\" AND Gallery.Name = \"MoMA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?arttype a :ArtType .\n  ?visualart a :VisualArt .\n  ?visualart p:hasArtType ?arttype .\n  ?artworkinexhibition a :ArtworkInExhibition .\n  ?artworkinexhibition p:hasVisualArt ?visualart .\n  ?exhibit a :Exhibition .\n  ?artworkinexhibition p:hasExhibit ?exhibit .\n  ?gallery a :Gallery .\n  ?exhibit p:hasGallery ?gallery .\n  ?visualart p:Title ?title .\n  ?arttype p:TypeName ?typename_w .\n  ?arttype p:TypeName ?typename_w2 .\n  ?gallery p:name ?name_w .\n  FILTER((STR(?typename_w) = \"Photography\" || (STR(?typename_w2) = \"Painting\" && STR(?name_w) = \"MoMA\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display all photographs and paintings exhibited at the MoMA.",
+      "qtype": "ambig",
+      "sql": "SELECT VisualArt.Title \nFROM ArtType JOIN VisualArt ON ArtType.id = VisualArt.ArtTypeId JOIN ArtworkInExhibition ON VisualArt.id = ArtworkInExhibition.VisualArtId JOIN Exhibit ON ArtworkInExhibition.ExhibitId = Exhibit.id JOIN Gallery ON Exhibit.GalleryId = Gallery.id\nWHERE (ArtType.TypeName = \"Photography\" OR ArtType.TypeName = \"Painting\") AND Gallery.Name = \"MoMA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?arttype a :ArtType .\n  ?visualart a :VisualArt .\n  ?visualart p:hasArtType ?arttype .\n  ?artworkinexhibition a :ArtworkInExhibition .\n  ?artworkinexhibition p:hasVisualArt ?visualart .\n  ?exhibit a :Exhibition .\n  ?artworkinexhibition p:hasExhibit ?exhibit .\n  ?gallery a :Gallery .\n  ?exhibit p:hasGallery ?gallery .\n  ?visualart p:Title ?title .\n  ?arttype p:TypeName ?typename_w .\n  ?arttype p:TypeName ?typename_w2 .\n  ?gallery p:name ?name_w .\n  FILTER((((STR(?typename_w) = \"Photography\" || STR(?typename_w2) = \"Painting\")) && STR(?name_w) = \"MoMA\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all photographs and paintings exhibited at the MoMA.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?arttype a :ArtType .\n  ?visualart a :VisualArt .\n  ?visualart p:hasArtType ?arttype .\n  ?artworkinexhibition a :ArtworkInExhibition .\n  ?artworkinexhibition p:hasVisualArt ?visualart .\n  ?exhibit a :Exhibition .\n  ?artworkinexhibition p:hasExhibit ?exhibit .\n  ?gallery a :Gallery .\n  ?exhibit p:hasGallery ?gallery .\n  ?visualart p:Title ?title .\n  ?arttype p:TypeName ?typename_w .\n  ?arttype p:TypeName ?typename_w2 .\n  ?gallery p:name ?name_w .\n  FILTER((STR(?typename_w) = \"Photography\" || (STR(?typename_w2) = \"Painting\" && STR(?name_w) = \"MoMA\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?arttype a :ArtType .\n  ?visualart a :VisualArt .\n  ?visualart p:hasArtType ?arttype .\n  ?artworkinexhibition a :ArtworkInExhibition .\n  ?artworkinexhibition p:hasVisualArt ?visualart .\n  ?exhibit a :Exhibition .\n  ?artworkinexhibition p:hasExhibit ?exhibit .\n  ?gallery a :Gallery .\n  ?exhibit p:hasGallery ?gallery .\n  ?visualart p:Title ?title .\n  ?arttype p:TypeName ?typename_w .\n  ?arttype p:TypeName ?typename_w2 .\n  ?gallery p:name ?name_w .\n  FILTER((((STR(?typename_w) = \"Photography\" || STR(?typename_w2) = \"Painting\")) && STR(?name_w) = \"MoMA\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

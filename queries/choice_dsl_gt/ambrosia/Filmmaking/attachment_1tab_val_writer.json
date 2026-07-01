@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_writer",
+  "schema": "amb_attachment_1tab_val_writer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all screenwriters and also provide a list of playwrights who have studied at New York University.",
+      "qtype": "unambig",
+      "sql": "SELECT Writer.name \nFROM Writer\nWHERE Writer.Type = \"Screenwriter\" OR Writer.Type = \"Playwright\" AND Writer.Education = \"New York University\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?writer a :Writer .\n  ?writer p:name ?name .\n  ?writer p:Type ?type_w .\n  ?writer p:Type ?type_w2 .\n  ?writer p:Education ?education_w .\n  FILTER((STR(?type_w) = \"Screenwriter\" || (STR(?type_w2) = \"Playwright\" && STR(?education_w) = \"New York University\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show screenwriters and playwrights who have studied at New York University.",
+      "qtype": "ambig",
+      "sql": "SELECT Writer.name \nFROM Writer\nWHERE (Writer.Type = \"Screenwriter\" OR Writer.Type = \"Playwright\") AND Writer.Education = \"New York University\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?writer a :Writer .\n  ?writer p:name ?name .\n  ?writer p:Type ?type_w .\n  ?writer p:Type ?type_w2 .\n  ?writer p:Education ?education_w .\n  FILTER((((STR(?type_w) = \"Screenwriter\" || STR(?type_w2) = \"Playwright\")) && STR(?education_w) = \"New York University\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show screenwriters and playwrights who have studied at New York University.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?writer a :Writer .\n  ?writer p:name ?name .\n  ?writer p:Type ?type_w .\n  ?writer p:Type ?type_w2 .\n  ?writer p:Education ?education_w .\n  FILTER((STR(?type_w) = \"Screenwriter\" || (STR(?type_w2) = \"Playwright\" && STR(?education_w) = \"New York University\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?writer a :Writer .\n  ?writer p:name ?name .\n  ?writer p:Type ?type_w .\n  ?writer p:Type ?type_w2 .\n  ?writer p:Education ?education_w .\n  FILTER((((STR(?type_w) = \"Screenwriter\" || STR(?type_w2) = \"Playwright\")) && STR(?education_w) = \"New York University\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

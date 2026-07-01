@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Festivals_base
+target		ex:Festivals/{id} a :Festivals ; p:id {id} ; p:name {Name} ; p:Cultural_Festival {Cultural_Festival} ; p:location {Location} .
+source		SELECT `id`, `Name`, `Cultural_Festival`, `Location` FROM `Festivals`
+
+mappingId	Participants_base
+target		ex:Participant/{id} a :Participant ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Role {Role} ; p:Age {Age} .
+source		SELECT `id`, `FirstName`, `LastName`, `Role`, `Age` FROM `Participants`
+
+mappingId	Events_base
+target		ex:Events/{id} a :Events ; p:id {id} ; p:FestivalID {FestivalID} ; p:Attendance {Attendance} ; p:ParticipantID {ParticipantID} .
+source		SELECT `id`, `FestivalID`, `Attendance`, `ParticipantID` FROM `Events`
+
+mappingId	Events_ParticipantID_fk
+target		ex:Events/{id} p:hasParticipant ex:Participant/{ParticipantID} .
+source		SELECT `id`, `ParticipantID` FROM `Events` WHERE `ParticipantID` IS NOT NULL
+
+mappingId	Events_FestivalID_fk
+target		ex:Events/{id} p:hasFestivals ex:Festivals/{FestivalID} .
+source		SELECT `id`, `FestivalID` FROM `Events` WHERE `FestivalID` IS NOT NULL
+
+]]

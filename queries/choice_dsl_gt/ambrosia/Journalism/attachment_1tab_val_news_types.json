@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_news_types",
+  "schema": "amb_attachment_1tab_val_news_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all breaking news articles and also provide a list of news analysis articles about the Turkey-Syria earthquakes.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.Title \nFROM Articles\nWHERE Articles.NewsType = \"Breaking News\" OR Articles.NewsType = \"News Analysis\" AND Articles.Event = \"Turkey–Syria earthquakes\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:NewsType ?newstype_w .\n  ?articles p:NewsType ?newstype_w2 .\n  ?articles p:Event ?event_w .\n  FILTER((STR(?newstype_w) = \"Breaking News\" || (STR(?newstype_w2) = \"News Analysis\" && STR(?event_w) = \"Turkey–Syria earthquakes\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide breaking news and news analysis articles about the Turkey-Syria earthquakes.",
+      "qtype": "ambig",
+      "sql": "SELECT Articles.Title \nFROM Articles\nWHERE (Articles.NewsType = \"Breaking News\" OR Articles.NewsType = \"News Analysis\") AND Articles.Event = \"Turkey–Syria earthquakes\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:NewsType ?newstype_w .\n  ?articles p:NewsType ?newstype_w2 .\n  ?articles p:Event ?event_w .\n  FILTER((((STR(?newstype_w) = \"Breaking News\" || STR(?newstype_w2) = \"News Analysis\")) && STR(?event_w) = \"Turkey–Syria earthquakes\"))\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide breaking news and news analysis articles about the Turkey-Syria earthquakes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:NewsType ?newstype_w .\n  ?articles p:NewsType ?newstype_w2 .\n  ?articles p:Event ?event_w .\n  FILTER((STR(?newstype_w) = \"Breaking News\" || (STR(?newstype_w2) = \"News Analysis\" && STR(?event_w) = \"Turkey–Syria earthquakes\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:Title ?title .\n  ?articles p:NewsType ?newstype_w .\n  ?articles p:NewsType ?newstype_w2 .\n  ?articles p:Event ?event_w .\n  FILTER((((STR(?newstype_w) = \"Breaking News\" || STR(?newstype_w2) = \"News Analysis\")) && STR(?event_w) = \"Turkey–Syria earthquakes\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

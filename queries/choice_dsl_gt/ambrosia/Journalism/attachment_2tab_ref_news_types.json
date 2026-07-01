@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_news_types",
+  "schema": "amb_attachment_2tab_ref_news_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all latest news and also provide a list of news analysis articles on the Turkey-Syria Earthquakes.",
+      "qtype": "unambig",
+      "sql": "SELECT Breaking_News.headline as title\nFROM Events JOIN Breaking_News ON Events.eventId = Breaking_News.eventId\nUNION\nSELECT News_Analysis.title\nFROM Events JOIN News_Analysis ON Events.eventId = News_Analysis.eventId\nWHERE Events.eventName = \"Turkey–Syria Earthquakes\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?events a :Events .\n    ?breaking_news a :Breaking_News .\n    ?breaking_news p:hasEvents ?events .\n    ?breaking_news p:headline ?headline .\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?events a :Events .\n    ?news_analysis a :News_Analysis .\n    ?news_analysis p:hasEvents ?events .\n    ?news_analysis p:title ?title .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "What latest news are there on the Turkey-Syria Earthquakes and what news analysis articles are there on the same topic?",
+      "qtype": "unambig",
+      "sql": "SELECT Breaking_News.headline as title\nFROM Events JOIN Breaking_News ON Events.eventId = Breaking_News.eventId\nWHERE Events.eventName = \"Turkey–Syria Earthquakes\"\nUNION\nSELECT News_Analysis.title\nFROM Events JOIN News_Analysis ON Events.eventId = News_Analysis.eventId\nWHERE Events.eventName = \"Turkey–Syria Earthquakes\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?events a :Events .\n    ?breaking_news a :Breaking_News .\n    ?breaking_news p:hasEvents ?events .\n    ?breaking_news p:headline ?headline .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?events a :Events .\n    ?news_analysis a :News_Analysis .\n    ?news_analysis p:hasEvents ?events .\n    ?news_analysis p:title ?title .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide latest news and news analysis on the Turkey-Syria Earthquakes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?events a :Events .\n    ?breaking_news a :Breaking_News .\n    ?breaking_news p:hasEvents ?events .\n    ?breaking_news p:headline ?headline .\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?events a :Events .\n    ?news_analysis a :News_Analysis .\n    ?news_analysis p:hasEvents ?events .\n    ?news_analysis p:title ?title .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?title AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?events a :Events .\n    ?breaking_news a :Breaking_News .\n    ?breaking_news p:hasEvents ?events .\n    ?breaking_news p:headline ?headline .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?events a :Events .\n    ?news_analysis a :News_Analysis .\n    ?news_analysis p:hasEvents ?events .\n    ?news_analysis p:title ?title .\n    ?events p:eventName ?eventname_f .\n    FILTER(STR(?eventname_f) = \"Turkey–Syria Earthquakes\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

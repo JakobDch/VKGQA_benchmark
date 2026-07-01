@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{Flight_ID} a :Flights ; p:Flight_ID {Flight_ID} ; p:Departure_Time {Departure_Time} ; p:Arrival_Time {Arrival_Time} ; p:Aircraft_Type {Aircraft_Type} ; p:Origin_Airport_Code {Origin_Airport_Code} ; p:Destination_Airport_Code {Destination_Airport_Code} .
+source		SELECT `Flight_ID`, `Departure_Time`, `Arrival_Time`, `Aircraft_Type`, `Origin_Airport_Code`, `Destination_Airport_Code` FROM `Flights`
+
+mappingId	Flights_Destination_Airport_Code_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_Destination_Airport_Code ex:Airports/{Destination_Airport_Code} .
+source		SELECT `Flight_ID`, `Destination_Airport_Code` FROM `Flights` WHERE `Destination_Airport_Code` IS NOT NULL
+
+mappingId	Flights_Origin_Airport_Code_fk
+target		ex:Flights/{Flight_ID} p:hasAirports_Origin_Airport_Code ex:Airports/{Origin_Airport_Code} .
+source		SELECT `Flight_ID`, `Origin_Airport_Code` FROM `Flights` WHERE `Origin_Airport_Code` IS NOT NULL
+
+mappingId	Airports_base
+target		ex:Airports/{Airport_Code} a :Airports ; p:Airport_Code {Airport_Code} ; p:Airport_Name {Airport_Name} ; p:Country {Country} ; p:City {City} ; p:Elevation {Elevation} ; p:Timezone {Timezone} ; p:IATA_Code {IATA_Code} ; p:Latitude {Latitude} ; p:Longitude {Longitude} .
+source		SELECT `Airport_Code`, `Airport_Name`, `Country`, `City`, `Elevation`, `Timezone`, `IATA_Code`, `Latitude`, `Longitude` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{Airline_Code} a :Airlines ; p:Airline_Code {Airline_Code} ; p:Airline_Name {Airline_Name} ; p:Headquarters_City {Headquarters_City} ; p:Website {Website} .
+source		SELECT `Airline_Code`, `Airline_Name`, `Headquarters_City`, `Website` FROM `Airlines`
+
+mappingId	Pilots_base
+target		ex:Pilots/{Pilot_ID} a :Pilots ; p:Pilot_ID {Pilot_ID} ; p:First_Name {First_Name} ; p:Last_Name {Last_Name} ; p:Date_Of_Birth {Date_Of_Birth} ; p:License_Number {License_Number} ; p:License_Issue_Date {License_Issue_Date} ; p:Rating {Rating} ; p:Airline_Code {Airline_Code} .
+source		SELECT `Pilot_ID`, `First_Name`, `Last_Name`, `Date_Of_Birth`, `License_Number`, `License_Issue_Date`, `Rating`, `Airline_Code` FROM `Pilots`
+
+mappingId	Pilots_Airline_Code_fk
+target		ex:Pilots/{Pilot_ID} p:hasAirlines ex:Airlines/{Airline_Code} .
+source		SELECT `Pilot_ID`, `Airline_Code` FROM `Pilots` WHERE `Airline_Code` IS NOT NULL
+
+mappingId	Planes_base
+target		ex:Planes/{Plane_ID} a :Planes ; p:Plane_ID {Plane_ID} ; p:Registration_Number {Registration_Number} ; p:Model_Name {Model_Name} ; p:Manufacturer_Name {Manufacturer_Name} ; p:Year_Manufactured {Year_Manufactured} ; p:Capacity {Capacity} ; p:Pilot_ID {Pilot_ID} .
+source		SELECT `Plane_ID`, `Registration_Number`, `Model_Name`, `Manufacturer_Name`, `Year_Manufactured`, `Capacity`, `Pilot_ID` FROM `Planes`
+
+mappingId	Planes_Pilot_ID_fk
+target		ex:Planes/{Plane_ID} p:hasPilots ex:Pilots/{Pilot_ID} .
+source		SELECT `Plane_ID`, `Pilot_ID` FROM `Planes` WHERE `Pilot_ID` IS NOT NULL
+
+mappingId	Maintenance_Records_base
+target		ex:Maintenance_Records/{Record_ID} a :Maintenance_Records ; p:Record_ID {Record_ID} ; p:Plane_ID {Plane_ID} ; p:Work_Order_Description {Work_Order_Description} ; p:Start_DateTime {Start_DateTime} ; p:End_DateTime {End_DateTime} ; p:Total_Hours_Worked {Total_Hours_Worked} ; p:Cost {Cost} .
+source		SELECT `Record_ID`, `Plane_ID`, `Work_Order_Description`, `Start_DateTime`, `End_DateTime`, `Total_Hours_Worked`, `Cost` FROM `Maintenance_Records`
+
+mappingId	Maintenance_Records_Plane_ID_fk
+target		ex:Maintenance_Records/{Record_ID} p:hasPlanes ex:Planes/{Plane_ID} .
+source		SELECT `Record_ID`, `Plane_ID` FROM `Maintenance_Records` WHERE `Plane_ID` IS NOT NULL
+
+]]

@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_duration",
+  "schema": "amb_vague_2cols_duration",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the profit per operation and when did that operation occur?",
+      "qtype": "ambig",
+      "sql": "SELECT OperationID, (Revenue - Expenses) AS Profit, OperationYears FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?operationid ?calc ?operationyears WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationYears ?operationyears .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What is the profit per operation and when did that operation occur?",
+      "qtype": "ambig",
+      "sql": "SELECT OperationID, (Revenue - Expenses) AS Profit, OperationMonths FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?operationid ?calc ?operationmonths WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationMonths ?operationmonths .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What is the profit per operation and when did that operation occur?",
+      "qtype": "ambig",
+      "sql": "SELECT OperationID, (Revenue - Expenses) AS Profit, OperationYears, OperationMonths FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?operationid ?calc ?operationyears ?operationmonths WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationYears ?operationyears .\n  ?operations p:OperationMonths ?operationmonths .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "For each operation, list its average revenue and the months it took place.",
+      "qtype": "unambig",
+      "sql": "SELECT AVG(Revenue) AS AverageRevenuePerOperation, OperationMonths FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT (AVG(?rev) AS ?avg) ?om WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationMonths ?om ; p:Revenue ?rev } GROUP BY ?oid ?om",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold omits GROUP BY; NL = per-operation avg revenue + months"
+    },
+    {
+      "qid": 4,
+      "question": "For each operation, list its average revenue and the years and months it took place.",
+      "qtype": "unambig",
+      "sql": "SELECT AVG(Revenue) AS AverageRevenuePerOperation, OperationYears, OperationMonths FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT (AVG(?rev) AS ?avg) ?oy ?om WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationYears ?oy ; p:OperationMonths ?om ; p:Revenue ?rev } GROUP BY ?oid ?oy ?om",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold omits GROUP BY; NL = per-operation avg revenue + years + months"
+    },
+    {
+      "qid": 5,
+      "question": "What is the average revenue per operation and when did this occur?",
+      "qtype": "ambig",
+      "sql": "SELECT AVG(Revenue) AS AverageRevenuePerOperation, OperationYears FROM Operations",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT (AVG(?rev) AS ?avg) ?oy WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationYears ?oy ; p:Revenue ?rev } GROUP BY ?oid ?oy",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold omits GROUP BY; NL = per-operation avg revenue + years"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the average revenue per operation and when did this occur?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nCHOICE vague {\n  component: { SELECT (AVG(?rev) AS ?avg) ?om WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationMonths ?om ; p:Revenue ?rev } GROUP BY ?oid ?om }\n  full: { SELECT (AVG(?rev) AS ?avg) ?oy ?om WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationYears ?oy ; p:OperationMonths ?om ; p:Revenue ?rev } GROUP BY ?oid ?oy ?om }\n  component_2: { SELECT (AVG(?rev) AS ?avg) ?oy WHERE { ?o a :Operations ; p:OperationID ?oid ; p:OperationYears ?oy ; p:Revenue ?rev } GROUP BY ?oid ?oy }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the profit per operation and when did that operation occur?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?operationid ?calc ?operationyears WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationYears ?operationyears .\n} }\n  component_2: { SELECT ?operationid ?calc ?operationmonths WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationMonths ?operationmonths .\n} }\n  full: { SELECT ?operationid ?calc ?operationyears ?operationmonths WHERE {\n  ?operations a :Operations .\n  ?operations p:OperationID ?operationid .\n  ?operations p:Revenue ?revenue_n .\n  ?operations p:Expenses ?expenses_n .\n  BIND(((xsd:double(?revenue_n) - xsd:double(?expenses_n))) AS ?calc)\n  ?operations p:OperationYears ?operationyears .\n  ?operations p:OperationMonths ?operationmonths .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

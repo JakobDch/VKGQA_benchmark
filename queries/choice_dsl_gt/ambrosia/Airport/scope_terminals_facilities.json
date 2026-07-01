@@ -1,0 +1,108 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_terminals_facilities",
+  "schema": "amb_scope_terminals_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the names and descriptions of the facilities common to all terminals?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.facilityName, Facilities.description  from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id   GROUP BY Terminals_Facilities.facilityId HAVING COUNT(DISTINCT Terminals_Facilities.terminalId) = (SELECT COUNT(*) FROM  Terminals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilityname ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the description of the facilities available at each terminal.",
+      "qtype": "ambig",
+      "sql": "SELECT Facilities.description  from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id   GROUP BY Terminals_Facilities.facilityId HAVING COUNT(DISTINCT Terminals_Facilities.terminalId) = (SELECT COUNT(*) FROM  Terminals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the description of the facilities available at each terminal.",
+      "qtype": "ambig",
+      "sql": "select terminals.name , facilities.description from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 3,
+      "question": "Which facilities are common to all terminals?",
+      "qtype": "unambig",
+      "sql": "SELECT Facilities.facilityName  from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id   GROUP BY Terminals_Facilities.facilityId HAVING COUNT(DISTINCT Terminals_Facilities.terminalId) = (SELECT COUNT(*) FROM  Terminals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which facilities are present at all terminals?",
+      "qtype": "ambig",
+      "sql": "select terminals.name , facilities.facilityname from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?facilityname WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 5,
+      "question": "For every terminal, list the names and descriptions of the facilities they have.",
+      "qtype": "unambig",
+      "sql": "select terminals.name , facilities.facilityname , facilities.description from Terminals_Facilities join Facilities on Terminals_Facilities.facilityId = Facilities.id join Terminals on Terminals_Facilities.terminalId = Terminals.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?facilityname ?description WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n  ?facilities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the names and descriptions of the facilities each terminal has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilityname ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?facilityname ?description WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n  ?facilities p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which facilities are present at all terminals?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?facilityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:facilityName ?facilityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?facilityname WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:facilityName ?facilityname .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the description of the facilities available at each terminal.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?terminals_facilities a :Terminals_Facilities .\n  ?facilities a :Facility .\n  ?terminals_facilities p:hasFacilities ?facilities .\n  ?terminals a :Terminals .\n  ?terminals_facilities p:hasTerminals ?terminals .\n  ?terminals p:name ?name .\n  ?facilities p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacilities ?child ; p:hasTerminals ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Terminals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

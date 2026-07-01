@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hospitals_base
+target		ex:Hospitals/{id} a :Hospitals ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Hospitals`
+
+mappingId	Jobs_base
+target		ex:Jobs/{id} a :Jobs ; p:id {id} ; p:title {title} ; p:description {description} ; p:location {location} ; p:salary {salary} ; p:hospital_id {hospital_id} .
+source		SELECT `id`, `title`, `description`, `location`, `salary`, `hospital_id` FROM `Jobs`
+
+mappingId	Jobs_hospital_id_fk
+target		ex:Jobs/{id} p:hasHospitals ex:Hospitals/{hospital_id} .
+source		SELECT `id`, `hospital_id` FROM `Jobs` WHERE `hospital_id` IS NOT NULL
+
+mappingId	Doctors_base
+target		ex:Doctors/{id} a :Doctors ; p:id {id} ; p:name {name} ; p:specialist_doctor {specialist_doctor} ; p:hospital_id {hospital_id} .
+source		SELECT `id`, `name`, `specialist_doctor`, `hospital_id` FROM `Doctors`
+
+mappingId	Doctors_hospital_id_fk
+target		ex:Doctors/{id} p:hasHospitals ex:Hospitals/{hospital_id} .
+source		SELECT `id`, `hospital_id` FROM `Doctors` WHERE `hospital_id` IS NOT NULL
+
+]]

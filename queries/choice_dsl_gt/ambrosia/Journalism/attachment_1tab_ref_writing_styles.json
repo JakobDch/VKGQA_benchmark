@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_writing_styles",
+  "schema": "amb_attachment_1tab_ref_writing_styles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all short stories and also provide a list of personal essays written by Evelyn O'Connor.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.Title \nFROM WritingStyles JOIN Articles ON WritingStyles.id = Articles.WritingStyleId JOIN Authors ON Articles.AuthorId = Authors.id\nWHERE WritingStyles.StyleName = \"Short Story\" OR WritingStyles.StyleName = \"Personal Essay\" AND Authors.Name = \"Evelyn O'Connor\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?writingstyles a :WritingStyles .\n  ?articles a :Articles .\n  ?articles p:hasWritingStyles ?writingstyles .\n  ?authors a :Authors .\n  ?articles p:hasAuthors ?authors .\n  ?articles p:Title ?title .\n  ?writingstyles p:StyleName ?stylename_w .\n  ?writingstyles p:StyleName ?stylename_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?stylename_w) = \"Short Story\" || (STR(?stylename_w2) = \"Personal Essay\" && STR(?name_w) = \"Evelyn O'Connor\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show short stories and personal essays written by Evelyn O'Connor.",
+      "qtype": "ambig",
+      "sql": "SELECT Articles.Title \nFROM WritingStyles JOIN Articles ON WritingStyles.id = Articles.WritingStyleId JOIN Authors ON Articles.AuthorId = Authors.id\nWHERE (WritingStyles.StyleName = \"Short Story\" OR WritingStyles.StyleName = \"Personal Essay\") AND Authors.Name = \"Evelyn O'Connor\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?writingstyles a :WritingStyles .\n  ?articles a :Articles .\n  ?articles p:hasWritingStyles ?writingstyles .\n  ?authors a :Authors .\n  ?articles p:hasAuthors ?authors .\n  ?articles p:Title ?title .\n  ?writingstyles p:StyleName ?stylename_w .\n  ?writingstyles p:StyleName ?stylename_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?stylename_w) = \"Short Story\" || STR(?stylename_w2) = \"Personal Essay\")) && STR(?name_w) = \"Evelyn O'Connor\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show short stories and personal essays written by Evelyn O'Connor.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?writingstyles a :WritingStyles .\n  ?articles a :Articles .\n  ?articles p:hasWritingStyles ?writingstyles .\n  ?authors a :Authors .\n  ?articles p:hasAuthors ?authors .\n  ?articles p:Title ?title .\n  ?writingstyles p:StyleName ?stylename_w .\n  ?writingstyles p:StyleName ?stylename_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?stylename_w) = \"Short Story\" || (STR(?stylename_w2) = \"Personal Essay\" && STR(?name_w) = \"Evelyn O'Connor\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?writingstyles a :WritingStyles .\n  ?articles a :Articles .\n  ?articles p:hasWritingStyles ?writingstyles .\n  ?authors a :Authors .\n  ?articles p:hasAuthors ?authors .\n  ?articles p:Title ?title .\n  ?writingstyles p:StyleName ?stylename_w .\n  ?writingstyles p:StyleName ?stylename_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?stylename_w) = \"Short Story\" || STR(?stylename_w2) = \"Personal Essay\")) && STR(?name_w) = \"Evelyn O'Connor\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

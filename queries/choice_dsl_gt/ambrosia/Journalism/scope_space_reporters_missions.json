@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_space_reporters_missions",
+  "schema": "amb_scope_space_reporters_missions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the missions each reporter has written about.",
+      "qtype": "ambig",
+      "sql": "SELECT Missions.mission_name  from Space_Reporters_Missions join Missions on Space_Reporters_Missions.mission_id = Missions.mission_id join Space_Reporters on Space_Reporters_Missions.space_reporter_id = Space_Reporters.reporter_id   GROUP BY Space_Reporters_Missions.mission_id HAVING COUNT(DISTINCT Space_Reporters_Missions.space_reporter_id) = (SELECT COUNT(*) FROM  Space_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mission_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMissions ?child ; p:hasSpace_Reporters ?parent . } GROUP BY ?child }\n  ?child p:mission_name ?mission_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Space_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the missions each reporter has written about.",
+      "qtype": "ambig",
+      "sql": "select space_reporters.full_name , missions.mission_name from Space_Reporters_Missions join Missions on Space_Reporters_Missions.mission_id = Missions.mission_id join Space_Reporters on Space_Reporters_Missions.space_reporter_id = Space_Reporters.reporter_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?mission_name WHERE {\n  ?space_reporters_missions a :Space_Reporters_Missions .\n  ?missions a :Missions .\n  ?space_reporters_missions p:hasMissions ?missions .\n  ?space_reporters a :Space_Reporters .\n  ?space_reporters_missions p:hasSpace_Reporters ?space_reporters .\n  ?space_reporters p:name ?full_name .\n  ?missions p:mission_name ?mission_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the missions each reporter has written about.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?mission_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMissions ?child ; p:hasSpace_Reporters ?parent . } GROUP BY ?child }\n  ?child p:mission_name ?mission_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Space_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?full_name ?mission_name WHERE {\n  ?space_reporters_missions a :Space_Reporters_Missions .\n  ?missions a :Missions .\n  ?space_reporters_missions p:hasMissions ?missions .\n  ?space_reporters a :Space_Reporters .\n  ?space_reporters_missions p:hasSpace_Reporters ?space_reporters .\n  ?space_reporters p:name ?full_name .\n  ?missions p:mission_name ?mission_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

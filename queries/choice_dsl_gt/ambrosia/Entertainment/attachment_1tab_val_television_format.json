@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_television_format",
+  "schema": "amb_attachment_1tab_val_television_format",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What cooking shows have an audience score of 7.5 and what reality TV shows have the same score?",
+      "qtype": "unambig",
+      "sql": "SELECT TelevisionShows.Name \nFROM TelevisionShows\nWHERE (TelevisionShows.Genre = \"Cooking Show\" OR TelevisionShows.Genre = \"Reality TV Show\") AND TelevisionShows.Audience_Score = 7.5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:name ?name .\n  ?televisionshows p:Genre ?genre_w .\n  ?televisionshows p:Genre ?genre_w2 .\n  ?televisionshows p:Audience_Score ?audience_score_w .\n  FILTER((((STR(?genre_w) = \"Cooking Show\" || STR(?genre_w2) = \"Reality TV Show\")) && (STR(?audience_score_w) = \"7.5\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all cooking shows and also list reality TV shows with an audience score of 7.5.",
+      "qtype": "unambig",
+      "sql": "SELECT TelevisionShows.Name \nFROM TelevisionShows\nWHERE TelevisionShows.Genre = \"Cooking Show\" OR TelevisionShows.Genre = \"Reality TV Show\" AND TelevisionShows.Audience_Score = 7.5",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:name ?name .\n  ?televisionshows p:Genre ?genre_w .\n  ?televisionshows p:Genre ?genre_w2 .\n  ?televisionshows p:Audience_Score ?audience_score_w .\n  FILTER((STR(?genre_w) = \"Cooking Show\" || (STR(?genre_w2) = \"Reality TV Show\" && (STR(?audience_score_w) = \"7.5\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me cooking shows and reality TV shows with an audience score of 7.5.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:name ?name .\n  ?televisionshows p:Genre ?genre_w .\n  ?televisionshows p:Genre ?genre_w2 .\n  ?televisionshows p:Audience_Score ?audience_score_w .\n  FILTER((((STR(?genre_w) = \"Cooking Show\" || STR(?genre_w2) = \"Reality TV Show\")) && (STR(?audience_score_w) = \"7.5\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?televisionshows a :Tv_Show .\n  ?televisionshows p:name ?name .\n  ?televisionshows p:Genre ?genre_w .\n  ?televisionshows p:Genre ?genre_w2 .\n  ?televisionshows p:Audience_Score ?audience_score_w .\n  FILTER((STR(?genre_w) = \"Cooking Show\" || (STR(?genre_w2) = \"Reality TV Show\" && (STR(?audience_score_w) = \"7.5\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

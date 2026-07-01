@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Home_Inspections_base
+target		ex:Home_Inspections/{id} a :Home_Inspections ; p:id {id} ; p:address {address} ; p:inspection_date {inspection_date} .
+source		SELECT `id`, `address`, `inspection_date` FROM `Home_Inspections`
+
+mappingId	Issues_base
+target		ex:Issues/{id} a :Issues ; p:id {id} ; p:issue_type {issue_type} .
+source		SELECT `id`, `issue_type` FROM `Issues`
+
+mappingId	Home_Inspection_Issues_base
+target		ex:Home_Inspection_Issues/{_amb_rowid} a :Home_Inspection_Issues ; p:home_inspection_id {home_inspection_id} ; p:issue_id {issue_id} .
+source		SELECT `_amb_rowid`, `home_inspection_id`, `issue_id` FROM `Home_Inspection_Issues`
+
+mappingId	Home_Inspection_Issues_issue_id_fk
+target		ex:Home_Inspection_Issues/{_amb_rowid} p:hasIssues ex:Issues/{issue_id} .
+source		SELECT `_amb_rowid`, `issue_id` FROM `Home_Inspection_Issues` WHERE `issue_id` IS NOT NULL
+
+mappingId	Home_Inspection_Issues_home_inspection_id_fk
+target		ex:Home_Inspection_Issues/{_amb_rowid} p:hasHome_Inspections ex:Home_Inspections/{home_inspection_id} .
+source		SELECT `_amb_rowid`, `home_inspection_id` FROM `Home_Inspection_Issues` WHERE `home_inspection_id` IS NOT NULL
+
+]]

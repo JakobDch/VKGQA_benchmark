@@ -1,0 +1,75 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_airports_terminals",
+  "schema": "amb_scope_airports_terminals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which terminal IDs are the same at all airports?",
+      "qtype": "unambig",
+      "sql": "SELECT Terminals.airport_id  from Airports_Terminals join Terminals on Airports_Terminals.terminal_id = Terminals.id join Airports on Terminals.airport_id = Airports.id   GROUP BY Airports_Terminals.terminal_id HAVING COUNT(DISTINCT Airports_Terminals.airport_id) = (SELECT COUNT(*) FROM  Airports)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nSELECT ?aid WHERE {\n  { SELECT ?term (COUNT(DISTINCT ?ap) AS ?nf) WHERE { ?l p:hasTerminals ?term ; p:hasAirports ?ap . } GROUP BY ?term }\n  ?term p:hasAirports ?ta . ?ta p:id ?aid .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each airport, provide the corresponding type of terminals.",
+      "qtype": "unambig",
+      "sql": "select airports.name , terminals.type from Airports_Terminals join Terminals on Airports_Terminals.terminal_id = Terminals.id join Airports on Terminals.airport_id = Airports.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?airports_terminals a :Airports_Terminals .\n  ?terminals a :Terminals .\n  ?airports_terminals p:hasTerminals ?terminals .\n  ?airports a :Airports .\n  ?terminals p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?terminals p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "Which type of terminals is shared across all airports?",
+      "qtype": "unambig",
+      "sql": "SELECT Terminals.type  from Airports_Terminals join Terminals on Airports_Terminals.terminal_id = Terminals.id join Airports on Terminals.airport_id = Airports.id   GROUP BY Airports_Terminals.terminal_id HAVING COUNT(DISTINCT Airports_Terminals.airport_id) = (SELECT COUNT(*) FROM  Airports)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTerminals ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each airport, list IDs of terminals used.",
+      "qtype": "unambig",
+      "sql": "select airports.name , terminals.airport_id from Airports_Terminals join Terminals on Airports_Terminals.terminal_id = Terminals.id join Airports on Terminals.airport_id = Airports.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?airport_id WHERE {\n  ?airports_terminals a :Airports_Terminals .\n  ?terminals a :Terminals .\n  ?airports_terminals p:hasTerminals ?terminals .\n  ?airports a :Airports .\n  ?terminals p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?terminals p:hasAirports ?airport_id_ref .\n  ?airport_id_ref p:id ?airport_id .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me IDs of terminals every airport has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nCHOICE scope {\n  collective: { SELECT ?aid WHERE {\n  { SELECT ?term (COUNT(DISTINCT ?ap) AS ?nf) WHERE { ?l p:hasTerminals ?term ; p:hasAirports ?ap . } GROUP BY ?term }\n  ?term p:hasAirports ?ta . ?ta p:id ?aid .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?airport_id WHERE {\n  ?airports_terminals a :Airports_Terminals .\n  ?terminals a :Terminals .\n  ?airports_terminals p:hasTerminals ?terminals .\n  ?airports a :Airports .\n  ?terminals p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?terminals p:hasAirports ?airport_id_ref .\n  ?airport_id_ref p:id ?airport_id .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which types of terminals are associated with each airport?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?airports_terminals a :Airports_Terminals .\n  ?terminals a :Terminals .\n  ?airports_terminals p:hasTerminals ?terminals .\n  ?airports a :Airports .\n  ?terminals p:hasAirports ?airports .\n  ?airports p:name ?name .\n  ?terminals p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTerminals ?child ; p:hasAirports ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airports } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_design_build_firms_project_types",
+  "schema": "amb_scope_design_build_firms_project_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each firm, give me the corresponding project description.",
+      "qtype": "unambig",
+      "sql": "select design_build_firms.name , project_types.description from Design_Build_Firms_Project_Types join Project_Types on Design_Build_Firms_Project_Types.TypeID = Project_Types.TypeID join Design_Build_Firms on Design_Build_Firms_Project_Types.FirmID = Design_Build_Firms.FirmID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?design_build_firms_project_types a :Design_Build_Firms_Project_Types .\n  ?project_types a :Project_Types .\n  ?design_build_firms_project_types p:hasProject_Types ?project_types .\n  ?design_build_firms a :Design_Build_Firms .\n  ?design_build_firms_project_types p:hasDesign_Build_Firms ?design_build_firms .\n  ?design_build_firms p:name ?name .\n  ?project_types p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What project description is in common for all firms?",
+      "qtype": "unambig",
+      "sql": "SELECT Project_Types.Description  from Design_Build_Firms_Project_Types join Project_Types on Design_Build_Firms_Project_Types.TypeID = Project_Types.TypeID join Design_Build_Firms on Design_Build_Firms_Project_Types.FirmID = Design_Build_Firms.FirmID   GROUP BY Design_Build_Firms_Project_Types.TypeID HAVING COUNT(DISTINCT Design_Build_Firms_Project_Types.FirmID) = (SELECT COUNT(*) FROM  Design_Build_Firms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProject_Types ?child ; p:hasDesign_Build_Firms ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Design_Build_Firms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the project descriptions corresponding to each firm.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?design_build_firms_project_types a :Design_Build_Firms_Project_Types .\n  ?project_types a :Project_Types .\n  ?design_build_firms_project_types p:hasProject_Types ?project_types .\n  ?design_build_firms a :Design_Build_Firms .\n  ?design_build_firms_project_types p:hasDesign_Build_Firms ?design_build_firms .\n  ?design_build_firms p:name ?name .\n  ?project_types p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProject_Types ?child ; p:hasDesign_Build_Firms ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Design_Build_Firms } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

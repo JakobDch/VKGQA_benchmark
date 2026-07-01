@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} ; p:name {fullname} .
+source		SELECT `CustomerID`, `EmailAddress`, `PhoneNumber`, `fullname` FROM `Customers`
+
+mappingId	Hotels_base
+target		ex:Hotels/{HotelID} a :Hotels ; p:HotelID {HotelID} ; p:name {Name} ; p:Address {Address} ; p:City {City} ; p:State {State} ; p:PostalCode {PostalCode} ; p:Country {Country} .
+source		SELECT `HotelID`, `Name`, `Address`, `City`, `State`, `PostalCode`, `Country` FROM `Hotels`
+
+mappingId	Rooms_base
+target		ex:Rooms/{RoomID} a :Rooms ; p:RoomID {RoomID} ; p:HotelID {HotelID} ; p:Number {Number} ; p:Type {Type} ; p:Amenities {Amenities} .
+source		SELECT `RoomID`, `HotelID`, `Number`, `Type`, `Amenities` FROM `Rooms`
+
+mappingId	Rooms_HotelID_fk
+target		ex:Rooms/{RoomID} p:hasHotels ex:Hotels/{HotelID} .
+source		SELECT `RoomID`, `HotelID` FROM `Rooms` WHERE `HotelID` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{ReservationID} a :Reservations ; p:ReservationID {ReservationID} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} ; p:GuestID {GuestID} ; p:TotalCost {TotalCost} ; p:PaymentMethod {PaymentMethod} .
+source		SELECT `ReservationID`, `CheckInDate`, `CheckOutDate`, `GuestID`, `TotalCost`, `PaymentMethod` FROM `Reservations`
+
+mappingId	Reservations_GuestID_fk
+target		ex:Reservations/{ReservationID} p:hasCustomers ex:Customers/{GuestID} .
+source		SELECT `ReservationID`, `GuestID` FROM `Reservations` WHERE `GuestID` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Reviews/{ReviewID} a :Reviews ; p:ReviewID {ReviewID} ; p:CustomerID {CustomerID} ; p:HotelID {HotelID} ; p:Customer_Reviews {Customer_Reviews} ; p:Number_Of_Stars {Number_Of_Stars} ; p:Date_Of_Review {Date_Of_Review} .
+source		SELECT `ReviewID`, `CustomerID`, `HotelID`, `Customer_Reviews`, `Number_Of_Stars`, `Date_Of_Review` FROM `Reviews`
+
+mappingId	Reviews_HotelID_fk
+target		ex:Reviews/{ReviewID} p:hasHotels ex:Hotels/{HotelID} .
+source		SELECT `ReviewID`, `HotelID` FROM `Reviews` WHERE `HotelID` IS NOT NULL
+
+mappingId	Reviews_CustomerID_fk
+target		ex:Reviews/{ReviewID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `ReviewID`, `CustomerID` FROM `Reviews` WHERE `CustomerID` IS NOT NULL
+
+]]

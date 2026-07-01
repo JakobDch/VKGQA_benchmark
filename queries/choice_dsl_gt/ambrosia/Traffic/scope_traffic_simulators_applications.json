@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_traffic_simulators_applications",
+  "schema": "amb_scope_traffic_simulators_applications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every traffic simulator, list the applications used.",
+      "qtype": "unambig",
+      "sql": "select traffic_simulators.simulator_name , applications.application_name from Traffic_Simulators join Traffic_Simulators_Applications on Traffic_Simulators.simulator_id = Traffic_Simulators_Applications.traffic_simulator_id join Applications on Traffic_Simulators_Applications.application_id = Applications.application_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nSELECT ?sn ?an WHERE { ?l p:hasTraffic_Simulators ?s ; p:hasApplications ?a . ?s p:name ?sn . ?a p:name ?an . }",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What applications are common to all traffic simulators?",
+      "qtype": "unambig",
+      "sql": "SELECT Applications.application_name  from Traffic_Simulators join Traffic_Simulators_Applications on Traffic_Simulators.simulator_id = Traffic_Simulators_Applications.traffic_simulator_id join Applications on Traffic_Simulators_Applications.application_id = Applications.application_id   GROUP BY Traffic_Simulators_Applications.application_id HAVING COUNT(DISTINCT Traffic_Simulators_Applications.traffic_simulator_id) = (SELECT COUNT(*) FROM  Traffic_Simulators)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?application_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasApplications ?child ; p:hasTraffic_Simulators ?parent . } GROUP BY ?child }\n  ?child p:name ?application_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Simulators } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the applications each traffic simulator uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nCHOICE scope {\n  distributive: { SELECT ?sn ?an WHERE { ?l p:hasTraffic_Simulators ?s ; p:hasApplications ?a . ?s p:name ?sn . ?a p:name ?an . } }\n  collective: { SELECT ?application_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasApplications ?child ; p:hasTraffic_Simulators ?parent . } GROUP BY ?child }\n  ?child p:name ?application_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Simulators } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

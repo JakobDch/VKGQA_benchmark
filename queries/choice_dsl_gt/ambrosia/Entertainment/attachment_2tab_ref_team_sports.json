@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_team_sports",
+  "schema": "amb_attachment_2tab_ref_team_sports",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all football players and a list of all intermediate-level rugby players.",
+      "qtype": "unambig",
+      "sql": "SELECT Football_Players.PlayerName\nFROM Fitness_Level JOIN Football_Players ON Fitness_Level.ID = Football_Players.Fitness_ID\nUNION\nSELECT Rugby_Players.PlayerName\nFROM Fitness_Level JOIN Rugby_Players ON Fitness_Level.ID = Rugby_Players.Fitness_ID\nWHERE Fitness_Level.Level = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?fitness_level a :Fitness_Level .\n    ?football_players a :Football_Players .\n    ?football_players p:hasFitness_Level ?fitness_level .\n    ?football_players p:PlayerName ?playername .\n    BIND(?playername AS ?o0)\n  }\n  UNION\n  {\n    ?fitness_level a :Fitness_Level .\n    ?rugby_players a :Rugby_Players .\n    ?rugby_players p:hasFitness_Level ?fitness_level .\n    ?rugby_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "What are the football players with an intermediate fitness level and the rugby players with an intermediate fitness level?",
+      "qtype": "unambig",
+      "sql": "SELECT Football_Players.PlayerName\nFROM Fitness_Level JOIN Football_Players ON Fitness_Level.ID = Football_Players.Fitness_ID\nWHERE Fitness_Level.Level = \"Intermediate\"\nUNION\nSELECT Rugby_Players.PlayerName\nFROM Fitness_Level JOIN Rugby_Players ON Fitness_Level.ID = Rugby_Players.Fitness_ID\nWHERE Fitness_Level.Level = \"Intermediate\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?fitness_level a :Fitness_Level .\n    ?football_players a :Football_Players .\n    ?football_players p:hasFitness_Level ?fitness_level .\n    ?football_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n  UNION\n  {\n    ?fitness_level a :Fitness_Level .\n    ?rugby_players a :Rugby_Players .\n    ?rugby_players p:hasFitness_Level ?fitness_level .\n    ?rugby_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide football players and rugby players with an intermediate fitness level.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?fitness_level a :Fitness_Level .\n    ?football_players a :Football_Players .\n    ?football_players p:hasFitness_Level ?fitness_level .\n    ?football_players p:PlayerName ?playername .\n    BIND(?playername AS ?o0)\n  }\n  UNION\n  {\n    ?fitness_level a :Fitness_Level .\n    ?rugby_players a :Rugby_Players .\n    ?rugby_players p:hasFitness_Level ?fitness_level .\n    ?rugby_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?fitness_level a :Fitness_Level .\n    ?football_players a :Football_Players .\n    ?football_players p:hasFitness_Level ?fitness_level .\n    ?football_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n  UNION\n  {\n    ?fitness_level a :Fitness_Level .\n    ?rugby_players a :Rugby_Players .\n    ?rugby_players p:hasFitness_Level ?fitness_level .\n    ?rugby_players p:PlayerName ?playername .\n    ?fitness_level p:Level ?level_f .\n    FILTER(STR(?level_f) = \"Intermediate\")\n    BIND(?playername AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

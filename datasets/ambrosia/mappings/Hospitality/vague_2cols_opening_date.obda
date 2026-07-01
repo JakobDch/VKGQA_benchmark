@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hotels_base
+target		ex:Hotels/{HotelID} a :Hotels ; p:HotelID {HotelID} ; p:Opening_Year {Opening_Year} ; p:Opening_Month {Opening_Month} ; p:name {Name} ; p:Address {Address} ; p:City {City} ; p:Country {Country} .
+source		SELECT `HotelID`, `Opening_Year`, `Opening_Month`, `Name`, `Address`, `City`, `Country` FROM `Hotels`
+
+mappingId	Rooms_base
+target		ex:Rooms/{RoomID} a :Rooms ; p:RoomID {RoomID} ; p:HotelID {HotelID} ; p:Type {Type} ; p:Capacity {Capacity} ; p:Rate {Rate} .
+source		SELECT `RoomID`, `HotelID`, `Type`, `Capacity`, `Rate` FROM `Rooms`
+
+mappingId	Rooms_HotelID_fk
+target		ex:Rooms/{RoomID} p:hasHotels ex:Hotels/{HotelID} .
+source		SELECT `RoomID`, `HotelID` FROM `Rooms` WHERE `HotelID` IS NOT NULL
+
+mappingId	Bookings_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:GuestID {GuestID} ; p:RoomID {RoomID} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} ; p:TotalCost {TotalCost} .
+source		SELECT `BookingID`, `GuestID`, `RoomID`, `CheckInDate`, `CheckOutDate`, `TotalCost` FROM `Bookings`
+
+mappingId	Bookings_RoomID_fk
+target		ex:Bookings/{BookingID} p:hasRooms ex:Rooms/{RoomID} .
+source		SELECT `BookingID`, `RoomID` FROM `Bookings` WHERE `RoomID` IS NOT NULL
+
+mappingId	Bookings_GuestID_fk
+target		ex:Bookings/{BookingID} p:hasGuests ex:Guests/{GuestID} .
+source		SELECT `BookingID`, `GuestID` FROM `Bookings` WHERE `GuestID` IS NOT NULL
+
+mappingId	Guests_base
+target		ex:Guests/{GuestID} a :Guests ; p:GuestID {GuestID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `GuestID`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Guests`
+
+mappingId	StaffMembers_base
+target		ex:Staff/{StaffMemberID} a :Staff ; p:StaffMemberID {StaffMemberID} ; p:name {FullName} ; p:Position {Position} ; p:Department {Department} ; p:HireDate {HireDate} .
+source		SELECT `StaffMemberID`, `FullName`, `Position`, `Department`, `HireDate` FROM `StaffMembers`
+
+mappingId	Services_base
+target		ex:Services/{ServiceID} a :Services ; p:ServiceID {ServiceID} ; p:Description {Description} ; p:Cost {Cost} ; p:Available {Available} .
+source		SELECT `ServiceID`, `Description`, `Cost`, `Available` FROM `Services`
+
+]]

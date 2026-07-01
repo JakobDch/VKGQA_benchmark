@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	MovieActor_base
+target		ex:MovieActor/{ActorID} a :MovieActor ; p:ActorID {ActorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} .
+source		SELECT `ActorID`, `FirstName`, `LastName`, `DateOfBirth`, `Nationality` FROM `MovieActor`
+
+mappingId	MusicPerformer_base
+target		ex:MusicPerformer/{PerformerID} a :MusicPerformer ; p:PerformerID {PerformerID} ; p:name {Name} ; p:Genre {Genre} ; p:YearsInIndustry {YearsInIndustry} ; p:MusicPerformerType {MusicPerformerType} .
+source		SELECT `PerformerID`, `Name`, `Genre`, `YearsInIndustry`, `MusicPerformerType` FROM `MusicPerformer`
+
+mappingId	Album_base
+target		ex:Album/{AlbumID} a :Album ; p:AlbumID {AlbumID} ; p:Title {Title} ; p:ReleaseDate {ReleaseDate} ; p:PerformerID {PerformerID} .
+source		SELECT `AlbumID`, `Title`, `ReleaseDate`, `PerformerID` FROM `Album`
+
+mappingId	Album_PerformerID_fk
+target		ex:Album/{AlbumID} p:hasMusicPerformer ex:MusicPerformer/{PerformerID} .
+source		SELECT `AlbumID`, `PerformerID` FROM `Album` WHERE `PerformerID` IS NOT NULL
+
+mappingId	Song_base
+target		ex:Song/{SongID} a :Song ; p:SongID {SongID} ; p:Title {Title} ; p:Length {Length} ; p:AlbumID {AlbumID} .
+source		SELECT `SongID`, `Title`, `Length`, `AlbumID` FROM `Song`
+
+mappingId	Song_AlbumID_fk
+target		ex:Song/{SongID} p:hasAlbum ex:Album/{AlbumID} .
+source		SELECT `SongID`, `AlbumID` FROM `Song` WHERE `AlbumID` IS NOT NULL
+
+]]

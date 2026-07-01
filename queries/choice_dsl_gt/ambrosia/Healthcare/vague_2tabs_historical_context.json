@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2tabs_historical_context",
+  "schema": "amb_vague_2tabs_historical_context",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each facility, list all their employee names, positions and its past owner(s).",
+      "qtype": "unambig",
+      "sql": "SELECT \n    Employees.employee_name, \n    Employees.position, \n    Past_Owners.owner_name, Past_Owners.acquisition_year\nFROM \n    Employees\nJOIN \n    Healthcare_Facilities ON Employees.healthcare_facility_id =Healthcare_Facilities.id JOIN Past_Owners ON  Healthcare_Facilities.Past_Owner_id = Past_Owners.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?employee_name ?position ?owner_name ?acquisition_year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?past_owners a :Past_Owners .\n  ?healthcare_facilities p:hasPast_Owners ?past_owners .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?past_owners p:owner_name ?owner_name .\n  ?past_owners p:acquisition_year ?acquisition_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "List the name and founding year of each healthcare facility",
+      "qtype": "unambig",
+      "sql": "SELECT hf.name , hc.year\nFROM Healthcare_Facilities hf\nJOIN Founding_Year hc ON hf.founding_id = hc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Founding_Year .\n  ?hf p:hasFounding_Year ?hc .\n  ?hf p:name ?name .\n  ?hc p:year ?year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "For each facility, list all their employee names, positions and its founding year.",
+      "qtype": "unambig",
+      "sql": "SELECT \n    Employees.employee_name, \n    Employees.position, \n    Founding_Year.year\nFROM \n    Employees\nJOIN \n Healthcare_Facilities ON Employees.healthcare_facility_id =Healthcare_Facilities.id JOIN Founding_Year ON  Healthcare_Facilities.founding_id = Founding_Year.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?employee_name ?position ?year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?founding_year a :Founding_Year .\n  ?healthcare_facilities p:hasFounding_Year ?founding_year .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?founding_year p:year ?year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "show me all the employee names, position and historical context",
+      "qtype": "ambig",
+      "sql": "SELECT \n    Employees.employee_name, \n    Employees.position, \n    Founding_Year.year,   Past_Owners.owner_name, Past_Owners.acquisition_year\nFROM \n    Employees\nJOIN \n    Healthcare_Facilities ON Employees.healthcare_facility_id =Healthcare_Facilities.id JOIN Founding_Year ON  Healthcare_Facilities.founding_id = Founding_Year.id JOIN Past_Owners ON  Healthcare_Facilities.Past_Owner_id = Past_Owners.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?employee_name ?position ?year ?owner_name ?acquisition_year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?founding_year a :Founding_Year .\n  ?healthcare_facilities p:hasFounding_Year ?founding_year .\n  ?past_owners a :Past_Owners .\n  ?healthcare_facilities p:hasPast_Owners ?past_owners .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?founding_year p:year ?year .\n  ?past_owners p:owner_name ?owner_name .\n  ?past_owners p:acquisition_year ?acquisition_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "List the name, founding year and past owner of each healthcare facility",
+      "qtype": "unambig",
+      "sql": "SELECT hf.name , hc.year,   po.owner_name, po.acquisition_year \nFROM Healthcare_Facilities hf\nJOIN Founding_Year hc ON hf.founding_id = hc.id JOIN Past_Owners po ON hf.past_owner_id = po.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?year ?owner_name ?acquisition_year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Founding_Year .\n  ?hf p:hasFounding_Year ?hc .\n  ?po a :Past_Owners .\n  ?hf p:hasPast_Owners ?po .\n  ?hf p:name ?name .\n  ?hc p:year ?year .\n  ?po p:owner_name ?owner_name .\n  ?po p:acquisition_year ?acquisition_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "List the name and past owner of each healthcare facility",
+      "qtype": "unambig",
+      "sql": "SELECT hf.name , hc.owner_name, hc.acquisition_year\nFROM Healthcare_Facilities hf\nJOIN Past_Owners hc ON hf.past_owner_id = hc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?owner_name ?acquisition_year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Past_Owners .\n  ?hf p:hasPast_Owners ?hc .\n  ?hf p:name ?name .\n  ?hc p:owner_name ?owner_name .\n  ?hc p:acquisition_year ?acquisition_year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me all the employee names, position and historical context",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?employee_name ?position ?owner_name ?acquisition_year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?past_owners a :Past_Owners .\n  ?healthcare_facilities p:hasPast_Owners ?past_owners .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?past_owners p:owner_name ?owner_name .\n  ?past_owners p:acquisition_year ?acquisition_year .\n} }\n  component_2: { SELECT ?employee_name ?position ?year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?founding_year a :Founding_Year .\n  ?healthcare_facilities p:hasFounding_Year ?founding_year .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?founding_year p:year ?year .\n} }\n  full: { SELECT ?employee_name ?position ?year ?owner_name ?acquisition_year WHERE {\n  ?employees a :Employees .\n  ?healthcare_facilities a :Healthcare_Facilities .\n  ?employees p:hasHealthcare_Facilities ?healthcare_facilities .\n  ?founding_year a :Founding_Year .\n  ?healthcare_facilities p:hasFounding_Year ?founding_year .\n  ?past_owners a :Past_Owners .\n  ?healthcare_facilities p:hasPast_Owners ?past_owners .\n  ?employees p:employee_name ?employee_name .\n  ?employees p:position ?position .\n  ?founding_year p:year ?year .\n  ?past_owners p:owner_name ?owner_name .\n  ?past_owners p:acquisition_year ?acquisition_year .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "show the name and historical context of each healthcare facility",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Founding_Year .\n  ?hf p:hasFounding_Year ?hc .\n  ?hf p:name ?name .\n  ?hc p:year ?year .\n} }\n  full: { SELECT ?name ?year ?owner_name ?acquisition_year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Founding_Year .\n  ?hf p:hasFounding_Year ?hc .\n  ?po a :Past_Owners .\n  ?hf p:hasPast_Owners ?po .\n  ?hf p:name ?name .\n  ?hc p:year ?year .\n  ?po p:owner_name ?owner_name .\n  ?po p:acquisition_year ?acquisition_year .\n} }\n  component_2: { SELECT ?name ?owner_name ?acquisition_year WHERE {\n  ?hf a :Healthcare_Facilities .\n  ?hc a :Past_Owners .\n  ?hf p:hasPast_Owners ?hc .\n  ?hf p:name ?name .\n  ?hc p:owner_name ?owner_name .\n  ?hc p:acquisition_year ?acquisition_year .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

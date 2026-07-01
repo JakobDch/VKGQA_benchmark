@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_visual_art_professions",
+  "schema": "amb_attachment_1tab_ref_visual_art_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which photographers have a pricing of 700 and which videographers have the same pricing?",
+      "qtype": "unambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings JOIN Pricing ON JobPostings.pricingID = Pricing.pricingID\nWHERE (JobPostings.visualArtProfession = \"Photographer\" OR JobPostings.visualArtProfession = \"Videographer\") AND Pricing.price = 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?pricing a :Pricing .\n  ?jobpostings p:hasPricing ?pricing .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w2 .\n  ?pricing p:price ?price_w .\n  FILTER((((STR(?visualartprofession_w) = \"Photographer\" || STR(?visualartprofession_w2) = \"Videographer\")) && (STR(?price_w) = \"700\" || STR(?price_w) = \"700.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all photographers and also provide a list of videographers with a pricing of 700.",
+      "qtype": "unambig",
+      "sql": "SELECT JobPostings.title \nFROM JobPostings JOIN Pricing ON JobPostings.pricingID = Pricing.pricingID\nWHERE JobPostings.visualArtProfession = \"Photographer\" OR JobPostings.visualArtProfession = \"Videographer\" AND Pricing.price = 700",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?pricing a :Pricing .\n  ?jobpostings p:hasPricing ?pricing .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w2 .\n  ?pricing p:price ?price_w .\n  FILTER((STR(?visualartprofession_w) = \"Photographer\" || (STR(?visualartprofession_w2) = \"Videographer\" && (STR(?price_w) = \"700\" || STR(?price_w) = \"700.0\"))))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show photographers and videographers with a pricing of 700.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?pricing a :Pricing .\n  ?jobpostings p:hasPricing ?pricing .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w2 .\n  ?pricing p:price ?price_w .\n  FILTER((((STR(?visualartprofession_w) = \"Photographer\" || STR(?visualartprofession_w2) = \"Videographer\")) && (STR(?price_w) = \"700\" || STR(?price_w) = \"700.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?jobpostings a :JobPostings .\n  ?pricing a :Pricing .\n  ?jobpostings p:hasPricing ?pricing .\n  ?jobpostings p:title ?title .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w .\n  ?jobpostings p:visualArtProfession ?visualartprofession_w2 .\n  ?pricing p:price ?price_w .\n  FILTER((STR(?visualartprofession_w) = \"Photographer\" || (STR(?visualartprofession_w2) = \"Videographer\" && (STR(?price_w) = \"700\" || STR(?price_w) = \"700.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

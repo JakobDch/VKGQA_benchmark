@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	War_Correspondents_base
+target		ex:War_Correspondents/{id} a :War_Correspondents ; p:id {id} ; p:name {name} ; p:organization {organization} .
+source		SELECT `id`, `name`, `organization` FROM `War_Correspondents`
+
+mappingId	Locations_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:locationName {locationName} .
+source		SELECT `id`, `locationName` FROM `Locations`
+
+mappingId	War_Correspondents_Locations_base
+target		ex:War_Correspondents_Locations/{_amb_rowid} a :War_Correspondents_Locations ; p:warCorrespondentId {warCorrespondentId} ; p:locationId {locationId} ; p:assignmentDate {assignmentDate} .
+source		SELECT `_amb_rowid`, `warCorrespondentId`, `locationId`, `assignmentDate` FROM `War_Correspondents_Locations`
+
+mappingId	War_Correspondents_Locations_locationId_fk
+target		ex:War_Correspondents_Locations/{_amb_rowid} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `_amb_rowid`, `locationId` FROM `War_Correspondents_Locations` WHERE `locationId` IS NOT NULL
+
+mappingId	War_Correspondents_Locations_warCorrespondentId_fk
+target		ex:War_Correspondents_Locations/{_amb_rowid} p:hasWar_Correspondents ex:War_Correspondents/{warCorrespondentId} .
+source		SELECT `_amb_rowid`, `warCorrespondentId` FROM `War_Correspondents_Locations` WHERE `warCorrespondentId` IS NOT NULL
+
+]]

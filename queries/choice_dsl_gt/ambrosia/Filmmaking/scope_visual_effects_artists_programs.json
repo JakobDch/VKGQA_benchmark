@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_visual_effects_artists_programs",
+  "schema": "amb_scope_visual_effects_artists_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What program do all visual effects artists have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.name  from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id   GROUP BY Visual_Effects_Artists_Programs.program_id HAVING COUNT(DISTINCT Visual_Effects_Artists_Programs.visual_effects_artist_id) = (SELECT COUNT(*) FROM  Visual_Effects_Artists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What information is there about programs including their versions that are popular among all visual effects artists?",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.name, Programs.version  from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id   GROUP BY Visual_Effects_Artists_Programs.program_id HAVING COUNT(DISTINCT Visual_Effects_Artists_Programs.visual_effects_artist_id) = (SELECT COUNT(*) FROM  Visual_Effects_Artists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Tell me the programs every visual effects artist uses and their versions.",
+      "qtype": "ambig",
+      "sql": "select visual_effects_artists.name , programs.name , programs.version from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?version WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:name ?name2 .\n  ?programs p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 3,
+      "question": "What is the version of program common for all visual effects artists?",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.version  from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id   GROUP BY Visual_Effects_Artists_Programs.program_id HAVING COUNT(DISTINCT Visual_Effects_Artists_Programs.visual_effects_artist_id) = (SELECT COUNT(*) FROM  Visual_Effects_Artists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the versions of programs associated with each visual effects artists?",
+      "qtype": "ambig",
+      "sql": "select visual_effects_artists.name , programs.version from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?version WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 5,
+      "question": "What visual effects artists are there and what programs do they use?",
+      "qtype": "unambig",
+      "sql": "select visual_effects_artists.name , programs.name from Visual_Effects_Artists_Programs join Programs on Visual_Effects_Artists_Programs.program_id = Programs.program_id join Visual_Effects_Artists on Visual_Effects_Artists_Programs.visual_effects_artist_id = Visual_Effects_Artists.artist_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What program does each visual effects artist have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:name ?name2 .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the programs every visual effects artist uses and their versions.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 ?version WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:name ?name2 .\n  ?programs p:version ?version .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the versions of programs associated with each visual effects artists?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasVisual_Effects_Artists ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Visual_Effects_Artists } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?version WHERE {\n  ?visual_effects_artists_programs a :Visual_Effects_Artists_Programs .\n  ?programs a :Programs .\n  ?visual_effects_artists_programs p:hasPrograms ?programs .\n  ?visual_effects_artists a :Visual_Effects_Artists .\n  ?visual_effects_artists_programs p:hasVisual_Effects_Artists ?visual_effects_artists .\n  ?visual_effects_artists p:name ?name .\n  ?programs p:version ?version .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

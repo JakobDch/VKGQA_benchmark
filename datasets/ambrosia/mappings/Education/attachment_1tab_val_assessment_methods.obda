@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Age` FROM `Students`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:Title {Title} ; p:Department {Department} .
+source		SELECT `CourseID`, `Title`, `Department` FROM `Courses`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Semester {Semester} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Semester` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Scores_base
+target		ex:Scores/{ScoreID} a :Scores ; p:ScoreID {ScoreID} ; p:EnrollmentID {EnrollmentID} ; p:AssessmentID {AssessmentID} ; p:Score {Score} .
+source		SELECT `ScoreID`, `EnrollmentID`, `AssessmentID`, `Score` FROM `Scores`
+
+mappingId	Scores_AssessmentID_fk
+target		ex:Scores/{ScoreID} p:hasAssessments ex:Assessments/{AssessmentID} .
+source		SELECT `ScoreID`, `AssessmentID` FROM `Scores` WHERE `AssessmentID` IS NOT NULL
+
+mappingId	Scores_EnrollmentID_fk
+target		ex:Scores/{ScoreID} p:hasEnrollments ex:Enrollments/{EnrollmentID} .
+source		SELECT `ScoreID`, `EnrollmentID` FROM `Scores` WHERE `EnrollmentID` IS NOT NULL
+
+mappingId	Grades_base
+target		ex:Grades/{GradeID} a :Grades ; p:GradeID {GradeID} ; p:EnrollmentID {EnrollmentID} ; p:FinalGrade {FinalGrade} .
+source		SELECT `GradeID`, `EnrollmentID`, `FinalGrade` FROM `Grades`
+
+mappingId	Grades_EnrollmentID_fk
+target		ex:Grades/{GradeID} p:hasEnrollments ex:Enrollments/{EnrollmentID} .
+source		SELECT `GradeID`, `EnrollmentID` FROM `Grades` WHERE `EnrollmentID` IS NOT NULL
+
+mappingId	Assessments_base
+target		ex:Assessments/{AssessmentID} a :Assessments ; p:AssessmentID {AssessmentID} ; p:AssessmentMethod {AssessmentMethod} ; p:Assessor {Assessor} ; p:TotalMarks {TotalMarks} ; p:PassingMark {PassingMark} ; p:DateOfAssessment {DateOfAssessment} .
+source		SELECT `AssessmentID`, `AssessmentMethod`, `Assessor`, `TotalMarks`, `PassingMark`, `DateOfAssessment` FROM `Assessments`
+
+]]

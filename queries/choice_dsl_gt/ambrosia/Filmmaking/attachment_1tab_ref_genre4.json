@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_genre4",
+  "schema": "amb_attachment_1tab_ref_genre4",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What sci-fi films were filmed in New Zealand and what fantasy films were filmed in the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Films.title \nFROM Genres JOIN Films ON Genres.id = Films.genreId\nWHERE (Genres.genreName = \"Sci-Fi\" OR Genres.genreName = \"Fantasy\") AND Films.filmingLocation = \"New Zealand\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?films a :Films .\n  ?films p:hasGenres ?genres .\n  ?films p:title ?title .\n  ?genres p:genreName ?genrename_w .\n  ?genres p:genreName ?genrename_w2 .\n  ?films p:filmingLocation ?filminglocation_w .\n  FILTER((((STR(?genrename_w) = \"Sci-Fi\" || STR(?genrename_w2) = \"Fantasy\")) && STR(?filminglocation_w) = \"New Zealand\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show sci-fi films and fantasy films filmed in New Zealand.",
+      "qtype": "ambig",
+      "sql": "SELECT Films.title \nFROM Genres JOIN Films ON Genres.id = Films.genreId\nWHERE Genres.genreName = \"Sci-Fi\" OR Genres.genreName = \"Fantasy\" AND Films.filmingLocation = \"New Zealand\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?films a :Films .\n  ?films p:hasGenres ?genres .\n  ?films p:title ?title .\n  ?genres p:genreName ?genrename_w .\n  ?genres p:genreName ?genrename_w2 .\n  ?films p:filmingLocation ?filminglocation_w .\n  FILTER((STR(?genrename_w) = \"Sci-Fi\" || (STR(?genrename_w2) = \"Fantasy\" && STR(?filminglocation_w) = \"New Zealand\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show sci-fi films and fantasy films filmed in New Zealand.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?films a :Films .\n  ?films p:hasGenres ?genres .\n  ?films p:title ?title .\n  ?genres p:genreName ?genrename_w .\n  ?genres p:genreName ?genrename_w2 .\n  ?films p:filmingLocation ?filminglocation_w .\n  FILTER((((STR(?genrename_w) = \"Sci-Fi\" || STR(?genrename_w2) = \"Fantasy\")) && STR(?filminglocation_w) = \"New Zealand\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?films a :Films .\n  ?films p:hasGenres ?genres .\n  ?films p:title ?title .\n  ?genres p:genreName ?genrename_w .\n  ?genres p:genreName ?genrename_w2 .\n  ?films p:filmingLocation ?filminglocation_w .\n  FILTER((STR(?genrename_w) = \"Sci-Fi\" || (STR(?genrename_w2) = \"Fantasy\" && STR(?filminglocation_w) = \"New Zealand\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

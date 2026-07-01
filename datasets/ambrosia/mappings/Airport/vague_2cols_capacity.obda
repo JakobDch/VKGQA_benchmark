@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flight_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:Destination {Destination} .
+source		SELECT `FlightID`, `DepartureTime`, `Destination` FROM `Flight`
+
+mappingId	Airline_base
+target		ex:Airlines/{CompanyName} a :Airlines ; p:CompanyName {CompanyName} ; p:Headquarters {Headquarters} ; p:NumberofEmployees {NumberofEmployees} .
+source		SELECT `CompanyName`, `Headquarters`, `NumberofEmployees` FROM `Airline`
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:name {Name} ; p:Age {Age} .
+source		SELECT `PassengerID`, `Name`, `Age` FROM `Passengers`
+
+mappingId	AirlinesAndFlights_base
+target		ex:AirlinesAndFlights/{AirlinesID}/{FlightsID} a :AirlinesAndFlights ; p:AirlinesID {AirlinesID} ; p:FlightsID {FlightsID} .
+source		SELECT `AirlinesID`, `FlightsID` FROM `AirlinesAndFlights`
+
+mappingId	AirlinesAndFlights_FlightsID_fk
+target		ex:AirlinesAndFlights/{AirlinesID}/{FlightsID} p:hasFlights ex:Flights/{FlightsID} .
+source		SELECT `AirlinesID`, `FlightsID` FROM `AirlinesAndFlights` WHERE `FlightsID` IS NOT NULL
+
+mappingId	AirlinesAndFlights_AirlinesID_fk
+target		ex:AirlinesAndFlights/{AirlinesID}/{FlightsID} p:hasAirlines ex:Airlines/{AirlinesID} .
+source		SELECT `AirlinesID`, `FlightsID` FROM `AirlinesAndFlights` WHERE `AirlinesID` IS NOT NULL
+
+mappingId	Airports_base
+target		ex:Airports/{AirportID} a :Airports ; p:AirportID {AirportID} ; p:City {City} ; p:Country {Country} .
+source		SELECT `AirportID`, `City`, `Country` FROM `Airports`
+
+mappingId	AirportDetails_base
+target		ex:AirportDetails/{_amb_rowid} a :AirportDetails ; p:AirportID {AirportID} ; p:Passenger_Throughput {Passenger_Throughput} ; p:Number_Of_Aircrafts {Number_Of_Aircrafts} ; p:Latitude {Latitude} ; p:Longitude {Longitude} .
+source		SELECT `_amb_rowid`, `AirportID`, `Passenger_Throughput`, `Number_Of_Aircrafts`, `Latitude`, `Longitude` FROM `AirportDetails`
+
+mappingId	AirportDetails_AirportID_fk
+target		ex:AirportDetails/{_amb_rowid} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `_amb_rowid`, `AirportID` FROM `AirportDetails` WHERE `AirportID` IS NOT NULL
+
+mappingId	AirportDetails_AirportID_fk
+target		ex:AirportDetails/{_amb_rowid} p:hasAirports ex:Airports/{AirportID} .
+source		SELECT `_amb_rowid`, `AirportID` FROM `AirportDetails` WHERE `AirportID` IS NOT NULL
+
+]]

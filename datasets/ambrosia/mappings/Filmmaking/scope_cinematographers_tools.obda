@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Cinematographers_base
+target		ex:Cinematographers/{id} a :Cinematographers ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `id`, `name`, `birthdate` FROM `Cinematographers`
+
+mappingId	Tools_base
+target		ex:Tools/{id} a :Tools ; p:id {id} ; p:toolName {toolName} .
+source		SELECT `id`, `toolName` FROM `Tools`
+
+mappingId	Cinematographers_Tools_base
+target		ex:Cinematographers_Tools/{cinematographerId}/{toolId} a :Cinematographers_Tools ; p:cinematographerId {cinematographerId} ; p:toolId {toolId} .
+source		SELECT `cinematographerId`, `toolId` FROM `Cinematographers_Tools`
+
+mappingId	Cinematographers_Tools_toolId_fk
+target		ex:Cinematographers_Tools/{cinematographerId}/{toolId} p:hasTools ex:Tools/{toolId} .
+source		SELECT `cinematographerId`, `toolId` FROM `Cinematographers_Tools` WHERE `toolId` IS NOT NULL
+
+mappingId	Cinematographers_Tools_cinematographerId_fk
+target		ex:Cinematographers_Tools/{cinematographerId}/{toolId} p:hasCinematographers ex:Cinematographers/{cinematographerId} .
+source		SELECT `cinematographerId`, `toolId` FROM `Cinematographers_Tools` WHERE `cinematographerId` IS NOT NULL
+
+]]

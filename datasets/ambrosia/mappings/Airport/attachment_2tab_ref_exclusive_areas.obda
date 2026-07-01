@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{airportID} a :Airports ; p:airportID {airportID} ; p:name {name} ; p:city {city} ; p:country {country} .
+source		SELECT `airportID`, `name`, `city`, `country` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{airlineID} a :Airlines ; p:airlineID {airlineID} ; p:name {name} ; p:headquarters {headquarters} .
+source		SELECT `airlineID`, `name`, `headquarters` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{flightID} a :Flights ; p:flightID {flightID} ; p:originAirport {originAirport} ; p:destinationAirport {destinationAirport} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:airlineID {airlineID} .
+source		SELECT `flightID`, `originAirport`, `destinationAirport`, `departureTime`, `arrivalTime`, `airlineID` FROM `Flights`
+
+mappingId	Flights_airlineID_fk
+target		ex:Flights/{flightID} p:hasAirlines ex:Airlines/{airlineID} .
+source		SELECT `flightID`, `airlineID` FROM `Flights` WHERE `airlineID` IS NOT NULL
+
+mappingId	Flights_destinationAirport_fk
+target		ex:Flights/{flightID} p:hasAirports_destinationAirport ex:Airports/{destinationAirport} .
+source		SELECT `flightID`, `destinationAirport` FROM `Flights` WHERE `destinationAirport` IS NOT NULL
+
+mappingId	Flights_originAirport_fk
+target		ex:Flights/{flightID} p:hasAirports_originAirport ex:Airports/{originAirport} .
+source		SELECT `flightID`, `originAirport` FROM `Flights` WHERE `originAirport` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{passengerID} a :Passengers ; p:passengerID {passengerID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:frequentFlyerNumber {frequentFlyerNumber} ; p:vipStatus {vipStatus} .
+source		SELECT `passengerID`, `firstName`, `lastName`, `frequentFlyerNumber`, `vipStatus` FROM `Passengers`
+
+mappingId	Amenities_base
+target		ex:Amenity/{amenityID} a :Amenity ; p:amenityID {amenityID} ; p:description {description} ; p:availableInFrequentFlyerLounge {availableInFrequentFlyerLounge} ; p:availableInVIPLounge {availableInVIPLounge} .
+source		SELECT `amenityID`, `description`, `availableInFrequentFlyerLounge`, `availableInVIPLounge` FROM `Amenities`
+
+mappingId	VIPLounges_base
+target		ex:VIPLounges/{loungeID} a :VIPLounges ; p:loungeID {loungeID} ; p:airportID {airportID} ; p:amenityID {amenityID} ; p:capacity {capacity} .
+source		SELECT `loungeID`, `airportID`, `amenityID`, `capacity` FROM `VIPLounges`
+
+mappingId	VIPLounges_amenityID_fk
+target		ex:VIPLounges/{loungeID} p:hasAmenity ex:Amenity/{amenityID} .
+source		SELECT `loungeID`, `amenityID` FROM `VIPLounges` WHERE `amenityID` IS NOT NULL
+
+mappingId	VIPLounges_airportID_fk
+target		ex:VIPLounges/{loungeID} p:hasAirports ex:Airports/{airportID} .
+source		SELECT `loungeID`, `airportID` FROM `VIPLounges` WHERE `airportID` IS NOT NULL
+
+mappingId	FrequentFlyerLounges_base
+target		ex:VIPLounges/{loungeID} a :VIPLounges ; p:loungeID {loungeID} ; p:airportID {airportID} ; p:amenityID {amenityID} ; p:capacity {capacity} .
+source		SELECT `loungeID`, `airportID`, `amenityID`, `capacity` FROM `FrequentFlyerLounges`
+
+mappingId	FrequentFlyerLounges_amenityID_fk
+target		ex:VIPLounges/{loungeID} p:hasAmenity ex:Amenity/{amenityID} .
+source		SELECT `loungeID`, `amenityID` FROM `FrequentFlyerLounges` WHERE `amenityID` IS NOT NULL
+
+mappingId	FrequentFlyerLounges_airportID_fk
+target		ex:VIPLounges/{loungeID} p:hasAirports ex:Airports/{airportID} .
+source		SELECT `loungeID`, `airportID` FROM `FrequentFlyerLounges` WHERE `airportID` IS NOT NULL
+
+]]

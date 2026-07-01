@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employer_base
+target		ex:Employers/{Id} a :Employers ; p:Id {Id} ; p:name {Name} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `Id`, `Name`, `Email`, `PhoneNumber` FROM `Employer`
+
+mappingId	Position_base
+target		ex:Position/{Id} a :Position ; p:Id {Id} ; p:Title {Title} ; p:Description {Description} .
+source		SELECT `Id`, `Title`, `Description` FROM `Position`
+
+mappingId	SalaryDetails_base
+target		ex:SalaryDetails/{Id} a :SalaryDetails ; p:Id {Id} ; p:Salary_Range {Salary_Range} ; p:Hourly_Rate {Hourly_Rate} ; p:PositionId {PositionId} .
+source		SELECT `Id`, `Salary_Range`, `Hourly_Rate`, `PositionId` FROM `SalaryDetails`
+
+mappingId	SalaryDetails_PositionId_fk
+target		ex:SalaryDetails/{Id} p:hasPosition ex:Position/{PositionId} .
+source		SELECT `Id`, `PositionId` FROM `SalaryDetails` WHERE `PositionId` IS NOT NULL
+
+mappingId	ApplicationDeadline_base
+target		ex:ApplicationDeadline/{Id} a :ApplicationDeadline ; p:Id {Id} ; p:Deadline {Deadline} ; p:PositionId {PositionId} .
+source		SELECT `Id`, `Deadline`, `PositionId` FROM `ApplicationDeadline`
+
+mappingId	ApplicationDeadline_PositionId_fk
+target		ex:ApplicationDeadline/{Id} p:hasPosition ex:Position/{PositionId} .
+source		SELECT `Id`, `PositionId` FROM `ApplicationDeadline` WHERE `PositionId` IS NOT NULL
+
+mappingId	Applicant_base
+target		ex:Applicants/{Id} a :Applicants ; p:Id {Id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:ResumeText {ResumeText} .
+source		SELECT `Id`, `FirstName`, `LastName`, `Email`, `ResumeText` FROM `Applicant`
+
+mappingId	Application_base
+target		ex:Application/{Id} a :Application ; p:Id {Id} ; p:ApplicationDate {ApplicationDate} ; p:ApplicantId {ApplicantId} ; p:PositionId {PositionId} .
+source		SELECT `Id`, `ApplicationDate`, `ApplicantId`, `PositionId` FROM `Application`
+
+mappingId	Application_PositionId_fk
+target		ex:Application/{Id} p:hasPosition ex:Position/{PositionId} .
+source		SELECT `Id`, `PositionId` FROM `Application` WHERE `PositionId` IS NOT NULL
+
+mappingId	Application_ApplicantId_fk
+target		ex:Application/{Id} p:hasApplicants ex:Applicants/{ApplicantId} .
+source		SELECT `Id`, `ApplicantId` FROM `Application` WHERE `ApplicantId` IS NOT NULL
+
+]]

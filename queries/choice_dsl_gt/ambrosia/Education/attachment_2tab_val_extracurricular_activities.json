@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_extracurricular_activities",
+  "schema": "amb_attachment_2tab_val_extracurricular_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What clubs and leadership programs have 30 participants?",
+      "qtype": "unambig",
+      "sql": "SELECT Clubs.name\nFROM Clubs\nWHERE Clubs.Participants = 30\nUNION\nSELECT LeadershipPrograms.name\nFROM LeadershipPrograms\nWHERE LeadershipPrograms.Participants = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?clubs a :Clubs .\n    ?clubs p:name ?name .\n    ?clubs p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?leadershipprograms a :LeadershipPrograms .\n    ?leadershipprograms p:name ?name .\n    ?leadershipprograms p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all clubs and also display leadership programs with 30 participants.",
+      "qtype": "unambig",
+      "sql": "SELECT Clubs.name\nFROM Clubs\nUNION\nSELECT LeadershipPrograms.name\nFROM LeadershipPrograms\nWHERE LeadershipPrograms.Participants = 30",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?clubs a :Clubs .\n    ?clubs p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?leadershipprograms a :LeadershipPrograms .\n    ?leadershipprograms p:name ?name .\n    ?leadershipprograms p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display clubs and leadership programs with 30 participants.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?clubs a :Clubs .\n    ?clubs p:name ?name .\n    ?clubs p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?leadershipprograms a :LeadershipPrograms .\n    ?leadershipprograms p:name ?name .\n    ?leadershipprograms p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?clubs a :Clubs .\n    ?clubs p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?leadershipprograms a :LeadershipPrograms .\n    ?leadershipprograms p:name ?name .\n    ?leadershipprograms p:Participants ?participants_f .\n    FILTER((STR(?participants_f) = \"30\" || STR(?participants_f) = \"30.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Schools_base
+target		ex:Schools/{id} a :Schools ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Schools`
+
+mappingId	Educational_Jobs_base
+target		ex:Educational_Jobs/{job_id} a :Educational_Jobs ; p:job_id {job_id} ; p:title {title} ; p:description {description} .
+source		SELECT `job_id`, `title`, `description` FROM `Educational_Jobs`
+
+mappingId	School_Employees_base
+target		ex:School_Employees/{employee_id} a :School_Employees ; p:employee_id {employee_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:job_title {job_title} ; p:school_id {school_id} .
+source		SELECT `employee_id`, `first_name`, `last_name`, `job_title`, `school_id` FROM `School_Employees`
+
+mappingId	School_Employees_school_id_fk
+target		ex:School_Employees/{employee_id} p:hasSchools ex:Schools/{school_id} .
+source		SELECT `employee_id`, `school_id` FROM `School_Employees` WHERE `school_id` IS NOT NULL
+
+mappingId	Jobs_at_School_base
+target		ex:Jobs_at_School/{school_job_id} a :Jobs_at_School ; p:school_job_id {school_job_id} ; p:school_id {school_id} ; p:job_id {job_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `school_job_id`, `school_id`, `job_id`, `start_date`, `end_date` FROM `Jobs_at_School`
+
+mappingId	Jobs_at_School_job_id_fk
+target		ex:Jobs_at_School/{school_job_id} p:hasEducational_Jobs ex:Educational_Jobs/{job_id} .
+source		SELECT `school_job_id`, `job_id` FROM `Jobs_at_School` WHERE `job_id` IS NOT NULL
+
+mappingId	Jobs_at_School_school_id_fk
+target		ex:Jobs_at_School/{school_job_id} p:hasSchools ex:Schools/{school_id} .
+source		SELECT `school_job_id`, `school_id` FROM `Jobs_at_School` WHERE `school_id` IS NOT NULL
+
+mappingId	Employee_Education_base
+target		ex:Employee_Education/{employee_education_id} a :Employee_Education ; p:employee_education_id {employee_education_id} ; p:employee_id {employee_id} ; p:education_level {education_level} ; p:major {major} ; p:degree_year {degree_year} .
+source		SELECT `employee_education_id`, `employee_id`, `education_level`, `major`, `degree_year` FROM `Employee_Education`
+
+mappingId	Employee_Education_employee_id_fk
+target		ex:Employee_Education/{employee_education_id} p:hasSchool_Employees ex:School_Employees/{employee_id} .
+source		SELECT `employee_education_id`, `employee_id` FROM `Employee_Education` WHERE `employee_id` IS NOT NULL
+
+]]

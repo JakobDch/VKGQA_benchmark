@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Books_base
+target		ex:Book/{BookID} a :Book ; p:BookID {BookID} ; p:Title {Title} ; p:Author {Author} ; p:PublicationYear {PublicationYear} ; p:Summary {Summary} ; p:Themes {Themes} ; p:Novel {Novel} .
+source		SELECT `BookID`, `Title`, `Author`, `PublicationYear`, `Summary`, `Themes`, `Novel` FROM `Books`
+
+mappingId	Authors_base
+target		ex:Author/{AuthorID} a :Author ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:DeathDate {DeathDate} ; p:Biography {Biography} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `BirthDate`, `DeathDate`, `Biography` FROM `Authors`
+
+mappingId	Publishers_base
+target		ex:Publisher/{PublisherID} a :Publisher ; p:PublisherID {PublisherID} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `PublisherID`, `Name`, `Address`, `PhoneNumber` FROM `Publishers`
+
+mappingId	Genres_base
+target		ex:Genre/{GenreID} a :Genre ; p:GenreID {GenreID} ; p:name {Name} .
+source		SELECT `GenreID`, `Name` FROM `Genres`
+
+mappingId	Book_Authors_base
+target		ex:Book_Authors/{BookID}/{AuthorID} a :Book_Authors ; p:BookID {BookID} ; p:AuthorID {AuthorID} .
+source		SELECT `BookID`, `AuthorID` FROM `Book_Authors`
+
+mappingId	Book_Authors_AuthorID_fk
+target		ex:Book_Authors/{BookID}/{AuthorID} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `BookID`, `AuthorID` FROM `Book_Authors` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Book_Authors_BookID_fk
+target		ex:Book_Authors/{BookID}/{AuthorID} p:hasBook ex:Book/{BookID} .
+source		SELECT `BookID`, `AuthorID` FROM `Book_Authors` WHERE `BookID` IS NOT NULL
+
+mappingId	Book_Genres_base
+target		ex:Book_Genres/{BookID}/{GenreID} a :Book_Genres ; p:BookID {BookID} ; p:GenreID {GenreID} .
+source		SELECT `BookID`, `GenreID` FROM `Book_Genres`
+
+mappingId	Book_Genres_GenreID_fk
+target		ex:Book_Genres/{BookID}/{GenreID} p:hasGenre ex:Genre/{GenreID} .
+source		SELECT `BookID`, `GenreID` FROM `Book_Genres` WHERE `GenreID` IS NOT NULL
+
+mappingId	Book_Genres_BookID_fk
+target		ex:Book_Genres/{BookID}/{GenreID} p:hasBook ex:Book/{BookID} .
+source		SELECT `BookID`, `GenreID` FROM `Book_Genres` WHERE `BookID` IS NOT NULL
+
+]]

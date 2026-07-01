@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Maritime_Villages_base
+target		ex:Maritime_Villages/{id} a :Maritime_Villages ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Maritime_Villages`
+
+mappingId	Boat_Tours_base
+target		ex:Boat_Tours/{id} a :Boat_Tours ; p:id {id} ; p:tour_name {tour_name} ; p:description {description} .
+source		SELECT `id`, `tour_name`, `description` FROM `Boat_Tours`
+
+mappingId	Maritime_Villages_Boat_Tours_base
+target		ex:Maritime_Villages_Boat_Tours/{_amb_rowid} a :Maritime_Villages_Boat_Tours ; p:maritime_village_id {maritime_village_id} ; p:boat_tour_id {boat_tour_id} .
+source		SELECT `_amb_rowid`, `maritime_village_id`, `boat_tour_id` FROM `Maritime_Villages_Boat_Tours`
+
+mappingId	Maritime_Villages_Boat_Tours_boat_tour_id_fk
+target		ex:Maritime_Villages_Boat_Tours/{_amb_rowid} p:hasBoat_Tours ex:Boat_Tours/{boat_tour_id} .
+source		SELECT `_amb_rowid`, `boat_tour_id` FROM `Maritime_Villages_Boat_Tours` WHERE `boat_tour_id` IS NOT NULL
+
+mappingId	Maritime_Villages_Boat_Tours_maritime_village_id_fk
+target		ex:Maritime_Villages_Boat_Tours/{_amb_rowid} p:hasMaritime_Villages ex:Maritime_Villages/{maritime_village_id} .
+source		SELECT `_amb_rowid`, `maritime_village_id` FROM `Maritime_Villages_Boat_Tours` WHERE `maritime_village_id` IS NOT NULL
+
+]]

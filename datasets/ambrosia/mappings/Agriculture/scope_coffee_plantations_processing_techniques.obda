@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Coffee_Plantations_base
+target		ex:Coffee_Plantations/{plantation_id} a :Coffee_Plantations ; p:plantation_id {plantation_id} ; p:name {name} ; p:location {location} .
+source		SELECT `plantation_id`, `name`, `location` FROM `Coffee_Plantations`
+
+mappingId	Processing_Techniques_base
+target		ex:Processing_Techniques/{technique_id} a :Processing_Techniques ; p:technique_id {technique_id} ; p:name {technique_name} .
+source		SELECT `technique_id`, `technique_name` FROM `Processing_Techniques`
+
+mappingId	Coffee_Plantations_Processing_Techniques_base
+target		ex:Coffee_Plantations_Processing_Techniques/{id} a :Coffee_Plantations_Processing_Techniques ; p:id {id} ; p:coffee_plantation_id {coffee_plantation_id} ; p:processing_technique_id {processing_technique_id} .
+source		SELECT `id`, `coffee_plantation_id`, `processing_technique_id` FROM `Coffee_Plantations_Processing_Techniques`
+
+mappingId	Coffee_Plantations_Processing_Techniques_processing_technique_id_fk
+target		ex:Coffee_Plantations_Processing_Techniques/{id} p:hasProcessing_Techniques ex:Processing_Techniques/{processing_technique_id} .
+source		SELECT `id`, `processing_technique_id` FROM `Coffee_Plantations_Processing_Techniques` WHERE `processing_technique_id` IS NOT NULL
+
+mappingId	Coffee_Plantations_Processing_Techniques_coffee_plantation_id_fk
+target		ex:Coffee_Plantations_Processing_Techniques/{id} p:hasCoffee_Plantations ex:Coffee_Plantations/{coffee_plantation_id} .
+source		SELECT `id`, `coffee_plantation_id` FROM `Coffee_Plantations_Processing_Techniques` WHERE `coffee_plantation_id` IS NOT NULL
+
+]]

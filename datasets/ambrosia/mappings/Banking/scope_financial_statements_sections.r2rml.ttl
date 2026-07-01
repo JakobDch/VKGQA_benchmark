@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_financial_statements_sections_0_Financial_Statements_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"Name\", \"Date\" FROM \"Financial_Statements\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Financial_Statements/{id}" ; rr:class :Financial_Statements ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Date ; rr:objectMap [ rr:column "Date" ] ] .
+
+<#tm_scope_financial_statements_sections_1_Sections_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"SectionName\" FROM \"Sections\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Sections/{id}" ; rr:class :Sections ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:SectionName ; rr:objectMap [ rr:column "SectionName" ] ] .
+
+<#tm_scope_financial_statements_sections_2_Financial_Statements_Sections_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Financial_Statement_id\", \"Section_id\" FROM \"Financial_Statements_Sections\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Financial_Statements_Sections/{Financial_Statement_id}/{Section_id}" ; rr:class :Financial_Statements_Sections ] ;
+  rr:predicateObjectMap [ rr:predicate p:Financial_Statement_id ; rr:objectMap [ rr:column "Financial_Statement_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Section_id ; rr:objectMap [ rr:column "Section_id" ] ] .
+
+<#tm_scope_financial_statements_sections_3_Financial_Statements_Sections_Section_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Financial_Statement_id\", \"Section_id\" FROM \"Financial_Statements_Sections\" WHERE \"Section_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Financial_Statements_Sections/{Financial_Statement_id}/{Section_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSections ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Sections/{Section_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_financial_statements_sections_4_Financial_Statements_Sections_Financial_Statement_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Financial_Statement_id\", \"Section_id\" FROM \"Financial_Statements_Sections\" WHERE \"Financial_Statement_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Financial_Statements_Sections/{Financial_Statement_id}/{Section_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFinancial_Statements ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Financial_Statements/{Financial_Statement_id}" ; rr:termType rr:IRI ] ] .
+

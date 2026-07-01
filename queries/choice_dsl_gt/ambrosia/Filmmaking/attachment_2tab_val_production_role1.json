@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_production_role1",
+  "schema": "amb_attachment_2tab_val_production_role1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both scripts and editors where either has a deadline of 21.04.03.",
+      "qtype": "unambig",
+      "sql": "SELECT Scripts.Title as Name\nFROM Scripts\nWHERE Scripts.Deadline = \"21.04.03\"\nUNION\nSELECT Editors.Name\nFROM Editors\nWHERE Editors.Deadline = \"21.04.03\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?scripts a :Scripts .\n    ?scripts p:Title ?title .\n    ?scripts p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me scripts and editors with a deadline of 21.04.03.",
+      "qtype": "ambig",
+      "sql": "SELECT Scripts.Title as Name\nFROM Scripts\nUNION\nSELECT Editors.Name\nFROM Editors\nWHERE Editors.Deadline = \"21.04.03\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?scripts a :Scripts .\n    ?scripts p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me scripts and editors with a deadline of 21.04.03.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?scripts a :Scripts .\n    ?scripts p:Title ?title .\n    ?scripts p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?scripts a :Scripts .\n    ?scripts p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"21.04.03\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

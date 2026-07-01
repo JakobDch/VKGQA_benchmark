@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Agency_base
+target		ex:Agency/{id} a :Agency ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Agency`
+
+mappingId	HospitalityJobType_base
+target		ex:HospitalityJobType/{id} a :HospitalityJobType ; p:id {id} ; p:job_type {job_type} .
+source		SELECT `id`, `job_type` FROM `HospitalityJobType`
+
+mappingId	JobPosting_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:posted_date {posted_date} ; p:agency_id {agency_id} ; p:hospitality_job_type_id {hospitality_job_type_id} .
+source		SELECT `id`, `title`, `description`, `posted_date`, `agency_id`, `hospitality_job_type_id` FROM `JobPosting`
+
+mappingId	JobPosting_hospitality_job_type_id_fk
+target		ex:JobPostings/{id} p:hasHospitalityJobType ex:HospitalityJobType/{hospitality_job_type_id} .
+source		SELECT `id`, `hospitality_job_type_id` FROM `JobPosting` WHERE `hospitality_job_type_id` IS NOT NULL
+
+mappingId	JobPosting_agency_id_fk
+target		ex:JobPostings/{id} p:hasAgency ex:Agency/{agency_id} .
+source		SELECT `id`, `agency_id` FROM `JobPosting` WHERE `agency_id` IS NOT NULL
+
+mappingId	Applicant_base
+target		ex:Applicants/{id} a :Applicants ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Applicant`
+
+mappingId	Application_base
+target		ex:Application/{application_id} a :Application ; p:application_id {application_id} ; p:job_posting_id {job_posting_id} ; p:applicant_id {applicant_id} ; p:application_date {application_date} ; p:status {status} .
+source		SELECT `application_id`, `job_posting_id`, `applicant_id`, `application_date`, `status` FROM `Application`
+
+mappingId	Application_applicant_id_fk
+target		ex:Application/{application_id} p:hasApplicants ex:Applicants/{applicant_id} .
+source		SELECT `application_id`, `applicant_id` FROM `Application` WHERE `applicant_id` IS NOT NULL
+
+mappingId	Application_job_posting_id_fk
+target		ex:Application/{application_id} p:hasJobPostings ex:JobPostings/{job_posting_id} .
+source		SELECT `application_id`, `job_posting_id` FROM `Application` WHERE `job_posting_id` IS NOT NULL
+
+]]

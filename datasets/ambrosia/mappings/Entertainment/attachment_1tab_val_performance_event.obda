@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Artists_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:name {Name} ; p:Age {Age} ; p:Genre {Genre} .
+source		SELECT `ArtistID`, `Name`, `Age`, `Genre` FROM `Artists`
+
+mappingId	Events_base
+target		ex:Events/{EventID} a :Events ; p:EventID {EventID} ; p:name {Name} ; p:Date {Date} ; p:location {Location} .
+source		SELECT `EventID`, `Name`, `Date`, `Location` FROM `Events`
+
+mappingId	Performances_base
+target		ex:Performance/{PerformanceID} a :Performance ; p:PerformanceID {PerformanceID} ; p:EventID {EventID} ; p:Type {Type} ; p:AudienceSize {AudienceSize} ; p:PerformanceEvent {PerformanceEvent} ; p:AuditionRoom {AuditionRoom} .
+source		SELECT `PerformanceID`, `EventID`, `Type`, `AudienceSize`, `PerformanceEvent`, `AuditionRoom` FROM `Performances`
+
+mappingId	Performances_EventID_fk
+target		ex:Performance/{PerformanceID} p:hasEvents ex:Events/{EventID} .
+source		SELECT `PerformanceID`, `EventID` FROM `Performances` WHERE `EventID` IS NOT NULL
+
+mappingId	Participants_base
+target		ex:Participant/{ParticipantID} a :Participant ; p:ParticipantID {ParticipantID} ; p:ArtistID {ArtistID} ; p:PerformanceID {PerformanceID} ; p:Role {Role} .
+source		SELECT `ParticipantID`, `ArtistID`, `PerformanceID`, `Role` FROM `Participants`
+
+mappingId	Participants_PerformanceID_fk
+target		ex:Participant/{ParticipantID} p:hasPerformance ex:Performance/{PerformanceID} .
+source		SELECT `ParticipantID`, `PerformanceID` FROM `Participants` WHERE `PerformanceID` IS NOT NULL
+
+mappingId	Participants_ArtistID_fk
+target		ex:Participant/{ParticipantID} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `ParticipantID`, `ArtistID` FROM `Participants` WHERE `ArtistID` IS NOT NULL
+
+]]

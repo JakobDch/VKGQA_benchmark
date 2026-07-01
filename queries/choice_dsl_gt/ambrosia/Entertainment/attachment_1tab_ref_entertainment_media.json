@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_entertainment_media",
+  "schema": "amb_attachment_1tab_ref_entertainment_media",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show films and novels released in 2020.",
+      "qtype": "ambig",
+      "sql": "SELECT EntertainmentItem.title \nFROM MediaType JOIN EntertainmentItem ON MediaType.id = EntertainmentItem.mediaTypeId\nWHERE (MediaType.typeName = \"Film\" OR MediaType.typeName = \"Novel\") AND EntertainmentItem.releaseYear = 2020",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?mediatype a :MediaType .\n  ?entertainmentitem a :EntertainmentItem .\n  ?entertainmentitem p:hasMediaType ?mediatype .\n  ?entertainmentitem p:title ?title .\n  ?mediatype p:typeName ?typename_w .\n  ?mediatype p:typeName ?typename_w2 .\n  ?entertainmentitem p:releaseYear ?releaseyear_w .\n  FILTER((((STR(?typename_w) = \"Film\" || STR(?typename_w2) = \"Novel\")) && (STR(?releaseyear_w) = \"2020\" || STR(?releaseyear_w) = \"2020.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show films and novels released in 2020.",
+      "qtype": "ambig",
+      "sql": "SELECT EntertainmentItem.title \nFROM MediaType JOIN EntertainmentItem ON MediaType.id = EntertainmentItem.mediaTypeId\nWHERE MediaType.typeName = \"Film\" OR MediaType.typeName = \"Novel\" AND EntertainmentItem.releaseYear = 2020",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?mediatype a :MediaType .\n  ?entertainmentitem a :EntertainmentItem .\n  ?entertainmentitem p:hasMediaType ?mediatype .\n  ?entertainmentitem p:title ?title .\n  ?mediatype p:typeName ?typename_w .\n  ?mediatype p:typeName ?typename_w2 .\n  ?entertainmentitem p:releaseYear ?releaseyear_w .\n  FILTER((STR(?typename_w) = \"Film\" || (STR(?typename_w2) = \"Novel\" && (STR(?releaseyear_w) = \"2020\" || STR(?releaseyear_w) = \"2020.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show films and novels released in 2020.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?mediatype a :MediaType .\n  ?entertainmentitem a :EntertainmentItem .\n  ?entertainmentitem p:hasMediaType ?mediatype .\n  ?entertainmentitem p:title ?title .\n  ?mediatype p:typeName ?typename_w .\n  ?mediatype p:typeName ?typename_w2 .\n  ?entertainmentitem p:releaseYear ?releaseyear_w .\n  FILTER((((STR(?typename_w) = \"Film\" || STR(?typename_w2) = \"Novel\")) && (STR(?releaseyear_w) = \"2020\" || STR(?releaseyear_w) = \"2020.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?mediatype a :MediaType .\n  ?entertainmentitem a :EntertainmentItem .\n  ?entertainmentitem p:hasMediaType ?mediatype .\n  ?entertainmentitem p:title ?title .\n  ?mediatype p:typeName ?typename_w .\n  ?mediatype p:typeName ?typename_w2 .\n  ?entertainmentitem p:releaseYear ?releaseyear_w .\n  FILTER((STR(?typename_w) = \"Film\" || (STR(?typename_w2) = \"Novel\" && (STR(?releaseyear_w) = \"2020\" || STR(?releaseyear_w) = \"2020.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

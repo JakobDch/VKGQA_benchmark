@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_val_genre2",
+  "schema": "amb_attachment_2tab_val_genre2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show sci-fi movies and fantasy movies that were filmed in New Zealand?",
+      "qtype": "unambig",
+      "sql": "SELECT SciFiMovies.title\nFROM SciFiMovies\nWHERE SciFiMovies.filmingLocation = \"New Zealand\"\nUNION\nSELECT FantasyMovies.title\nFROM FantasyMovies\nWHERE FantasyMovies.filmingLocation = \"New Zealand\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?scifimovies a :SciFi_Movies .\n    ?scifimovies p:title ?title .\n    ?scifimovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?fantasymovies a :FantasyMovies .\n    ?fantasymovies p:title ?title .\n    ?fantasymovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display sci-fi movies and fantasy movies filmed in New Zealand.",
+      "qtype": "ambig",
+      "sql": "SELECT SciFiMovies.title\nFROM SciFiMovies\nUNION\nSELECT FantasyMovies.title\nFROM FantasyMovies\nWHERE FantasyMovies.filmingLocation = \"New Zealand\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?scifimovies a :SciFi_Movies .\n    ?scifimovies p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?fantasymovies a :FantasyMovies .\n    ?fantasymovies p:title ?title .\n    ?fantasymovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display sci-fi movies and fantasy movies filmed in New Zealand.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?scifimovies a :SciFi_Movies .\n    ?scifimovies p:title ?title .\n    ?scifimovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?fantasymovies a :FantasyMovies .\n    ?fantasymovies p:title ?title .\n    ?fantasymovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?scifimovies a :SciFi_Movies .\n    ?scifimovies p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?fantasymovies a :FantasyMovies .\n    ?fantasymovies p:title ?title .\n    ?fantasymovies p:filmingLocation ?filminglocation_f .\n    FILTER(STR(?filminglocation_f) = \"New Zealand\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

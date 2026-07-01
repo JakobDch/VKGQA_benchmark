@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_games_platforms",
+  "schema": "amb_scope_games_platforms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every game what platforms can they each be played on?",
+      "qtype": "unambig",
+      "sql": "select games.title , platforms.name from Games_Platforms join Platforms on Games_Platforms.platformsID = Platforms.platformID join Games on Games_Platforms.gamesID = Games.gameID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?games_platforms a :Games_Platforms .\n  ?platforms a :Platforms .\n  ?games_platforms p:hasPlatforms ?platforms .\n  ?games a :Games .\n  ?games_platforms p:hasGames ?games .\n  ?games p:title ?title .\n  ?platforms p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What platform is used by all games at the same time?",
+      "qtype": "unambig",
+      "sql": "SELECT Platforms.name  from Games_Platforms join Platforms on Games_Platforms.platformsID = Platforms.platformID join Games on Games_Platforms.gamesID = Games.gameID   GROUP BY Games_Platforms.platformsID HAVING COUNT(DISTINCT Games_Platforms.gamesID) = (SELECT COUNT(*) FROM  Games)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:platformsID ?cg . ?child a :Platforms ; p:platformID ?cg . ?l p:gamesID ?pg . ?parent a :Games ; p:gameID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Games } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What game platforms are there for all the games listed?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?name WHERE {\n  ?games_platforms a :Games_Platforms .\n  ?platforms a :Platforms .\n  ?games_platforms p:hasPlatforms ?platforms .\n  ?games a :Games .\n  ?games_platforms p:hasGames ?games .\n  ?games p:title ?title .\n  ?platforms p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:platformsID ?cg . ?child a :Platforms ; p:platformID ?cg . ?l p:gamesID ?pg . ?parent a :Games ; p:gameID ?pg . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Games } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

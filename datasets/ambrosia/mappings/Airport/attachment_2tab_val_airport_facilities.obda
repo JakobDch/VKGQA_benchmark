@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:Airline {Airline} ; p:Destination {Destination} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} .
+source		SELECT `FlightID`, `Airline`, `Destination`, `DepartureTime`, `ArrivalTime` FROM `Flights`
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:name {Name} ; p:Age {Age} ; p:Nationality {Nationality} .
+source		SELECT `PassengerID`, `Name`, `Age`, `Nationality` FROM `Passengers`
+
+mappingId	Bookings_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:PassengerID {PassengerID} ; p:FlightID {FlightID} ; p:Class {Class} ; p:Price {Price} .
+source		SELECT `BookingID`, `PassengerID`, `FlightID`, `Class`, `Price` FROM `Bookings`
+
+mappingId	Bookings_FlightID_fk
+target		ex:Bookings/{BookingID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `BookingID`, `FlightID` FROM `Bookings` WHERE `FlightID` IS NOT NULL
+
+mappingId	Bookings_PassengerID_fk
+target		ex:Bookings/{BookingID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `BookingID`, `PassengerID` FROM `Bookings` WHERE `PassengerID` IS NOT NULL
+
+mappingId	BaggageClaims_base
+target		ex:BaggageClaims/{ClaimID} a :BaggageClaims ; p:ClaimID {ClaimID} ; p:HandlerName {HandlerName} ; p:FlightID {FlightID} ; p:location {Location} .
+source		SELECT `ClaimID`, `HandlerName`, `FlightID`, `Location` FROM `BaggageClaims`
+
+mappingId	BaggageClaims_FlightID_fk
+target		ex:BaggageClaims/{ClaimID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `ClaimID`, `FlightID` FROM `BaggageClaims` WHERE `FlightID` IS NOT NULL
+
+mappingId	SecurityChecks_base
+target		ex:SecurityChecks/{CheckpointID} a :SecurityChecks ; p:CheckpointID {CheckpointID} ; p:OfficerName {OfficerName} ; p:FlightID {FlightID} ; p:location {Location} ; p:Time {Time} .
+source		SELECT `CheckpointID`, `OfficerName`, `FlightID`, `Location`, `Time` FROM `SecurityChecks`
+
+mappingId	SecurityChecks_FlightID_fk
+target		ex:SecurityChecks/{CheckpointID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `CheckpointID`, `FlightID` FROM `SecurityChecks` WHERE `FlightID` IS NOT NULL
+
+]]

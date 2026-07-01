@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_labs_equipment_0_Labs_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Labs\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Labs/{id}" ; rr:class :Labs ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_labs_equipment_1_Equipment_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"type\" FROM \"Equipment\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Equipment/{id}" ; rr:class :Equipment ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "type" ] ] .
+
+<#tm_scope_labs_equipment_2_Labs_Equipment_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"labs_id\", \"equipment_id\" FROM \"Labs_Equipment\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Labs_Equipment/{_amb_rowid}" ; rr:class :Labs_Equipment ] ;
+  rr:predicateObjectMap [ rr:predicate p:labs_id ; rr:objectMap [ rr:column "labs_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:equipment_id ; rr:objectMap [ rr:column "equipment_id" ] ] .
+
+<#tm_scope_labs_equipment_3_Labs_Equipment_equipment_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"equipment_id\" FROM \"Labs_Equipment\" WHERE \"equipment_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Labs_Equipment/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEquipment ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Equipment/{equipment_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_labs_equipment_4_Labs_Equipment_labs_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"labs_id\" FROM \"Labs_Equipment\" WHERE \"labs_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Labs_Equipment/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasLabs ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Labs/{labs_id}" ; rr:termType rr:IRI ] ] .
+

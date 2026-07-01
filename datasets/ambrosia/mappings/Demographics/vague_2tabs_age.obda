@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Country_base
+target		ex:Countries/{id} a :Countries ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Country`
+
+mappingId	Region_base
+target		ex:Regions/{id} a :Regions ; p:id {id} ; p:region_name {region_name} ; p:country_id {country_id} .
+source		SELECT `id`, `region_name`, `country_id` FROM `Region`
+
+mappingId	Region_country_id_fk
+target		ex:Regions/{id} p:hasCountries ex:Countries/{country_id} .
+source		SELECT `id`, `country_id` FROM `Region` WHERE `country_id` IS NOT NULL
+
+mappingId	Population_Group_base
+target		ex:Population_Group/{id} a :Population_Group ; p:id {id} ; p:group_name {group_name} ; p:population {population} ; p:median_age {median_age} ; p:age_range_id {age_range_id} .
+source		SELECT `id`, `group_name`, `population`, `median_age`, `age_range_id` FROM `Population_Group`
+
+mappingId	Population_Group_age_range_id_fk
+target		ex:Population_Group/{id} p:hasAge_Range ex:Age_Range/{age_range_id} .
+source		SELECT `id`, `age_range_id` FROM `Population_Group` WHERE `age_range_id` IS NOT NULL
+
+mappingId	Population_Group_median_age_fk
+target		ex:Population_Group/{id} p:hasMedian_Age ex:Median_Age/{median_age} .
+source		SELECT `id`, `median_age` FROM `Population_Group` WHERE `median_age` IS NOT NULL
+
+mappingId	Age_Range_base
+target		ex:Age_Range/{id} a :Age_Range ; p:id {id} ; p:start_age {start_age} ; p:end_age {end_age} ; p:country {country} .
+source		SELECT `id`, `start_age`, `end_age`, `country` FROM `Age_Range`
+
+mappingId	Age_Range_country_fk
+target		ex:Age_Range/{id} p:hasCountries ex:Countries/{country} .
+source		SELECT `id`, `country` FROM `Age_Range` WHERE `country` IS NOT NULL
+
+mappingId	Median_Age_base
+target		ex:Median_Age/{id} a :Median_Age ; p:id {id} ; p:age {age} ; p:country {country} .
+source		SELECT `id`, `age`, `country` FROM `Median_Age`
+
+mappingId	Median_Age_country_fk
+target		ex:Median_Age/{id} p:hasCountries ex:Countries/{country} .
+source		SELECT `id`, `country` FROM `Median_Age` WHERE `country` IS NOT NULL
+
+]]

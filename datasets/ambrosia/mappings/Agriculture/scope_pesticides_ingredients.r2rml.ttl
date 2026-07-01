@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/agriculture#> .
+@prefix p: <http://ambrosia.example.org/agriculture/prop#> .
+@prefix ex: <http://ambrosia.example.org/agriculture/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_pesticides_ingredients_0_Pesticides_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"usage_instructions\" FROM \"Pesticides\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Pesticides/{id}" ; rr:class :Pesticides ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:usage_instructions ; rr:objectMap [ rr:column "usage_instructions" ] ] .
+
+<#tm_scope_pesticides_ingredients_1_Ingredients_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"ingredient_name\" FROM \"Ingredients\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Ingredients/{id}" ; rr:class :Ingredients ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "ingredient_name" ] ] .
+
+<#tm_scope_pesticides_ingredients_2_Pesticides_Ingredients_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"pesticide_id\", \"ingredient_id\" FROM \"Pesticides_Ingredients\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Pesticides_Ingredients/{_amb_rowid}" ; rr:class :Pesticides_Ingredients ] ;
+  rr:predicateObjectMap [ rr:predicate p:pesticide_id ; rr:objectMap [ rr:column "pesticide_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ingredient_id ; rr:objectMap [ rr:column "ingredient_id" ] ] .
+
+<#tm_scope_pesticides_ingredients_3_Pesticides_Ingredients_ingredient_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"ingredient_id\" FROM \"Pesticides_Ingredients\" WHERE \"ingredient_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Pesticides_Ingredients/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasIngredients ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Ingredients/{ingredient_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_pesticides_ingredients_4_Pesticides_Ingredients_pesticide_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"pesticide_id\" FROM \"Pesticides_Ingredients\" WHERE \"pesticide_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Pesticides_Ingredients/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPesticides ; rr:objectMap [ rr:template "http://ambrosia.example.org/agriculture/id/Pesticides/{pesticide_id}" ; rr:termType rr:IRI ] ] .
+

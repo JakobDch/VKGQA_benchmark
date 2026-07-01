@@ -1,0 +1,108 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_gate_facility",
+  "schema": "amb_scope_gate_facility",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each gate, give me the facility description.",
+      "qtype": "unambig",
+      "sql": "select gate.airport_code , facility.description from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airport_code ?description WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What facility is common to all gates?",
+      "qtype": "unambig",
+      "sql": "SELECT Facility.name  from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id   GROUP BY Gate_Facility.facility_id HAVING COUNT(DISTINCT Gate_Facility.gate_id) = (SELECT COUNT(*) FROM  Gate)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the name of facility corresponding to each gate?",
+      "qtype": "ambig",
+      "sql": "select gate.airport_code , facility.name from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airport_code ?name WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "For each gate, provide the corresponding name and description of facility.",
+      "qtype": "unambig",
+      "sql": "select gate.airport_code , facility.name , facility.description from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?airport_code ?name ?description WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:name ?name .\n  ?facility p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "What name and description of facility are associated with each gate?",
+      "qtype": "ambig",
+      "sql": "SELECT Facility.name, Facility.description  from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id   GROUP BY Gate_Facility.facility_id HAVING COUNT(DISTINCT Gate_Facility.gate_id) = (SELECT COUNT(*) FROM  Gate)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the facility description of each gate?",
+      "qtype": "ambig",
+      "sql": "SELECT Facility.description  from Gate_Facility join Facility on Gate_Facility.facility_id = Facility.facility_id join Gate on Gate_Facility.gate_id = Gate.gate_id   GROUP BY Gate_Facility.facility_id HAVING COUNT(DISTINCT Gate_Facility.gate_id) = (SELECT COUNT(*) FROM  Gate)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the facility description of each gate?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?airport_code ?description WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the name of facility corresponding to each gate?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?airport_code ?name WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:name ?name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What name and description of facility are associated with each gate?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?airport_code ?name ?description WHERE {\n  ?gate_facility a :Gate_Facility .\n  ?facility a :Facility .\n  ?gate_facility p:hasFacility ?facility .\n  ?gate a :Gates .\n  ?gate_facility p:hasGate ?gate .\n  ?gate p:airport_code ?airport_code .\n  ?facility p:name ?name .\n  ?facility p:description ?description .\n} }\n  collective: { SELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFacility ?child ; p:hasGate ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

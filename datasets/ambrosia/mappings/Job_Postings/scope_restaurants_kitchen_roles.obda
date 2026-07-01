@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Restaurants_base
+target		ex:Restaurants/{id} a :Restaurants ; p:id {id} ; p:name {name} ; p:address {address} ; p:phone_number {phone_number} .
+source		SELECT `id`, `name`, `address`, `phone_number` FROM `Restaurants`
+
+mappingId	Kitchen_Roles_base
+target		ex:Kitchen_Roles/{role_id} a :Kitchen_Roles ; p:role_id {role_id} ; p:role_name {role_name} .
+source		SELECT `role_id`, `role_name` FROM `Kitchen_Roles`
+
+mappingId	Restaurants_Kitchen_Roles_base
+target		ex:Restaurants_Kitchen_Roles/{_amb_rowid} a :Restaurants_Kitchen_Roles ; p:restaurant_id {restaurant_id} ; p:kitchen_role_id {kitchen_role_id} .
+source		SELECT `_amb_rowid`, `restaurant_id`, `kitchen_role_id` FROM `Restaurants_Kitchen_Roles`
+
+mappingId	Restaurants_Kitchen_Roles_kitchen_role_id_fk
+target		ex:Restaurants_Kitchen_Roles/{_amb_rowid} p:hasKitchen_Roles ex:Kitchen_Roles/{kitchen_role_id} .
+source		SELECT `_amb_rowid`, `kitchen_role_id` FROM `Restaurants_Kitchen_Roles` WHERE `kitchen_role_id` IS NOT NULL
+
+mappingId	Restaurants_Kitchen_Roles_restaurant_id_fk
+target		ex:Restaurants_Kitchen_Roles/{_amb_rowid} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `_amb_rowid`, `restaurant_id` FROM `Restaurants_Kitchen_Roles` WHERE `restaurant_id` IS NOT NULL
+
+]]

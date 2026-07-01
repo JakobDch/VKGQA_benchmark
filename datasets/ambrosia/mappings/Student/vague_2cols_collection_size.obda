@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `ID`, `FirstName`, `LastName`, `DateOfBirth`, `Email`, `PhoneNumber` FROM `Students`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:CourseTitle {CourseTitle} ; p:Instructor {Instructor} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `CourseID`, `CourseTitle`, `Instructor`, `StartDate`, `EndDate` FROM `Courses`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Semester {Semester} ; p:Year {Year} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Semester`, `Year` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Grades_base
+target		ex:Grades/{GradeID} a :Grades ; p:GradeID {GradeID} ; p:EnrollmentID {EnrollmentID} ; p:FinalGrade {FinalGrade} .
+source		SELECT `GradeID`, `EnrollmentID`, `FinalGrade` FROM `Grades`
+
+mappingId	Grades_EnrollmentID_fk
+target		ex:Grades/{GradeID} p:hasEnrollments ex:Enrollments/{EnrollmentID} .
+source		SELECT `GradeID`, `EnrollmentID` FROM `Grades` WHERE `EnrollmentID` IS NOT NULL
+
+mappingId	Library_base
+target		ex:Libraries/{LibraryID} a :Libraries ; p:LibraryID {LibraryID} ; p:Number_Of_Volumes {Number_Of_Volumes} ; p:Shelving_Space {Shelving_Space} ; p:Library {Library} ; p:Accessible {Accessible} ; p:OpeningHours {OpeningHours} .
+source		SELECT `LibraryID`, `Number_Of_Volumes`, `Shelving_Space`, `Library`, `Accessible`, `OpeningHours` FROM `Library`
+
+]]

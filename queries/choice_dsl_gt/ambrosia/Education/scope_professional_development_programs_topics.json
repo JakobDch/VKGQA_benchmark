@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_professional_development_programs_topics",
+  "schema": "amb_scope_professional_development_programs_topics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each development program, list the topics studied.",
+      "qtype": "unambig",
+      "sql": "select professional_development_programs.program_name , topics.topic_name from Professional_Development_Programs_Topics join Topics on Professional_Development_Programs_Topics.topics_id = Topics.id join Professional_Development_Programs on Professional_Development_Programs_Topics.pdp_topics_id = Professional_Development_Programs.program_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_name ?topic_name WHERE {\n  ?professional_development_programs_topics a :Professional_Development_Programs_Topics .\n  ?topics a :Topics .\n  ?professional_development_programs_topics p:hasTopics ?topics .\n  ?professional_development_programs a :Professional_Development_Programs .\n  ?professional_development_programs_topics p:hasProfessional_Development_Programs ?professional_development_programs .\n  ?professional_development_programs p:program_name ?program_name .\n  ?topics p:topic_name ?topic_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the topics each development program has.",
+      "qtype": "ambig",
+      "sql": "SELECT Topics.topic_name  from Professional_Development_Programs_Topics join Topics on Professional_Development_Programs_Topics.topics_id = Topics.id join Professional_Development_Programs on Professional_Development_Programs_Topics.pdp_topics_id = Professional_Development_Programs.program_id   GROUP BY Professional_Development_Programs_Topics.topics_id HAVING COUNT(DISTINCT Professional_Development_Programs_Topics.pdp_topics_id) = (SELECT COUNT(*) FROM  Professional_Development_Programs)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?topic_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasProfessional_Development_Programs ?parent . } GROUP BY ?child }\n  ?child p:topic_name ?topic_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Professional_Development_Programs } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the topics each development program has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?program_name ?topic_name WHERE {\n  ?professional_development_programs_topics a :Professional_Development_Programs_Topics .\n  ?topics a :Topics .\n  ?professional_development_programs_topics p:hasTopics ?topics .\n  ?professional_development_programs a :Professional_Development_Programs .\n  ?professional_development_programs_topics p:hasProfessional_Development_Programs ?professional_development_programs .\n  ?professional_development_programs p:program_name ?program_name .\n  ?topics p:topic_name ?topic_name .\n} }\n  collective: { SELECT ?topic_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasProfessional_Development_Programs ?parent . } GROUP BY ?child }\n  ?child p:topic_name ?topic_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Professional_Development_Programs } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

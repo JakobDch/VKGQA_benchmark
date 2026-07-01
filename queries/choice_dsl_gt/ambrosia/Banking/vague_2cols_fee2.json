@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_fee2",
+  "schema": "amb_vague_2cols_fee2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all customers with checking accounts born after 1990 and their respective account numbers. What are the corresponding maintenance fees and overdraft charges for these accounts?",
+      "qtype": "unambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Monthly_Maintenance_Fee, Overdraft_Charges FROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON CheckingAccounts.AccountNumber = Accounts.AccountNumber WHERE SUBSTR(Customers.DateOfBirth, 1, 4) > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?monthly_maintenance_fee ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee . }\n  OPTIONAL { ?checkingaccounts p:Overdraft_Charges ?overdraft_charges . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Display a list of customers with a checking account, their accounts, their monthly maintenance fee, and overdraft charges for them.",
+      "qtype": "unambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Monthly_Maintenance_Fee, Overdraft_Charges FROM Accounts JOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON Accounts.AccountNumber = CheckingAccounts.AccountNumber",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?monthly_maintenance_fee ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee .\n  ?checkingaccounts p:Overdraft_Charges ?overdraft_charges .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "List all customers with checking accounts born after 1990 and their respective account numbers and corresponding maintenance fees.",
+      "qtype": "unambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Monthly_Maintenance_Fee FROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON CheckingAccounts.AccountNumber = Accounts.AccountNumber WHERE SUBSTR(Customers.DateOfBirth, 1, 4) > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?monthly_maintenance_fee WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show all customers with checking accounts born after 1990 and their account numbers and corresponding fees.",
+      "qtype": "ambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Overdraft_Charges FROM Accounts\nJOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON CheckingAccounts.AccountNumber = Accounts.AccountNumber WHERE SUBSTR(Customers.DateOfBirth, 1, 4) > '1990'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Overdraft_Charges ?overdraft_charges . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Display a list of customers that have a checking account, their accounts and the fee of that accounts.",
+      "qtype": "ambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Monthly_Maintenance_Fee FROM Accounts JOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON Accounts.AccountNumber = CheckingAccounts.AccountNumber",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?monthly_maintenance_fee WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Display a list of customers that have a checking account, their accounts and the fee of that accounts.",
+      "qtype": "ambig",
+      "sql": "SELECT Accounts.AccountNumber, Customers.FullName, CheckingAccounts.Overdraft_Charges FROM Accounts JOIN Customers ON Customers.CustomerID = Accounts.CustomerID JOIN CheckingAccounts ON Accounts.AccountNumber = CheckingAccounts.AccountNumber",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?fullname ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Overdraft_Charges ?overdraft_charges .\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all customers with checking accounts born after 1990 and their account numbers and corresponding fees.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?accountnumber ?fullname ?monthly_maintenance_fee ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee . }\n  OPTIONAL { ?checkingaccounts p:Overdraft_Charges ?overdraft_charges . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n} }\n  component: { SELECT ?accountnumber ?fullname ?monthly_maintenance_fee WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n} }\n  component_2: { SELECT ?accountnumber ?fullname ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  OPTIONAL { ?customers p:name ?fullname . }\n  OPTIONAL { ?checkingaccounts p:Overdraft_Charges ?overdraft_charges . }\n  ?customers p:DateOfBirth ?dateofbirth_s .\n  FILTER(STR(SUBSTR(STR(?dateofbirth_s), 1, 4)) > \"1990\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Display a list of customers that have a checking account, their accounts and the fee of that accounts.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?accountnumber ?fullname ?monthly_maintenance_fee ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee .\n  ?checkingaccounts p:Overdraft_Charges ?overdraft_charges .\n} }\n  component: { SELECT ?accountnumber ?fullname ?overdraft_charges WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Overdraft_Charges ?overdraft_charges .\n} }\n  component_2: { SELECT ?accountnumber ?fullname ?monthly_maintenance_fee WHERE {\n  ?accounts a :Accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?checkingaccounts a :CheckingAccounts .\n  ?checkingaccounts p:hasAccounts ?accounts .\n  ?accounts p:AccountNumber ?accountnumber .\n  ?customers p:name ?fullname .\n  ?checkingaccounts p:Monthly_Maintenance_Fee ?monthly_maintenance_fee .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

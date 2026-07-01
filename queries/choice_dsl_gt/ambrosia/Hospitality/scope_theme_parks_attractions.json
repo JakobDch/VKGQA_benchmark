@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_theme_parks_attractions",
+  "schema": "amb_scope_theme_parks_attractions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the descriptions of the attractions common to all theme parks",
+      "qtype": "unambig",
+      "sql": "SELECT Attractions.description  from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id   GROUP BY Theme_Parks_Attractions.attraction_id HAVING COUNT(DISTINCT Theme_Parks_Attractions.theme_park_id) = (SELECT COUNT(*) FROM  Theme_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each theme park, display the corresponding types and descriptions of attractions.",
+      "qtype": "unambig",
+      "sql": "select theme_parks.name , attractions.type , attractions.description from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:type ?type .\n  ?attractions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "what are the descriptions of the attractions that each theme park has?",
+      "qtype": "ambig",
+      "sql": "select theme_parks.name , attractions.description from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "What types and descriptions of attractions are available at each theme park?",
+      "qtype": "ambig",
+      "sql": "SELECT Attractions.type, Attractions.description  from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id   GROUP BY Theme_Parks_Attractions.attraction_id HAVING COUNT(DISTINCT Theme_Parks_Attractions.theme_park_id) = (SELECT COUNT(*) FROM  Theme_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the types of the attractions that all theme parks have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Attractions.type  from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id   GROUP BY Theme_Parks_Attractions.attraction_id HAVING COUNT(DISTINCT Theme_Parks_Attractions.theme_park_id) = (SELECT COUNT(*) FROM  Theme_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the attraction types every theme park has.",
+      "qtype": "ambig",
+      "sql": "select theme_parks.name , attractions.type from Theme_Parks_Attractions join Attractions on Theme_Parks_Attractions.attraction_id = Attractions.attraction_id join Theme_Parks on Theme_Parks_Attractions.theme_park_id = Theme_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what are the descriptions of the attractions that each theme park has?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What types and descriptions of attractions are available at each theme park?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:type ?type .\n  ?attractions p:description ?description .\n} }\n  collective: { SELECT ?type ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the attraction types every theme park has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasAttractions ?child ; p:hasTheme_Parks ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Theme_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?theme_parks_attractions a :Theme_Parks_Attractions .\n  ?attractions a :Attractions .\n  ?theme_parks_attractions p:hasAttractions ?attractions .\n  ?theme_parks a :Theme_Parks .\n  ?theme_parks_attractions p:hasTheme_Parks ?theme_parks .\n  ?theme_parks p:name ?name .\n  ?attractions p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

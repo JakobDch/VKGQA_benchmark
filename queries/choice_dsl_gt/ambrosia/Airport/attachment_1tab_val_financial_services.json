@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_financial_services",
+  "schema": "amb_attachment_1tab_val_financial_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show currency exchange and ATM machines located near gate 10.",
+      "qtype": "ambig",
+      "sql": "SELECT Financial_Services.Name \nFROM Financial_Services\nWHERE (Financial_Services.Type = \"Currency Exchange Service\" OR Financial_Services.Type = \"ATM Machine\") AND Financial_Services.Location_Within_Terminal = \"Near Gate 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?financial_services a :Financial_Services .\n  ?financial_services p:name ?name .\n  ?financial_services p:Type ?type_w .\n  ?financial_services p:Type ?type_w2 .\n  ?financial_services p:Location_Within_Terminal ?location_within_terminal_w .\n  FILTER((((STR(?type_w) = \"Currency Exchange Service\" || STR(?type_w2) = \"ATM Machine\")) && STR(?location_within_terminal_w) = \"Near Gate 10\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show currency exchange and ATM machines located near gate 10.",
+      "qtype": "ambig",
+      "sql": "SELECT Financial_Services.Name \nFROM Financial_Services\nWHERE Financial_Services.Type = \"Currency Exchange Service\" OR Financial_Services.Type = \"ATM Machine\" AND Financial_Services.Location_Within_Terminal = \"Near Gate 10\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?financial_services a :Financial_Services .\n  ?financial_services p:name ?name .\n  ?financial_services p:Type ?type_w .\n  ?financial_services p:Type ?type_w2 .\n  ?financial_services p:Location_Within_Terminal ?location_within_terminal_w .\n  FILTER((STR(?type_w) = \"Currency Exchange Service\" || (STR(?type_w2) = \"ATM Machine\" && STR(?location_within_terminal_w) = \"Near Gate 10\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show currency exchange and ATM machines located near gate 10.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?financial_services a :Financial_Services .\n  ?financial_services p:name ?name .\n  ?financial_services p:Type ?type_w .\n  ?financial_services p:Type ?type_w2 .\n  ?financial_services p:Location_Within_Terminal ?location_within_terminal_w .\n  FILTER((STR(?type_w) = \"Currency Exchange Service\" || (STR(?type_w2) = \"ATM Machine\" && STR(?location_within_terminal_w) = \"Near Gate 10\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?financial_services a :Financial_Services .\n  ?financial_services p:name ?name .\n  ?financial_services p:Type ?type_w .\n  ?financial_services p:Type ?type_w2 .\n  ?financial_services p:Location_Within_Terminal ?location_within_terminal_w .\n  FILTER((((STR(?type_w) = \"Currency Exchange Service\" || STR(?type_w2) = \"ATM Machine\")) && STR(?location_within_terminal_w) = \"Near Gate 10\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

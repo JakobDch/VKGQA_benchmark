@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Radio_Stations_base
+target		ex:Radio_Stations/{id} a :Radio_Stations ; p:id {id} ; p:stationName {stationName} ; p:location {location} .
+source		SELECT `id`, `stationName`, `location` FROM `Radio_Stations`
+
+mappingId	Programs_base
+target		ex:Programs/{id} a :Programs ; p:id {id} ; p:programType {programType} .
+source		SELECT `id`, `programType` FROM `Programs`
+
+mappingId	Radio_Stations_Programs_base
+target		ex:Radio_Stations_Programs/{_amb_rowid} a :Radio_Stations_Programs ; p:radioStationId {radioStationId} ; p:programId {programId} .
+source		SELECT `_amb_rowid`, `radioStationId`, `programId` FROM `Radio_Stations_Programs`
+
+mappingId	Radio_Stations_Programs_programId_fk
+target		ex:Radio_Stations_Programs/{_amb_rowid} p:hasPrograms ex:Programs/{programId} .
+source		SELECT `_amb_rowid`, `programId` FROM `Radio_Stations_Programs` WHERE `programId` IS NOT NULL
+
+mappingId	Radio_Stations_Programs_radioStationId_fk
+target		ex:Radio_Stations_Programs/{_amb_rowid} p:hasRadio_Stations ex:Radio_Stations/{radioStationId} .
+source		SELECT `_amb_rowid`, `radioStationId` FROM `Radio_Stations_Programs` WHERE `radioStationId` IS NOT NULL
+
+]]

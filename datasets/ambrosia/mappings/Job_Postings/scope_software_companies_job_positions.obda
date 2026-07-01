@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Software_Companies_base
+target		ex:Software_Companies/{id} a :Software_Companies ; p:id {id} ; p:company_name {company_name} ; p:location {location} .
+source		SELECT `id`, `company_name`, `location` FROM `Software_Companies`
+
+mappingId	Job_Positions_base
+target		ex:Job_Positions/{id} a :Job_Positions ; p:id {id} ; p:position_title {position_title} ; p:description {description} .
+source		SELECT `id`, `position_title`, `description` FROM `Job_Positions`
+
+mappingId	Software_Companies_Job_Positions_base
+target		ex:Software_Companies_Job_Positions/{software_company_id}/{job_position_id} a :Software_Companies_Job_Positions ; p:software_company_id {software_company_id} ; p:job_position_id {job_position_id} .
+source		SELECT `software_company_id`, `job_position_id` FROM `Software_Companies_Job_Positions`
+
+mappingId	Software_Companies_Job_Positions_job_position_id_fk
+target		ex:Software_Companies_Job_Positions/{software_company_id}/{job_position_id} p:hasJob_Positions ex:Job_Positions/{job_position_id} .
+source		SELECT `software_company_id`, `job_position_id` FROM `Software_Companies_Job_Positions` WHERE `job_position_id` IS NOT NULL
+
+mappingId	Software_Companies_Job_Positions_software_company_id_fk
+target		ex:Software_Companies_Job_Positions/{software_company_id}/{job_position_id} p:hasSoftware_Companies ex:Software_Companies/{software_company_id} .
+source		SELECT `software_company_id`, `job_position_id` FROM `Software_Companies_Job_Positions` WHERE `software_company_id` IS NOT NULL
+
+mappingId	Employee_Skills_base
+target		ex:Employee_Skills/{_amb_rowid} a :Employee_Skills ; p:employee_id {employee_id} ; p:skill_id {skill_id} ; p:experience_level {experience_level} .
+source		SELECT `_amb_rowid`, `employee_id`, `skill_id`, `experience_level` FROM `Employee_Skills`
+
+mappingId	Employee_Skills_skill_id_fk
+target		ex:Employee_Skills/{_amb_rowid} p:hasSkill ex:Skill/{skill_id} .
+source		SELECT `_amb_rowid`, `skill_id` FROM `Employee_Skills` WHERE `skill_id` IS NOT NULL
+
+mappingId	Employee_Projects_base
+target		ex:Employee_Projects/{_amb_rowid} a :Employee_Projects ; p:employee_id {employee_id} ; p:project_id {project_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `_amb_rowid`, `employee_id`, `project_id`, `start_date`, `end_date` FROM `Employee_Projects`
+
+mappingId	Skills_base
+target		ex:Skill/{id} a :Skill ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Skills`
+
+]]

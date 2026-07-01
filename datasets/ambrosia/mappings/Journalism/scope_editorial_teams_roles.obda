@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Editorial_Teams_base
+target		ex:Editorial_Teams/{TeamID} a :Editorial_Teams ; p:TeamID {TeamID} ; p:TeamName {TeamName} ; p:TeamDescription {TeamDescription} .
+source		SELECT `TeamID`, `TeamName`, `TeamDescription` FROM `Editorial_Teams`
+
+mappingId	Roles_base
+target		ex:Roles/{RoleID} a :Roles ; p:RoleID {RoleID} ; p:RoleName {RoleName} .
+source		SELECT `RoleID`, `RoleName` FROM `Roles`
+
+mappingId	Editorial_Teams_Roles_base
+target		ex:Editorial_Teams_Roles/{TeamID}/{RoleID} a :Editorial_Teams_Roles ; p:TeamID {TeamID} ; p:RoleID {RoleID} .
+source		SELECT `TeamID`, `RoleID` FROM `Editorial_Teams_Roles`
+
+mappingId	Editorial_Teams_Roles_RoleID_fk
+target		ex:Editorial_Teams_Roles/{TeamID}/{RoleID} p:hasRoles ex:Roles/{RoleID} .
+source		SELECT `TeamID`, `RoleID` FROM `Editorial_Teams_Roles` WHERE `RoleID` IS NOT NULL
+
+mappingId	Editorial_Teams_Roles_TeamID_fk
+target		ex:Editorial_Teams_Roles/{TeamID}/{RoleID} p:hasEditorial_Teams ex:Editorial_Teams/{TeamID} .
+source		SELECT `TeamID`, `RoleID` FROM `Editorial_Teams_Roles` WHERE `TeamID` IS NOT NULL
+
+]]

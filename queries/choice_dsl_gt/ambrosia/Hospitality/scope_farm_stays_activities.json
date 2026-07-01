@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_farm_stays_activities",
+  "schema": "amb_scope_farm_stays_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each farm stay, show the activity descriptions it offers.",
+      "qtype": "unambig",
+      "sql": "select farm_stays.name , activities.description from Farm_Stays_Activities join Activities on Farm_Stays_Activities.activity_id = Activities.activity_id join Farm_Stays on Farm_Stays_Activities.farm_stay_id = Farm_Stays.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?farm_stays_activities a :Farm_Stays_Activities .\n  ?activities a :Activities .\n  ?farm_stays_activities p:hasActivities ?activities .\n  ?farm_stays a :Farm_Stays .\n  ?farm_stays_activities p:hasFarm_Stays ?farm_stays .\n  ?farm_stays p:name ?name .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What is the description of each activity for each farm stay?",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.description  from Farm_Stays_Activities join Activities on Farm_Stays_Activities.activity_id = Activities.activity_id join Farm_Stays on Farm_Stays_Activities.farm_stay_id = Farm_Stays.id   GROUP BY Farm_Stays_Activities.activity_id HAVING COUNT(DISTINCT Farm_Stays_Activities.farm_stay_id) = (SELECT COUNT(*) FROM  Farm_Stays)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasFarm_Stays ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm_Stays } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the description of each activity for each farm stay?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?farm_stays_activities a :Farm_Stays_Activities .\n  ?activities a :Activities .\n  ?farm_stays_activities p:hasActivities ?activities .\n  ?farm_stays a :Farm_Stays .\n  ?farm_stays_activities p:hasFarm_Stays ?farm_stays .\n  ?farm_stays p:name ?name .\n  ?activities p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasFarm_Stays ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Farm_Stays } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

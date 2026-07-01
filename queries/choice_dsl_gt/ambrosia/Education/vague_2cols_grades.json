@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_grades",
+  "schema": "amb_vague_2cols_grades",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is John Doe's GPA and courses?",
+      "qtype": "unambig",
+      "sql": "SELECT Grades.CourseName, Grades.Gpa FROM Grades JOIN Enrollments ON Enrollments.EnrollmentID = Grades.EnrollmentID JOIN Students ON Students.StudentID = Enrollments. StudentID WHERE Students.fullname = 'John Doe';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename ?gpa WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Gpa ?gpa .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who got the lowest standardized test score and what was the score?",
+      "qtype": "unambig",
+      "sql": "SELECT Grades.Standardized_Test_Score, Students.fullname FROM Students JOIN Enrollments ON Students.StudentID = Enrollments. StudentID  JOIN Grades ON Enrollments.EnrollmentID = Grades.EnrollmentID ORDER BY Grades.Standardized_Test_Score ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?standardized_test_score ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname .\n  ?grades p:Standardized_Test_Score ?standardized_test_score_o .\n}\nORDER BY ASC(?standardized_test_score_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who got the lowest score and what was the score?",
+      "qtype": "ambig",
+      "sql": "SELECT Grades.Gpa, Students.fullname FROM Students JOIN Enrollments ON Students.StudentID = Enrollments. StudentID  JOIN Grades ON Enrollments.EnrollmentID = Grades.EnrollmentID ORDER BY Grades.Gpa ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gpa ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Gpa ?gpa .\n  ?students p:name ?fullname .\n  ?grades p:Gpa ?gpa_o .\n}\nORDER BY ASC(?gpa_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who got the lowest score and what was the score?",
+      "qtype": "ambig",
+      "sql": "SELECT Grades.Gpa, Grades.Standardized_Test_Score,  Students.fullname FROM Students JOIN Enrollments ON Students.StudentID = Enrollments. StudentID  JOIN Grades ON Enrollments.EnrollmentID = Grades.EnrollmentID ORDER BY Grades.Gpa, Grades.Standardized_Test_Score ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gpa ?standardized_test_score ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Gpa ?gpa .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname .\n  ?grades p:Gpa ?gpa_o .\n  ?grades p:Standardized_Test_Score ?standardized_test_score_o .\n}\nORDER BY ASC(?gpa_o) ASC(?standardized_test_score_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Tell me the results of John Doe's standardized test, his GPA and the courses he is taking.",
+      "qtype": "unambig",
+      "sql": "SELECT Grades.CourseName,  Grades.Gpa , Grades.Standardized_Test_Score FROM Grades JOIN Enrollments ON Enrollments.EnrollmentID = Grades.EnrollmentID JOIN Students ON Students.StudentID = Enrollments. StudentID WHERE Students.fullname = 'John Doe';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename ?gpa ?standardized_test_score WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Gpa ?gpa .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me John Doe's course names and grades.",
+      "qtype": "ambig",
+      "sql": "SELECT Grades.CourseName, Grades.Standardized_Test_Score FROM Grades JOIN Enrollments ON Enrollments.EnrollmentID = Grades.EnrollmentID JOIN Students ON Students.StudentID = Enrollments. StudentID WHERE Students.fullname = 'John Doe';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename ?standardized_test_score WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me John Doe's course names and grades.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?coursename ?gpa WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Gpa ?gpa .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n} }\n  full: { SELECT ?coursename ?gpa ?standardized_test_score WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Gpa ?gpa .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n} }\n  component_2: { SELECT ?coursename ?standardized_test_score WHERE {\n  ?grades a :Grades .\n  ?enrollments a :Enrollments .\n  ?grades p:hasEnrollments ?enrollments .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?grades p:CourseName ?coursename .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"John Doe\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who got the lowest score and what was the score?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?standardized_test_score ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname .\n  ?grades p:Standardized_Test_Score ?standardized_test_score_o .\n}\nORDER BY ASC(?standardized_test_score_o)\nLIMIT 1 }\n  component_2: { SELECT ?gpa ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Gpa ?gpa .\n  ?students p:name ?fullname .\n  ?grades p:Gpa ?gpa_o .\n}\nORDER BY ASC(?gpa_o)\nLIMIT 1 }\n  full: { SELECT ?gpa ?standardized_test_score ?fullname WHERE {\n  ?students a :Students .\n  ?enrollments a :Enrollments .\n  ?enrollments p:hasStudents ?students .\n  ?grades a :Grades .\n  ?grades p:hasEnrollments ?enrollments .\n  ?grades p:Gpa ?gpa .\n  ?grades p:Standardized_Test_Score ?standardized_test_score .\n  ?students p:name ?fullname .\n  ?grades p:Gpa ?gpa_o .\n  ?grades p:Standardized_Test_Score ?standardized_test_score_o .\n}\nORDER BY ASC(?gpa_o) ASC(?standardized_test_score_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

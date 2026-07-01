@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_higher_education_institutions",
+  "schema": "amb_attachment_1tab_val_higher_education_institutions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all university students and also provide a list of college students studying Business Administration.",
+      "qtype": "unambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE Students.HigherEducationInstitution = \"University\" OR Students.HigherEducationInstitution = \"College\" AND Students.AcademicProgram = \"Business Administration\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w2 .\n  ?students p:AcademicProgram ?academicprogram_w .\n  FILTER((STR(?highereducationinstitution_w) = \"University\" || (STR(?highereducationinstitution_w2) = \"College\" && STR(?academicprogram_w) = \"Business Administration\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List all university students and college students studying Business Administration.",
+      "qtype": "ambig",
+      "sql": "SELECT Students.FullName\nFROM Students\nWHERE (Students.HigherEducationInstitution = \"University\" OR Students.HigherEducationInstitution = \"College\") AND Students.AcademicProgram = \"Business Administration\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w2 .\n  ?students p:AcademicProgram ?academicprogram_w .\n  FILTER((((STR(?highereducationinstitution_w) = \"University\" || STR(?highereducationinstitution_w2) = \"College\")) && STR(?academicprogram_w) = \"Business Administration\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all university students and college students studying Business Administration.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w2 .\n  ?students p:AcademicProgram ?academicprogram_w .\n  FILTER((STR(?highereducationinstitution_w) = \"University\" || (STR(?highereducationinstitution_w2) = \"College\" && STR(?academicprogram_w) = \"Business Administration\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w .\n  ?students p:HigherEducationInstitution ?highereducationinstitution_w2 .\n  ?students p:AcademicProgram ?academicprogram_w .\n  FILTER((((STR(?highereducationinstitution_w) = \"University\" || STR(?highereducationinstitution_w2) = \"College\")) && STR(?academicprogram_w) = \"Business Administration\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

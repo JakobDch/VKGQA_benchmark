@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_food_critics_cuisines",
+  "schema": "amb_scope_food_critics_cuisines",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each of the food critics, list the corresponding cuisine.",
+      "qtype": "unambig",
+      "sql": "select food_critics.critic_name , cuisines.cuisine_name from Food_Critics_Cuisines join Cuisines on Food_Critics_Cuisines.cuisine_id = Cuisines.id join Food_Critics on Food_Critics_Cuisines.food_critic_id = Food_Critics.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?critic_name ?cuisine_name WHERE {\n  ?food_critics_cuisines a :Food_Critics_Cuisines .\n  ?cuisines a :Cuisines .\n  ?food_critics_cuisines p:hasCuisines ?cuisines .\n  ?food_critics a :Food_Critics .\n  ?food_critics_cuisines p:hasFood_Critics ?food_critics .\n  ?food_critics p:critic_name ?critic_name .\n  ?cuisines p:cuisine_name ?cuisine_name .\n}",
+      "status": "pass",
+      "note": "n=25"
+    },
+    {
+      "qid": 1,
+      "question": "List the cuisines that every food critic reviews.",
+      "qtype": "ambig",
+      "sql": "SELECT Cuisines.cuisine_name  from Food_Critics_Cuisines join Cuisines on Food_Critics_Cuisines.cuisine_id = Cuisines.id join Food_Critics on Food_Critics_Cuisines.food_critic_id = Food_Critics.id   GROUP BY Food_Critics_Cuisines.cuisine_id HAVING COUNT(DISTINCT Food_Critics_Cuisines.food_critic_id) = (SELECT COUNT(*) FROM  Food_Critics)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?cuisine_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCuisines ?child ; p:hasFood_Critics ?parent . } GROUP BY ?child }\n  ?child p:cuisine_name ?cuisine_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Food_Critics } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the cuisines that every food critic reviews.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?critic_name ?cuisine_name WHERE {\n  ?food_critics_cuisines a :Food_Critics_Cuisines .\n  ?cuisines a :Cuisines .\n  ?food_critics_cuisines p:hasCuisines ?cuisines .\n  ?food_critics a :Food_Critics .\n  ?food_critics_cuisines p:hasFood_Critics ?food_critics .\n  ?food_critics p:critic_name ?critic_name .\n  ?cuisines p:cuisine_name ?cuisine_name .\n} }\n  collective: { SELECT ?cuisine_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCuisines ?child ; p:hasFood_Critics ?parent . } GROUP BY ?child }\n  ?child p:cuisine_name ?cuisine_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Food_Critics } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

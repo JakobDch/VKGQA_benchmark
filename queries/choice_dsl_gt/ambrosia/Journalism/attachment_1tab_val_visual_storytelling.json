@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_visual_storytelling",
+  "schema": "amb_attachment_1tab_val_visual_storytelling",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all of the articles with photos, also show the articles with videos but just those about technology.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.title \nFROM Articles\nWHERE Articles.visualStorytelling = \"Photo\" OR Articles.visualStorytelling = \"Video\" AND Articles.articleType = \"Technology\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:title ?title .\n  ?articles p:visualStorytelling ?visualstorytelling_w .\n  ?articles p:visualStorytelling ?visualstorytelling_w2 .\n  ?articles p:articleType ?articletype_w .\n  FILTER((STR(?visualstorytelling_w) = \"Photo\" || (STR(?visualstorytelling_w2) = \"Video\" && STR(?articletype_w) = \"Technology\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List both articles with photos and articles with videos where any are on the subject of technology.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.title \nFROM Articles\nWHERE (Articles.visualStorytelling = \"Photo\" OR Articles.visualStorytelling = \"Video\") AND Articles.articleType = \"Technology\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:title ?title .\n  ?articles p:visualStorytelling ?visualstorytelling_w .\n  ?articles p:visualStorytelling ?visualstorytelling_w2 .\n  ?articles p:articleType ?articletype_w .\n  FILTER((((STR(?visualstorytelling_w) = \"Photo\" || STR(?visualstorytelling_w2) = \"Video\")) && STR(?articletype_w) = \"Technology\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all the articles with photos and videos related to technology.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:title ?title .\n  ?articles p:visualStorytelling ?visualstorytelling_w .\n  ?articles p:visualStorytelling ?visualstorytelling_w2 .\n  ?articles p:articleType ?articletype_w .\n  FILTER((STR(?visualstorytelling_w) = \"Photo\" || (STR(?visualstorytelling_w2) = \"Video\" && STR(?articletype_w) = \"Technology\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?articles p:title ?title .\n  ?articles p:visualStorytelling ?visualstorytelling_w .\n  ?articles p:visualStorytelling ?visualstorytelling_w2 .\n  ?articles p:articleType ?articletype_w .\n  FILTER((((STR(?visualstorytelling_w) = \"Photo\" || STR(?visualstorytelling_w2) = \"Video\")) && STR(?articletype_w) = \"Technology\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_banks_financial_roles",
+  "schema": "amb_scope_banks_financial_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What financial roles are present at every bank at the same time?",
+      "qtype": "unambig",
+      "sql": "SELECT Financial_Roles.RoleName  from Banks_Financial_Roles join Financial_Roles on Banks_Financial_Roles.RoleID = Financial_Roles.RoleID join Banks on Banks_Financial_Roles.BankID = Banks.BankID   GROUP BY Banks_Financial_Roles.RoleID HAVING COUNT(DISTINCT Banks_Financial_Roles.BankID) = (SELECT COUNT(*) FROM  Banks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :Financial_Roles ; p:RoleID ?cg . ?l p:BankID ?pg . ?parent a :Banks ; p:BankID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Banks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every bank list all of the financial roles available.",
+      "qtype": "unambig",
+      "sql": "select banks.name , financial_roles.rolename from Banks_Financial_Roles join Financial_Roles on Banks_Financial_Roles.RoleID = Financial_Roles.RoleID join Banks on Banks_Financial_Roles.BankID = Banks.BankID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?rolename WHERE {\n  ?banks_financial_roles a :Banks_Financial_Roles .\n  ?financial_roles a :Financial_Roles .\n  ?banks_financial_roles p:hasFinancial_Roles ?financial_roles .\n  ?banks a :Banks .\n  ?banks_financial_roles p:hasBanks ?banks .\n  ?banks p:name ?name .\n  ?financial_roles p:RoleName ?rolename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What financial roles are there for every bank?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:RoleID ?cg . ?child a :Financial_Roles ; p:RoleID ?cg . ?l p:BankID ?pg . ?parent a :Banks ; p:BankID ?pg . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Banks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?rolename WHERE {\n  ?banks_financial_roles a :Banks_Financial_Roles .\n  ?financial_roles a :Financial_Roles .\n  ?banks_financial_roles p:hasFinancial_Roles ?financial_roles .\n  ?banks a :Banks .\n  ?banks_financial_roles p:hasBanks ?banks .\n  ?banks p:name ?name .\n  ?financial_roles p:RoleName ?rolename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

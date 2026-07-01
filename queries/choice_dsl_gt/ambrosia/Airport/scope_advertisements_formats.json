@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_advertisements_formats",
+  "schema": "amb_scope_advertisements_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the formats that every advertisement has.",
+      "qtype": "ambig",
+      "sql": "SELECT Formats.format_name  from Advertisements_Formats join Formats on Advertisements_Formats.format_id = Formats.id join Advertisements on Advertisements_Formats.advertisement_id = Advertisements.id   GROUP BY Advertisements_Formats.format_id HAVING COUNT(DISTINCT Advertisements_Formats.advertisement_id) = (SELECT COUNT(*) FROM  Advertisements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFormats ?child ; p:hasAdvertisements ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Advertisements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the formats that every advertisement has.",
+      "qtype": "ambig",
+      "sql": "select advertisements.title , formats.format_name from Advertisements_Formats join Formats on Advertisements_Formats.format_id = Formats.id join Advertisements on Advertisements_Formats.advertisement_id = Advertisements.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?format_name WHERE {\n  ?advertisements_formats a :Advertisements_Formats .\n  ?formats a :Formats .\n  ?advertisements_formats p:hasFormats ?formats .\n  ?advertisements a :Advertisements .\n  ?advertisements_formats p:hasAdvertisements ?advertisements .\n  ?advertisements p:title ?title .\n  ?formats p:format_name ?format_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the formats that every advertisement has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?format_name WHERE {\n  ?advertisements_formats a :Advertisements_Formats .\n  ?formats a :Formats .\n  ?advertisements_formats p:hasFormats ?formats .\n  ?advertisements a :Advertisements .\n  ?advertisements_formats p:hasAdvertisements ?advertisements .\n  ?advertisements p:title ?title .\n  ?formats p:format_name ?format_name .\n} }\n  collective: { SELECT ?format_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFormats ?child ; p:hasAdvertisements ?parent . } GROUP BY ?child }\n  ?child p:format_name ?format_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Advertisements } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

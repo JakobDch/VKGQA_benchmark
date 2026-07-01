@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_construction_jobs",
+  "schema": "amb_attachment_1tab_ref_construction_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show civil engineering jobs and architecture jobs that use AutoCAD software.",
+      "qtype": "ambig",
+      "sql": "SELECT Construction_Jobs.jobTitle \nFROM Construction_Jobs JOIN Design_Software_Expertise ON Construction_Jobs.designSoftware = Design_Software_Expertise.softwareName\nWHERE (Construction_Jobs.ConstructionJobType = \"Civil Engineering\" OR Construction_Jobs.ConstructionJobType = \"Architecture\") AND Design_Software_Expertise.softwareName = \"AutoCAD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?jobtitle WHERE {\n  ?construction_jobs a :Construction_Jobs .\n  ?design_software_expertise a :Design_Software_Expertise .\n  ?construction_jobs p:designSoftware ?designsoftware_l .\n  ?design_software_expertise p:softwareName ?softwarename_r .\n  ?construction_jobs p:jobTitle ?jobtitle .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w2 .\n  ?design_software_expertise p:softwareName ?softwarename_w .\n  FILTER(STR(?designsoftware_l) = STR(?softwarename_r))\n  FILTER((((STR(?constructionjobtype_w) = \"Civil Engineering\" || STR(?constructionjobtype_w2) = \"Architecture\")) && STR(?softwarename_w) = \"AutoCAD\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show civil engineering jobs and architecture jobs that use AutoCAD software.",
+      "qtype": "ambig",
+      "sql": "SELECT Construction_Jobs.jobTitle \nFROM Construction_Jobs JOIN Design_Software_Expertise ON Construction_Jobs.designSoftware = Design_Software_Expertise.softwareName\nWHERE Construction_Jobs.ConstructionJobType = \"Civil Engineering\" OR Construction_Jobs.ConstructionJobType = \"Architecture\" AND Design_Software_Expertise.softwareName = \"AutoCAD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?jobtitle WHERE {\n  ?construction_jobs a :Construction_Jobs .\n  ?design_software_expertise a :Design_Software_Expertise .\n  ?construction_jobs p:designSoftware ?designsoftware_l .\n  ?design_software_expertise p:softwareName ?softwarename_r .\n  ?construction_jobs p:jobTitle ?jobtitle .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w2 .\n  ?design_software_expertise p:softwareName ?softwarename_w .\n  FILTER(STR(?designsoftware_l) = STR(?softwarename_r))\n  FILTER((STR(?constructionjobtype_w) = \"Civil Engineering\" || (STR(?constructionjobtype_w2) = \"Architecture\" && STR(?softwarename_w) = \"AutoCAD\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show civil engineering jobs and architecture jobs that use AutoCAD software.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?jobtitle WHERE {\n  ?construction_jobs a :Construction_Jobs .\n  ?design_software_expertise a :Design_Software_Expertise .\n  ?construction_jobs p:designSoftware ?designsoftware_l .\n  ?design_software_expertise p:softwareName ?softwarename_r .\n  ?construction_jobs p:jobTitle ?jobtitle .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w2 .\n  ?design_software_expertise p:softwareName ?softwarename_w .\n  FILTER(STR(?designsoftware_l) = STR(?softwarename_r))\n  FILTER((((STR(?constructionjobtype_w) = \"Civil Engineering\" || STR(?constructionjobtype_w2) = \"Architecture\")) && STR(?softwarename_w) = \"AutoCAD\"))\n} }\n  low: { SELECT ?jobtitle WHERE {\n  ?construction_jobs a :Construction_Jobs .\n  ?design_software_expertise a :Design_Software_Expertise .\n  ?construction_jobs p:designSoftware ?designsoftware_l .\n  ?design_software_expertise p:softwareName ?softwarename_r .\n  ?construction_jobs p:jobTitle ?jobtitle .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w .\n  ?construction_jobs p:constructionJobType ?constructionjobtype_w2 .\n  ?design_software_expertise p:softwareName ?softwarename_w .\n  FILTER(STR(?designsoftware_l) = STR(?softwarename_r))\n  FILTER((STR(?constructionjobtype_w) = \"Civil Engineering\" || (STR(?constructionjobtype_w2) = \"Architecture\" && STR(?softwarename_w) = \"AutoCAD\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Software_Developers_base
+target		ex:Software_Developers/{id} a :Software_Developers ; p:id {id} ; p:name {name} ; p:experience {experience} ; p:skills {skills} ; p:grade {grade} .
+source		SELECT `id`, `name`, `experience`, `skills`, `grade` FROM `Software_Developers`
+
+mappingId	Data_Analysts_base
+target		ex:Data_Analysts/{id} a :Data_Analysts ; p:id {id} ; p:name {name} ; p:experience {experience} ; p:tools {tools} ; p:grade {grade} .
+source		SELECT `id`, `name`, `experience`, `tools`, `grade` FROM `Data_Analysts`
+
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:location {location} ; p:size {size} .
+source		SELECT `id`, `name`, `location`, `size` FROM `Companies`
+
+mappingId	Projects_base
+target		ex:Project/{id} a :Project ; p:id {id} ; p:description {description} ; p:startDate {startDate} ; p:endDate {endDate} ; p:companyId {companyId} .
+source		SELECT `id`, `description`, `startDate`, `endDate`, `companyId` FROM `Projects`
+
+mappingId	Projects_companyId_fk
+target		ex:Project/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Projects` WHERE `companyId` IS NOT NULL
+
+mappingId	Developers_Projects_base
+target		ex:Developers_Projects/{developerId}/{projectId} a :Developers_Projects ; p:developerId {developerId} ; p:projectId {projectId} .
+source		SELECT `developerId`, `projectId` FROM `Developers_Projects`
+
+mappingId	Developers_Projects_projectId_fk
+target		ex:Developers_Projects/{developerId}/{projectId} p:hasProject ex:Project/{projectId} .
+source		SELECT `developerId`, `projectId` FROM `Developers_Projects` WHERE `projectId` IS NOT NULL
+
+mappingId	Developers_Projects_developerId_fk
+target		ex:Developers_Projects/{developerId}/{projectId} p:hasSoftware_Developers ex:Software_Developers/{developerId} .
+source		SELECT `developerId`, `projectId` FROM `Developers_Projects` WHERE `developerId` IS NOT NULL
+
+mappingId	Analysts_Projects_base
+target		ex:Analysts_Projects/{analystId}/{projectId} a :Analysts_Projects ; p:analystId {analystId} ; p:projectId {projectId} .
+source		SELECT `analystId`, `projectId` FROM `Analysts_Projects`
+
+mappingId	Analysts_Projects_projectId_fk
+target		ex:Analysts_Projects/{analystId}/{projectId} p:hasProject ex:Project/{projectId} .
+source		SELECT `analystId`, `projectId` FROM `Analysts_Projects` WHERE `projectId` IS NOT NULL
+
+mappingId	Analysts_Projects_analystId_fk
+target		ex:Analysts_Projects/{analystId}/{projectId} p:hasData_Analysts ex:Data_Analysts/{analystId} .
+source		SELECT `analystId`, `projectId` FROM `Analysts_Projects` WHERE `analystId` IS NOT NULL
+
+]]

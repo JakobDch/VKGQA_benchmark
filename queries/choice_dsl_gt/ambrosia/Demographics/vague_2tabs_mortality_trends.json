@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2tabs_mortality_trends",
+  "schema": "amb_vague_2tabs_mortality_trends",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the death count and province names in areas with more than 1.5M people.",
+      "qtype": "unambig",
+      "sql": "SELECT Number_Of_Deaths.total_deaths, Province.name FROM Number_Of_Deaths JOIN Province ON Number_Of_Deaths.year = Province.year WHERE Province.population > 1500000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?total_deaths ?name WHERE {\n  ?number_of_deaths a :Number_Of_Deaths .\n  ?province a :Province .\n  ?province p:hasNumber_Of_Deaths ?number_of_deaths .\n  ?number_of_deaths p:total_deaths ?total_deaths .\n  ?province p:name ?name .\n  ?province p:population ?population_f .\n  FILTER(?population_f > 1500000)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the mortality trends and population for new york",
+      "qtype": "ambig",
+      "sql": "SELECT Number_Of_Deaths.total_deaths, Province.population FROM Province JOIN Number_Of_Deaths ON Province.year = Number_Of_Deaths.year WHERE Province.name = 'New York'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?total_deaths ?population WHERE {\n  ?province a :Province .\n  ?number_of_deaths a :Number_Of_Deaths .\n  ?province p:hasNumber_Of_Deaths ?number_of_deaths .\n  ?number_of_deaths p:total_deaths ?total_deaths .\n  ?province p:population ?population .\n  ?province p:name ?name_f .\n  FILTER(?name_f = \"New York\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the mortality trends and population for new york",
+      "qtype": "ambig",
+      "sql": "SELECT Crude_Death_Rate.rate, Province.population FROM Province JOIN Crude_Death_Rate ON Province.year = Crude_Death_Rate.year WHERE Province.name = 'New York'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?rate ?pop WHERE {\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?cdr a :Crude_Death_Rate ; p:year ?y2 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(?nm='New York')\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the mortality trends and population for new york",
+      "qtype": "ambig",
+      "sql": "SELECT Number_Of_Deaths.total_deaths, Crude_Death_Rate.rate, Province.population FROM Province JOIN Number_Of_Deaths ON Province.year = Number_Of_Deaths.year JOIN Crude_Death_Rate ON Province.year = Crude_Death_Rate.year WHERE Province.name = 'New York'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?td ?rate ?pop WHERE {\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?nod a :Number_Of_Deaths ; p:year ?y2 ; p:total_deaths ?td .\n  ?cdr a :Crude_Death_Rate ; p:year ?y3 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(STR(?y)=STR(?y3)) FILTER(?nm='New York')\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "List all the death rates for places with a population greater than 1.5M and names of these places.",
+      "qtype": "unambig",
+      "sql": "SELECT Crude_Death_Rate.rate, Province.name FROM Crude_Death_Rate JOIN Province ON Crude_Death_Rate.year = Province.year WHERE Province.population > 1500000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rate ?nm WHERE {\n  ?cdr a :Crude_Death_Rate ; p:year ?y2 ; p:rate ?rate .\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  FILTER(STR(?y)=STR(?y2)) FILTER(?pop > 1500000)\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "show me the mortality trends and names of provinces with a population greater than 1,500,000",
+      "qtype": "ambig",
+      "sql": "SELECT Number_Of_Deaths.total_deaths, Crude_Death_Rate.rate, Province.name FROM Number_Of_Deaths JOIN Province ON Number_Of_Deaths.year = Province.year JOIN Crude_Death_Rate ON Province.year = Crude_Death_Rate.year WHERE Province.population > 1500000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?td ?rate ?nm WHERE {\n  ?nod a :Number_Of_Deaths ; p:year ?y2 ; p:total_deaths ?td .\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?cdr a :Crude_Death_Rate ; p:year ?y3 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(STR(?y)=STR(?y3)) FILTER(?pop > 1500000)\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "show me the mortality trends and names of provinces with a population greater than 1,500,000",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?total_deaths ?name WHERE {\n  ?number_of_deaths a :Number_Of_Deaths .\n  ?province a :Province .\n  ?province p:hasNumber_Of_Deaths ?number_of_deaths .\n  ?number_of_deaths p:total_deaths ?total_deaths .\n  ?province p:name ?name .\n  ?province p:population ?population_f .\n  FILTER(?population_f > 1500000)\n} }\n  component_2: { SELECT ?rate ?nm WHERE {\n  ?cdr a :Crude_Death_Rate ; p:year ?y2 ; p:rate ?rate .\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  FILTER(STR(?y)=STR(?y2)) FILTER(?pop > 1500000)\n} }\n  full: { SELECT ?td ?rate ?nm WHERE {\n  ?nod a :Number_Of_Deaths ; p:year ?y2 ; p:total_deaths ?td .\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?cdr a :Crude_Death_Rate ; p:year ?y3 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(STR(?y)=STR(?y3)) FILTER(?pop > 1500000)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the mortality trends and population for new york",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nCHOICE vague {\n  full: { SELECT ?td ?rate ?pop WHERE {\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?nod a :Number_Of_Deaths ; p:year ?y2 ; p:total_deaths ?td .\n  ?cdr a :Crude_Death_Rate ; p:year ?y3 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(STR(?y)=STR(?y3)) FILTER(?nm='New York')\n} }\n  component: { SELECT ?rate ?pop WHERE {\n  ?pr a :Province ; p:year ?y ; p:name ?nm ; p:population ?pop .\n  ?cdr a :Crude_Death_Rate ; p:year ?y2 ; p:rate ?rate .\n  FILTER(STR(?y)=STR(?y2)) FILTER(?nm='New York')\n} }\n  component_2: { SELECT ?total_deaths ?population WHERE {\n  ?province a :Province .\n  ?number_of_deaths a :Number_Of_Deaths .\n  ?province p:hasNumber_Of_Deaths ?number_of_deaths .\n  ?number_of_deaths p:total_deaths ?total_deaths .\n  ?province p:population ?population .\n  ?province p:name ?name_f .\n  FILTER(?name_f = \"New York\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

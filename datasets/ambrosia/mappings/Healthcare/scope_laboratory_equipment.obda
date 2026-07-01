@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Laboratory_base
+target		ex:Laboratory/{id} a :Laboratory ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Laboratory`
+
+mappingId	Equipment_base
+target		ex:Equipment/{id} a :Equipment ; p:id {id} ; p:type {type} ; p:description {description} .
+source		SELECT `id`, `type`, `description` FROM `Equipment`
+
+mappingId	Laboratory_Equipment_base
+target		ex:Laboratory_Equipment/{laboratory_id}/{equipment_type_id} a :Laboratory_Equipment ; p:laboratory_id {laboratory_id} ; p:equipment_type_id {equipment_type_id} .
+source		SELECT `laboratory_id`, `equipment_type_id` FROM `Laboratory_Equipment`
+
+mappingId	Laboratory_Equipment_equipment_type_id_fk
+target		ex:Laboratory_Equipment/{laboratory_id}/{equipment_type_id} p:hasEquipment ex:Equipment/{equipment_type_id} .
+source		SELECT `laboratory_id`, `equipment_type_id` FROM `Laboratory_Equipment` WHERE `equipment_type_id` IS NOT NULL
+
+mappingId	Laboratory_Equipment_laboratory_id_fk
+target		ex:Laboratory_Equipment/{laboratory_id}/{equipment_type_id} p:hasLaboratory ex:Laboratory/{laboratory_id} .
+source		SELECT `laboratory_id`, `equipment_type_id` FROM `Laboratory_Equipment` WHERE `laboratory_id` IS NOT NULL
+
+mappingId	Doctors_base
+target		ex:Doctors/{id} a :Doctors ; p:id {id} ; p:name {name} ; p:specialization {specialization} .
+source		SELECT `id`, `name`, `specialization` FROM `Doctors`
+
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:name {name} ; p:age {age} ; p:gender {gender} .
+source		SELECT `id`, `name`, `age`, `gender` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{appointment_id} a :Appointments ; p:appointment_id {appointment_id} ; p:doctor_id {doctor_id} ; p:patient_id {patient_id} ; p:date {date} ; p:time {time} .
+source		SELECT `appointment_id`, `doctor_id`, `patient_id`, `date`, `time` FROM `Appointments`
+
+mappingId	Appointments_patient_id_fk
+target		ex:Appointments/{appointment_id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `appointment_id`, `patient_id` FROM `Appointments` WHERE `patient_id` IS NOT NULL
+
+mappingId	Appointments_doctor_id_fk
+target		ex:Appointments/{appointment_id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `appointment_id`, `doctor_id` FROM `Appointments` WHERE `doctor_id` IS NOT NULL
+
+]]

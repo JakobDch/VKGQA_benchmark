@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:name {FullName} .
+source		SELECT `id`, `email`, `phoneNumber`, `FullName` FROM `customers`
+
+mappingId	rates_base
+target		ex:rates/{id} a :rates ; p:id {id} ; p:interestRate {interestRate} .
+source		SELECT `id`, `interestRate` FROM `rates`
+
+mappingId	loans_base
+target		ex:Loans/{id} a :Loans ; p:id {id} ; p:customerId {customerId} ; p:loanType {loanType} ; p:amount {amount} ; p:termYears {termYears} ; p:interestRateId {interestRateId} .
+source		SELECT `id`, `customerId`, `loanType`, `amount`, `termYears`, `interestRateId` FROM `loans`
+
+mappingId	loans_interestRateId_fk
+target		ex:Loans/{id} p:hasrates ex:rates/{interestRateId} .
+source		SELECT `id`, `interestRateId` FROM `loans` WHERE `interestRateId` IS NOT NULL
+
+mappingId	loans_customerId_fk
+target		ex:Loans/{id} p:hasCustomers ex:Customers/{customerId} .
+source		SELECT `id`, `customerId` FROM `loans` WHERE `customerId` IS NOT NULL
+
+]]

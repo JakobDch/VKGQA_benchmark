@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_aquaculture_facility_fish_species",
+  "schema": "amb_scope_aquaculture_facility_fish_species",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each facility, list the species they have.",
+      "qtype": "unambig",
+      "sql": "select aquaculture_facility.name , fish_species.species_name from Aquaculture_Facility_Fish_Species join Fish_Species on Aquaculture_Facility_Fish_Species.fish_species_id = Fish_Species.id join Aquaculture_Facility on Aquaculture_Facility_Fish_Species.aquaculture_facility_id = Aquaculture_Facility.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?species_name WHERE {\n  ?aquaculture_facility_fish_species a :Aquaculture_Facility_Fish_Species .\n  ?fish_species a :Species .\n  ?aquaculture_facility_fish_species p:hasFish_Species ?fish_species .\n  ?aquaculture_facility a :Aquaculture_Facility .\n  ?aquaculture_facility_fish_species p:hasAquaculture_Facility ?aquaculture_facility .\n  ?aquaculture_facility p:name ?name .\n  ?fish_species p:name ?species_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the species every facility has.",
+      "qtype": "ambig",
+      "sql": "SELECT Fish_Species.species_name  from Aquaculture_Facility_Fish_Species join Fish_Species on Aquaculture_Facility_Fish_Species.fish_species_id = Fish_Species.id join Aquaculture_Facility on Aquaculture_Facility_Fish_Species.aquaculture_facility_id = Aquaculture_Facility.id   GROUP BY Aquaculture_Facility_Fish_Species.fish_species_id HAVING COUNT(DISTINCT Aquaculture_Facility_Fish_Species.aquaculture_facility_id) = (SELECT COUNT(*) FROM  Aquaculture_Facility)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?species_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFish_Species ?child ; p:hasAquaculture_Facility ?parent . } GROUP BY ?child }\n  ?child p:name ?species_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Aquaculture_Facility } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the species every facility has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?species_name WHERE {\n  ?aquaculture_facility_fish_species a :Aquaculture_Facility_Fish_Species .\n  ?fish_species a :Species .\n  ?aquaculture_facility_fish_species p:hasFish_Species ?fish_species .\n  ?aquaculture_facility a :Aquaculture_Facility .\n  ?aquaculture_facility_fish_species p:hasAquaculture_Facility ?aquaculture_facility .\n  ?aquaculture_facility p:name ?name .\n  ?fish_species p:name ?species_name .\n} }\n  collective: { SELECT ?species_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFish_Species ?child ; p:hasAquaculture_Facility ?parent . } GROUP BY ?child }\n  ?child p:name ?species_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Aquaculture_Facility } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

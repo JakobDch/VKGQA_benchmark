@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_digital_solutions",
+  "schema": "amb_attachment_1tab_val_digital_solutions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What mobile banking customers use biometric authentication and what internet banking customers also use it?",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.FullName\nFROM Customers\nWHERE (Customers.Digital_Solutions = \"Mobile Banking App\" OR Customers.Digital_Solutions = \"Internet Banking Platform\") AND Customers.Sign_in_Options = \"Biometric Authentication\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Digital_Solutions ?digital_solutions_w .\n  ?customers p:Digital_Solutions ?digital_solutions_w2 .\n  ?customers p:Sign_in_Options ?sign_in_options_w .\n  FILTER((((STR(?digital_solutions_w) = \"Mobile Banking App\" || STR(?digital_solutions_w2) = \"Internet Banking Platform\")) && STR(?sign_in_options_w) = \"Biometric Authentication\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show mobile banking customers and internet banking customers that use biometric authentication.",
+      "qtype": "ambig",
+      "sql": "SELECT Customers.FullName\nFROM Customers\nWHERE Customers.Digital_Solutions = \"Mobile Banking App\" OR Customers.Digital_Solutions = \"Internet Banking Platform\" AND Customers.Sign_in_Options = \"Biometric Authentication\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Digital_Solutions ?digital_solutions_w .\n  ?customers p:Digital_Solutions ?digital_solutions_w2 .\n  ?customers p:Sign_in_Options ?sign_in_options_w .\n  FILTER((STR(?digital_solutions_w) = \"Mobile Banking App\" || (STR(?digital_solutions_w2) = \"Internet Banking Platform\" && STR(?sign_in_options_w) = \"Biometric Authentication\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show mobile banking customers and internet banking customers that use biometric authentication.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Digital_Solutions ?digital_solutions_w .\n  ?customers p:Digital_Solutions ?digital_solutions_w2 .\n  ?customers p:Sign_in_Options ?sign_in_options_w .\n  FILTER((((STR(?digital_solutions_w) = \"Mobile Banking App\" || STR(?digital_solutions_w2) = \"Internet Banking Platform\")) && STR(?sign_in_options_w) = \"Biometric Authentication\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Digital_Solutions ?digital_solutions_w .\n  ?customers p:Digital_Solutions ?digital_solutions_w2 .\n  ?customers p:Sign_in_Options ?sign_in_options_w .\n  FILTER((STR(?digital_solutions_w) = \"Mobile Banking App\" || (STR(?digital_solutions_w2) = \"Internet Banking Platform\" && STR(?sign_in_options_w) = \"Biometric Authentication\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

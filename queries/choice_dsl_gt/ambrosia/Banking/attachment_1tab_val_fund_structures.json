@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_fund_structures",
+  "schema": "amb_attachment_1tab_val_fund_structures",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all hedge fund purchase amounts combined with a list of mutual fund purchase amounts where the market share is 2%.",
+      "qtype": "unambig",
+      "sql": "SELECT Investments.purchaseAmount \nFROM Investments\nWHERE Investments.FundStructure = \"Hedge Fund\" OR Investments.FundStructure = \"Mutual Fund\" AND Investments.MarketShare = \"2%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?purchaseamount WHERE {\n  ?investments a :Investments .\n  ?investments p:PurchaseAmount ?purchaseamount .\n  ?investments p:FundStructure ?fundstructure_w .\n  ?investments p:FundStructure ?fundstructure_w2 .\n  ?investments p:MarketShare ?marketshare_w .\n  FILTER((STR(?fundstructure_w) = \"Hedge Fund\" || (STR(?fundstructure_w2) = \"Mutual Fund\" && STR(?marketshare_w) = \"2%\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What is the purchase amount of hedge funds and mutual funds where the market share is 2%?",
+      "qtype": "ambig",
+      "sql": "SELECT Investments.purchaseAmount \nFROM Investments\nWHERE (Investments.FundStructure = \"Hedge Fund\" OR Investments.FundStructure = \"Mutual Fund\") AND Investments.MarketShare = \"2%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?purchaseamount WHERE {\n  ?investments a :Investments .\n  ?investments p:PurchaseAmount ?purchaseamount .\n  ?investments p:FundStructure ?fundstructure_w .\n  ?investments p:FundStructure ?fundstructure_w2 .\n  ?investments p:MarketShare ?marketshare_w .\n  FILTER((((STR(?fundstructure_w) = \"Hedge Fund\" || STR(?fundstructure_w2) = \"Mutual Fund\")) && STR(?marketshare_w) = \"2%\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the purchase amount of hedge funds and mutual funds where the market share is 2%?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?purchaseamount WHERE {\n  ?investments a :Investments .\n  ?investments p:PurchaseAmount ?purchaseamount .\n  ?investments p:FundStructure ?fundstructure_w .\n  ?investments p:FundStructure ?fundstructure_w2 .\n  ?investments p:MarketShare ?marketshare_w .\n  FILTER((STR(?fundstructure_w) = \"Hedge Fund\" || (STR(?fundstructure_w2) = \"Mutual Fund\" && STR(?marketshare_w) = \"2%\")))\n} }\n  high: { SELECT ?purchaseamount WHERE {\n  ?investments a :Investments .\n  ?investments p:PurchaseAmount ?purchaseamount .\n  ?investments p:FundStructure ?fundstructure_w .\n  ?investments p:FundStructure ?fundstructure_w2 .\n  ?investments p:MarketShare ?marketshare_w .\n  FILTER((((STR(?fundstructure_w) = \"Hedge Fund\" || STR(?fundstructure_w2) = \"Mutual Fund\")) && STR(?marketshare_w) = \"2%\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

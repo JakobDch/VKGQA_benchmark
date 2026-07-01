@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_students_courses",
+  "schema": "amb_scope_students_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each student, show the name of courses they are in.",
+      "qtype": "unambig",
+      "sql": "select students.fullname , courses.coursename from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?coursename WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:CourseName ?coursename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What courses are all students enrolled in at the same time and who are their teachers?",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.CourseName, Courses.TeacherName  from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID   GROUP BY Enrollments.CourseID HAVING COUNT(DISTINCT Enrollments.StudentID) = (SELECT COUNT(*) FROM  Students)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename ?teachername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:CourseName ?coursename .\n  ?child p:TeacherName ?teachername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the names of the courses students are in.",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.CourseName  from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID   GROUP BY Enrollments.CourseID HAVING COUNT(DISTINCT Enrollments.StudentID) = (SELECT COUNT(*) FROM  Students)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?coursename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:CourseName ?coursename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the courses that each student is enrolled in and their teachers.",
+      "qtype": "ambig",
+      "sql": "select students.fullname , courses.coursename , courses.teachername from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?coursename ?teachername WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:CourseName ?coursename .\n  ?courses p:TeacherName ?teachername .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Which teacher do all students have?",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.TeacherName  from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID   GROUP BY Enrollments.CourseID HAVING COUNT(DISTINCT Enrollments.StudentID) = (SELECT COUNT(*) FROM  Students)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?teachername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:TeacherName ?teachername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every student, show the teachers that they have.",
+      "qtype": "unambig",
+      "sql": "select students.fullname , courses.teachername from Enrollments join Courses on Enrollments.CourseID = Courses.CourseID join Students on Enrollments.StudentID = Students.StudentID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?teachername WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:TeacherName ?teachername .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the names of the courses students are in.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fullname ?coursename WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:CourseName ?coursename .\n} }\n  collective: { SELECT ?coursename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:CourseName ?coursename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the courses that each student is enrolled in and their teachers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?coursename ?teachername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:CourseName ?coursename .\n  ?child p:TeacherName ?teachername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?fullname ?coursename ?teachername WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:CourseName ?coursename .\n  ?courses p:TeacherName ?teachername .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the teachers that every student has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?teachername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasStudents ?parent . } GROUP BY ?child }\n  ?child p:TeacherName ?teachername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Students } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?fullname ?teachername WHERE {\n  ?enrollments a :Enrollments .\n  ?courses a :Courses .\n  ?enrollments p:hasCourses ?courses .\n  ?students a :Students .\n  ?enrollments p:hasStudents ?students .\n  ?students p:name ?fullname .\n  ?courses p:TeacherName ?teachername .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

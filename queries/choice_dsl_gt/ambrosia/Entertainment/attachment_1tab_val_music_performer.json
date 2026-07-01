@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_music_performer",
+  "schema": "amb_attachment_1tab_val_music_performer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which jazz musicians have been in the industry for 10 years and which rock guitarists have been in the industry for the same duration?",
+      "qtype": "unambig",
+      "sql": "SELECT MusicPerformer.Name \nFROM MusicPerformer\nWHERE (MusicPerformer.MusicPerformerType = \"Jazz Musician\" OR MusicPerformer.MusicPerformerType = \"Rock Guitarist\") AND MusicPerformer.YearsInIndustry = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?musicperformer a :MusicPerformer .\n  ?musicperformer p:name ?name .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w2 .\n  ?musicperformer p:YearsInIndustry ?yearsinindustry_w .\n  FILTER((((STR(?musicperformertype_w) = \"Jazz Musician\" || STR(?musicperformertype_w2) = \"Rock Guitarist\")) && (STR(?yearsinindustry_w) = \"10\" || STR(?yearsinindustry_w) = \"10.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display jazz musicians and rock guitarists who have been in the industry for 10 years.",
+      "qtype": "ambig",
+      "sql": "SELECT MusicPerformer.Name \nFROM MusicPerformer\nWHERE MusicPerformer.MusicPerformerType = \"Jazz Musician\" OR MusicPerformer.MusicPerformerType = \"Rock Guitarist\" AND MusicPerformer.YearsInIndustry = 10",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?musicperformer a :MusicPerformer .\n  ?musicperformer p:name ?name .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w2 .\n  ?musicperformer p:YearsInIndustry ?yearsinindustry_w .\n  FILTER((STR(?musicperformertype_w) = \"Jazz Musician\" || (STR(?musicperformertype_w2) = \"Rock Guitarist\" && (STR(?yearsinindustry_w) = \"10\" || STR(?yearsinindustry_w) = \"10.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display jazz musicians and rock guitarists who have been in the industry for 10 years.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?musicperformer a :MusicPerformer .\n  ?musicperformer p:name ?name .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w2 .\n  ?musicperformer p:YearsInIndustry ?yearsinindustry_w .\n  FILTER((((STR(?musicperformertype_w) = \"Jazz Musician\" || STR(?musicperformertype_w2) = \"Rock Guitarist\")) && (STR(?yearsinindustry_w) = \"10\" || STR(?yearsinindustry_w) = \"10.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?musicperformer a :MusicPerformer .\n  ?musicperformer p:name ?name .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w .\n  ?musicperformer p:MusicPerformerType ?musicperformertype_w2 .\n  ?musicperformer p:YearsInIndustry ?yearsinindustry_w .\n  FILTER((STR(?musicperformertype_w) = \"Jazz Musician\" || (STR(?musicperformertype_w2) = \"Rock Guitarist\" && (STR(?yearsinindustry_w) = \"10\" || STR(?yearsinindustry_w) = \"10.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Actors_base
+target		ex:Actors/{Actor_ID} a :Actors ; p:Actor_ID {Actor_ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Height {Height} .
+source		SELECT `Actor_ID`, `FirstName`, `LastName`, `DateOfBirth`, `Height` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{Role_ID} a :Roles ; p:Role_ID {Role_ID} ; p:CharacterName {CharacterName} ; p:Movie_ID {Movie_ID} ; p:Actor_ID {Actor_ID} .
+source		SELECT `Role_ID`, `CharacterName`, `Movie_ID`, `Actor_ID` FROM `Roles`
+
+mappingId	Roles_Actor_ID_fk
+target		ex:Roles/{Role_ID} p:hasActors ex:Actors/{Actor_ID} .
+source		SELECT `Role_ID`, `Actor_ID` FROM `Roles` WHERE `Actor_ID` IS NOT NULL
+
+mappingId	Roles_Movie_ID_fk
+target		ex:Roles/{Role_ID} p:hasMovies ex:Movies/{Movie_ID} .
+source		SELECT `Role_ID`, `Movie_ID` FROM `Roles` WHERE `Movie_ID` IS NOT NULL
+
+mappingId	Episodes_base
+target		ex:Episodes/{Episode_ID} a :Episodes ; p:Episode_ID {Episode_ID} ; p:SeasonNumber {SeasonNumber} ; p:EpisodeTitle {EpisodeTitle} ; p:EpisodeLength {EpisodeLength} ; p:AirDate {AirDate} ; p:Crew_ID {Crew_ID} .
+source		SELECT `Episode_ID`, `SeasonNumber`, `EpisodeTitle`, `EpisodeLength`, `AirDate`, `Crew_ID` FROM `Episodes`
+
+mappingId	Crew_base
+target		ex:Crew/{Crew_ID} a :Crew ; p:Crew_ID {Crew_ID} ; p:Position {Position} ; p:name {Name} ; p:Experience {Experience} ; p:Episode_ID {Episode_ID} .
+source		SELECT `Crew_ID`, `Position`, `Name`, `Experience`, `Episode_ID` FROM `Crew`
+
+mappingId	Crew_Episode_ID_fk
+target		ex:Crew/{Crew_ID} p:hasEpisodes ex:Episodes/{Episode_ID} .
+source		SELECT `Crew_ID`, `Episode_ID` FROM `Crew` WHERE `Episode_ID` IS NOT NULL
+
+mappingId	Movies_base
+target		ex:Movies/{Movie_ID} a :Movies ; p:Movie_ID {Movie_ID} ; p:Title {Title} ; p:ReleaseDate {ReleaseDate} ; p:Genre {Genre} ; p:BoxOffice {BoxOffice} .
+source		SELECT `Movie_ID`, `Title`, `ReleaseDate`, `Genre`, `BoxOffice` FROM `Movies`
+
+]]

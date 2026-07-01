@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	RoomTypes_base
+target		ex:RoomTypes/{Id} a :RoomTypes ; p:Id {Id} ; p:TypeName {TypeName} .
+source		SELECT `Id`, `TypeName` FROM `RoomTypes`
+
+mappingId	Rooms_base
+target		ex:Rooms/{Id} a :Rooms ; p:Id {Id} ; p:RoomTypeId {RoomTypeId} ; p:FloorNumber {FloorNumber} .
+source		SELECT `Id`, `RoomTypeId`, `FloorNumber` FROM `Rooms`
+
+mappingId	Rooms_RoomTypeId_fk
+target		ex:Rooms/{Id} p:hasRoomTypes ex:RoomTypes/{RoomTypeId} .
+source		SELECT `Id`, `RoomTypeId` FROM `Rooms` WHERE `RoomTypeId` IS NOT NULL
+
+mappingId	Guests_base
+target		ex:Guests/{Id} a :Guests ; p:Id {Id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `Id`, `FirstName`, `LastName`, `EmailAddress`, `PhoneNumber` FROM `Guests`
+
+mappingId	Bookings_base
+target		ex:Bookings/{Id} a :Bookings ; p:Id {Id} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} ; p:RoomId {RoomId} ; p:GuestId {GuestId} .
+source		SELECT `Id`, `CheckInDate`, `CheckOutDate`, `RoomId`, `GuestId` FROM `Bookings`
+
+mappingId	Bookings_GuestId_fk
+target		ex:Bookings/{Id} p:hasGuests ex:Guests/{GuestId} .
+source		SELECT `Id`, `GuestId` FROM `Bookings` WHERE `GuestId` IS NOT NULL
+
+mappingId	Bookings_RoomId_fk
+target		ex:Bookings/{Id} p:hasRooms ex:Rooms/{RoomId} .
+source		SELECT `Id`, `RoomId` FROM `Bookings` WHERE `RoomId` IS NOT NULL
+
+mappingId	Staff_base
+target		ex:Staff/{Id} a :Staff ; p:Id {Id} ; p:name {Name} ; p:Role {Role} ; p:Language {Language} ; p:AdditionalColumn1 {AdditionalColumn1} ; p:AdditionalColumn2 {AdditionalColumn2} ; p:AdditionalColumn3 {AdditionalColumn3} .
+source		SELECT `Id`, `Name`, `Role`, `Language`, `AdditionalColumn1`, `AdditionalColumn2`, `AdditionalColumn3` FROM `Staff`
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Companies_base
+target		ex:Companies/{companyID} a :Companies ; p:companyID {companyID} ; p:name {name} ; p:location {location} .
+source		SELECT `companyID`, `name`, `location` FROM `Companies`
+
+mappingId	Departments_base
+target		ex:Departments/{deptID} a :Departments ; p:deptID {deptID} ; p:deptName {deptName} ; p:companyID {companyID} .
+source		SELECT `deptID`, `deptName`, `companyID` FROM `Departments`
+
+mappingId	Departments_companyID_fk
+target		ex:Departments/{deptID} p:hasCompanies ex:Companies/{companyID} .
+source		SELECT `deptID`, `companyID` FROM `Departments` WHERE `companyID` IS NOT NULL
+
+mappingId	Teams_base
+target		ex:Teams/{teamID} a :Teams ; p:teamID {teamID} ; p:teamName {teamName} ; p:deptID {deptID} .
+source		SELECT `teamID`, `teamName`, `deptID` FROM `Teams`
+
+mappingId	Teams_deptID_fk
+target		ex:Teams/{teamID} p:hasDepartments ex:Departments/{deptID} .
+source		SELECT `teamID`, `deptID` FROM `Teams` WHERE `deptID` IS NOT NULL
+
+mappingId	Positions_base
+target		ex:Position/{positionID} a :Position ; p:positionID {positionID} ; p:title {title} ; p:description {description} ; p:teamID {teamID} .
+source		SELECT `positionID`, `title`, `description`, `teamID` FROM `Positions`
+
+mappingId	Positions_teamID_fk
+target		ex:Position/{positionID} p:hasTeams ex:Teams/{teamID} .
+source		SELECT `positionID`, `teamID` FROM `Positions` WHERE `teamID` IS NOT NULL
+
+mappingId	Management_base
+target		ex:Management/{roleID} a :Management ; p:roleID {roleID} ; p:PositionID {PositionID} ; p:Department_Head {Department_Head} ; p:Team_Leader {Team_Leader} .
+source		SELECT `roleID`, `PositionID`, `Department_Head`, `Team_Leader` FROM `Management`
+
+mappingId	Management_PositionID_fk
+target		ex:Management/{roleID} p:hasPosition ex:Position/{PositionID} .
+source		SELECT `roleID`, `PositionID` FROM `Management` WHERE `PositionID` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{employeeID} a :Employees ; p:employeeID {employeeID} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:hireDate {hireDate} ; p:positionID {positionID} ; p:name {fullname} .
+source		SELECT `employeeID`, `email`, `phoneNumber`, `hireDate`, `positionID`, `fullname` FROM `Employees`
+
+mappingId	Employees_positionID_fk
+target		ex:Employees/{employeeID} p:hasPosition ex:Position/{positionID} .
+source		SELECT `employeeID`, `positionID` FROM `Employees` WHERE `positionID` IS NOT NULL
+
+]]

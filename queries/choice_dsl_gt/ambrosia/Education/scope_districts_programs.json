@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_districts_programs",
+  "schema": "amb_scope_districts_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me a list of all our lessons that show up multiple times across our schools",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.Name  from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID   GROUP BY Districts_Programs.ProgramID HAVING COUNT(DISTINCT Districts_Programs.DistrictID) = (SELECT COUNT(*) FROM  Districts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which education programs are common to all school districts? Show their descriptions.",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.Description  from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID   GROUP BY Districts_Programs.ProgramID HAVING COUNT(DISTINCT Districts_Programs.DistrictID) = (SELECT COUNT(*) FROM  Districts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Provide the details of the programmes we have for every district (names and descriptions)",
+      "qtype": "ambig",
+      "sql": "SELECT Programs.Name, Programs.Description  from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID   GROUP BY Districts_Programs.ProgramID HAVING COUNT(DISTINCT Districts_Programs.DistrictID) = (SELECT COUNT(*) FROM  Districts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Provide the details of the programmes we have for every district (names and descriptions)",
+      "qtype": "ambig",
+      "sql": "select districts.name , programs.name , programs.description from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?description WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:name ?name2 .\n  ?programs p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "What lessons do we have for each school district",
+      "qtype": "ambig",
+      "sql": "select districts.name , programs.name from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "Describe the education programs that every school district has.",
+      "qtype": "ambig",
+      "sql": "select districts.name , programs.description from Districts_Programs join Programs on Districts_Programs.ProgramID = Programs.ID join Districts on Districts_Programs.DistrictID = Districts.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What lessons do we have for each school district",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:name ?name2 .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Describe the education programs that every school district has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:Description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Provide the details of the programmes we have for every district (names and descriptions)",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasDistricts ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Districts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?name2 ?description WHERE {\n  ?districts_programs a :Districts_Programs .\n  ?programs a :Programs .\n  ?districts_programs p:hasPrograms ?programs .\n  ?districts a :Districts .\n  ?districts_programs p:hasDistricts ?districts .\n  ?districts p:name ?name .\n  ?programs p:name ?name2 .\n  ?programs p:Description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

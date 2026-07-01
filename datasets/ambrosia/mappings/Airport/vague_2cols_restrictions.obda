@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:AirlineName {AirlineName} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:DestinationCity {DestinationCity} ; p:NumberOfPassengers {NumberOfPassengers} ; p:BaggageAllowance {BaggageAllowance} .
+source		SELECT `FlightID`, `AirlineName`, `DepartureTime`, `ArrivalTime`, `DestinationCity`, `NumberOfPassengers`, `BaggageAllowance` FROM `Flights`
+
+mappingId	Airports_base
+target		ex:Airports/{AirportCode} a :Airports ; p:AirportCode {AirportCode} ; p:AirportName {AirportName} ; p:City {City} ; p:Country {Country} ; p:Latitude {Latitude} ; p:Longitude {Longitude} .
+source		SELECT `AirportCode`, `AirportName`, `City`, `Country`, `Latitude`, `Longitude` FROM `Airports`
+
+mappingId	Terminals_base
+target		ex:Terminals/{TerminalId} a :Terminals ; p:TerminalId {TerminalId} ; p:AirportCode {AirportCode} ; p:FloorSpace {FloorSpace} ; p:NumberOfGates {NumberOfGates} .
+source		SELECT `TerminalId`, `AirportCode`, `FloorSpace`, `NumberOfGates` FROM `Terminals`
+
+mappingId	Terminals_AirportCode_fk
+target		ex:Terminals/{TerminalId} p:hasAirports ex:Airports/{AirportCode} .
+source		SELECT `TerminalId`, `AirportCode` FROM `Terminals` WHERE `AirportCode` IS NOT NULL
+
+mappingId	Security_base
+target		ex:Security/{RestrictionId} a :Security ; p:RestrictionId {RestrictionId} ; p:SizeLimit {SizeLimit} ; p:ProhibitedItem {ProhibitedItem} ; p:Airlines {Airlines} .
+source		SELECT `RestrictionId`, `SizeLimit`, `ProhibitedItem`, `Airlines` FROM `Security`
+
+mappingId	Security_Airlines_fk
+target		ex:Security/{RestrictionId} p:hasFlights ex:Flights/{Airlines} .
+source		SELECT `RestrictionId`, `Airlines` FROM `Security` WHERE `Airlines` IS NOT NULL
+
+]]

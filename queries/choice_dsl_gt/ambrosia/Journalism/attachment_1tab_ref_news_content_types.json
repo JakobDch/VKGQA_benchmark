@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_news_content_types",
+  "schema": "amb_attachment_1tab_ref_news_content_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all opinion pieces and include just the featured articles from volume 02.",
+      "qtype": "unambig",
+      "sql": "SELECT News_Contents.Title \nFROM News_Contents JOIN Volumes ON News_Contents.Volume_ID = Volumes.id\nWHERE News_Contents.News_Type = \"Opinion Piece\" OR News_Contents.News_Type = \"Feature Article\" AND Volumes.Issue_Number = \"02\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?news_contents a :News_Contents .\n  ?volumes a :Volumes .\n  ?news_contents p:hasVolumes ?volumes .\n  ?news_contents p:Title ?title .\n  ?news_contents p:News_Type ?news_type_w .\n  ?news_contents p:News_Type ?news_type_w2 .\n  ?volumes p:Issue_Number ?issue_number_w .\n  FILTER((STR(?news_type_w) = \"Opinion Piece\" || (STR(?news_type_w2) = \"Feature Article\" && (STR(?issue_number_w) = \"02\" || STR(?issue_number_w) = \"2\" || STR(?issue_number_w) = \"2.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all opinion pieces and featured articles in volume 02.",
+      "qtype": "ambig",
+      "sql": "SELECT News_Contents.Title \nFROM News_Contents JOIN Volumes ON News_Contents.Volume_ID = Volumes.id\nWHERE (News_Contents.News_Type = \"Opinion Piece\" OR News_Contents.News_Type = \"Feature Article\") AND Volumes.Issue_Number = \"02\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?news_contents a :News_Contents .\n  ?volumes a :Volumes .\n  ?news_contents p:hasVolumes ?volumes .\n  ?news_contents p:Title ?title .\n  ?news_contents p:News_Type ?news_type_w .\n  ?news_contents p:News_Type ?news_type_w2 .\n  ?volumes p:Issue_Number ?issue_number_w .\n  FILTER((((STR(?news_type_w) = \"Opinion Piece\" || STR(?news_type_w2) = \"Feature Article\")) && (STR(?issue_number_w) = \"02\" || STR(?issue_number_w) = \"2\" || STR(?issue_number_w) = \"2.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all opinion pieces and featured articles in volume 02.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?news_contents a :News_Contents .\n  ?volumes a :Volumes .\n  ?news_contents p:hasVolumes ?volumes .\n  ?news_contents p:Title ?title .\n  ?news_contents p:News_Type ?news_type_w .\n  ?news_contents p:News_Type ?news_type_w2 .\n  ?volumes p:Issue_Number ?issue_number_w .\n  FILTER((STR(?news_type_w) = \"Opinion Piece\" || (STR(?news_type_w2) = \"Feature Article\" && (STR(?issue_number_w) = \"02\" || STR(?issue_number_w) = \"2\" || STR(?issue_number_w) = \"2.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?news_contents a :News_Contents .\n  ?volumes a :Volumes .\n  ?news_contents p:hasVolumes ?volumes .\n  ?news_contents p:Title ?title .\n  ?news_contents p:News_Type ?news_type_w .\n  ?news_contents p:News_Type ?news_type_w2 .\n  ?volumes p:Issue_Number ?issue_number_w .\n  FILTER((((STR(?news_type_w) = \"Opinion Piece\" || STR(?news_type_w2) = \"Feature Article\")) && (STR(?issue_number_w) = \"02\" || STR(?issue_number_w) = \"2\" || STR(?issue_number_w) = \"2.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_film_industry_company",
+  "schema": "amb_attachment_1tab_val_film_industry_company",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both production and distribution companies with 500 employees.",
+      "qtype": "unambig",
+      "sql": "SELECT Companies.Name \nFROM Companies\nWHERE (Companies.Film_Industry_Type = \"Production Company\" OR Companies.Film_Industry_Type = \"Distribution Company\") AND Companies.Number_Of_Employees = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?companies a :Companies .\n  ?companies p:name ?name .\n  ?companies p:Film_Industry_Type ?film_industry_type_w .\n  ?companies p:Film_Industry_Type ?film_industry_type_w2 .\n  ?companies p:Number_Of_Employees ?number_of_employees_w .\n  FILTER((((STR(?film_industry_type_w) = \"Production Company\" || STR(?film_industry_type_w2) = \"Distribution Company\")) && (STR(?number_of_employees_w) = \"500\" || STR(?number_of_employees_w) = \"500.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the production companies and add just the distribution companies with 500 employees.",
+      "qtype": "unambig",
+      "sql": "SELECT Companies.Name \nFROM Companies\nWHERE Companies.Film_Industry_Type = \"Production Company\" OR Companies.Film_Industry_Type = \"Distribution Company\" AND Companies.Number_Of_Employees = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?companies a :Companies .\n  ?companies p:name ?name .\n  ?companies p:Film_Industry_Type ?film_industry_type_w .\n  ?companies p:Film_Industry_Type ?film_industry_type_w2 .\n  ?companies p:Number_Of_Employees ?number_of_employees_w .\n  FILTER((STR(?film_industry_type_w) = \"Production Company\" || (STR(?film_industry_type_w2) = \"Distribution Company\" && (STR(?number_of_employees_w) = \"500\" || STR(?number_of_employees_w) = \"500.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all the production companies and distribution companies with 500 employees.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?companies a :Companies .\n  ?companies p:name ?name .\n  ?companies p:Film_Industry_Type ?film_industry_type_w .\n  ?companies p:Film_Industry_Type ?film_industry_type_w2 .\n  ?companies p:Number_Of_Employees ?number_of_employees_w .\n  FILTER((((STR(?film_industry_type_w) = \"Production Company\" || STR(?film_industry_type_w2) = \"Distribution Company\")) && (STR(?number_of_employees_w) = \"500\" || STR(?number_of_employees_w) = \"500.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?companies a :Companies .\n  ?companies p:name ?name .\n  ?companies p:Film_Industry_Type ?film_industry_type_w .\n  ?companies p:Film_Industry_Type ?film_industry_type_w2 .\n  ?companies p:Number_Of_Employees ?number_of_employees_w .\n  FILTER((STR(?film_industry_type_w) = \"Production Company\" || (STR(?film_industry_type_w2) = \"Distribution Company\" && (STR(?number_of_employees_w) = \"500\" || STR(?number_of_employees_w) = \"500.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

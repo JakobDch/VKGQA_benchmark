@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_accommodation1",
+  "schema": "amb_attachment_1tab_ref_accommodation1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List both youth hostels and hotels with rooms that cost 50.",
+      "qtype": "unambig",
+      "sql": "SELECT hotels.name \nFROM hotels JOIN rooms ON hotels.id = rooms.hotel_id\nWHERE (hotels.accommodation_type = \"Youth Hostel\" OR hotels.accommodation_type = \"Hotel\") AND rooms.price = 50.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hashotels ?hotels .\n  ?hotels p:name ?name .\n  ?hotels p:accommodation_type ?accommodation_type_w .\n  ?hotels p:accommodation_type ?accommodation_type_w2 .\n  ?rooms p:price ?price_w .\n  FILTER((((STR(?accommodation_type_w) = \"Youth Hostel\" || STR(?accommodation_type_w2) = \"Hotel\")) && (STR(?price_w) = \"50\" || STR(?price_w) = \"50.0\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show youth hostels and hotels where rooms cost 50.",
+      "qtype": "ambig",
+      "sql": "SELECT hotels.name \nFROM hotels JOIN rooms ON hotels.id = rooms.hotel_id\nWHERE hotels.accommodation_type = \"Youth Hostel\" OR hotels.accommodation_type = \"Hotel\" AND rooms.price = 50.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hashotels ?hotels .\n  ?hotels p:name ?name .\n  ?hotels p:accommodation_type ?accommodation_type_w .\n  ?hotels p:accommodation_type ?accommodation_type_w2 .\n  ?rooms p:price ?price_w .\n  FILTER((STR(?accommodation_type_w) = \"Youth Hostel\" || (STR(?accommodation_type_w2) = \"Hotel\" && (STR(?price_w) = \"50\" || STR(?price_w) = \"50.0\"))))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show youth hostels and hotels where rooms cost 50.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hashotels ?hotels .\n  ?hotels p:name ?name .\n  ?hotels p:accommodation_type ?accommodation_type_w .\n  ?hotels p:accommodation_type ?accommodation_type_w2 .\n  ?rooms p:price ?price_w .\n  FILTER((((STR(?accommodation_type_w) = \"Youth Hostel\" || STR(?accommodation_type_w2) = \"Hotel\")) && (STR(?price_w) = \"50\" || STR(?price_w) = \"50.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?hotels a :Hotels .\n  ?rooms a :Rooms .\n  ?rooms p:hashotels ?hotels .\n  ?hotels p:name ?name .\n  ?hotels p:accommodation_type ?accommodation_type_w .\n  ?hotels p:accommodation_type ?accommodation_type_w2 .\n  ?rooms p:price ?price_w .\n  FILTER((STR(?accommodation_type_w) = \"Youth Hostel\" || (STR(?accommodation_type_w2) = \"Hotel\" && (STR(?price_w) = \"50\" || STR(?price_w) = \"50.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

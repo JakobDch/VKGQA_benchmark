@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_production1",
+  "schema": "amb_vague_2cols_production1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the theater company and producers for all plays and arrange them by ascending premiere date.",
+      "qtype": "unambig",
+      "sql": "SELECT theater_company, producer FROM Stage_Play ORDER BY year_premiered ASC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?theater_company ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List the theater company for all plays and arrange them by ascending premiere date.",
+      "qtype": "unambig",
+      "sql": "SELECT theater_company FROM Stage_Play ORDER BY year_premiered ASC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?theater_company WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What theater companies made all the dramas?",
+      "qtype": "unambig",
+      "sql": "SELECT theater_company FROM \"Stage_Play\" WHERE genre = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?theater_company WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me who staged all the performances and arrange them by premiere date in ascending order.",
+      "qtype": "ambig",
+      "sql": "SELECT producer FROM Stage_Play ORDER BY year_premiered ASC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What theater companies and producers made all the dramas?",
+      "qtype": "unambig",
+      "sql": "SELECT theater_company, producer FROM \"Stage_Play\" WHERE genre = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?theater_company ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What producers made all the dramas?",
+      "qtype": "unambig",
+      "sql": "SELECT producer FROM \"Stage_Play\" WHERE genre = 'Drama';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me who staged all the performances and arrange them by premiere date in ascending order.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?theater_company ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o) }\n  component: { SELECT ?theater_company WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o) }\n  component_2: { SELECT ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:year_premiered ?year_premiered_o .\n}\nORDER BY ASC(?year_premiered_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who produced all the dramas?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?theater_company WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n} }\n  full: { SELECT ?theater_company ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:theater_company ?theater_company .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n} }\n  component_2: { SELECT ?producer WHERE {\n  ?stage_play a :Stage_Play .\n  ?stage_play p:producer ?producer .\n  ?stage_play p:genre ?genre_f .\n  FILTER(STR(?genre_f) = \"Drama\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

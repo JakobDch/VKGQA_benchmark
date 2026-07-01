@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_periodicals",
+  "schema": "amb_attachment_2tab_val_periodicals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all newspapers and also display magazines with a circulation of 20,000.",
+      "qtype": "unambig",
+      "sql": "SELECT Newspapers.name\nFROM Newspapers\nUNION\nSELECT Magazines.name\nFROM Magazines\nWHERE Magazines.Circulation_Numbers = 20000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?newspapers a :Newspapers .\n    ?newspapers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magazines a :Magazines .\n    ?magazines p:name ?name .\n    ?magazines p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "Display newspapers and magazines with a circulation of 20,000.",
+      "qtype": "ambig",
+      "sql": "SELECT Newspapers.name\nFROM Newspapers\nWHERE Newspapers.Circulation_Numbers = 20000\nUNION\nSELECT Magazines.name\nFROM Magazines\nWHERE Magazines.Circulation_Numbers = 20000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?newspapers a :Newspapers .\n    ?newspapers p:name ?name .\n    ?newspapers p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magazines a :Magazines .\n    ?magazines p:name ?name .\n    ?magazines p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display newspapers and magazines with a circulation of 20,000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?newspapers a :Newspapers .\n    ?newspapers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magazines a :Magazines .\n    ?magazines p:name ?name .\n    ?magazines p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?newspapers a :Newspapers .\n    ?newspapers p:name ?name .\n    ?newspapers p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?magazines a :Magazines .\n    ?magazines p:name ?name .\n    ?magazines p:Circulation_Numbers ?circulation_numbers_f .\n    FILTER((STR(?circulation_numbers_f) = \"20000\" || STR(?circulation_numbers_f) = \"20000.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

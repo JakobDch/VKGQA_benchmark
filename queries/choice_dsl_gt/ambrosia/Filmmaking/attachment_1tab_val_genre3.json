@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_genre3",
+  "schema": "amb_attachment_1tab_val_genre3",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List both horror and thriller films where either have a $20M budget.",
+      "qtype": "unambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE (Movies.Genre = \"Horror\" OR Movies.Genre = \"Thriller\") AND Movies.Budget = \"20 million USD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:Budget ?budget_w .\n  FILTER((((STR(?genre_w) = \"Horror\" || STR(?genre_w2) = \"Thriller\")) && STR(?budget_w) = \"20 million USD\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Please list horrors and thrillers with a $20M budget.",
+      "qtype": "ambig",
+      "sql": "SELECT Movies.Title \nFROM Movies\nWHERE Movies.Genre = \"Horror\" OR Movies.Genre = \"Thriller\" AND Movies.Budget = \"20 million USD\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:Budget ?budget_w .\n  FILTER((STR(?genre_w) = \"Horror\" || (STR(?genre_w2) = \"Thriller\" && STR(?budget_w) = \"20 million USD\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Please list horrors and thrillers with a $20M budget.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:Budget ?budget_w .\n  FILTER((((STR(?genre_w) = \"Horror\" || STR(?genre_w2) = \"Thriller\")) && STR(?budget_w) = \"20 million USD\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?movies a :Movies .\n  ?movies p:Title ?title .\n  ?movies p:Genre ?genre_w .\n  ?movies p:Genre ?genre_w2 .\n  ?movies p:Budget ?budget_w .\n  FILTER((STR(?genre_w) = \"Horror\" || (STR(?genre_w2) = \"Thriller\" && STR(?budget_w) = \"20 million USD\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

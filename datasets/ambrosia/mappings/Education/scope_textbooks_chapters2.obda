@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Textbooks_base
+target		ex:Textbooks/{id} a :Textbooks ; p:id {id} ; p:title {title} ; p:author {author} .
+source		SELECT `id`, `title`, `author` FROM `Textbooks`
+
+mappingId	Chapters_base
+target		ex:Chapters/{chapterName} a :Chapters ; p:chapterName {chapterName} ; p:subject {subject} .
+source		SELECT `chapterName`, `subject` FROM `Chapters`
+
+mappingId	Authors_base
+target		ex:Authors/{authorId} a :Authors ; p:authorId {authorId} ; p:name {name} .
+source		SELECT `authorId`, `name` FROM `Authors`
+
+mappingId	Publishers_base
+target		ex:Publishers/{publisherId} a :Publishers ; p:publisherId {publisherId} ; p:companyName {companyName} .
+source		SELECT `publisherId`, `companyName` FROM `Publishers`
+
+mappingId	BookAuthors_base
+target		ex:BookAuthors/{_amb_rowid} a :BookAuthors ; p:bookId {bookId} ; p:authorId {authorId} .
+source		SELECT `_amb_rowid`, `bookId`, `authorId` FROM `BookAuthors`
+
+mappingId	BookAuthors_authorId_fk
+target		ex:BookAuthors/{_amb_rowid} p:hasAuthors ex:Authors/{authorId} .
+source		SELECT `_amb_rowid`, `authorId` FROM `BookAuthors` WHERE `authorId` IS NOT NULL
+
+mappingId	BookPublishers_base
+target		ex:BookPublishers/{_amb_rowid} a :BookPublishers ; p:bookId {bookId} ; p:publisherId {publisherId} .
+source		SELECT `_amb_rowid`, `bookId`, `publisherId` FROM `BookPublishers`
+
+mappingId	BookPublishers_publisherId_fk
+target		ex:BookPublishers/{_amb_rowid} p:hasPublishers ex:Publishers/{publisherId} .
+source		SELECT `_amb_rowid`, `publisherId` FROM `BookPublishers` WHERE `publisherId` IS NOT NULL
+
+mappingId	Textbooks_Chapters_base
+target		ex:Textbook_Chapters/{_amb_rowid} a :Textbook_Chapters ; p:textbookId {textbookId} ; p:chapterName {chapterName} .
+source		SELECT `_amb_rowid`, `textbookId`, `chapterName` FROM `Textbooks_Chapters`
+
+mappingId	Textbooks_Chapters_chapterName_fk
+target		ex:Textbook_Chapters/{_amb_rowid} p:hasChapters ex:Chapters/{chapterName} .
+source		SELECT `_amb_rowid`, `chapterName` FROM `Textbooks_Chapters` WHERE `chapterName` IS NOT NULL
+
+mappingId	Textbooks_Chapters_textbookId_fk
+target		ex:Textbook_Chapters/{_amb_rowid} p:hasTextbooks ex:Textbooks/{textbookId} .
+source		SELECT `_amb_rowid`, `textbookId` FROM `Textbooks_Chapters` WHERE `textbookId` IS NOT NULL
+
+]]

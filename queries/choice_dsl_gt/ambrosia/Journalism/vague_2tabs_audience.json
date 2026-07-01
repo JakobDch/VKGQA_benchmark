@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2tabs_audience",
+  "schema": "amb_vague_2tabs_audience",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Select all magazines, their demographic groups and professional fields of their audience.",
+      "qtype": "unambig",
+      "sql": "Select m.title, a.group_name, pf.field_name FROM Magazines m JOIN Demographic_Groups a on a.id = m.demographic_group_id JOIN Professional_Fields pf on pf.Field_id = m.Professional_Field_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?group_name ?field_name WHERE {\n  ?m a :Magazines .\n  ?a a :Demographic_Groups .\n  ?m p:hasDemographic_Groups ?a .\n  ?pf a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?pf .\n  ?m p:title ?title .\n  ?a p:group_name ?group_name .\n  ?pf p:field_name ?field_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "For each magazine list the readers, and their professional fields.",
+      "qtype": "unambig",
+      "sql": "Select r.name, a.field_name FROM Readers r JOIN Magazines m ON m.magazine_id = r.preferred_magazine_id JOIN Professional_Fields a on a.Field_id = m.Professional_Field_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?field_name WHERE {\n  ?r a :Readers .\n  ?m a :Magazines .\n  ?r p:hasMagazines ?m .\n  ?a a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?a .\n  ?r p:name ?name .\n  ?a p:field_name ?field_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the readers of different magazines and what category they fall into.",
+      "qtype": "ambig",
+      "sql": "Select r.name, a.group_name FROM Readers r JOIN Demographic_Groups a on a.id = r.demographic_group_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?group_name WHERE {\n  ?r a :Readers .\n  ?a a :Demographic_Groups .\n  ?r p:hasDemographic_Groups ?a .\n  ?r p:name ?name .\n  ?a p:group_name ?group_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the readers of different magazines and what category they fall into.",
+      "qtype": "ambig",
+      "sql": "Select r.name, a.group_name, pf.field_name FROM Readers r JOIN Demographic_Groups a on a.id = r.demographic_group_id JOIN Magazines m ON m.magazine_id = r.preferred_magazine_id  JOIN Professional_Fields pf on pf.Field_id = m.Professional_Field_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?group_name ?field_name WHERE {\n  ?r a :Readers .\n  ?a a :Demographic_Groups .\n  ?r p:hasDemographic_Groups ?a .\n  ?m a :Magazines .\n  ?r p:hasMagazines ?m .\n  ?pf a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?pf .\n  ?r p:name ?name .\n  ?a p:group_name ?group_name .\n  ?pf p:field_name ?field_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Select all magazines and their audience",
+      "qtype": "ambig",
+      "sql": "Select m.title, a.group_name FROM Magazines m JOIN Demographic_Groups a on a.id = m.demographic_group_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?group_name WHERE {\n  ?m a :Magazines .\n  ?a a :Demographic_Groups .\n  ?m p:hasDemographic_Groups ?a .\n  ?m p:title ?title .\n  ?a p:group_name ?group_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Select all magazines and their audience",
+      "qtype": "ambig",
+      "sql": "Select m.title, a.field_name FROM Magazines m JOIN Professional_Fields a on a.Field_id = m.Professional_Field_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?field_name WHERE {\n  ?m a :Magazines .\n  ?a a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?a .\n  ?m p:title ?title .\n  ?a p:field_name ?field_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Select all magazines and their audience",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?title ?group_name ?field_name WHERE {\n  ?m a :Magazines .\n  ?a a :Demographic_Groups .\n  ?m p:hasDemographic_Groups ?a .\n  ?pf a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?pf .\n  ?m p:title ?title .\n  ?a p:group_name ?group_name .\n  ?pf p:field_name ?field_name .\n} }\n  component: { SELECT ?title ?field_name WHERE {\n  ?m a :Magazines .\n  ?a a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?a .\n  ?m p:title ?title .\n  ?a p:field_name ?field_name .\n} }\n  component_2: { SELECT ?title ?group_name WHERE {\n  ?m a :Magazines .\n  ?a a :Demographic_Groups .\n  ?m p:hasDemographic_Groups ?a .\n  ?m p:title ?title .\n  ?a p:group_name ?group_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the readers of different magazines and what category they fall into.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?field_name WHERE {\n  ?r a :Readers .\n  ?m a :Magazines .\n  ?r p:hasMagazines ?m .\n  ?a a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?a .\n  ?r p:name ?name .\n  ?a p:field_name ?field_name .\n} }\n  component_2: { SELECT ?name ?group_name WHERE {\n  ?r a :Readers .\n  ?a a :Demographic_Groups .\n  ?r p:hasDemographic_Groups ?a .\n  ?r p:name ?name .\n  ?a p:group_name ?group_name .\n} }\n  full: { SELECT ?name ?group_name ?field_name WHERE {\n  ?r a :Readers .\n  ?a a :Demographic_Groups .\n  ?r p:hasDemographic_Groups ?a .\n  ?m a :Magazines .\n  ?r p:hasMagazines ?m .\n  ?pf a :Professional_Fields .\n  ?m p:hasProfessional_Fields ?pf .\n  ?r p:name ?name .\n  ?a p:group_name ?group_name .\n  ?pf p:field_name ?field_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_literature_type",
+  "schema": "amb_attachment_1tab_val_literature_type",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all novels and also list poems that are written in Italian.",
+      "qtype": "unambig",
+      "sql": "SELECT Literatures.Title \nFROM Literatures\nWHERE Literatures.LiteratureType = \"Novel\" OR Literatures.LiteratureType = \"Poem\" AND Literatures.Language = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?literatures a :Literatures .\n  ?literatures p:Title ?title .\n  ?literatures p:LiteratureType ?literaturetype_w .\n  ?literatures p:LiteratureType ?literaturetype_w2 .\n  ?literatures p:Language ?language_w .\n  FILTER((STR(?literaturetype_w) = \"Novel\" || (STR(?literaturetype_w2) = \"Poem\" && STR(?language_w) = \"Italian\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show novels and poems that are written in Italian.",
+      "qtype": "ambig",
+      "sql": "SELECT Literatures.Title \nFROM Literatures\nWHERE (Literatures.LiteratureType = \"Novel\" OR Literatures.LiteratureType = \"Poem\") AND Literatures.Language = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?literatures a :Literatures .\n  ?literatures p:Title ?title .\n  ?literatures p:LiteratureType ?literaturetype_w .\n  ?literatures p:LiteratureType ?literaturetype_w2 .\n  ?literatures p:Language ?language_w .\n  FILTER((((STR(?literaturetype_w) = \"Novel\" || STR(?literaturetype_w2) = \"Poem\")) && STR(?language_w) = \"Italian\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show novels and poems that are written in Italian.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?literatures a :Literatures .\n  ?literatures p:Title ?title .\n  ?literatures p:LiteratureType ?literaturetype_w .\n  ?literatures p:LiteratureType ?literaturetype_w2 .\n  ?literatures p:Language ?language_w .\n  FILTER((STR(?literaturetype_w) = \"Novel\" || (STR(?literaturetype_w2) = \"Poem\" && STR(?language_w) = \"Italian\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?literatures a :Literatures .\n  ?literatures p:Title ?title .\n  ?literatures p:LiteratureType ?literaturetype_w .\n  ?literatures p:LiteratureType ?literaturetype_w2 .\n  ?literatures p:Language ?language_w .\n  FILTER((((STR(?literaturetype_w) = \"Novel\" || STR(?literaturetype_w2) = \"Poem\")) && STR(?language_w) = \"Italian\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Health_Reporters_base
+target		ex:Health_Reporters/{ReporterID} a :Health_Reporters ; p:ReporterID {ReporterID} ; p:name {Name} ; p:email {Email} .
+source		SELECT `ReporterID`, `Name`, `Email` FROM `Health_Reporters`
+
+mappingId	Topics_base
+target		ex:topics/{TopicID} a :topics ; p:TopicID {TopicID} ; p:name {Name} .
+source		SELECT `TopicID`, `Name` FROM `Topics`
+
+mappingId	Health_Reporters_Topics_base
+target		ex:Health_Reporters_Topics/{PrimaryKey} a :Health_Reporters_Topics ; p:ReporterID {ReporterID} ; p:TopicID {TopicID} ; p:PrimaryKey {PrimaryKey} .
+source		SELECT `ReporterID`, `TopicID`, `PrimaryKey` FROM `Health_Reporters_Topics`
+
+mappingId	Health_Reporters_Topics_TopicID_fk
+target		ex:Health_Reporters_Topics/{PrimaryKey} p:hastopics ex:topics/{TopicID} .
+source		SELECT `PrimaryKey`, `TopicID` FROM `Health_Reporters_Topics` WHERE `TopicID` IS NOT NULL
+
+mappingId	Health_Reporters_Topics_ReporterID_fk
+target		ex:Health_Reporters_Topics/{PrimaryKey} p:hasHealth_Reporters ex:Health_Reporters/{ReporterID} .
+source		SELECT `PrimaryKey`, `ReporterID` FROM `Health_Reporters_Topics` WHERE `ReporterID` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:ReporterID {ReporterID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `ReporterID` FROM `Articles`
+
+mappingId	Articles_ReporterID_fk
+target		ex:Articles/{ArticleID} p:hasHealth_Reporters ex:Health_Reporters/{ReporterID} .
+source		SELECT `ArticleID`, `ReporterID` FROM `Articles` WHERE `ReporterID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{SourceID} a :Sources ; p:SourceID {SourceID} ; p:name {Name} ; p:URL {URL} .
+source		SELECT `SourceID`, `Name`, `URL` FROM `Sources`
+
+]]

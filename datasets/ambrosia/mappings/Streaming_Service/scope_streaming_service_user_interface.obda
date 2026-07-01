@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Streaming_Service_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:price {price} .
+source		SELECT `id`, `name`, `price` FROM `Streaming_Service`
+
+mappingId	User_Interface_base
+target		ex:User_Interface/{id} a :User_Interface ; p:id {id} ; p:interface_type {interface_type} .
+source		SELECT `id`, `interface_type` FROM `User_Interface`
+
+mappingId	Streaming_Service_User_Interface_base
+target		ex:Streaming_Service_User_Interface/{_amb_rowid} a :Streaming_Service_User_Interface ; p:streaming_service_id {streaming_service_id} ; p:user_interface_id {user_interface_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id`, `user_interface_id` FROM `Streaming_Service_User_Interface`
+
+mappingId	Streaming_Service_User_Interface_user_interface_id_fk
+target		ex:Streaming_Service_User_Interface/{_amb_rowid} p:hasUser_Interface ex:User_Interface/{user_interface_id} .
+source		SELECT `_amb_rowid`, `user_interface_id` FROM `Streaming_Service_User_Interface` WHERE `user_interface_id` IS NOT NULL
+
+mappingId	Streaming_Service_User_Interface_streaming_service_id_fk
+target		ex:Streaming_Service_User_Interface/{_amb_rowid} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `_amb_rowid`, `streaming_service_id` FROM `Streaming_Service_User_Interface` WHERE `streaming_service_id` IS NOT NULL
+
+]]

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Traffic_Camera_base
+target		ex:Traffic_Camera/{id} a :Traffic_Camera ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Traffic_Camera`
+
+mappingId	Function_base
+target		ex:Function/{id} a :Function ; p:id {id} ; p:name {functionName} .
+source		SELECT `id`, `functionName` FROM `Function`
+
+mappingId	Traffic_Camera_Function_base
+target		ex:Traffic_Camera_Function/{functionId}/{cameraId} a :Traffic_Camera_Function .
+source		SELECT `cameraId`, `functionId` FROM `Traffic_Camera_Function`
+
+mappingId	Traffic_Camera_Function_functionId_fk
+target		ex:Traffic_Camera_Function/{functionId}/{cameraId} p:hasFunction ex:Function/{functionId} .
+source		SELECT `functionId`, `cameraId` FROM `Traffic_Camera_Function` WHERE `functionId` IS NOT NULL
+
+mappingId	Traffic_Camera_Function_cameraId_fk
+target		ex:Traffic_Camera_Function/{functionId}/{cameraId} p:hasTraffic_Camera ex:Traffic_Camera/{cameraId} .
+source		SELECT `functionId`, `cameraId` FROM `Traffic_Camera_Function` WHERE `cameraId` IS NOT NULL
+
+mappingId	Road_Condition_base
+target		ex:Road_Condition/{id} a :Road_Condition ; p:id {id} ; p:roadId {roadId} ; p:condition {condition} .
+source		SELECT `id`, `roadId`, `condition` FROM `Road_Condition`
+
+mappingId	Camera_Road_Link_base
+target		ex:Camera_Road_Link/{roadId}/{cameraId} a :Camera_Road_Link .
+source		SELECT `cameraId`, `roadId` FROM `Camera_Road_Link`
+
+mappingId	Camera_Road_Link_roadId_fk
+target		ex:Camera_Road_Link/{roadId}/{cameraId} p:hasRoad_Condition ex:Road_Condition/{roadId} .
+source		SELECT `roadId`, `cameraId` FROM `Camera_Road_Link` WHERE `roadId` IS NOT NULL
+
+mappingId	Camera_Road_Link_cameraId_fk
+target		ex:Camera_Road_Link/{roadId}/{cameraId} p:hasTraffic_Camera ex:Traffic_Camera/{cameraId} .
+source		SELECT `roadId`, `cameraId` FROM `Camera_Road_Link` WHERE `cameraId` IS NOT NULL
+
+]]

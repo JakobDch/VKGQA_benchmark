@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Quality_Assurance_Testers_base
+target		ex:Quality_Assurance_Testers/{testerID} a :Quality_Assurance_Testers ; p:testerID {testerID} ; p:name {fullName} .
+source		SELECT `testerID`, `fullName` FROM `Quality_Assurance_Testers`
+
+mappingId	Test_Cases_base
+target		ex:Test_Cases/{testCaseID} a :Test_Cases ; p:testCaseID {testCaseID} ; p:caseType {caseType} ; p:description {description} .
+source		SELECT `testCaseID`, `caseType`, `description` FROM `Test_Cases`
+
+mappingId	Qualified_Tests_base
+target		ex:Qualified_Tests/{_amb_rowid} a :Qualified_Tests ; p:testerID {testerID} ; p:testCaseID {testCaseID} ; p:qualificationDate {qualificationDate} .
+source		SELECT `_amb_rowid`, `testerID`, `testCaseID`, `qualificationDate` FROM `Qualified_Tests`
+
+mappingId	Qualified_Tests_testCaseID_fk
+target		ex:Qualified_Tests/{_amb_rowid} p:hasTest_Cases ex:Test_Cases/{testCaseID} .
+source		SELECT `_amb_rowid`, `testCaseID` FROM `Qualified_Tests` WHERE `testCaseID` IS NOT NULL
+
+mappingId	Qualified_Tests_testerID_fk
+target		ex:Qualified_Tests/{_amb_rowid} p:hasQuality_Assurance_Testers ex:Quality_Assurance_Testers/{testerID} .
+source		SELECT `_amb_rowid`, `testerID` FROM `Qualified_Tests` WHERE `testerID` IS NOT NULL
+
+]]

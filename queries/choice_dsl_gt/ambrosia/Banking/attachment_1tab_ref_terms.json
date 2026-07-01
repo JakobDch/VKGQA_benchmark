@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_ref_terms",
+  "schema": "amb_attachment_1tab_ref_terms",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display monthly interest rates and annual percentage rates of bank accounts with a balance of 20,000.",
+      "qtype": "ambig",
+      "sql": "SELECT Terms.Value \nFROM Terms JOIN Loans ON Terms.LOAN_ID = Loans.LoanID JOIN BankAccounts ON Loans.ForeignKeyAccountNumber = BankAccounts.AccountNumber\nWHERE (Terms.Description = \"Monthly Interest Rate\" OR Terms.Description = \"Annual Percentage Rate\") AND BankAccounts.CurrentBalance = 20000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  ?terms a :Terms .\n  ?loans a :Loans .\n  ?terms p:hasLoans ?loans .\n  ?bankaccounts a :Accounts .\n  ?loans p:hasBankAccounts_ForeignKeyAccountNumber ?bankaccounts .\n  ?terms p:Value ?value .\n  ?terms p:Description ?description_w .\n  ?terms p:Description ?description_w2 .\n  ?bankaccounts p:CurrentBalance ?currentbalance_w .\n  FILTER((((STR(?description_w) = \"Monthly Interest Rate\" || STR(?description_w2) = \"Annual Percentage Rate\")) && (STR(?currentbalance_w) = \"20000\" || STR(?currentbalance_w) = \"20000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display monthly interest rates and annual percentage rates of bank accounts with a balance of 20,000.",
+      "qtype": "ambig",
+      "sql": "SELECT Terms.Value \nFROM Terms JOIN Loans ON Terms.LOAN_ID = Loans.LoanID JOIN BankAccounts ON Loans.ForeignKeyAccountNumber = BankAccounts.AccountNumber\nWHERE Terms.Description = \"Monthly Interest Rate\" OR Terms.Description = \"Annual Percentage Rate\" AND BankAccounts.CurrentBalance = 20000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  ?terms a :Terms .\n  ?loans a :Loans .\n  ?terms p:hasLoans ?loans .\n  ?bankaccounts a :Accounts .\n  ?loans p:hasBankAccounts_ForeignKeyAccountNumber ?bankaccounts .\n  ?terms p:Value ?value .\n  ?terms p:Description ?description_w .\n  ?terms p:Description ?description_w2 .\n  ?bankaccounts p:CurrentBalance ?currentbalance_w .\n  FILTER((STR(?description_w) = \"Monthly Interest Rate\" || (STR(?description_w2) = \"Annual Percentage Rate\" && (STR(?currentbalance_w) = \"20000\" || STR(?currentbalance_w) = \"20000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display monthly interest rates and annual percentage rates of bank accounts with a balance of 20,000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?value WHERE {\n  ?terms a :Terms .\n  ?loans a :Loans .\n  ?terms p:hasLoans ?loans .\n  ?bankaccounts a :Accounts .\n  ?loans p:hasBankAccounts_ForeignKeyAccountNumber ?bankaccounts .\n  ?terms p:Value ?value .\n  ?terms p:Description ?description_w .\n  ?terms p:Description ?description_w2 .\n  ?bankaccounts p:CurrentBalance ?currentbalance_w .\n  FILTER((STR(?description_w) = \"Monthly Interest Rate\" || (STR(?description_w2) = \"Annual Percentage Rate\" && (STR(?currentbalance_w) = \"20000\" || STR(?currentbalance_w) = \"20000.0\"))))\n} }\n  high: { SELECT ?value WHERE {\n  ?terms a :Terms .\n  ?loans a :Loans .\n  ?terms p:hasLoans ?loans .\n  ?bankaccounts a :Accounts .\n  ?loans p:hasBankAccounts_ForeignKeyAccountNumber ?bankaccounts .\n  ?terms p:Value ?value .\n  ?terms p:Description ?description_w .\n  ?terms p:Description ?description_w2 .\n  ?bankaccounts p:CurrentBalance ?currentbalance_w .\n  FILTER((((STR(?description_w) = \"Monthly Interest Rate\" || STR(?description_w2) = \"Annual Percentage Rate\")) && (STR(?currentbalance_w) = \"20000\" || STR(?currentbalance_w) = \"20000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

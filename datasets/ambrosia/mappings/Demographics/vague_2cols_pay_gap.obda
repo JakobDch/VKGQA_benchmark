@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	People_base
+target		ex:Person/{id} a :Person ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} ; p:occupation {occupation} .
+source		SELECT `id`, `firstName`, `lastName`, `dateOfBirth`, `occupation` FROM `People`
+
+mappingId	SalaryData_base
+target		ex:SalaryData/{_amb_rowid} a :SalaryData ; p:personId {personId} ; p:salary {salary} ; p:hireDate {hireDate} .
+source		SELECT `_amb_rowid`, `personId`, `salary`, `hireDate` FROM `SalaryData`
+
+mappingId	SalaryData_personId_fk
+target		ex:SalaryData/{_amb_rowid} p:hasPerson ex:Person/{personId} .
+source		SELECT `_amb_rowid`, `personId` FROM `SalaryData` WHERE `personId` IS NOT NULL
+
+mappingId	OccupationalStats_base
+target		ex:OccupationalStats/{_amb_rowid} a :OccupationalStats ; p:occupation {occupation} ; p:percentageGap {percentageGap} ; p:differenceInSalaries {differenceInSalaries} ; p:jobSatisfactionIndex {jobSatisfactionIndex} .
+source		SELECT `_amb_rowid`, `occupation`, `percentageGap`, `differenceInSalaries`, `jobSatisfactionIndex` FROM `OccupationalStats`
+
+mappingId	OccupationalStats_occupation_fk
+target		ex:OccupationalStats/{_amb_rowid} p:hasPerson ex:Person/{occupation} .
+source		SELECT `_amb_rowid`, `occupation` FROM `OccupationalStats` WHERE `occupation` IS NOT NULL
+
+mappingId	EducationLevel_base
+target		ex:EducationLevel/{_amb_rowid} a :EducationLevel ; p:educationLevel {educationLevel} ; p:avgYearsOfEducation {avgYearsOfEducation} ; p:avgAnnualIncome {avgAnnualIncome} .
+source		SELECT `_amb_rowid`, `educationLevel`, `avgYearsOfEducation`, `avgAnnualIncome` FROM `EducationLevel`
+
+mappingId	LocationData_base
+target		ex:LocationData/{locationID} a :LocationData ; p:locationID {locationID} ; p:city {city} ; p:state {state} ; p:country {country} ; p:numPeople {numPeople} .
+source		SELECT `locationID`, `city`, `state`, `country`, `numPeople` FROM `LocationData`
+
+mappingId	CityPopulationByDemographics_base
+target		ex:CityPopulationByDemographics/{_amb_rowid} a :CityPopulationByDemographics ; p:locationID {locationID} ; p:ageRange {ageRange} ; p:gender {gender} ; p:ethnicity {ethnicity} ; p:population {population} .
+source		SELECT `_amb_rowid`, `locationID`, `ageRange`, `gender`, `ethnicity`, `population` FROM `CityPopulationByDemographics`
+
+mappingId	CityPopulationByDemographics_locationID_fk
+target		ex:CityPopulationByDemographics/{_amb_rowid} p:hasLocationData ex:LocationData/{locationID} .
+source		SELECT `_amb_rowid`, `locationID` FROM `CityPopulationByDemographics` WHERE `locationID` IS NOT NULL
+
+]]

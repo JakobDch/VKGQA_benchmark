@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2tabs_leadership",
+  "schema": "amb_vague_2tabs_leadership",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the CEO and board of directors of Customer A's bank.",
+      "qtype": "unambig",
+      "sql": "select L.fullName, D.directorfullName  from Ceo L inner join banks B on B.ceoId = L.ceoId join  Board_of_directors D on B.boardID = D.boardID  inner join customers C on C.bankId = B.bankId where C.customerName = 'Customer A'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?directorfullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?d a :Board_of_directors .\n  ?b p:hasBoard_of_directors ?d .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:name ?fullname .\n  ?d p:directorfullname ?directorfullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who are the CEO and the board of directors of the bank that had the largest withdrawal?",
+      "qtype": "unambig",
+      "sql": "select L.fullName, D.directorfullName from Ceo L inner join banks B on B.ceoId = L.ceoId inner join customers C on C.bankId = B.bankId join  Board_of_directors D on B.boardID = D.boardID inner join Accounts A on A.customerId = C.CustomerId inner join Transactions T on T.accountId = A.accountId where T.type = 'Withdrawal' order by T.amount desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?directorfullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?d a :Board_of_directors .\n  ?b p:hasBoard_of_directors ?d .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:name ?fullname .\n  ?d p:directorfullname ?directorfullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who heads the bank that Customer A banks with?",
+      "qtype": "ambig",
+      "sql": "select L.fullName from Ceo L inner join banks B on B.ceoId = L.ceoId inner join customers C on C.bankId = B.bankId where C.customerName = 'Customer A'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:name ?fullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who heads the bank that Customer A banks with?",
+      "qtype": "ambig",
+      "sql": "select L.directorfullName from Board_of_directors L inner join banks B on B.boardID = L.boardID inner join customers C on C.bankId = B.bankId where C.customerName = 'Customer A'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?directorfullname WHERE {\n  ?l a :Board_of_directors .\n  ?b a :Banks .\n  ?b p:hasBoard_of_directors ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:directorfullname ?directorfullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who is the CEO of the bank that had the largest withdrawal?",
+      "qtype": "unambig",
+      "sql": "select L.fullName from Ceo L inner join banks B on B.ceoId = L.ceoId inner join customers C on C.bankId = B.bankId inner join Accounts A on A.customerId = C.CustomerId inner join Transactions T on T.accountId = A.accountId where T.type = 'Withdrawal' order by T.amount desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:name ?fullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who is on the board of directors of the bank that had the largest withdrawal?",
+      "qtype": "unambig",
+      "sql": "select L.directorfullName from Board_of_directors L inner join banks B on B.boardID = L.boardID inner join customers C on C.bankId = B.bankId inner join Accounts A on A.customerId = C.CustomerId inner join Transactions T on T.accountId = A.accountId where T.type = 'Withdrawal' order by T.amount desc limit 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?directorfullname WHERE {\n  ?l a :Board_of_directors .\n  ?b a :Banks .\n  ?b p:hasBoard_of_directors ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:directorfullname ?directorfullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who heads the bank that Customer A banks with?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?fullname ?directorfullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?d a :Board_of_directors .\n  ?b p:hasBoard_of_directors ?d .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:name ?fullname .\n  ?d p:directorfullname ?directorfullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n} }\n  component: { SELECT ?fullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:name ?fullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n} }\n  component_2: { SELECT ?directorfullname WHERE {\n  ?l a :Board_of_directors .\n  ?b a :Banks .\n  ?b p:hasBoard_of_directors ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?l p:directorfullname ?directorfullname .\n  ?c p:customerName ?customername_f .\n  FILTER(STR(?customername_f) = \"Customer A\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who heads the bank with the largest withdrawal?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?fullname ?directorfullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?d a :Board_of_directors .\n  ?b p:hasBoard_of_directors ?d .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:name ?fullname .\n  ?d p:directorfullname ?directorfullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1 }\n  component: { SELECT ?fullname WHERE {\n  ?l a :Ceo .\n  ?b a :Banks .\n  ?b p:hasCeo ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:name ?fullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1 }\n  component_2: { SELECT ?directorfullname WHERE {\n  ?l a :Board_of_directors .\n  ?b a :Banks .\n  ?b p:hasBoard_of_directors ?l .\n  ?c a :Customers .\n  ?c p:hasBanks ?b .\n  ?a a :Accounts .\n  ?a p:hasCustomers ?c .\n  ?t a :Transactions .\n  ?t p:hasAccounts ?a .\n  ?l p:directorfullname ?directorfullname .\n  ?t p:type ?type_f .\n  ?t p:amount ?amount_o .\n  FILTER(STR(?type_f) = \"Withdrawal\")\n}\nORDER BY DESC(?amount_o)\nLIMIT 1 }\n}",
+      "verified": true
+    }
+  ]
+}

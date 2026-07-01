@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_rating",
+  "schema": "amb_vague_2tabs_rating",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the rating of Breaking Bad?",
+      "qtype": "ambig",
+      "sql": "SELECT Age_Rating.ageMinimum FROM Age_Rating JOIN Tv_Show ON Tv_Show.AgeRatingId = Age_Rating.ratingId WHERE Tv_Show.title = 'Breaking Bad';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ageminimum WHERE {\n  ?age_rating a :Age_Rating .\n  ?tv_show a :Tv_Show .\n  ?tv_show p:hasAge_Rating ?age_rating .\n  ?age_rating p:ageMinimum ?ageminimum .\n  ?tv_show p:title ?title_f .\n  FILTER(STR(?title_f) = \"Breaking Bad\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the rating of Breaking Bad?",
+      "qtype": "ambig",
+      "sql": "SELECT Critical_Rating.score FROM Critical_Rating JOIN Tv_Show ON Tv_Show.CriticalScoreId = Critical_Rating.ratingId WHERE Tv_Show.title = 'Breaking Bad';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score WHERE {\n  ?critical_rating a :Critical_Rating .\n  ?tv_show a :Tv_Show .\n  ?tv_show p:hasCritical_Rating ?critical_rating .\n  ?critical_rating p:score ?score .\n  ?tv_show p:title ?title_f .\n  FILTER(STR(?title_f) = \"Breaking Bad\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the rating of Breaking Bad?",
+      "qtype": "ambig",
+      "sql": "SELECT Age_Rating.ageMinimum FROM Age_Rating JOIN Tv_Show ON Tv_Show.AgeRatingId = Age_Rating.ratingId WHERE Tv_Show.title = 'Breaking Bad' UNION SELECT Critical_Rating.score FROM Critical_Rating JOIN Tv_Show ON Tv_Show.CriticalScoreId = Critical_Rating.ratingId WHERE Tv_Show.title = 'Breaking Bad';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?age_rating a :Age_Rating .\n    ?tv_show a :Tv_Show .\n    ?tv_show p:hasAge_Rating ?age_rating .\n    ?age_rating p:ageMinimum ?ageminimum .\n    ?tv_show p:title ?title_f .\n    FILTER(STR(?title_f) = \"Breaking Bad\")\n    BIND(?ageminimum AS ?o0)\n  }\n  UNION\n  {\n    ?critical_rating a :Critical_Rating .\n    ?tv_show a :Tv_Show .\n    ?tv_show p:hasCritical_Rating ?critical_rating .\n    ?critical_rating p:score ?score .\n    ?tv_show p:title ?title_f .\n    FILTER(STR(?title_f) = \"Breaking Bad\")\n    BIND(?score AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "What are the lowest age and critical ratings?",
+      "qtype": "unambig",
+      "sql": "SELECT MIN(ageMinimum) FROM Age_Rating UNION SELECT MIN(score) FROM Critical_Rating",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nSELECT ?v WHERE { { SELECT (MIN(?a) AS ?v) WHERE { ?x a :Age_Rating ; p:ageMinimum ?a } } UNION { SELECT (MIN(?s) AS ?v) WHERE { ?y a :Critical_Rating ; p:score ?s } } }",
+      "status": "pass",
+      "note": "override OK (gold-SQL): aggregate (MIN) inside UNION -> two scalar sub-SELECTs unioned"
+    },
+    {
+      "qid": 4,
+      "question": "What is the lowest age rating?",
+      "qtype": "unambig",
+      "sql": "SELECT MIN(ageMinimum) FROM Age_Rating;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MIN(?ageminimum_a) AS ?agg) WHERE {\n  ?age_rating a :Age_Rating .\n  ?age_rating p:ageMinimum ?ageminimum_a .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the lowest critical rating?",
+      "qtype": "unambig",
+      "sql": "SELECT MIN(score) FROM Critical_Rating;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MIN(?score_a) AS ?agg) WHERE {\n  ?critical_rating a :Critical_Rating .\n  ?critical_rating p:score ?score_a .\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the rating of Breaking Bad?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        0
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?score WHERE {\n  ?critical_rating a :Critical_Rating .\n  ?tv_show a :Tv_Show .\n  ?tv_show p:hasCritical_Rating ?critical_rating .\n  ?critical_rating p:score ?score .\n  ?tv_show p:title ?title_f .\n  FILTER(STR(?title_f) = \"Breaking Bad\")\n} }\n  full: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?age_rating a :Age_Rating .\n    ?tv_show a :Tv_Show .\n    ?tv_show p:hasAge_Rating ?age_rating .\n    ?age_rating p:ageMinimum ?ageminimum .\n    ?tv_show p:title ?title_f .\n    FILTER(STR(?title_f) = \"Breaking Bad\")\n    BIND(?ageminimum AS ?o0)\n  }\n  UNION\n  {\n    ?critical_rating a :Critical_Rating .\n    ?tv_show a :Tv_Show .\n    ?tv_show p:hasCritical_Rating ?critical_rating .\n    ?critical_rating p:score ?score .\n    ?tv_show p:title ?title_f .\n    FILTER(STR(?title_f) = \"Breaking Bad\")\n    BIND(?score AS ?o0)\n  }\n} }\n  component_2: { SELECT ?ageminimum WHERE {\n  ?age_rating a :Age_Rating .\n  ?tv_show a :Tv_Show .\n  ?tv_show p:hasAge_Rating ?age_rating .\n  ?age_rating p:ageMinimum ?ageminimum .\n  ?tv_show p:title ?title_f .\n  FILTER(STR(?title_f) = \"Breaking Bad\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the minimum rating?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nCHOICE vague {\n  full: { SELECT ?v WHERE { { SELECT (MIN(?a) AS ?v) WHERE { ?x a :Age_Rating ; p:ageMinimum ?a } } UNION { SELECT (MIN(?s) AS ?v) WHERE { ?y a :Critical_Rating ; p:score ?s } } } }\n  component: { SELECT (MIN(?ageminimum_a) AS ?agg) WHERE {\n  ?age_rating a :Age_Rating .\n  ?age_rating p:ageMinimum ?ageminimum_a .\n} }\n  component_2: { SELECT (MIN(?score_a) AS ?agg) WHERE {\n  ?critical_rating a :Critical_Rating .\n  ?critical_rating p:score ?score_a .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

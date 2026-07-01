@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_photography_workshops_techniques",
+  "schema": "amb_scope_photography_workshops_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What techniques do we have for every photography workshop?",
+      "qtype": "ambig",
+      "sql": "SELECT Techniques.technique_name  from Photography_Workshops_Techniques join Techniques on Photography_Workshops_Techniques.technique_id = Techniques.technique_id join Photography_Workshops on Photography_Workshops_Techniques.photography_workshop_id = Photography_Workshops.workshop_id   GROUP BY Photography_Workshops_Techniques.technique_id HAVING COUNT(DISTINCT Photography_Workshops_Techniques.photography_workshop_id) = (SELECT COUNT(*) FROM  Photography_Workshops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasPhotography_Workshops ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photography_Workshops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What techniques do we have for every photography workshop?",
+      "qtype": "ambig",
+      "sql": "select photography_workshops.workshop_id , techniques.technique_name from Photography_Workshops_Techniques join Techniques on Photography_Workshops_Techniques.technique_id = Techniques.technique_id join Photography_Workshops on Photography_Workshops_Techniques.photography_workshop_id = Photography_Workshops.workshop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?workshop_id ?technique_name WHERE {\n  ?photography_workshops_techniques a :Photography_Workshops_Techniques .\n  ?techniques a :Techniques .\n  ?photography_workshops_techniques p:hasTechniques ?techniques .\n  ?photography_workshops a :Photography_Workshops .\n  ?photography_workshops_techniques p:hasPhotography_Workshops ?photography_workshops .\n  ?photography_workshops p:workshop_id ?workshop_id .\n  ?techniques p:technique_name ?technique_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What techniques do we have for every photography workshop?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?workshop_id ?technique_name WHERE {\n  ?photography_workshops_techniques a :Photography_Workshops_Techniques .\n  ?techniques a :Techniques .\n  ?photography_workshops_techniques p:hasTechniques ?techniques .\n  ?photography_workshops a :Photography_Workshops .\n  ?photography_workshops_techniques p:hasPhotography_Workshops ?photography_workshops .\n  ?photography_workshops p:workshop_id ?workshop_id .\n  ?techniques p:technique_name ?technique_name .\n} }\n  collective: { SELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTechniques ?child ; p:hasPhotography_Workshops ?parent . } GROUP BY ?child }\n  ?child p:technique_name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photography_Workshops } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

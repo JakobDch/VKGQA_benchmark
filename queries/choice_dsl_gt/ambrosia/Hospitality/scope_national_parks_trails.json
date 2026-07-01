@@ -1,0 +1,174 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_national_parks_trails",
+  "schema": "amb_scope_national_parks_trails",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What trail IDs and difficulties are common for all national parks?",
+      "qtype": "unambig",
+      "sql": "SELECT Trails.trail_id, Trails.difficulty  from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id   GROUP BY National_Parks_Trails.trail_id HAVING COUNT(DISTINCT National_Parks_Trails.national_park_id) = (SELECT COUNT(*) FROM  National_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?trail_id ?difficulty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:trail_id ?trail_id .\n  ?child p:difficulty ?difficulty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every national park, what are the corresponding trail IDs and difficulties?",
+      "qtype": "unambig",
+      "sql": "select national_parks.name , trails.trail_id , trails.difficulty from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?trail_id ?difficulty WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:trail_id ?trail_id .\n  ?trails p:difficulty ?difficulty .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What are the difficulties of the trails that are common to all national parks?",
+      "qtype": "unambig",
+      "sql": "SELECT Trails.difficulty  from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id   GROUP BY National_Parks_Trails.trail_id HAVING COUNT(DISTINCT National_Parks_Trails.national_park_id) = (SELECT COUNT(*) FROM  National_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?difficulty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:difficulty ?difficulty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the difficulty of the trail that is offered in each national park?",
+      "qtype": "ambig",
+      "sql": "select national_parks.name , trails.difficulty from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?difficulty WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:difficulty ?difficulty .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Show the difficulty and length of trials that are shared by all national parks.",
+      "qtype": "unambig",
+      "sql": "SELECT Trails.difficulty, Trails.length  from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id   GROUP BY National_Parks_Trails.trail_id HAVING COUNT(DISTINCT National_Parks_Trails.national_park_id) = (SELECT COUNT(*) FROM  National_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?difficulty ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:difficulty ?difficulty .\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every national park, what is the related length of trail?",
+      "qtype": "unambig",
+      "sql": "select national_parks.name , trails.length from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:length ?length .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 6,
+      "question": "What are the IDs, difficulties and lengths of the trails common to all national parks.",
+      "qtype": "unambig",
+      "sql": "SELECT Trails.trail_id, Trails.difficulty, Trails.length  from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id   GROUP BY National_Parks_Trails.trail_id HAVING COUNT(DISTINCT National_Parks_Trails.national_park_id) = (SELECT COUNT(*) FROM  National_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?trail_id ?difficulty ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:trail_id ?trail_id .\n  ?child p:difficulty ?difficulty .\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "Show me the IDs, difficulties and lengths of the trails every national park has.",
+      "qtype": "ambig",
+      "sql": "select national_parks.name , trails.trail_id , trails.difficulty , trails.length from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?trail_id ?difficulty ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:trail_id ?trail_id .\n  ?trails p:difficulty ?difficulty .\n  ?trails p:length ?length .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 8,
+      "question": "What length of trails do we have for each national park?",
+      "qtype": "ambig",
+      "sql": "SELECT Trails.length  from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id   GROUP BY National_Parks_Trails.trail_id HAVING COUNT(DISTINCT National_Parks_Trails.national_park_id) = (SELECT COUNT(*) FROM  National_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 9,
+      "question": "For each national park, list the difficulty and length of the trials available.",
+      "qtype": "unambig",
+      "sql": "select national_parks.name , trails.difficulty , trails.length from National_Parks_Trails join Trails on National_Parks_Trails.trail_id = Trails.trail_id join National_Parks on National_Parks_Trails.national_park_id = National_Parks.park_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?difficulty ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:difficulty ?difficulty .\n  ?trails p:length ?length .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "which trail IDs and difficulties are associated with every national park?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?trail_id ?difficulty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:trail_id ?trail_id .\n  ?child p:difficulty ?difficulty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?trail_id ?difficulty WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:trail_id ?trail_id .\n  ?trails p:difficulty ?difficulty .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the difficulty of the trail that is offered in each national park?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?difficulty WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:difficulty ?difficulty .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?difficulty WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:difficulty ?difficulty .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "For every National Park, what are the corresponding difficulty and length of trials?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?difficulty ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:difficulty ?difficulty .\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?difficulty ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:difficulty ?difficulty .\n  ?trails p:length ?length .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What length of trails do we have for each national park?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        8
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:length ?length .\n} }\n  collective: { SELECT ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the IDs, difficulties and lengths of the trails every national park has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        6,
+        7
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?trail_id ?difficulty ?length WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrails ?child ; p:hasNational_Parks ?parent . } GROUP BY ?child }\n  ?child p:trail_id ?trail_id .\n  ?child p:difficulty ?difficulty .\n  ?child p:length ?length .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :National_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?trail_id ?difficulty ?length WHERE {\n  ?national_parks_trails a :National_Parks_Trails .\n  ?trails a :Trails .\n  ?national_parks_trails p:hasTrails ?trails .\n  ?national_parks a :National_Parks .\n  ?national_parks_trails p:hasNational_Parks ?national_parks .\n  ?national_parks p:name ?name .\n  ?trails p:trail_id ?trail_id .\n  ?trails p:difficulty ?difficulty .\n  ?trails p:length ?length .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

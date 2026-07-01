@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_coffee_plantations_processing_techniques",
+  "schema": "amb_scope_coffee_plantations_processing_techniques",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every coffee plantation, list the processing techniques used.",
+      "qtype": "unambig",
+      "sql": "select coffee_plantations.name , processing_techniques.technique_name from Coffee_Plantations_Processing_Techniques join Processing_Techniques on Coffee_Plantations_Processing_Techniques.processing_technique_id = Processing_Techniques.technique_id join Coffee_Plantations on Coffee_Plantations_Processing_Techniques.coffee_plantation_id = Coffee_Plantations.plantation_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?technique_name WHERE {\n  ?coffee_plantations_processing_techniques a :Coffee_Plantations_Processing_Techniques .\n  ?processing_techniques a :Processing_Techniques .\n  ?coffee_plantations_processing_techniques p:hasProcessing_Techniques ?processing_techniques .\n  ?coffee_plantations a :Coffee_Plantations .\n  ?coffee_plantations_processing_techniques p:hasCoffee_Plantations ?coffee_plantations .\n  ?coffee_plantations p:name ?name .\n  ?processing_techniques p:name ?technique_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the processing techniques each coffee plantation uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Processing_Techniques.technique_name  from Coffee_Plantations_Processing_Techniques join Processing_Techniques on Coffee_Plantations_Processing_Techniques.processing_technique_id = Processing_Techniques.technique_id join Coffee_Plantations on Coffee_Plantations_Processing_Techniques.coffee_plantation_id = Coffee_Plantations.plantation_id   GROUP BY Coffee_Plantations_Processing_Techniques.processing_technique_id HAVING COUNT(DISTINCT Coffee_Plantations_Processing_Techniques.coffee_plantation_id) = (SELECT COUNT(*) FROM  Coffee_Plantations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcessing_Techniques ?child ; p:hasCoffee_Plantations ?parent . } GROUP BY ?child }\n  ?child p:name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Coffee_Plantations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the processing techniques each coffee plantation uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?technique_name WHERE {\n  ?coffee_plantations_processing_techniques a :Coffee_Plantations_Processing_Techniques .\n  ?processing_techniques a :Processing_Techniques .\n  ?coffee_plantations_processing_techniques p:hasProcessing_Techniques ?processing_techniques .\n  ?coffee_plantations a :Coffee_Plantations .\n  ?coffee_plantations_processing_techniques p:hasCoffee_Plantations ?coffee_plantations .\n  ?coffee_plantations p:name ?name .\n  ?processing_techniques p:name ?technique_name .\n} }\n  collective: { SELECT ?technique_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProcessing_Techniques ?child ; p:hasCoffee_Plantations ?parent . } GROUP BY ?child }\n  ?child p:name ?technique_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Coffee_Plantations } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

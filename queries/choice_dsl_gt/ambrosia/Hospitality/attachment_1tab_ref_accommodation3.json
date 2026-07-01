@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_accommodation3",
+  "schema": "amb_attachment_1tab_ref_accommodation3",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all chalets and cabins which cost 200 per night.",
+      "qtype": "ambig",
+      "sql": "SELECT Chalets.Name \nFROM Chalets\nWHERE (Chalets.Accommodation = \"Chalet\" OR Chalets.Accommodation = \"Cabin\") AND Chalets.Price_Per_Night = 200.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?chalets a :Chalets .\n  ?chalets p:name ?name .\n  ?chalets p:Accommodation ?accommodation_w .\n  ?chalets p:Accommodation ?accommodation_w2 .\n  ?chalets p:Price_Per_Night ?price_per_night_w .\n  FILTER((((STR(?accommodation_w) = \"Chalet\" || STR(?accommodation_w2) = \"Cabin\")) && (STR(?price_per_night_w) = \"200\" || STR(?price_per_night_w) = \"200.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all chalets and cabins which cost 200 per night.",
+      "qtype": "ambig",
+      "sql": "SELECT Chalets.Name \nFROM Chalets\nWHERE Chalets.Accommodation = \"Chalet\" OR Chalets.Accommodation = \"Cabin\" AND Chalets.Price_Per_Night = 200.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?chalets a :Chalets .\n  ?chalets p:name ?name .\n  ?chalets p:Accommodation ?accommodation_w .\n  ?chalets p:Accommodation ?accommodation_w2 .\n  ?chalets p:Price_Per_Night ?price_per_night_w .\n  FILTER((STR(?accommodation_w) = \"Chalet\" || (STR(?accommodation_w2) = \"Cabin\" && (STR(?price_per_night_w) = \"200\" || STR(?price_per_night_w) = \"200.0\"))))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all chalets and cabins which cost 200 per night.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?chalets a :Chalets .\n  ?chalets p:name ?name .\n  ?chalets p:Accommodation ?accommodation_w .\n  ?chalets p:Accommodation ?accommodation_w2 .\n  ?chalets p:Price_Per_Night ?price_per_night_w .\n  FILTER((STR(?accommodation_w) = \"Chalet\" || (STR(?accommodation_w2) = \"Cabin\" && (STR(?price_per_night_w) = \"200\" || STR(?price_per_night_w) = \"200.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?chalets a :Chalets .\n  ?chalets p:name ?name .\n  ?chalets p:Accommodation ?accommodation_w .\n  ?chalets p:Accommodation ?accommodation_w2 .\n  ?chalets p:Price_Per_Night ?price_per_night_w .\n  FILTER((((STR(?accommodation_w) = \"Chalet\" || STR(?accommodation_w2) = \"Cabin\")) && (STR(?price_per_night_w) = \"200\" || STR(?price_per_night_w) = \"200.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

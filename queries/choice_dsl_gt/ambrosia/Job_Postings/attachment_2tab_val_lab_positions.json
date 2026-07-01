@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_lab_positions",
+  "schema": "amb_attachment_2tab_val_lab_positions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all research scientists and also display female laboratory technicians.",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Scientists.name\nFROM Research_Scientists\nUNION\nSELECT Laboratory_Technicians.name\nFROM Laboratory_Technicians\nWHERE Laboratory_Technicians.Gender = \"Female\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_scientists a :Research_Scientists .\n    ?research_scientists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?laboratory_technicians a :Laboratory_Technicians .\n    ?laboratory_technicians p:name ?name .\n    ?laboratory_technicians p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Can you show female research scientists and female laboratory technicians?",
+      "qtype": "unambig",
+      "sql": "SELECT Research_Scientists.name\nFROM Research_Scientists\nWHERE Research_Scientists.Gender = \"Female\"\nUNION\nSELECT Laboratory_Technicians.name\nFROM Laboratory_Technicians\nWHERE Laboratory_Technicians.Gender = \"Female\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_scientists a :Research_Scientists .\n    ?research_scientists p:name ?name .\n    ?research_scientists p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?laboratory_technicians a :Laboratory_Technicians .\n    ?laboratory_technicians p:name ?name .\n    ?laboratory_technicians p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display female laboratory technicians and research scientists.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_scientists a :Research_Scientists .\n    ?research_scientists p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?laboratory_technicians a :Laboratory_Technicians .\n    ?laboratory_technicians p:name ?name .\n    ?laboratory_technicians p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?research_scientists a :Research_Scientists .\n    ?research_scientists p:name ?name .\n    ?research_scientists p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?laboratory_technicians a :Laboratory_Technicians .\n    ?laboratory_technicians p:name ?name .\n    ?laboratory_technicians p:Gender ?gender_f .\n    FILTER(STR(?gender_f) = \"Female\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

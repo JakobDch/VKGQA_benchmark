@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Location_base
+target		ex:Location/{id} a :Location ; p:id {id} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `id`, `city`, `state`, `country` FROM `Location`
+
+mappingId	Neighborhood_base
+target		ex:neighborhoods/{id} a :neighborhoods ; p:id {id} ; p:name {name} ; p:location_id {location_id} .
+source		SELECT `id`, `name`, `location_id` FROM `Neighborhood`
+
+mappingId	Neighborhood_location_id_fk
+target		ex:neighborhoods/{id} p:hasLocation ex:Location/{location_id} .
+source		SELECT `id`, `location_id` FROM `Neighborhood` WHERE `location_id` IS NOT NULL
+
+mappingId	PropertyType_base
+target		ex:PropertyType/{id} a :PropertyType ; p:id {id} ; p:type {type} .
+source		SELECT `id`, `type` FROM `PropertyType`
+
+mappingId	House_base
+target		ex:House/{id} a :House ; p:id {id} ; p:property_type_id {property_type_id} ; p:neighborhood_id {neighborhood_id} ; p:address {address} ; p:square_footage {square_footage} ; p:bedrooms {bedrooms} ; p:bathrooms {bathrooms} ; p:Fees {Fees} ; p:Taxes {Taxes} ; p:House_Price {House_Price} .
+source		SELECT `id`, `property_type_id`, `neighborhood_id`, `address`, `square_footage`, `bedrooms`, `bathrooms`, `Fees`, `Taxes`, `House_Price` FROM `House`
+
+mappingId	House_neighborhood_id_fk
+target		ex:House/{id} p:hasneighborhoods ex:neighborhoods/{neighborhood_id} .
+source		SELECT `id`, `neighborhood_id` FROM `House` WHERE `neighborhood_id` IS NOT NULL
+
+mappingId	House_property_type_id_fk
+target		ex:House/{id} p:hasPropertyType ex:PropertyType/{property_type_id} .
+source		SELECT `id`, `property_type_id` FROM `House` WHERE `property_type_id` IS NOT NULL
+
+mappingId	SaleRecord_base
+target		ex:SaleRecord/{id} a :SaleRecord ; p:id {id} ; p:house_id {house_id} ; p:sale_date {sale_date} ; p:purchase_price {purchase_price} .
+source		SELECT `id`, `house_id`, `sale_date`, `purchase_price` FROM `SaleRecord`
+
+mappingId	SaleRecord_house_id_fk
+target		ex:SaleRecord/{id} p:hasHouse ex:House/{house_id} .
+source		SELECT `id`, `house_id` FROM `SaleRecord` WHERE `house_id` IS NOT NULL
+
+mappingId	Mortgage_base
+target		ex:Mortgage/{id} a :Mortgage ; p:id {id} ; p:sale_record_id {sale_record_id} ; p:loan_amount {loan_amount} ; p:interest_rate {interest_rate} ; p:mortgage_term {mortgage_term} ; p:monthly_payment {monthly_payment} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `id`, `sale_record_id`, `loan_amount`, `interest_rate`, `mortgage_term`, `monthly_payment`, `start_date`, `end_date` FROM `Mortgage`
+
+mappingId	Mortgage_sale_record_id_fk
+target		ex:Mortgage/{id} p:hasSaleRecord ex:SaleRecord/{sale_record_id} .
+source		SELECT `id`, `sale_record_id` FROM `Mortgage` WHERE `sale_record_id` IS NOT NULL
+
+]]

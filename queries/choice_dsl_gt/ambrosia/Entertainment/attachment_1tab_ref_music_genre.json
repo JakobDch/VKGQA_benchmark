@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_music_genre",
+  "schema": "amb_attachment_1tab_ref_music_genre",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all pop songs and only those hip hop songs which were performed at Madison Square Garden.",
+      "qtype": "unambig",
+      "sql": "SELECT Songs.title \nFROM Music_Genres JOIN Songs ON Music_Genres.id = Songs.music_genre_id JOIN Concerts ON Songs.concert_id = Concerts.id\nWHERE Music_Genres.name = \"Pop Song\" OR Music_Genres.name = \"Hip Hop Song\" AND Concerts.venue = \"Madison Square Garden\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?music_genres a :Music_Genre .\n  ?songs a :Song .\n  ?songs p:hasMusic_Genres ?music_genres .\n  ?concerts a :Concert .\n  ?songs p:hasConcerts ?concerts .\n  ?songs p:title ?title .\n  ?music_genres p:name ?name_w .\n  ?music_genres p:name ?name_w2 .\n  ?concerts p:venue ?venue_w .\n  FILTER((STR(?name_w) = \"Pop Song\" || (STR(?name_w2) = \"Hip Hop Song\" && STR(?venue_w) = \"Madison Square Garden\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show pop songs and hip hop songs performed at Madison Square Garden.",
+      "qtype": "ambig",
+      "sql": "SELECT Songs.title \nFROM Music_Genres JOIN Songs ON Music_Genres.id = Songs.music_genre_id JOIN Concerts ON Songs.concert_id = Concerts.id\nWHERE (Music_Genres.name = \"Pop Song\" OR Music_Genres.name = \"Hip Hop Song\") AND Concerts.venue = \"Madison Square Garden\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?music_genres a :Music_Genre .\n  ?songs a :Song .\n  ?songs p:hasMusic_Genres ?music_genres .\n  ?concerts a :Concert .\n  ?songs p:hasConcerts ?concerts .\n  ?songs p:title ?title .\n  ?music_genres p:name ?name_w .\n  ?music_genres p:name ?name_w2 .\n  ?concerts p:venue ?venue_w .\n  FILTER((((STR(?name_w) = \"Pop Song\" || STR(?name_w2) = \"Hip Hop Song\")) && STR(?venue_w) = \"Madison Square Garden\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show pop songs and hip hop songs performed at Madison Square Garden.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?music_genres a :Music_Genre .\n  ?songs a :Song .\n  ?songs p:hasMusic_Genres ?music_genres .\n  ?concerts a :Concert .\n  ?songs p:hasConcerts ?concerts .\n  ?songs p:title ?title .\n  ?music_genres p:name ?name_w .\n  ?music_genres p:name ?name_w2 .\n  ?concerts p:venue ?venue_w .\n  FILTER((STR(?name_w) = \"Pop Song\" || (STR(?name_w2) = \"Hip Hop Song\" && STR(?venue_w) = \"Madison Square Garden\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?music_genres a :Music_Genre .\n  ?songs a :Song .\n  ?songs p:hasMusic_Genres ?music_genres .\n  ?concerts a :Concert .\n  ?songs p:hasConcerts ?concerts .\n  ?songs p:title ?title .\n  ?music_genres p:name ?name_w .\n  ?music_genres p:name ?name_w2 .\n  ?concerts p:venue ?venue_w .\n  FILTER((((STR(?name_w) = \"Pop Song\" || STR(?name_w2) = \"Hip Hop Song\")) && STR(?venue_w) = \"Madison Square Garden\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

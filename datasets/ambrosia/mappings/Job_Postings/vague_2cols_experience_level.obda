@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Applicants_base
+target		ex:Applicants/{id} a :Applicants ; p:id {id} ; p:name {name} ; p:email {email} ; p:phone {phone} ; p:resume {resume} .
+source		SELECT `id`, `name`, `email`, `phone`, `resume` FROM `Applicants`
+
+mappingId	Jobs_base
+target		ex:Jobs/{id} a :Jobs ; p:id {id} ; p:title {title} ; p:description {description} ; p:location {location} ; p:salary {salary} .
+source		SELECT `id`, `title`, `description`, `location`, `salary` FROM `Jobs`
+
+mappingId	Companies_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:industry {industry} ; p:size {size} .
+source		SELECT `id`, `name`, `industry`, `size` FROM `Companies`
+
+mappingId	CompanyJobs_base
+target		ex:CompanyJobs/{company_id}/{job_id} a :CompanyJobs ; p:company_id {company_id} ; p:job_id {job_id} .
+source		SELECT `company_id`, `job_id` FROM `CompanyJobs`
+
+mappingId	CompanyJobs_job_id_fk
+target		ex:CompanyJobs/{company_id}/{job_id} p:hasJobs ex:Jobs/{job_id} .
+source		SELECT `company_id`, `job_id` FROM `CompanyJobs` WHERE `job_id` IS NOT NULL
+
+mappingId	CompanyJobs_company_id_fk
+target		ex:CompanyJobs/{company_id}/{job_id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `company_id`, `job_id` FROM `CompanyJobs` WHERE `company_id` IS NOT NULL
+
+mappingId	Experiences_base
+target		ex:Experiences/{applicant_id}/{job} a :Experiences ; p:applicant_id {applicant_id} ; p:years_of_experience {years_of_experience} ; p:number_of_completed_projects {number_of_completed_projects} ; p:job {job} ; p:additional_skills {additional_skills} .
+source		SELECT `applicant_id`, `years_of_experience`, `number_of_completed_projects`, `job`, `additional_skills` FROM `Experiences`
+
+mappingId	Experiences_applicant_id_fk
+target		ex:Experiences/{applicant_id}/{job} p:hasApplicants ex:Applicants/{applicant_id} .
+source		SELECT `applicant_id`, `job` FROM `Experiences` WHERE `applicant_id` IS NOT NULL
+
+]]

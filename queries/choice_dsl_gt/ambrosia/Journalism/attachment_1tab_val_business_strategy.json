@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_business_strategy",
+  "schema": "amb_attachment_1tab_val_business_strategy",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all media franchises and also provide a list of cross-platform expansions with liberals as the target audience.",
+      "qtype": "unambig",
+      "sql": "SELECT MediaFranchises.name \nFROM MediaFranchises\nWHERE MediaFranchises.Business_Strategy = \"Media Franchise\" OR MediaFranchises.Business_Strategy = \"Cross-Platform Expansion\" AND MediaFranchises.Audience = \"Liberals\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?mediafranchises a :MediaFranchises .\n  ?mediafranchises p:name ?name .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w2 .\n  ?mediafranchises p:Audience ?audience_w .\n  FILTER((STR(?business_strategy_w) = \"Media Franchise\" || (STR(?business_strategy_w2) = \"Cross-Platform Expansion\" && STR(?audience_w) = \"Liberals\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display media franchises and cross-platform expansions with liberals as the target audience.",
+      "qtype": "ambig",
+      "sql": "SELECT MediaFranchises.name \nFROM MediaFranchises\nWHERE (MediaFranchises.Business_Strategy = \"Media Franchise\" OR MediaFranchises.Business_Strategy = \"Cross-Platform Expansion\") AND MediaFranchises.Audience = \"Liberals\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?mediafranchises a :MediaFranchises .\n  ?mediafranchises p:name ?name .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w2 .\n  ?mediafranchises p:Audience ?audience_w .\n  FILTER((((STR(?business_strategy_w) = \"Media Franchise\" || STR(?business_strategy_w2) = \"Cross-Platform Expansion\")) && STR(?audience_w) = \"Liberals\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display media franchises and cross-platform expansions with liberals as the target audience.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?mediafranchises a :MediaFranchises .\n  ?mediafranchises p:name ?name .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w2 .\n  ?mediafranchises p:Audience ?audience_w .\n  FILTER((STR(?business_strategy_w) = \"Media Franchise\" || (STR(?business_strategy_w2) = \"Cross-Platform Expansion\" && STR(?audience_w) = \"Liberals\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?mediafranchises a :MediaFranchises .\n  ?mediafranchises p:name ?name .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w .\n  ?mediafranchises p:Business_Strategy ?business_strategy_w2 .\n  ?mediafranchises p:Audience ?audience_w .\n  FILTER((((STR(?business_strategy_w) = \"Media Franchise\" || STR(?business_strategy_w2) = \"Cross-Platform Expansion\")) && STR(?audience_w) = \"Liberals\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

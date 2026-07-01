@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Transaction_Type_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:transaction_type {transaction_type} ; p:bank_account {bank_account} ; p:amount {amount} ; p:date {date} .
+source		SELECT `transaction_id`, `transaction_type`, `bank_account`, `amount`, `date` FROM `Transaction_Type`
+
+mappingId	Customer_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Customer`
+
+mappingId	Account_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:bank_account {bank_account} ; p:balance {balance} ; p:interest_rate {interest_rate} .
+source		SELECT `account_id`, `bank_account`, `balance`, `interest_rate` FROM `Account`
+
+mappingId	Employee_base
+target		ex:Employees/{employee_id} a :Employees ; p:employee_id {employee_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:hire_date {hire_date} .
+source		SELECT `employee_id`, `first_name`, `last_name`, `email`, `hire_date` FROM `Employee`
+
+mappingId	Loan_base
+target		ex:Loans/{loan_id} a :Loans ; p:loan_id {loan_id} ; p:customer_id {customer_id} ; p:loan_amount {loan_amount} ; p:interest_rate {interest_rate} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `loan_id`, `customer_id`, `loan_amount`, `interest_rate`, `start_date`, `end_date` FROM `Loan`
+
+mappingId	Loan_customer_id_fk
+target		ex:Loans/{loan_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `loan_id`, `customer_id` FROM `Loan` WHERE `customer_id` IS NOT NULL
+
+mappingId	Savings_Account_base
+target		ex:SavingsAccounts/{savings_id} a :SavingsAccounts ; p:savings_id {savings_id} ; p:account_id {account_id} ; p:balance {balance} ; p:annual_interst_rate {annual_interst_rate} ; p:created_at {created_at} .
+source		SELECT `savings_id`, `account_id`, `balance`, `annual_interst_rate`, `created_at` FROM `Savings_Account`
+
+mappingId	Savings_Account_account_id_fk
+target		ex:SavingsAccounts/{savings_id} p:hasAccounts ex:Accounts/{account_id} .
+source		SELECT `savings_id`, `account_id` FROM `Savings_Account` WHERE `account_id` IS NOT NULL
+
+]]

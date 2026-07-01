@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_pay_gap",
+  "schema": "amb_vague_2cols_pay_gap",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each occupation, list the salaries and salary differences as a percentage.",
+      "qtype": "unambig",
+      "sql": "SELECT OccupationalStats.occupation, OccupationalStats.percentageGap, SalaryData.salary FROM OccupationalStats JOIN People ON OccupationalStats.occupation = People. occupation JOIN SalaryData ON SalaryData.personId = People.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?occ ?gap ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:percentageGap ?gap .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "For each occupation, show me all the salaries and the salary differences both as the pay amount and a percentage.",
+      "qtype": "unambig",
+      "sql": "SELECT OccupationalStats.occupation, OccupationalStats.percentageGap, differenceInSalaries, SalaryData.salary FROM OccupationalStats JOIN People ON OccupationalStats.occupation = People. occupation JOIN SalaryData ON SalaryData.personId = People.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?occ ?gap ?diff ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:percentageGap ?gap ; p:differenceInSalaries ?diff .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Show the pay gap percentage and job satisfaction of occupations, from lowest to highest satisfaction.",
+      "qtype": "unambig",
+      "sql": "SELECT occupation, percentageGap, jobSatisfactionIndex FROM OccupationalStats ORDER BY jobSatisfactionIndex ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?occupation ?percentagegap ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:percentageGap ?percentagegap .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "For each occupation, list the salaries and the pay gap as the pay amount.",
+      "qtype": "unambig",
+      "sql": "SELECT OccupationalStats.occupation, OccupationalStats.differenceInSalaries, SalaryData.salary FROM OccupationalStats JOIN People ON OccupationalStats.occupation = People. occupation JOIN SalaryData ON SalaryData.personId = People.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?occ ?diff ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:differenceInSalaries ?diff .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Show the difference in salaries and job satisfaction of occupations, from lowest to highest satisfaction.",
+      "qtype": "unambig",
+      "sql": "SELECT occupation, differenceInSalaries, jobSatisfactionIndex FROM OccupationalStats ORDER BY jobSatisfactionIndex ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?occupation ?differenceinsalaries ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:differenceInSalaries ?differenceinsalaries .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Show the pay gap percentage, difference in salaries and job satisfaction of occupations, from lowest to highest satisfaction.",
+      "qtype": "unambig",
+      "sql": "SELECT occupation, percentageGap, differenceInSalaries, jobSatisfactionIndex FROM OccupationalStats ORDER BY jobSatisfactionIndex ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?occupation ?percentagegap ?differenceinsalaries ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:percentageGap ?percentagegap .\n  ?occupationalstats p:differenceInSalaries ?differenceinsalaries .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o)",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Working in different sectors, what will be the salary and pay gap?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nCHOICE vague {\n  component: { SELECT ?occ ?gap ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:percentageGap ?gap .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n} }\n  full: { SELECT ?occ ?gap ?diff ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:percentageGap ?gap ; p:differenceInSalaries ?diff .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n} }\n  component_2: { SELECT ?occ ?diff ?sal WHERE {\n  ?os a :OccupationalStats ; p:occupation ?occ ; p:differenceInSalaries ?diff .\n  ?pe a :Person ; p:occupation ?occ2 .\n  ?sd a :SalaryData ; p:hasPeople ?pe ; p:salary ?sal .\n  FILTER(STR(?occ)=STR(?occ2))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the pay gap and job satisfaction across occupations, from lowest to highest satisfaction?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?occupation ?percentagegap ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:percentageGap ?percentagegap .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o) }\n  component_2: { SELECT ?occupation ?differenceinsalaries ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:differenceInSalaries ?differenceinsalaries .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o) }\n  full: { SELECT ?occupation ?percentagegap ?differenceinsalaries ?jobsatisfactionindex WHERE {\n  ?occupationalstats a :OccupationalStats .\n  ?occupationalstats p:occupation ?occupation .\n  ?occupationalstats p:percentageGap ?percentagegap .\n  ?occupationalstats p:differenceInSalaries ?differenceinsalaries .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex .\n  ?occupationalstats p:jobSatisfactionIndex ?jobsatisfactionindex_o .\n}\nORDER BY ASC(?jobsatisfactionindex_o) }\n}",
+      "verified": true
+    }
+  ]
+}

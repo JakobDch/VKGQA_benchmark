@@ -1,0 +1,53 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2cols_cost",
+  "schema": "amb_vague_2cols_cost",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In descending order of out of pocket expenses, list the surgical procedures.",
+      "qtype": "unambig",
+      "sql": "SELECT Description, OutOfPocketExpense\nFROM SurgicalProcedures\nORDER BY OutOfPocketExpense DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?outofpocketexpense WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense_o .\n}\nORDER BY DESC(?outofpocketexpense_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What are the surgical procedures listed in descending order of cost?",
+      "qtype": "ambig",
+      "sql": "SELECT Description, InsuranceCovered\nFROM SurgicalProcedures\nORDER BY InsuranceCovered DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?insurancecovered WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered_o .\n}\nORDER BY DESC(?insurancecovered_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What are the surgical procedures listed in descending order of cost?",
+      "qtype": "ambig",
+      "sql": "SELECT Description, InsuranceCovered, OutOfPocketExpense\nFROM SurgicalProcedures\nORDER BY InsuranceCovered, OutOfPocketExpense DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?insurancecovered ?outofpocketexpense WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered_o .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense_o .\n}\nORDER BY ASC(?insurancecovered_o) DESC(?outofpocketexpense_o)",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the surgical procedures listed in descending order of cost?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?description ?outofpocketexpense WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense_o .\n}\nORDER BY DESC(?outofpocketexpense_o) }\n  full: { SELECT ?description ?insurancecovered ?outofpocketexpense WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered_o .\n  ?surgicalprocedures p:OutOfPocketExpense ?outofpocketexpense_o .\n}\nORDER BY ASC(?insurancecovered_o) DESC(?outofpocketexpense_o) }\n  component_2: { SELECT ?description ?insurancecovered WHERE {\n  ?surgicalprocedures a :SurgicalProcedures .\n  ?surgicalprocedures p:Description ?description .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered .\n  ?surgicalprocedures p:InsuranceCovered ?insurancecovered_o .\n}\nORDER BY DESC(?insurancecovered_o) }\n}",
+      "verified": true
+    }
+  ]
+}

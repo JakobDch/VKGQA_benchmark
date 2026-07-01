@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_dining_establishments",
+  "schema": "amb_attachment_2tab_ref_dining_establishments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of names of restaurants and also provide a list of names of cafes that serve lasagna.",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurants.name\nFROM Menu_Options JOIN Restaurant_Menus ON Menu_Options.id = Restaurant_Menus.menu_option_id JOIN Restaurants ON Restaurant_Menus.restaurant_id = Restaurants.id\nUNION\nSELECT Cafe.name\nFROM Menu_Options JOIN Cafe_Menus ON Menu_Options.id = Cafe_Menus.menu_option_id JOIN Cafe ON Cafe_Menus.cafe_id = Cafe.id\nWHERE Menu_Options.option_name = \"Lasagna\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?menu_options a :Menu_Options .\n    ?restaurant_menus a :Restaurant_Menus .\n    ?restaurant_menus p:hasMenu_Options ?menu_options .\n    ?restaurants a :Restaurants .\n    ?restaurant_menus p:hasRestaurants ?restaurants .\n    ?restaurants p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?menu_options a :Menu_Options .\n    ?cafe_menus a :Cafe_Menus .\n    ?cafe_menus p:hasMenu_Options ?menu_options .\n    ?cafe a :Cafe .\n    ?cafe_menus p:hasCafe ?cafe .\n    ?cafe p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What are names of restaurants that serve lasagna and names of cafes that also serve it?",
+      "qtype": "unambig",
+      "sql": "SELECT Restaurants.name\nFROM Menu_Options JOIN Restaurant_Menus ON Menu_Options.id = Restaurant_Menus.menu_option_id JOIN Restaurants ON Restaurant_Menus.restaurant_id = Restaurants.id\nWHERE Menu_Options.option_name = \"Lasagna\"\nUNION\nSELECT Cafe.name\nFROM Menu_Options JOIN Cafe_Menus ON Menu_Options.id = Cafe_Menus.menu_option_id JOIN Cafe ON Cafe_Menus.cafe_id = Cafe.id\nWHERE Menu_Options.option_name = \"Lasagna\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?menu_options a :Menu_Options .\n    ?restaurant_menus a :Restaurant_Menus .\n    ?restaurant_menus p:hasMenu_Options ?menu_options .\n    ?restaurants a :Restaurants .\n    ?restaurant_menus p:hasRestaurants ?restaurants .\n    ?restaurants p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?menu_options a :Menu_Options .\n    ?cafe_menus a :Cafe_Menus .\n    ?cafe_menus p:hasMenu_Options ?menu_options .\n    ?cafe a :Cafe .\n    ?cafe_menus p:hasCafe ?cafe .\n    ?cafe p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show names of all restaurants and cafes that serve lasagna.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?menu_options a :Menu_Options .\n    ?restaurant_menus a :Restaurant_Menus .\n    ?restaurant_menus p:hasMenu_Options ?menu_options .\n    ?restaurants a :Restaurants .\n    ?restaurant_menus p:hasRestaurants ?restaurants .\n    ?restaurants p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?menu_options a :Menu_Options .\n    ?cafe_menus a :Cafe_Menus .\n    ?cafe_menus p:hasMenu_Options ?menu_options .\n    ?cafe a :Cafe .\n    ?cafe_menus p:hasCafe ?cafe .\n    ?cafe p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?menu_options a :Menu_Options .\n    ?restaurant_menus a :Restaurant_Menus .\n    ?restaurant_menus p:hasMenu_Options ?menu_options .\n    ?restaurants a :Restaurants .\n    ?restaurant_menus p:hasRestaurants ?restaurants .\n    ?restaurants p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?menu_options a :Menu_Options .\n    ?cafe_menus a :Cafe_Menus .\n    ?cafe_menus p:hasMenu_Options ?menu_options .\n    ?cafe a :Cafe .\n    ?cafe_menus p:hasCafe ?cafe .\n    ?cafe p:name ?name .\n    ?menu_options p:option_name ?option_name_f .\n    FILTER(STR(?option_name_f) = \"Lasagna\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

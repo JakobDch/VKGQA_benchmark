@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Training_Center_base
+target		ex:Training_Center/{ID} a :Training_Center ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Training_Center`
+
+mappingId	Flight_Attendants_base
+target		ex:Flight_Attendants/{ID} a :Flight_Attendants ; p:ID {ID} ; p:name {Name} ; p:Age {Age} ; p:Experience {Experience} ; p:HireDate {HireDate} ; p:Training_Center_ID {Training_Center_ID} .
+source		SELECT `ID`, `Name`, `Age`, `Experience`, `HireDate`, `Training_Center_ID` FROM `Flight_Attendants`
+
+mappingId	Flight_Attendants_Training_Center_ID_fk
+target		ex:Flight_Attendants/{ID} p:hasTraining_Center ex:Training_Center/{Training_Center_ID} .
+source		SELECT `ID`, `Training_Center_ID` FROM `Flight_Attendants` WHERE `Training_Center_ID` IS NOT NULL
+
+mappingId	Pilots_base
+target		ex:Pilots/{ID} a :Pilots ; p:ID {ID} ; p:name {Name} ; p:Age {Age} ; p:Experience {Experience} ; p:LicenseNumber {LicenseNumber} ; p:Training_Center_ID {Training_Center_ID} .
+source		SELECT `ID`, `Name`, `Age`, `Experience`, `LicenseNumber`, `Training_Center_ID` FROM `Pilots`
+
+mappingId	Pilots_Training_Center_ID_fk
+target		ex:Pilots/{ID} p:hasTraining_Center ex:Training_Center/{Training_Center_ID} .
+source		SELECT `ID`, `Training_Center_ID` FROM `Pilots` WHERE `Training_Center_ID` IS NOT NULL
+
+mappingId	Aircrafts_base
+target		ex:Aircrafts/{ID} a :Aircrafts ; p:ID {ID} ; p:Type {Type} ; p:Model {Model} ; p:Capacity {Capacity} .
+source		SELECT `ID`, `Type`, `Model`, `Capacity` FROM `Aircrafts`
+
+mappingId	Flights_base
+target		ex:Flights/{ID} a :Flights ; p:ID {ID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:OriginCity {OriginCity} ; p:DestinationCity {DestinationCity} ; p:Aircraft_ID {Aircraft_ID} .
+source		SELECT `ID`, `DepartureTime`, `ArrivalTime`, `OriginCity`, `DestinationCity`, `Aircraft_ID` FROM `Flights`
+
+mappingId	Flights_Aircraft_ID_fk
+target		ex:Flights/{ID} p:hasAircrafts ex:Aircrafts/{Aircraft_ID} .
+source		SELECT `ID`, `Aircraft_ID` FROM `Flights` WHERE `Aircraft_ID` IS NOT NULL
+
+mappingId	Assignments_base
+target		ex:Assignments/{ID} a :Assignments ; p:ID {ID} ; p:Flight_ID {Flight_ID} ; p:Pilot_ID {Pilot_ID} ; p:CoPilot_ID {CoPilot_ID} .
+source		SELECT `ID`, `Flight_ID`, `Pilot_ID`, `CoPilot_ID` FROM `Assignments`
+
+mappingId	Assignments_CoPilot_ID_fk
+target		ex:Assignments/{ID} p:hasPilots_CoPilot_ID ex:Pilots/{CoPilot_ID} .
+source		SELECT `ID`, `CoPilot_ID` FROM `Assignments` WHERE `CoPilot_ID` IS NOT NULL
+
+mappingId	Assignments_Pilot_ID_fk
+target		ex:Assignments/{ID} p:hasPilots_Pilot_ID ex:Pilots/{Pilot_ID} .
+source		SELECT `ID`, `Pilot_ID` FROM `Assignments` WHERE `Pilot_ID` IS NOT NULL
+
+mappingId	Assignments_Flight_ID_fk
+target		ex:Assignments/{ID} p:hasFlights ex:Flights/{Flight_ID} .
+source		SELECT `ID`, `Flight_ID` FROM `Assignments` WHERE `Flight_ID` IS NOT NULL
+
+]]

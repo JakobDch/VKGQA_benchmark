@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_products",
+  "schema": "amb_attachment_1tab_val_products",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the ETP records, in addition show the UIT records with an exit fee of 0.01.",
+      "qtype": "unambig",
+      "sql": "SELECT Products.Name \nFROM Products\nWHERE Products.Category = \"ETP\" OR Products.Category = \"UIT\" AND Products.ExitFee = 0.01",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?products a :Products .\n  ?products p:name ?name .\n  ?products p:Category ?category_w .\n  ?products p:Category ?category_w2 .\n  ?products p:ExitFee ?exitfee_w .\n  FILTER((STR(?category_w) = \"ETP\" || (STR(?category_w2) = \"UIT\" && (STR(?exitfee_w) = \"0.01\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List all entries for both ETPs and UITs where the exit fee is 0.01.",
+      "qtype": "unambig",
+      "sql": "SELECT Products.Name \nFROM Products\nWHERE (Products.Category = \"ETP\" OR Products.Category = \"UIT\") AND Products.ExitFee = 0.01",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?products a :Products .\n  ?products p:name ?name .\n  ?products p:Category ?category_w .\n  ?products p:Category ?category_w2 .\n  ?products p:ExitFee ?exitfee_w .\n  FILTER((((STR(?category_w) = \"ETP\" || STR(?category_w2) = \"UIT\")) && (STR(?exitfee_w) = \"0.01\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all ETPs and UITs where the exit fee is 0.01.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?products a :Products .\n  ?products p:name ?name .\n  ?products p:Category ?category_w .\n  ?products p:Category ?category_w2 .\n  ?products p:ExitFee ?exitfee_w .\n  FILTER((STR(?category_w) = \"ETP\" || (STR(?category_w2) = \"UIT\" && (STR(?exitfee_w) = \"0.01\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?products a :Products .\n  ?products p:name ?name .\n  ?products p:Category ?category_w .\n  ?products p:Category ?category_w2 .\n  ?products p:ExitFee ?exitfee_w .\n  FILTER((((STR(?category_w) = \"ETP\" || STR(?category_w2) = \"UIT\")) && (STR(?exitfee_w) = \"0.01\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

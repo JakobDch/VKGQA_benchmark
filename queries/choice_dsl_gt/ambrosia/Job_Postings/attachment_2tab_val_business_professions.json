@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_business_professions",
+  "schema": "amb_attachment_2tab_val_business_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What sales managers have a hybrid work arrangement and what marketing specialists are the same?",
+      "qtype": "unambig",
+      "sql": "SELECT Sales_Manager.name\nFROM Sales_Manager\nWHERE Sales_Manager.working_arrangement = \"Hybrid\"\nUNION\nSELECT Marketing_Specialist.name\nFROM Marketing_Specialist\nWHERE Marketing_Specialist.working_arrangement = \"Hybrid\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?sales_manager a :Sales_Manager .\n    ?sales_manager p:name ?name .\n    ?sales_manager p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?marketing_specialist a :MarketingSpecialists .\n    ?marketing_specialist p:name ?name .\n    ?marketing_specialist p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Provide sales managers and marketing specialists with a hybrid work arrangement.",
+      "qtype": "ambig",
+      "sql": "SELECT Sales_Manager.name\nFROM Sales_Manager\nUNION\nSELECT Marketing_Specialist.name\nFROM Marketing_Specialist\nWHERE Marketing_Specialist.working_arrangement = \"Hybrid\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?sales_manager a :Sales_Manager .\n    ?sales_manager p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?marketing_specialist a :MarketingSpecialists .\n    ?marketing_specialist p:name ?name .\n    ?marketing_specialist p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide sales managers and marketing specialists with a hybrid work arrangement.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?sales_manager a :Sales_Manager .\n    ?sales_manager p:name ?name .\n    ?sales_manager p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?marketing_specialist a :MarketingSpecialists .\n    ?marketing_specialist p:name ?name .\n    ?marketing_specialist p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?sales_manager a :Sales_Manager .\n    ?sales_manager p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?marketing_specialist a :MarketingSpecialists .\n    ?marketing_specialist p:name ?name .\n    ?marketing_specialist p:working_arrangement ?working_arrangement_f .\n    FILTER(STR(?working_arrangement_f) = \"Hybrid\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

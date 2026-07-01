@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Person_base
+target		ex:Person/{personID} a :Person ; p:personID {personID} ; p:name {name} ; p:dateofbirth {dateofbirth} .
+source		SELECT `personID`, `name`, `dateofbirth` FROM `Person`
+
+mappingId	Disease_base
+target		ex:Disease/{diseaseID} a :Disease ; p:diseaseID {diseaseID} ; p:name {name} ; p:deathrate {deathrate} .
+source		SELECT `diseaseID`, `name`, `deathrate` FROM `Disease`
+
+mappingId	Number_Of_Deaths_base
+target		ex:Number_Of_Deaths/{year} a :Number_Of_Deaths ; p:year {year} ; p:total_deaths {total_deaths} .
+source		SELECT `year`, `total_deaths` FROM `Number_Of_Deaths`
+
+mappingId	Number_Of_Deaths_year_fk
+target		ex:Number_Of_Deaths/{year} p:hasProvince ex:Province/{year} .
+source		SELECT `year` FROM `Number_Of_Deaths` WHERE `year` IS NOT NULL
+
+mappingId	Crude_Death_Rate_base
+target		ex:Crude_Death_Rate/{year} a :Crude_Death_Rate ; p:year {year} ; p:rate {rate} .
+source		SELECT `year`, `rate` FROM `Crude_Death_Rate`
+
+mappingId	Crude_Death_Rate_year_fk
+target		ex:Crude_Death_Rate/{year} p:hasProvince ex:Province/{year} .
+source		SELECT `year` FROM `Crude_Death_Rate` WHERE `year` IS NOT NULL
+
+mappingId	Province_base
+target		ex:Province/{provinceID} a :Province ; p:provinceID {provinceID} ; p:name {name} ; p:year {year} ; p:population {population} .
+source		SELECT `provinceID`, `name`, `year`, `population` FROM `Province`
+
+mappingId	Province_year_fk
+target		ex:Province/{provinceID} p:hasNumber_Of_Deaths ex:Number_Of_Deaths/{year} .
+source		SELECT `provinceID`, `year` FROM `Province` WHERE `year` IS NOT NULL
+
+]]

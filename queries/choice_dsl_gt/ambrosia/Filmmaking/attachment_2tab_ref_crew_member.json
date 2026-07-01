@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_2tab_ref_crew_member",
+  "schema": "amb_attachment_2tab_ref_crew_member",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the director whose film won an award in 1983 and who was the cinematographer for the same film?",
+      "qtype": "unambig",
+      "sql": "SELECT Director.name\nFROM Award JOIN Film ON Award.film_id = Film.id JOIN Director ON Film.director_id = Director.id\nWHERE Award.year = 1983\nUNION\nSELECT Cinematographer.name\nFROM Award JOIN Film ON Award.film_id = Film.id JOIN Cinematographer ON Film.cinematographer_id = Cinematographer.id\nWHERE Award.year = 1983",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?director a :Directors .\n    ?film p:hasDirector ?director .\n    ?director p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?cinematographer a :Cinematographers .\n    ?film p:hasCinematographer ?cinematographer .\n    ?cinematographer p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display the directors and cinematographers whose films won an award in 1983.",
+      "qtype": "ambig",
+      "sql": "SELECT Director.name\nFROM Award JOIN Film ON Award.film_id = Film.id JOIN Director ON Film.director_id = Director.id\nUNION\nSELECT Cinematographer.name\nFROM Award JOIN Film ON Award.film_id = Film.id JOIN Cinematographer ON Film.cinematographer_id = Cinematographer.id\nWHERE Award.year = 1983",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?director a :Directors .\n    ?film p:hasDirector ?director .\n    ?director p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?cinematographer a :Cinematographers .\n    ?film p:hasCinematographer ?cinematographer .\n    ?cinematographer p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display the directors and cinematographers whose films won an award in 1983.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?director a :Directors .\n    ?film p:hasDirector ?director .\n    ?director p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?cinematographer a :Cinematographers .\n    ?film p:hasCinematographer ?cinematographer .\n    ?cinematographer p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?director a :Directors .\n    ?film p:hasDirector ?director .\n    ?director p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?award a :Awards .\n    ?film a :Films .\n    ?award p:hasFilm ?film .\n    ?cinematographer a :Cinematographers .\n    ?film p:hasCinematographer ?cinematographer .\n    ?cinematographer p:name ?name .\n    ?award p:year ?year_f .\n    FILTER((STR(?year_f) = \"1983\" || STR(?year_f) = \"1983.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

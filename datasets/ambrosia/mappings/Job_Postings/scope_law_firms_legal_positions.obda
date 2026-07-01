@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Law_Firms_base
+target		ex:Law_Firms/{id} a :Law_Firms ; p:id {id} ; p:name {name} ; p:address {address} ; p:website {website} .
+source		SELECT `id`, `name`, `address`, `website` FROM `Law_Firms`
+
+mappingId	Legal_Positions_base
+target		ex:Legal_Positions/{id} a :Legal_Positions ; p:id {id} ; p:position_name {position_name} ; p:required_experience {required_experience} .
+source		SELECT `id`, `position_name`, `required_experience` FROM `Legal_Positions`
+
+mappingId	Law_Firm_Job_Postings_base
+target		ex:Law_Firm_Job_Postings/{id} a :Law_Firm_Job_Postings ; p:id {id} ; p:job_title {job_title} ; p:posted_date {posted_date} ; p:application_deadline {application_deadline} ; p:description {description} ; p:salary {salary} .
+source		SELECT `id`, `job_title`, `posted_date`, `application_deadline`, `description`, `salary` FROM `Law_Firm_Job_Postings`
+
+mappingId	Law_Firms_Legal_Positions_base
+target		ex:Law_Firms_Legal_Positions/{firm_id}/{position_id} a :Law_Firms_Legal_Positions ; p:firm_id {firm_id} ; p:position_id {position_id} .
+source		SELECT `firm_id`, `position_id` FROM `Law_Firms_Legal_Positions`
+
+mappingId	Law_Firms_Legal_Positions_position_id_fk
+target		ex:Law_Firms_Legal_Positions/{firm_id}/{position_id} p:hasLegal_Positions ex:Legal_Positions/{position_id} .
+source		SELECT `firm_id`, `position_id` FROM `Law_Firms_Legal_Positions` WHERE `position_id` IS NOT NULL
+
+mappingId	Law_Firms_Legal_Positions_firm_id_fk
+target		ex:Law_Firms_Legal_Positions/{firm_id}/{position_id} p:hasLaw_Firms ex:Law_Firms/{firm_id} .
+source		SELECT `firm_id`, `position_id` FROM `Law_Firms_Legal_Positions` WHERE `firm_id` IS NOT NULL
+
+]]

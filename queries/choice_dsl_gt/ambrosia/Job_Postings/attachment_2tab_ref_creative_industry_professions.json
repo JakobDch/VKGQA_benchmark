@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_creative_industry_professions",
+  "schema": "amb_attachment_2tab_ref_creative_industry_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all graphic designers and also provide a list of web developers who work at 3/10 New York Avenue.",
+      "qtype": "unambig",
+      "sql": "SELECT Graphic_Designers.name\nFROM Office JOIN Graphic_Designers ON Office.id = Graphic_Designers.officeId\nUNION\nSELECT Web_Developers.name\nFROM Office JOIN Web_Developers ON Office.id = Web_Developers.officeId\nWHERE Office.address = \"3/10 New York Avenue\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?office a :Office .\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:hasOffice ?office .\n    ?graphic_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?office a :Office .\n    ?web_developers a :Web_Developers .\n    ?web_developers p:hasOffice ?office .\n    ?web_developers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show graphic designers and web developers working at 3/10 New York Avenue.",
+      "qtype": "ambig",
+      "sql": "SELECT Graphic_Designers.name\nFROM Office JOIN Graphic_Designers ON Office.id = Graphic_Designers.officeId\nWHERE Office.address = \"3/10 New York Avenue\"\nUNION\nSELECT Web_Developers.name\nFROM Office JOIN Web_Developers ON Office.id = Web_Developers.officeId\nWHERE Office.address = \"3/10 New York Avenue\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?office a :Office .\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:hasOffice ?office .\n    ?graphic_designers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?office a :Office .\n    ?web_developers a :Web_Developers .\n    ?web_developers p:hasOffice ?office .\n    ?web_developers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show graphic designers and web developers working at 3/10 New York Avenue.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?office a :Office .\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:hasOffice ?office .\n    ?graphic_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?office a :Office .\n    ?web_developers a :Web_Developers .\n    ?web_developers p:hasOffice ?office .\n    ?web_developers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?office a :Office .\n    ?graphic_designers a :Graphic_Designers .\n    ?graphic_designers p:hasOffice ?office .\n    ?graphic_designers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?office a :Office .\n    ?web_developers a :Web_Developers .\n    ?web_developers p:hasOffice ?office .\n    ?web_developers p:name ?name .\n    ?office p:address ?address_f .\n    FILTER(STR(?address_f) = \"3/10 New York Avenue\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

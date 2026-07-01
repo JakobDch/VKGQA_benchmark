@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hotels_base
+target		ex:Hotels/{HotelID} a :Hotels ; p:HotelID {HotelID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `HotelID`, `Name`, `Location` FROM `Hotels`
+
+mappingId	Services_base
+target		ex:Services/{ServiceID} a :Services ; p:ServiceID {ServiceID} ; p:ServiceName {ServiceName} .
+source		SELECT `ServiceID`, `ServiceName` FROM `Services`
+
+mappingId	Hotels_Services_base
+target		ex:Hotels_Services/{Hotels_ID}/{Service_ID} a :Hotels_Services ; p:Hotels_ID {Hotels_ID} ; p:Service_ID {Service_ID} .
+source		SELECT `Hotels_ID`, `Service_ID` FROM `Hotels_Services`
+
+mappingId	Hotels_Services_Service_ID_fk
+target		ex:Hotels_Services/{Hotels_ID}/{Service_ID} p:hasServices ex:Services/{Service_ID} .
+source		SELECT `Hotels_ID`, `Service_ID` FROM `Hotels_Services` WHERE `Service_ID` IS NOT NULL
+
+mappingId	Hotels_Services_Hotels_ID_fk
+target		ex:Hotels_Services/{Hotels_ID}/{Service_ID} p:hasHotels ex:Hotels/{Hotels_ID} .
+source		SELECT `Hotels_ID`, `Service_ID` FROM `Hotels_Services` WHERE `Hotels_ID` IS NOT NULL
+
+]]

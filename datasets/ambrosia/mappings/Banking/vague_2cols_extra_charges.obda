@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {EmailAddress} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `EmailAddress`, `PhoneNumber` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:AccountType {AccountType} ; p:Balance {Balance} ; p:OpenDate {OpenDate} .
+source		SELECT `AccountID`, `CustomerID`, `AccountType`, `Balance`, `OpenDate` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:FromAccountID {FromAccountID} ; p:ToAccountID {ToAccountID} ; p:Amount {Amount} ; p:Date {Date} ; p:Fee_Amount {Fee_Amount} ; p:Commission_Percentage {Commission_Percentage} ; p:Transactions {Transactions} .
+source		SELECT `TransactionID`, `FromAccountID`, `ToAccountID`, `Amount`, `Date`, `Fee_Amount`, `Commission_Percentage`, `Transactions` FROM `Transactions`
+
+mappingId	Transactions_ToAccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts_ToAccountID ex:Accounts/{ToAccountID} .
+source		SELECT `TransactionID`, `ToAccountID` FROM `Transactions` WHERE `ToAccountID` IS NOT NULL
+
+mappingId	Transactions_FromAccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts_FromAccountID ex:Accounts/{FromAccountID} .
+source		SELECT `TransactionID`, `FromAccountID` FROM `Transactions` WHERE `FromAccountID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:LoanAmount {LoanAmount} ; p:InterestRate {InterestRate} ; p:TermYears {TermYears} ; p:ApprovalDate {ApprovalDate} .
+source		SELECT `LoanID`, `CustomerID`, `LoanAmount`, `InterestRate`, `TermYears`, `ApprovalDate` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Overdrafts_base
+target		ex:Overdrafts/{OverdraftID} a :Overdrafts ; p:OverdraftID {OverdraftID} ; p:AccountID {AccountID} ; p:LimitAmount {LimitAmount} ; p:InterestRate {InterestRate} ; p:Fees {Fees} .
+source		SELECT `OverdraftID`, `AccountID`, `LimitAmount`, `InterestRate`, `Fees` FROM `Overdrafts`
+
+mappingId	Overdrafts_AccountID_fk
+target		ex:Overdrafts/{OverdraftID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `OverdraftID`, `AccountID` FROM `Overdrafts` WHERE `AccountID` IS NOT NULL
+
+mappingId	Rewards_base
+target		ex:Rewards/{RewardID} a :Rewards ; p:RewardID {RewardID} ; p:AccountID {AccountID} ; p:Points {Points} ; p:RedemptionValue {RedemptionValue} .
+source		SELECT `RewardID`, `AccountID`, `Points`, `RedemptionValue` FROM `Rewards`
+
+mappingId	Rewards_AccountID_fk
+target		ex:Rewards/{RewardID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `RewardID`, `AccountID` FROM `Rewards` WHERE `AccountID` IS NOT NULL
+
+]]

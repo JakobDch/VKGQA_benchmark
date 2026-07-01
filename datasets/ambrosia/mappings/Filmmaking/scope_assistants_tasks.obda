@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Assistants_base
+target		ex:Assistants/{id} a :Assistants ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Assistants`
+
+mappingId	Tasks_base
+target		ex:Tasks/{id} a :Tasks ; p:id {id} ; p:task_name {task_name} ; p:description {description} .
+source		SELECT `id`, `task_name`, `description` FROM `Tasks`
+
+mappingId	Assistants_Tasks_base
+target		ex:Assistants_Tasks/{assistant_id}/{task_id} a :Assistants_Tasks ; p:assistant_id {assistant_id} ; p:task_id {task_id} .
+source		SELECT `assistant_id`, `task_id` FROM `Assistants_Tasks`
+
+mappingId	Assistants_Tasks_task_id_fk
+target		ex:Assistants_Tasks/{assistant_id}/{task_id} p:hasTasks ex:Tasks/{task_id} .
+source		SELECT `assistant_id`, `task_id` FROM `Assistants_Tasks` WHERE `task_id` IS NOT NULL
+
+mappingId	Assistants_Tasks_assistant_id_fk
+target		ex:Assistants_Tasks/{assistant_id}/{task_id} p:hasAssistants ex:Assistants/{assistant_id} .
+source		SELECT `assistant_id`, `task_id` FROM `Assistants_Tasks` WHERE `assistant_id` IS NOT NULL
+
+]]

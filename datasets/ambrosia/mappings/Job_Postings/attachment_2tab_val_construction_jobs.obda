@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Civil_Engineers_base
+target		ex:Civil_Engineers/{id} a :Civil_Engineers ; p:id {id} ; p:name {name} ; p:years_of_experience {years_of_experience} ; p:design_software_expertise {design_software_expertise} ; p:salary {salary} .
+source		SELECT `id`, `name`, `years_of_experience`, `design_software_expertise`, `salary` FROM `Civil_Engineers`
+
+mappingId	Design_Softwares_base
+target		ex:Design_Softwares/{software_name} a :Design_Softwares ; p:software_name {software_name} ; p:popularity {popularity} .
+source		SELECT `software_name`, `popularity` FROM `Design_Softwares`
+
+mappingId	Architects_base
+target		ex:Architects/{id} a :Architects ; p:id {id} ; p:name {name} ; p:years_in_practice {years_in_practice} ; p:design_software_expertise {design_software_expertise} ; p:salary {salary} .
+source		SELECT `id`, `name`, `years_in_practice`, `design_software_expertise`, `salary` FROM `Architects`
+
+mappingId	Projects_base
+target		ex:Project/{project_id} a :Project ; p:project_id {project_id} ; p:title {title} ; p:description {description} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `project_id`, `title`, `description`, `start_date`, `end_date` FROM `Projects`
+
+mappingId	Engineer_Projects_base
+target		ex:Engineer_Projects/{engineer_id}/{project_id} a :Engineer_Projects ; p:engineer_id {engineer_id} ; p:project_id {project_id} .
+source		SELECT `engineer_id`, `project_id` FROM `Engineer_Projects`
+
+mappingId	Engineer_Projects_project_id_fk
+target		ex:Engineer_Projects/{engineer_id}/{project_id} p:hasProject ex:Project/{project_id} .
+source		SELECT `engineer_id`, `project_id` FROM `Engineer_Projects` WHERE `project_id` IS NOT NULL
+
+mappingId	Engineer_Projects_engineer_id_fk
+target		ex:Engineer_Projects/{engineer_id}/{project_id} p:hasCivil_Engineers ex:Civil_Engineers/{engineer_id} .
+source		SELECT `engineer_id`, `project_id` FROM `Engineer_Projects` WHERE `engineer_id` IS NOT NULL
+
+mappingId	Architect_Projects_base
+target		ex:Architect_Projects/{architect_id}/{project_id} a :Architect_Projects ; p:architect_id {architect_id} ; p:project_id {project_id} .
+source		SELECT `architect_id`, `project_id` FROM `Architect_Projects`
+
+mappingId	Architect_Projects_project_id_fk
+target		ex:Architect_Projects/{architect_id}/{project_id} p:hasProject ex:Project/{project_id} .
+source		SELECT `architect_id`, `project_id` FROM `Architect_Projects` WHERE `project_id` IS NOT NULL
+
+mappingId	Architect_Projects_architect_id_fk
+target		ex:Architect_Projects/{architect_id}/{project_id} p:hasArchitects ex:Architects/{architect_id} .
+source		SELECT `architect_id`, `project_id` FROM `Architect_Projects` WHERE `architect_id` IS NOT NULL
+
+]]

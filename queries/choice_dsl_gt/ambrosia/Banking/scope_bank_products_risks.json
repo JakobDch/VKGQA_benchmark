@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_bank_products_risks",
+  "schema": "amb_scope_bank_products_risks",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What risk names are associated with each bank product?",
+      "qtype": "ambig",
+      "sql": "SELECT Risks.RiskName  from Bank_Products_Risks join Risks on Bank_Products_Risks.RiskID = Risks.RiskID join Bank_Products on Bank_Products_Risks.ProductID = Bank_Products.ProductID   GROUP BY Bank_Products_Risks.RiskID HAVING COUNT(DISTINCT Bank_Products_Risks.ProductID) = (SELECT COUNT(*) FROM  Bank_Products)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?riskname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRisks ?child ; p:hasBank_Products ?parent . } GROUP BY ?child }\n  ?child p:RiskName ?riskname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Products } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What risk names are associated with each bank product?",
+      "qtype": "ambig",
+      "sql": "select bank_products.productname , risks.riskname from Bank_Products_Risks join Risks on Bank_Products_Risks.RiskID = Risks.RiskID join Bank_Products on Bank_Products_Risks.ProductID = Bank_Products.ProductID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?productname ?riskname WHERE {\n  ?bank_products_risks a :Bank_Products_Risks .\n  ?risks a :Risks .\n  ?bank_products_risks p:hasRisks ?risks .\n  ?bank_products a :Bank_Products .\n  ?bank_products_risks p:hasBank_Products ?bank_products .\n  ?bank_products p:ProductName ?productname .\n  ?risks p:RiskName ?riskname .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What risk names are associated with each bank product?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?riskname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRisks ?child ; p:hasBank_Products ?parent . } GROUP BY ?child }\n  ?child p:RiskName ?riskname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Products } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?productname ?riskname WHERE {\n  ?bank_products_risks a :Bank_Products_Risks .\n  ?risks a :Risks .\n  ?bank_products_risks p:hasRisks ?risks .\n  ?bank_products a :Bank_Products .\n  ?bank_products_risks p:hasBank_Products ?bank_products .\n  ?bank_products p:ProductName ?productname .\n  ?risks p:RiskName ?riskname .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

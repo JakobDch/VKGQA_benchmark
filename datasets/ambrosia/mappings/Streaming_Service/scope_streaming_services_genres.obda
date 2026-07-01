@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Genres`
+
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:service_name {service_name} ; p:release_date {release_date} .
+source		SELECT `id`, `service_name`, `release_date` FROM `Streaming_Services`
+
+mappingId	Streaming_Services_Genres_base
+target		ex:Streaming_Services_Genres/{streaming_services_id}/{genres_id} a :Streaming_Services_Genres ; p:streaming_services_id {streaming_services_id} ; p:genres_id {genres_id} .
+source		SELECT `streaming_services_id`, `genres_id` FROM `Streaming_Services_Genres`
+
+mappingId	Streaming_Services_Genres_genres_id_fk
+target		ex:Streaming_Services_Genres/{streaming_services_id}/{genres_id} p:hasGenres ex:Genres/{genres_id} .
+source		SELECT `streaming_services_id`, `genres_id` FROM `Streaming_Services_Genres` WHERE `genres_id` IS NOT NULL
+
+mappingId	Streaming_Services_Genres_streaming_services_id_fk
+target		ex:Streaming_Services_Genres/{streaming_services_id}/{genres_id} p:hasStreaming_Services ex:Streaming_Services/{streaming_services_id} .
+source		SELECT `streaming_services_id`, `genres_id` FROM `Streaming_Services_Genres` WHERE `streaming_services_id` IS NOT NULL
+
+]]

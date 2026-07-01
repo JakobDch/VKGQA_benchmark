@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_origin",
+  "schema": "amb_vague_2cols_origin",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the photojournalist who took the most recent photo.",
+      "qtype": "unambig",
+      "sql": "SELECT Photojournalists.Name\nFROM Assignments\nJOIN Photojournalists ON Assignments.PhotojournalistId = Photojournalists.ID \nJOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id \nORDER BY PublishedPhotos.PublicationDate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?assignments a :Assignments .\n  ?photojournalists a :Photojournalists .\n  ?assignments p:hasPhotojournalists ?photojournalists .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?photojournalists p:name ?name .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the events of photos published in 2022",
+      "qtype": "unambig",
+      "sql": "SELECT Events.Title FROM Assignments JOIN Events ON Assignments.EventId = Events.ID JOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id WHERE  strftime('%Y', PublishedPhotos.PublicationDate) = '2022'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT ?title WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasEvents ?ev .\n  ?ev a :Events ; p:Title ?title .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n}",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): strftime year-extraction (SQLite-only); NL intent = published in 2022"
+    },
+    {
+      "qid": 2,
+      "question": "List the photojournalists whose photos were published in 2022 and the events depicted in these photos.",
+      "qtype": "unambig",
+      "sql": "SELECT Photojournalists.Name , Events.Title FROM Assignments JOIN Events ON Assignments.EventId = Events.ID JOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id JOIN Photojournalists ON Assignments.PhotojournalistId = Photojournalists.ID  WHERE  strftime('%Y', PublishedPhotos.PublicationDate) = '2022'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT ?name ?title WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasEvents ?ev ; p:hasPhotojournalists ?pj .\n  ?ev a :Events ; p:Title ?title .\n  ?pj a :Photojournalists ; p:name ?name .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n}",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): strftime year-extraction (SQLite-only); NL intent = published in 2022"
+    },
+    {
+      "qid": 3,
+      "question": "List the photojournalists whose photos were published in 2022.",
+      "qtype": "unambig",
+      "sql": "SELECT Photojournalists.Name FROM Assignments JOIN Photojournalists ON Assignments.PhotojournalistId = Photojournalists.ID JOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id WHERE  strftime('%Y', PublishedPhotos.PublicationDate) = '2022'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nSELECT ?name WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasPhotojournalists ?pj .\n  ?pj a :Photojournalists ; p:name ?name .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n}",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): strftime year-extraction (SQLite-only); NL intent = published in 2022"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the photojournalist and the event of the most recent photo.",
+      "qtype": "unambig",
+      "sql": "SELECT Photojournalists.Name , Events.Title\nFROM Assignments\nJOIN Events ON Assignments.EventId = Events.ID\nJOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id  JOIN Photojournalists ON Assignments.PhotojournalistId = Photojournalists.ID \nORDER BY PublishedPhotos.PublicationDate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title WHERE {\n  ?assignments a :Assignments .\n  ?events a :Events .\n  ?assignments p:hasEvents ?events .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?photojournalists a :Photojournalists .\n  ?assignments p:hasPhotojournalists ?photojournalists .\n  ?photojournalists p:name ?name .\n  ?events p:Title ?title .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the origin of the most recent photo",
+      "qtype": "ambig",
+      "sql": "SELECT Events.Title\nFROM Assignments\nJOIN Events ON Assignments.EventId = Events.ID\nJOIN PublishedPhotos ON PublishedPhotos.AssignmentId = Assignments.id \nORDER BY PublishedPhotos.PublicationDate DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?assignments a :Assignments .\n  ?events a :Events .\n  ?assignments p:hasEvents ?events .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?events p:Title ?title .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the origin of the most recent photo",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?assignments a :Assignments .\n  ?photojournalists a :Photojournalists .\n  ?assignments p:hasPhotojournalists ?photojournalists .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?photojournalists p:name ?name .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1 }\n  full: { SELECT ?name ?title WHERE {\n  ?assignments a :Assignments .\n  ?events a :Events .\n  ?assignments p:hasEvents ?events .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?photojournalists a :Photojournalists .\n  ?assignments p:hasPhotojournalists ?photojournalists .\n  ?photojournalists p:name ?name .\n  ?events p:Title ?title .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1 }\n  component_2: { SELECT ?title WHERE {\n  ?assignments a :Assignments .\n  ?events a :Events .\n  ?assignments p:hasEvents ?events .\n  ?publishedphotos a :PublishedPhotos .\n  ?publishedphotos p:hasAssignments ?assignments .\n  ?events p:Title ?title .\n  ?publishedphotos p:PublicationDate ?publicationdate_o .\n}\nORDER BY DESC(?publicationdate_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the origin of all photos published in 2022",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nCHOICE vague {\n  component: { SELECT ?title WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasEvents ?ev .\n  ?ev a :Events ; p:Title ?title .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n} }\n  full: { SELECT ?name ?title WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasEvents ?ev ; p:hasPhotojournalists ?pj .\n  ?ev a :Events ; p:Title ?title .\n  ?pj a :Photojournalists ; p:name ?name .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n} }\n  component_2: { SELECT ?name WHERE {\n  ?pp a :PublishedPhotos ; p:PublicationDate ?d ; p:hasAssignments ?asg .\n  ?asg a :Assignments ; p:hasPhotojournalists ?pj .\n  ?pj a :Photojournalists ; p:name ?name .\n  FILTER(STRSTARTS(STR(?d), \"2022\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

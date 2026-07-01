@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_ref_exclusive_areas",
+  "schema": "amb_attachment_1tab_ref_exclusive_areas",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which terminals have frequent flyer lounges with complimentary Wi-Fi and which terminals have VIP lounges with the same amenity?",
+      "qtype": "unambig",
+      "sql": "SELECT Terminal.Name \nFROM ExclusiveArea JOIN AreaAmenityMap ON ExclusiveArea.areaId = AreaAmenityMap.areaId JOIN Amenity ON AreaAmenityMap.amenityId = Amenity.amenityId JOIN Terminal ON Terminal.id = ExclusiveArea.terminalid WHERE ExclusiveArea.exclusiveAreaValue = \"Frequent Flyer Lounge\" AND Amenity.amenityValue = \"Complimentary Wi-Fi\"\nUNION\nSELECT Terminal.Name \nFROM ExclusiveArea JOIN AreaAmenityMap ON ExclusiveArea.areaId = AreaAmenityMap.areaId JOIN Amenity ON AreaAmenityMap.amenityId = Amenity.amenityId JOIN Terminal ON Terminal.id = ExclusiveArea.terminalid\nWHERE ExclusiveArea.exclusiveAreaValue = \"VIP Lounge\" AND Amenity.amenityValue = \"Complimentary Wi-Fi\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"Frequent Flyer Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"VIP Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show terminals that have frequent flyer lounges and VIP lounges with complimentary Wi-Fi.",
+      "qtype": "ambig",
+      "sql": "SELECT Terminal.Name \nFROM Terminal JOIN ExclusiveArea ON Terminal.id = ExclusiveArea.terminalId WHERE ExclusiveArea.exclusiveAreaValue = \"Frequent Flyer Lounge\"\nUNION\nSELECT Terminal.Name \nFROM ExclusiveArea JOIN AreaAmenityMap ON ExclusiveArea.areaId = AreaAmenityMap.areaId JOIN Amenity ON AreaAmenityMap.amenityId = Amenity.amenityId JOIN Terminal ON Terminal.id = ExclusiveArea.terminalid\nWHERE ExclusiveArea.exclusiveAreaValue = \"VIP Lounge\" AND Amenity.amenityValue = \"Complimentary Wi-Fi\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?terminal a :Terminals .\n    ?exclusivearea a :ExclusiveArea .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"Frequent Flyer Lounge\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"VIP Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show terminals that have frequent flyer lounges and VIP lounges with complimentary Wi-Fi.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"Frequent Flyer Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"VIP Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?terminal a :Terminals .\n    ?exclusivearea a :ExclusiveArea .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"Frequent Flyer Lounge\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?exclusivearea a :ExclusiveArea .\n    ?areaamenitymap a :AreaAmenityMap .\n    ?areaamenitymap p:hasExclusiveArea ?exclusivearea .\n    ?amenity a :Amenity .\n    ?areaamenitymap p:hasAmenity ?amenity .\n    ?terminal a :Terminals .\n    ?exclusivearea p:hasTerminal ?terminal .\n    ?terminal p:name ?name .\n    ?exclusivearea p:exclusiveAreaValue ?exclusiveareavalue_f .\n    ?amenity p:amenityValue ?amenityvalue_f .\n    FILTER(STR(?exclusiveareavalue_f) = \"VIP Lounge\")\n    FILTER(STR(?amenityvalue_f) = \"Complimentary Wi-Fi\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

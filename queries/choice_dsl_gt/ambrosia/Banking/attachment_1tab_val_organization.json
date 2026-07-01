@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_organization",
+  "schema": "amb_attachment_1tab_val_organization",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all customers of either the currency exchange services founded in 2000 or the commodity trading firms that were founded at the same time.",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.FullName\nFROM Customers\nWHERE (Customers.Organization = \"Currency Exchange Service\" OR Customers.Organization = \"Commodity Trading Firm\") AND Customers.Year_of_establishment = 2000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Organization ?organization_w .\n  ?customers p:Organization ?organization_w2 .\n  ?customers p:Year_of_establishment ?year_of_establishment_w .\n  FILTER((((STR(?organization_w) = \"Currency Exchange Service\" || STR(?organization_w2) = \"Commodity Trading Firm\")) && (STR(?year_of_establishment_w) = \"2000\" || STR(?year_of_establishment_w) = \"2000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show the commodity trading firm customers from firms formed in 2000 and also show all the currency exchange service customers.",
+      "qtype": "unambig",
+      "sql": "SELECT Customers.FullName\nFROM Customers\nWHERE Customers.Organization = \"Currency Exchange Service\" OR Customers.Organization = \"Commodity Trading Firm\" AND Customers.Year_of_establishment = 2000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Organization ?organization_w .\n  ?customers p:Organization ?organization_w2 .\n  ?customers p:Year_of_establishment ?year_of_establishment_w .\n  FILTER((STR(?organization_w) = \"Currency Exchange Service\" || (STR(?organization_w2) = \"Commodity Trading Firm\" && (STR(?year_of_establishment_w) = \"2000\" || STR(?year_of_establishment_w) = \"2000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all currency exchange service customers and commodity trading firm customers where the organisation was formed in 2000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Organization ?organization_w .\n  ?customers p:Organization ?organization_w2 .\n  ?customers p:Year_of_establishment ?year_of_establishment_w .\n  FILTER((((STR(?organization_w) = \"Currency Exchange Service\" || STR(?organization_w2) = \"Commodity Trading Firm\")) && (STR(?year_of_establishment_w) = \"2000\" || STR(?year_of_establishment_w) = \"2000.0\")))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?customers a :Customers .\n  ?customers p:name ?fullname .\n  ?customers p:Organization ?organization_w .\n  ?customers p:Organization ?organization_w2 .\n  ?customers p:Year_of_establishment ?year_of_establishment_w .\n  FILTER((STR(?organization_w) = \"Currency Exchange Service\" || (STR(?organization_w2) = \"Commodity Trading Firm\" && (STR(?year_of_establishment_w) = \"2000\" || STR(?year_of_establishment_w) = \"2000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

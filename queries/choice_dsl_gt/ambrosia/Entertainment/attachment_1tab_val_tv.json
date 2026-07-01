@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_tv",
+  "schema": "amb_attachment_1tab_val_tv",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all documentaries and also list mini-series that have 7 episodes.",
+      "qtype": "unambig",
+      "sql": "SELECT TvShow.title \nFROM TvShow\nWHERE TvShow.tv = \"Documentary Series\" OR TvShow.tv = \"Mini-Series\" AND TvShow.number_of_episodes = 7",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?tvshow a :Tv_Show .\n  ?tvshow p:title ?title .\n  ?tvshow p:tv ?tv_w .\n  ?tvshow p:tv ?tv_w2 .\n  ?tvshow p:number_of_episodes ?number_of_episodes_w .\n  FILTER((STR(?tv_w) = \"Documentary Series\" || (STR(?tv_w2) = \"Mini-Series\" && (STR(?number_of_episodes_w) = \"7\" || STR(?number_of_episodes_w) = \"7.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What documentaries have 7 episodes and what mini-series has the same number of episodes?",
+      "qtype": "unambig",
+      "sql": "SELECT TvShow.title \nFROM TvShow\nWHERE (TvShow.tv = \"Documentary Series\" OR TvShow.tv = \"Mini-Series\") AND TvShow.number_of_episodes = 7",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?tvshow a :Tv_Show .\n  ?tvshow p:title ?title .\n  ?tvshow p:tv ?tv_w .\n  ?tvshow p:tv ?tv_w2 .\n  ?tvshow p:number_of_episodes ?number_of_episodes_w .\n  FILTER((((STR(?tv_w) = \"Documentary Series\" || STR(?tv_w2) = \"Mini-Series\")) && (STR(?number_of_episodes_w) = \"7\" || STR(?number_of_episodes_w) = \"7.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show documentaries and mini-series that have 7 episodes.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?tvshow a :Tv_Show .\n  ?tvshow p:title ?title .\n  ?tvshow p:tv ?tv_w .\n  ?tvshow p:tv ?tv_w2 .\n  ?tvshow p:number_of_episodes ?number_of_episodes_w .\n  FILTER((STR(?tv_w) = \"Documentary Series\" || (STR(?tv_w2) = \"Mini-Series\" && (STR(?number_of_episodes_w) = \"7\" || STR(?number_of_episodes_w) = \"7.0\"))))\n} }\n  high: { SELECT ?title WHERE {\n  ?tvshow a :Tv_Show .\n  ?tvshow p:title ?title .\n  ?tvshow p:tv ?tv_w .\n  ?tvshow p:tv ?tv_w2 .\n  ?tvshow p:number_of_episodes ?number_of_episodes_w .\n  FILTER((((STR(?tv_w) = \"Documentary Series\" || STR(?tv_w2) = \"Mini-Series\")) && (STR(?number_of_episodes_w) = \"7\" || STR(?number_of_episodes_w) = \"7.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

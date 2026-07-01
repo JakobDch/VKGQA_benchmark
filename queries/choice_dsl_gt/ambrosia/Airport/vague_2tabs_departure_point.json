@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2tabs_departure_point",
+  "schema": "amb_vague_2tabs_departure_point",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the earliest flight and its departure terminal.",
+      "qtype": "unambig",
+      "sql": "SELECT Flight.flight_number, Terminal.terminal_name FROM Terminal JOIN Flight ON Flight.terminal_id = Terminal.id ORDER BY Flight.departure_time ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?terminal_name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show the departure terminal from each flight.",
+      "qtype": "unambig",
+      "sql": "SELECT Flight.flight_number, Terminal.terminal_name FROM Terminal JOIN Flight ON Flight.terminal_id = Terminal.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?terminal_name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Show the earliest flight and specify what city it is leaving from.",
+      "qtype": "unambig",
+      "sql": "SELECT Flight.flight_number, City.name FROM City JOIN Flight ON Flight.origin_city_id = City.id ORDER BY Flight.departure_time ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?name WHERE {\n  ?city a :Cities .\n  ?flight a :Flights .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?city p:name ?name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show the flight and its departure point that departs first.",
+      "qtype": "ambig",
+      "sql": "SELECT Flight.flight_number, Terminal.terminal_name, City.name FROM Terminal JOIN Flight ON Flight.terminal_id = Terminal.id JOIN City ON Flight.origin_city_id = City.id ORDER BY Flight.departure_time ASC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?terminal_name ?name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?city a :Cities .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?city p:name ?name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show the departure terminal and city from each flight.",
+      "qtype": "unambig",
+      "sql": "SELECT Flight.flight_number, Terminal.terminal_name,  City.name  FROM Terminal JOIN Flight ON Flight.terminal_id = Terminal.id JOIN City ON Flight.origin_city_id = City.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?terminal_name ?name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?city a :Cities .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?city p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Show the departure city from each flight.",
+      "qtype": "unambig",
+      "sql": "SELECT Flight.flight_number, City.name FROM City JOIN Flight ON Flight.origin_city_id = City.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?name WHERE {\n  ?city a :Cities .\n  ?flight a :Flights .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?city p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the flight and its departure point that departs first.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?flight_number ?terminal_name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1 }\n  component_2: { SELECT ?flight_number ?name WHERE {\n  ?city a :Cities .\n  ?flight a :Flights .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?city p:name ?name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1 }\n  full: { SELECT ?flight_number ?terminal_name ?name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?city a :Cities .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?city p:name ?name .\n  ?flight p:departure_time ?departure_time_o .\n}\nORDER BY ASC(?departure_time_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show departure point from each flight",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?flight_number ?terminal_name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n} }\n  full: { SELECT ?flight_number ?terminal_name ?name WHERE {\n  ?terminal a :Terminals .\n  ?flight a :Flights .\n  ?flight p:hasTerminal ?terminal .\n  ?city a :Cities .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?terminal p:terminal_name ?terminal_name .\n  ?city p:name ?name .\n} }\n  component_2: { SELECT ?flight_number ?name WHERE {\n  ?city a :Cities .\n  ?flight a :Flights .\n  ?flight p:hasCity_origin_city_id ?city .\n  ?flight p:flight_number ?flight_number .\n  ?city p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_age_0_Countries_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CountryName\" FROM \"Countries\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{CountryName}" ; rr:class :Countries ] ;
+  rr:predicateObjectMap [ rr:predicate p:CountryName ; rr:objectMap [ rr:column "CountryName" ] ] .
+
+<#tm_vague_2cols_age_1_Regions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RegionName\", \"CountryId\" FROM \"Regions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{RegionName}" ; rr:class :Regions ] ;
+  rr:predicateObjectMap [ rr:predicate p:RegionName ; rr:objectMap [ rr:column "RegionName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CountryId ; rr:objectMap [ rr:column "CountryId" ] ] .
+
+<#tm_vague_2cols_age_2_Regions_CountryId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"RegionName\", \"CountryId\" FROM \"Regions\" WHERE \"CountryId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{RegionName}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{CountryId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_age_3_Populations_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityId\", \"Year\", \"TotalPopulation\" FROM \"Populations\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Populations/{Year}" ; rr:class :Populations ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityId ; rr:objectMap [ rr:column "CityId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Year ; rr:objectMap [ rr:column "Year" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalPopulation ; rr:objectMap [ rr:column "TotalPopulation" ] ] .
+
+<#tm_vague_2cols_age_4_Populations_CityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Year\", \"CityId\" FROM \"Populations\" WHERE \"CityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Populations/{Year}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_age_5_AgeDemographics_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityId\", \"Year\", \"MedianAge\", \"AgeRange\", \"PopulationGroup\" FROM \"AgeDemographics\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/AgeDemographics/{Year}" ; rr:class :AgeDemographics ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityId ; rr:objectMap [ rr:column "CityId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Year ; rr:objectMap [ rr:column "Year" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:MedianAge ; rr:objectMap [ rr:column "MedianAge" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AgeRange ; rr:objectMap [ rr:column "AgeRange" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PopulationGroup ; rr:objectMap [ rr:column "PopulationGroup" ] ] .
+
+<#tm_vague_2cols_age_6_AgeDemographics_CityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Year\", \"CityId\" FROM \"AgeDemographics\" WHERE \"CityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/AgeDemographics/{Year}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_age_7_Ethnicity_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityId\", \"Year\", \"WhitePercentage\", \"BlackOrAfricanAmericanPercentage\", \"AsianPercentage\", \"HispanicOrLatinoPercentage\" FROM \"Ethnicity\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Ethnicity/{Year}" ; rr:class :Ethnicity ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityId ; rr:objectMap [ rr:column "CityId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Year ; rr:objectMap [ rr:column "Year" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:WhitePercentage ; rr:objectMap [ rr:column "WhitePercentage" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BlackOrAfricanAmericanPercentage ; rr:objectMap [ rr:column "BlackOrAfricanAmericanPercentage" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AsianPercentage ; rr:objectMap [ rr:column "AsianPercentage" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:HispanicOrLatinoPercentage ; rr:objectMap [ rr:column "HispanicOrLatinoPercentage" ] ] .
+
+<#tm_vague_2cols_age_8_Ethnicity_CityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"Year\", \"CityId\" FROM \"Ethnicity\" WHERE \"CityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Ethnicity/{Year}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_age_9_Cities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"CityName\", \"RegionId\" FROM \"Cities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{id}" ; rr:class :Cities ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityName ; rr:objectMap [ rr:column "CityName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:RegionId ; rr:objectMap [ rr:column "RegionId" ] ] .
+
+<#tm_vague_2cols_age_10_Cities_RegionId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"RegionId\" FROM \"Cities\" WHERE \"RegionId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRegions ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{RegionId}" ; rr:termType rr:IRI ] ] .
+

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_exam_type_of_question",
+  "schema": "amb_scope_exam_type_of_question",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What type of questions are common to all exams?",
+      "qtype": "unambig",
+      "sql": "SELECT Type_Of_Question.questionType  from Exam_Type_Of_Question join Type_Of_Question on Exam_Type_Of_Question.questionTypeID = Type_Of_Question.id join Exam on Exam_Type_Of_Question.examID = Exam.id   GROUP BY Exam_Type_Of_Question.questionTypeID HAVING COUNT(DISTINCT Exam_Type_Of_Question.examID) = (SELECT COUNT(*) FROM  Exam)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?questiontype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasType_Of_Question ?child ; p:hasExam ?parent . } GROUP BY ?child }\n  ?child p:questionType ?questiontype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Exams } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the types of questions every exam asks.",
+      "qtype": "ambig",
+      "sql": "select exam.examname , type_of_question.questiontype from Exam_Type_Of_Question join Type_Of_Question on Exam_Type_Of_Question.questionTypeID = Type_Of_Question.id join Exam on Exam_Type_Of_Question.examID = Exam.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?examname ?questiontype WHERE {\n  ?exam_type_of_question a :Exam_Type_Of_Question .\n  ?type_of_question a :Type_Of_Question .\n  ?exam_type_of_question p:hasType_Of_Question ?type_of_question .\n  ?exam a :Exams .\n  ?exam_type_of_question p:hasExam ?exam .\n  ?exam p:examName ?examname .\n  ?type_of_question p:questionType ?questiontype .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the types of questions every exam asks.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?questiontype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasType_Of_Question ?child ; p:hasExam ?parent . } GROUP BY ?child }\n  ?child p:questionType ?questiontype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Exams } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?examname ?questiontype WHERE {\n  ?exam_type_of_question a :Exam_Type_Of_Question .\n  ?type_of_question a :Type_Of_Question .\n  ?exam_type_of_question p:hasType_Of_Question ?type_of_question .\n  ?exam a :Exams .\n  ?exam_type_of_question p:hasExam ?exam .\n  ?exam p:examName ?examname .\n  ?type_of_question p:questionType ?questiontype .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Theatres_base
+target		ex:Theatre/{id} a :Theatre ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Theatres`
+
+mappingId	Plays_base
+target		ex:Play/{id} a :Play ; p:id {id} ; p:title {title} ; p:genre {genre} .
+source		SELECT `id`, `title`, `genre` FROM `Plays`
+
+mappingId	Actors_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Actors`
+
+mappingId	Directors_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Directors`
+
+mappingId	Movies_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:directorId {directorId} .
+source		SELECT `id`, `title`, `directorId` FROM `Movies`
+
+mappingId	Movies_directorId_fk
+target		ex:Movie/{id} p:hasDirector ex:Director/{directorId} .
+source		SELECT `id`, `directorId` FROM `Movies` WHERE `directorId` IS NOT NULL
+
+mappingId	TheatrePerformances_base
+target		ex:TheatrePerformances/{theatreId}/{playId}/{performanceDate}/{actorId}/{directorId} a :TheatrePerformances ; p:theatreId {theatreId} ; p:playId {playId} ; p:performanceDate {performanceDate} ; p:actorId {actorId} ; p:directorId {directorId} .
+source		SELECT `theatreId`, `playId`, `performanceDate`, `actorId`, `directorId` FROM `TheatrePerformances`
+
+mappingId	TheatrePerformances_directorId_fk
+target		ex:TheatrePerformances/{theatreId}/{playId}/{performanceDate}/{actorId}/{directorId} p:hasDirector ex:Director/{directorId} .
+source		SELECT `theatreId`, `playId`, `performanceDate`, `actorId`, `directorId` FROM `TheatrePerformances` WHERE `directorId` IS NOT NULL
+
+mappingId	TheatrePerformances_actorId_fk
+target		ex:TheatrePerformances/{theatreId}/{playId}/{performanceDate}/{actorId}/{directorId} p:hasActor ex:Actor/{actorId} .
+source		SELECT `theatreId`, `playId`, `performanceDate`, `actorId`, `directorId` FROM `TheatrePerformances` WHERE `actorId` IS NOT NULL
+
+mappingId	TheatrePerformances_playId_fk
+target		ex:TheatrePerformances/{theatreId}/{playId}/{performanceDate}/{actorId}/{directorId} p:hasPlay ex:Play/{playId} .
+source		SELECT `theatreId`, `playId`, `performanceDate`, `actorId`, `directorId` FROM `TheatrePerformances` WHERE `playId` IS NOT NULL
+
+mappingId	TheatrePerformances_theatreId_fk
+target		ex:TheatrePerformances/{theatreId}/{playId}/{performanceDate}/{actorId}/{directorId} p:hasTheatre ex:Theatre/{theatreId} .
+source		SELECT `theatreId`, `playId`, `performanceDate`, `actorId`, `directorId` FROM `TheatrePerformances` WHERE `theatreId` IS NOT NULL
+
+]]

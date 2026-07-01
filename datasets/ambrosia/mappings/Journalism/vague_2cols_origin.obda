@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Photojournalists_base
+target		ex:Photojournalists/{id} a :Photojournalists ; p:id {id} ; p:name {Name} ; p:Birthdate {Birthdate} .
+source		SELECT `id`, `Name`, `Birthdate` FROM `Photojournalists`
+
+mappingId	Events_base
+target		ex:Events/{id} a :Events ; p:id {id} ; p:Title {Title} ; p:location {Location} ; p:Date {Date} .
+source		SELECT `id`, `Title`, `Location`, `Date` FROM `Events`
+
+mappingId	Photos_base
+target		ex:photos/{id} a :photos ; p:id {id} ; p:FilePath {FilePath} ; p:Caption {Caption} ; p:TakenOn {TakenOn} .
+source		SELECT `id`, `FilePath`, `Caption`, `TakenOn` FROM `Photos`
+
+mappingId	Assignments_base
+target		ex:Assignments/{id} a :Assignments ; p:id {id} ; p:EventId {EventId} ; p:PhotojournalistId {PhotojournalistId} .
+source		SELECT `id`, `EventId`, `PhotojournalistId` FROM `Assignments`
+
+mappingId	Assignments_PhotojournalistId_fk
+target		ex:Assignments/{id} p:hasPhotojournalists ex:Photojournalists/{PhotojournalistId} .
+source		SELECT `id`, `PhotojournalistId` FROM `Assignments` WHERE `PhotojournalistId` IS NOT NULL
+
+mappingId	Assignments_EventId_fk
+target		ex:Assignments/{id} p:hasEvents ex:Events/{EventId} .
+source		SELECT `id`, `EventId` FROM `Assignments` WHERE `EventId` IS NOT NULL
+
+mappingId	PublishedPhotos_base
+target		ex:PublishedPhotos/{id} a :PublishedPhotos ; p:id {id} ; p:AssignmentId {AssignmentId} ; p:PhotoId {PhotoId} ; p:PublicationDate {PublicationDate} .
+source		SELECT `id`, `AssignmentId`, `PhotoId`, `PublicationDate` FROM `PublishedPhotos`
+
+mappingId	PublishedPhotos_PhotoId_fk
+target		ex:PublishedPhotos/{id} p:hasphotos ex:photos/{PhotoId} .
+source		SELECT `id`, `PhotoId` FROM `PublishedPhotos` WHERE `PhotoId` IS NOT NULL
+
+mappingId	PublishedPhotos_AssignmentId_fk
+target		ex:PublishedPhotos/{id} p:hasAssignments ex:Assignments/{AssignmentId} .
+source		SELECT `id`, `AssignmentId` FROM `PublishedPhotos` WHERE `AssignmentId` IS NOT NULL
+
+]]

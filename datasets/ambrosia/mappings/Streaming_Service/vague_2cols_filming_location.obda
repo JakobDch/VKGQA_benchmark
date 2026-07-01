@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Users_base
+target		ex:Users/{user_id} a :Users ; p:user_id {user_id} ; p:username {username} ; p:email {email} ; p:password {password} ; p:city {city} ; p:country {country} ; p:created_at {created_at} .
+source		SELECT `user_id`, `username`, `email`, `password`, `city`, `country`, `created_at` FROM `Users`
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{subscription_id} a :Subscriptions ; p:subscription_id {subscription_id} ; p:user_id {user_id} ; p:plan {plan} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `subscription_id`, `user_id`, `plan`, `start_date`, `end_date` FROM `Subscriptions`
+
+mappingId	Subscriptions_user_id_fk
+target		ex:Subscriptions/{subscription_id} p:hasUsers ex:Users/{user_id} .
+source		SELECT `subscription_id`, `user_id` FROM `Subscriptions` WHERE `user_id` IS NOT NULL
+
+mappingId	Shows_base
+target		ex:Shows/{show_id} a :Shows ; p:show_id {show_id} ; p:title {title} ; p:genre {genre} ; p:description {description} ; p:release_year {release_year} ; p:language {language} .
+source		SELECT `show_id`, `title`, `genre`, `description`, `release_year`, `language` FROM `Shows`
+
+mappingId	Episodes_base
+target		ex:Episodes/{episode_id} a :Episodes ; p:episode_id {episode_id} ; p:show_id {show_id} ; p:season {season} ; p:episode_number {episode_number} ; p:title {title} ; p:duration {duration} ; p:release_date {release_date} .
+source		SELECT `episode_id`, `show_id`, `season`, `episode_number`, `title`, `duration`, `release_date` FROM `Episodes`
+
+mappingId	Episodes_show_id_fk
+target		ex:Episodes/{episode_id} p:hasShows ex:Shows/{show_id} .
+source		SELECT `episode_id`, `show_id` FROM `Episodes` WHERE `show_id` IS NOT NULL
+
+mappingId	Ratings_base
+target		ex:Ratings/{rating_id} a :Ratings ; p:rating_id {rating_id} ; p:user_id {user_id} ; p:show_id {show_id} ; p:episode_id {episode_id} ; p:stars {stars} ; p:comment {comment} .
+source		SELECT `rating_id`, `user_id`, `show_id`, `episode_id`, `stars`, `comment` FROM `Ratings`
+
+mappingId	Ratings_episode_id_fk
+target		ex:Ratings/{rating_id} p:hasEpisodes ex:Episodes/{episode_id} .
+source		SELECT `rating_id`, `episode_id` FROM `Ratings` WHERE `episode_id` IS NOT NULL
+
+mappingId	Ratings_show_id_fk
+target		ex:Ratings/{rating_id} p:hasShows ex:Shows/{show_id} .
+source		SELECT `rating_id`, `show_id` FROM `Ratings` WHERE `show_id` IS NOT NULL
+
+mappingId	Ratings_user_id_fk
+target		ex:Ratings/{rating_id} p:hasUsers ex:Users/{user_id} .
+source		SELECT `rating_id`, `user_id` FROM `Ratings` WHERE `user_id` IS NOT NULL
+
+mappingId	RealityShows_base
+target		ex:RealityShows/{reality_show_id} a :RealityShows ; p:reality_show_id {reality_show_id} ; p:name {name} ; p:network {network} ; p:host {host} ; p:premiere_date {premiere_date} ; p:winner {winner} ; p:city {city} ; p:country {country} .
+source		SELECT `reality_show_id`, `name`, `network`, `host`, `premiere_date`, `winner`, `city`, `country` FROM `RealityShows`
+
+]]

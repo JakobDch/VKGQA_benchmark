@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_healthcare_centers_programs",
+  "schema": "amb_scope_healthcare_centers_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the type of program for each health care centre.",
+      "qtype": "ambig",
+      "sql": "SELECT Programs.ProgramType  from Healthcare_Centers_Programs join Programs on Healthcare_Centers_Programs.ProgramID = Programs.ProgramID join Healthcare_Centers on Healthcare_Centers_Programs.CenterID = Healthcare_Centers.CenterID   GROUP BY Healthcare_Centers_Programs.ProgramID HAVING COUNT(DISTINCT Healthcare_Centers_Programs.CenterID) = (SELECT COUNT(*) FROM  Healthcare_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?programtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasHealthcare_Centers ?parent . } GROUP BY ?child }\n  ?child p:ProgramType ?programtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Healthcare_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the type of program for each health care centre.",
+      "qtype": "ambig",
+      "sql": "select healthcare_centers.centername , programs.programtype from Healthcare_Centers_Programs join Programs on Healthcare_Centers_Programs.ProgramID = Programs.ProgramID join Healthcare_Centers on Healthcare_Centers_Programs.CenterID = Healthcare_Centers.CenterID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?centername ?programtype WHERE {\n  ?healthcare_centers_programs a :Healthcare_Centers_Programs .\n  ?programs a :Programs .\n  ?healthcare_centers_programs p:hasPrograms ?programs .\n  ?healthcare_centers a :Healthcare_Centers .\n  ?healthcare_centers_programs p:hasHealthcare_Centers ?healthcare_centers .\n  ?healthcare_centers p:CenterName ?centername .\n  ?programs p:ProgramType ?programtype .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the type of program for each health care centre.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?centername ?programtype WHERE {\n  ?healthcare_centers_programs a :Healthcare_Centers_Programs .\n  ?programs a :Programs .\n  ?healthcare_centers_programs p:hasPrograms ?programs .\n  ?healthcare_centers a :Healthcare_Centers .\n  ?healthcare_centers_programs p:hasHealthcare_Centers ?healthcare_centers .\n  ?healthcare_centers p:CenterName ?centername .\n  ?programs p:ProgramType ?programtype .\n} }\n  collective: { SELECT ?programtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasHealthcare_Centers ?parent . } GROUP BY ?child }\n  ?child p:ProgramType ?programtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Healthcare_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

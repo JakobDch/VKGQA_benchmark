@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{authorID} a :Authors ; p:authorID {authorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `authorID`, `firstName`, `lastName`, `email` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{articleID} a :Articles ; p:articleID {articleID} ; p:title {title} ; p:content {content} ; p:publishDate {publishDate} ; p:authorID {authorID} .
+source		SELECT `articleID`, `title`, `content`, `publishDate`, `authorID` FROM `Articles`
+
+mappingId	Articles_authorID_fk
+target		ex:Articles/{articleID} p:hasAuthors ex:Authors/{authorID} .
+source		SELECT `articleID`, `authorID` FROM `Articles` WHERE `authorID` IS NOT NULL
+
+mappingId	Magazines_base
+target		ex:Magazines/{magazineID} a :Magazines ; p:magazineID {magazineID} ; p:name {name} ; p:publisher {publisher} ; p:ISSN {ISSN} .
+source		SELECT `magazineID`, `name`, `publisher`, `ISSN` FROM `Magazines`
+
+mappingId	MagazineArticles_base
+target		ex:MagazineArticles/{magazineArticleID} a :MagazineArticles ; p:magazineArticleID {magazineArticleID} ; p:articleID {articleID} ; p:magazineID {magazineID} ; p:publicationMonth {publicationMonth} ; p:publicationYear {publicationYear} .
+source		SELECT `magazineArticleID`, `articleID`, `magazineID`, `publicationMonth`, `publicationYear` FROM `MagazineArticles`
+
+mappingId	MagazineArticles_magazineID_fk
+target		ex:MagazineArticles/{magazineArticleID} p:hasMagazines ex:Magazines/{magazineID} .
+source		SELECT `magazineArticleID`, `magazineID` FROM `MagazineArticles` WHERE `magazineID` IS NOT NULL
+
+mappingId	MagazineArticles_articleID_fk
+target		ex:MagazineArticles/{magazineArticleID} p:hasArticles ex:Articles/{articleID} .
+source		SELECT `magazineArticleID`, `articleID` FROM `MagazineArticles` WHERE `articleID` IS NOT NULL
+
+mappingId	Demographics_base
+target		ex:Demographics/{demographicID} a :Demographics ; p:demographicID {demographicID} ; p:demographic_group {demographic_group} ; p:professional_field {professional_field} ; p:magazineID {magazineID} .
+source		SELECT `demographicID`, `demographic_group`, `professional_field`, `magazineID` FROM `Demographics`
+
+mappingId	Demographics_magazineID_fk
+target		ex:Demographics/{demographicID} p:hasMagazines ex:Magazines/{magazineID} .
+source		SELECT `demographicID`, `magazineID` FROM `Demographics` WHERE `magazineID` IS NOT NULL
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{subscriptionID} a :Subscriptions ; p:subscriptionID {subscriptionID} ; p:customerName {customerName} ; p:customerEmail {customerEmail} ; p:startDate {startDate} ; p:endDate {endDate} ; p:magazineID {magazineID} .
+source		SELECT `subscriptionID`, `customerName`, `customerEmail`, `startDate`, `endDate`, `magazineID` FROM `Subscriptions`
+
+mappingId	Subscriptions_magazineID_fk
+target		ex:Subscriptions/{subscriptionID} p:hasMagazines ex:Magazines/{magazineID} .
+source		SELECT `subscriptionID`, `magazineID` FROM `Subscriptions` WHERE `magazineID` IS NOT NULL
+
+]]

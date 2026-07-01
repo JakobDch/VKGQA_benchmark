@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_book_genre",
+  "schema": "amb_attachment_2tab_val_book_genre",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which science fiction books are published in 2018 and which romance books are published in the same year?",
+      "qtype": "unambig",
+      "sql": "SELECT Science_Fiction_Book.title\nFROM Science_Fiction_Book\nWHERE Science_Fiction_Book.Year_of_publication = 2018\nUNION\nSELECT Romance_Book.title\nFROM Romance_Book\nWHERE Romance_Book.Year_of_publication = 2018",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_fiction_book a :Science_Fiction_Book .\n    ?science_fiction_book p:Title ?title .\n    ?science_fiction_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romance_book a :Romance_Book .\n    ?romance_book p:Title ?title .\n    ?romance_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show science fiction books and romance books published in 2018.",
+      "qtype": "ambig",
+      "sql": "SELECT Science_Fiction_Book.title\nFROM Science_Fiction_Book\nUNION\nSELECT Romance_Book.title\nFROM Romance_Book\nWHERE Romance_Book.Year_of_publication = 2018",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_fiction_book a :Science_Fiction_Book .\n    ?science_fiction_book p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romance_book a :Romance_Book .\n    ?romance_book p:Title ?title .\n    ?romance_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show science fiction books and romance books published in 2018.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_fiction_book a :Science_Fiction_Book .\n    ?science_fiction_book p:Title ?title .\n    ?science_fiction_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romance_book a :Romance_Book .\n    ?romance_book p:Title ?title .\n    ?romance_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?science_fiction_book a :Science_Fiction_Book .\n    ?science_fiction_book p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?romance_book a :Romance_Book .\n    ?romance_book p:Title ?title .\n    ?romance_book p:Year_of_publication ?year_of_publication_f .\n    FILTER((STR(?year_of_publication_f) = \"2018\" || STR(?year_of_publication_f) = \"2018.0\"))\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

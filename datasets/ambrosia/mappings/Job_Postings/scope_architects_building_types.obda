@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Architects_base
+target		ex:Architects/{id} a :Architects ; p:id {id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `id`, `name`, `experience` FROM `Architects`
+
+mappingId	Building_Types_base
+target		ex:Building_Types/{id} a :Building_Types ; p:id {id} ; p:type {type} .
+source		SELECT `id`, `type` FROM `Building_Types`
+
+mappingId	Job_Postings_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:required_skills {required_skills} ; p:salary {salary} ; p:post_date {post_date} .
+source		SELECT `id`, `title`, `description`, `required_skills`, `salary`, `post_date` FROM `Job_Postings`
+
+mappingId	Architects_Building_Types_base
+target		ex:Architects_Building_Types/{architect_id}/{building_type_id} a :Architects_Building_Types ; p:architect_id {architect_id} ; p:building_type_id {building_type_id} .
+source		SELECT `architect_id`, `building_type_id` FROM `Architects_Building_Types`
+
+mappingId	Architects_Building_Types_building_type_id_fk
+target		ex:Architects_Building_Types/{architect_id}/{building_type_id} p:hasBuilding_Types ex:Building_Types/{building_type_id} .
+source		SELECT `architect_id`, `building_type_id` FROM `Architects_Building_Types` WHERE `building_type_id` IS NOT NULL
+
+mappingId	Architects_Building_Types_architect_id_fk
+target		ex:Architects_Building_Types/{architect_id}/{building_type_id} p:hasArchitects ex:Architects/{architect_id} .
+source		SELECT `architect_id`, `building_type_id` FROM `Architects_Building_Types` WHERE `architect_id` IS NOT NULL
+
+]]

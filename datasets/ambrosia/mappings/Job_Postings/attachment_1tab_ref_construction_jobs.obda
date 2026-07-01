@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employers_base
+target		ex:Employers/{employerID} a :Employers ; p:employerID {employerID} ; p:companyName {companyName} ; p:location {location} .
+source		SELECT `employerID`, `companyName`, `location` FROM `Employers`
+
+mappingId	Applicants_base
+target		ex:Applicants/{applicantID} a :Applicants ; p:applicantID {applicantID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:resumePath {resumePath} .
+source		SELECT `applicantID`, `firstName`, `lastName`, `email`, `phoneNumber`, `resumePath` FROM `Applicants`
+
+mappingId	Construction_Jobs_base
+target		ex:Construction_Jobs/{constructionJobID} a :Construction_Jobs ; p:constructionJobID {constructionJobID} ; p:jobTitle {jobTitle} ; p:jobDescription {jobDescription} ; p:requiredSkills {requiredSkills} ; p:constructionJobType {constructionJobType} ; p:designSoftware {designSoftware} .
+source		SELECT `constructionJobID`, `jobTitle`, `jobDescription`, `requiredSkills`, `constructionJobType`, `designSoftware` FROM `Construction_Jobs`
+
+mappingId	Construction_Jobs_designSoftware_fk
+target		ex:Construction_Jobs/{constructionJobID} p:hasDesign_Software_Expertise ex:Design_Software_Expertise/{designSoftware} .
+source		SELECT `constructionJobID`, `designSoftware` FROM `Construction_Jobs` WHERE `designSoftware` IS NOT NULL
+
+mappingId	Design_Software_Expertise_base
+target		ex:Design_Software_Expertise/{softwareID} a :Design_Software_Expertise ; p:softwareID {softwareID} ; p:softwareName {softwareName} .
+source		SELECT `softwareID`, `softwareName` FROM `Design_Software_Expertise`
+
+mappingId	Employed_in_Construction_Jobs_base
+target		ex:Employed_in_Construction_Jobs/{employedID} a :Employed_in_Construction_Jobs ; p:employedID {employedID} ; p:applicantID {applicantID} ; p:constructionJobID {constructionJobID} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `employedID`, `applicantID`, `constructionJobID`, `startDate`, `endDate` FROM `Employed_in_Construction_Jobs`
+
+mappingId	Employed_in_Construction_Jobs_constructionJobID_fk
+target		ex:Employed_in_Construction_Jobs/{employedID} p:hasConstruction_Jobs ex:Construction_Jobs/{constructionJobID} .
+source		SELECT `employedID`, `constructionJobID` FROM `Employed_in_Construction_Jobs` WHERE `constructionJobID` IS NOT NULL
+
+mappingId	Employed_in_Construction_Jobs_applicantID_fk
+target		ex:Employed_in_Construction_Jobs/{employedID} p:hasApplicants ex:Applicants/{applicantID} .
+source		SELECT `employedID`, `applicantID` FROM `Employed_in_Construction_Jobs` WHERE `applicantID` IS NOT NULL
+
+]]

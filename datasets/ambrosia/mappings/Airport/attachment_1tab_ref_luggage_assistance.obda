@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:name {Name} ; p:FlightID {FlightID} .
+source		SELECT `PassengerID`, `Name`, `FlightID` FROM `Passengers`
+
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:DepartureTime {DepartureTime} ; p:Destination {Destination} ; p:AvailableSeats {AvailableSeats} .
+source		SELECT `FlightID`, `DepartureTime`, `Destination`, `AvailableSeats` FROM `Flights`
+
+mappingId	LuggageRequests_base
+target		ex:LuggageRequests/{RequestID} a :LuggageRequests ; p:RequestID {RequestID} ; p:PassengerID {PassengerID} ; p:AssistanceType {AssistanceType} ; p:location {Location} ; p:RequestDate {RequestDate} .
+source		SELECT `RequestID`, `PassengerID`, `AssistanceType`, `Location`, `RequestDate` FROM `LuggageRequests`
+
+mappingId	LuggageRequests_PassengerID_fk
+target		ex:LuggageRequests/{RequestID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `RequestID`, `PassengerID` FROM `LuggageRequests` WHERE `PassengerID` IS NOT NULL
+
+mappingId	Locations_base
+target		ex:Locations/{LocationID} a :Locations ; p:LocationID {LocationID} ; p:LocationName {LocationName} .
+source		SELECT `LocationID`, `LocationName` FROM `Locations`
+
+mappingId	Bookings_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:LuggageRequestID {LuggageRequestID} ; p:LocationID {LocationID} ; p:SlotStart {SlotStart} ; p:SlotEnd {SlotEnd} ; p:BookingStatus {BookingStatus} .
+source		SELECT `BookingID`, `LuggageRequestID`, `LocationID`, `SlotStart`, `SlotEnd`, `BookingStatus` FROM `Bookings`
+
+mappingId	Bookings_LocationID_fk
+target		ex:Bookings/{BookingID} p:hasLocations ex:Locations/{LocationID} .
+source		SELECT `BookingID`, `LocationID` FROM `Bookings` WHERE `LocationID` IS NOT NULL
+
+mappingId	Bookings_LuggageRequestID_fk
+target		ex:Bookings/{BookingID} p:hasLuggageRequests ex:LuggageRequests/{LuggageRequestID} .
+source		SELECT `BookingID`, `LuggageRequestID` FROM `Bookings` WHERE `LuggageRequestID` IS NOT NULL
+
+]]

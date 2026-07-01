@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Location_base
+target		ex:Location/{id} a :Location ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Location`
+
+mappingId	Era_base
+target		ex:Era/{id} a :Era ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Era`
+
+mappingId	Story_base
+target		ex:Story/{id} a :Story ; p:id {id} ; p:title {title} ; p:location_id {location_id} ; p:era_id {era_id} .
+source		SELECT `id`, `title`, `location_id`, `era_id` FROM `Story`
+
+mappingId	Story_era_id_fk
+target		ex:Story/{id} p:hasEra ex:Era/{era_id} .
+source		SELECT `id`, `era_id` FROM `Story` WHERE `era_id` IS NOT NULL
+
+mappingId	Story_location_id_fk
+target		ex:Story/{id} p:hasLocation ex:Location/{location_id} .
+source		SELECT `id`, `location_id` FROM `Story` WHERE `location_id` IS NOT NULL
+
+mappingId	Character_base
+target		ex:Character/{id} a :Character ; p:id {id} ; p:name {name} ; p:role {role} ; p:story_id {story_id} .
+source		SELECT `id`, `name`, `role`, `story_id` FROM `Character`
+
+mappingId	Character_story_id_fk
+target		ex:Character/{id} p:hasStory ex:Story/{story_id} .
+source		SELECT `id`, `story_id` FROM `Character` WHERE `story_id` IS NOT NULL
+
+mappingId	Episode_base
+target		ex:Episode/{id} a :Episode ; p:id {id} ; p:episode_number {episode_number} ; p:title {title} ; p:release_date {release_date} ; p:story_id {story_id} .
+source		SELECT `id`, `episode_number`, `title`, `release_date`, `story_id` FROM `Episode`
+
+mappingId	Episode_story_id_fk
+target		ex:Episode/{id} p:hasStory ex:Story/{story_id} .
+source		SELECT `id`, `story_id` FROM `Episode` WHERE `story_id` IS NOT NULL
+
+mappingId	Review_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:reviewer_name {reviewer_name} ; p:rating {rating} ; p:comment {comment} ; p:episode_id {episode_id} .
+source		SELECT `id`, `reviewer_name`, `rating`, `comment`, `episode_id` FROM `Review`
+
+mappingId	Review_episode_id_fk
+target		ex:Review/{id} p:hasEpisode ex:Episode/{episode_id} .
+source		SELECT `id`, `episode_id` FROM `Review` WHERE `episode_id` IS NOT NULL
+
+]]

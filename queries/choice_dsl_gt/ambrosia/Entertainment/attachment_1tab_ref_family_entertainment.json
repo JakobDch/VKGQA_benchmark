@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_family_entertainment",
+  "schema": "amb_attachment_1tab_ref_family_entertainment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all the amusement parks, also list the water parks but only those in Orlando, Florida.",
+      "qtype": "unambig",
+      "sql": "SELECT ThemeParks.parkName \nFROM ThemeParks WHERE ThemeParks.familyEntertainment = \"Amusement Park\"\nUNION\nSELECT ThemeParks.parkName \nFROM ThemeParks JOIN Locations ON ThemeParks.locationId = Locations.id\nWHERE ThemeParks.familyEntertainment = \"Water Park\" AND Locations.name = \"Orlando, Florida\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?themeparks a :ThemeParks .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    FILTER(STR(?familyentertainment_f) = \"Amusement Park\")\n    BIND(?parkname AS ?o0)\n  }\n  UNION\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Water Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 1,
+      "question": "What are the amusement parks in Orlando, Florida? What are the water parks in the same place?",
+      "qtype": "unambig",
+      "sql": "SELECT ThemeParks.parkName \nFROM ThemeParks JOIN Locations ON ThemeParks.locationId = Locations.id\nWHERE ThemeParks.familyEntertainment = \"Amusement Park\" AND Locations.name = \"Orlando, Florida\"\nUNION\nSELECT ThemeParks.parkName \nFROM ThemeParks JOIN Locations ON ThemeParks.locationId = Locations.id\nWHERE ThemeParks.familyEntertainment = \"Water Park\" AND Locations.name = \"Orlando, Florida\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Amusement Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n  UNION\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Water Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the amusement parks and water parks in Orlando, Florida?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?themeparks a :ThemeParks .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    FILTER(STR(?familyentertainment_f) = \"Amusement Park\")\n    BIND(?parkname AS ?o0)\n  }\n  UNION\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Water Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Amusement Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n  UNION\n  {\n    ?themeparks a :ThemeParks .\n    ?locations a :Location .\n    ?themeparks p:hasLocations ?locations .\n    ?themeparks p:parkName ?parkname .\n    ?themeparks p:familyEntertainment ?familyentertainment_f .\n    ?locations p:name ?name_f .\n    FILTER(STR(?familyentertainment_f) = \"Water Park\")\n    FILTER(STR(?name_f) = \"Orlando, Florida\")\n    BIND(?parkname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

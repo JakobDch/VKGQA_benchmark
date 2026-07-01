@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_activity",
+  "schema": "amb_attachment_1tab_val_activity",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What tourists visited tourist attractions at Portobello and what tourists visited local markets in the same location?",
+      "qtype": "unambig",
+      "sql": "SELECT Tourists.Name \nFROM Tourists\nWHERE (Tourists.Activity = \"Tourist Attraction\" OR Tourists.Activity = \"Local Market\") AND Tourists.Location = \"Portobello\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?tourists a :Tourists .\n  ?tourists p:name ?name .\n  ?tourists p:Activity ?activity_w .\n  ?tourists p:Activity ?activity_w2 .\n  ?tourists p:location ?location_w .\n  FILTER((((STR(?activity_w) = \"Tourist Attraction\" || STR(?activity_w2) = \"Local Market\")) && STR(?location_w) = \"Portobello\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all tourists that visited tourist attractions and also list tourists that visited local markets in Portobello.",
+      "qtype": "unambig",
+      "sql": "SELECT Tourists.Name \nFROM Tourists\nWHERE Tourists.Activity = \"Tourist Attraction\" OR Tourists.Activity = \"Local Market\" AND Tourists.Location = \"Portobello\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?tourists a :Tourists .\n  ?tourists p:name ?name .\n  ?tourists p:Activity ?activity_w .\n  ?tourists p:Activity ?activity_w2 .\n  ?tourists p:location ?location_w .\n  FILTER((STR(?activity_w) = \"Tourist Attraction\" || (STR(?activity_w2) = \"Local Market\" && STR(?location_w) = \"Portobello\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide me with the tourists that visited tourist attractions and local markets in Portobello.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?tourists a :Tourists .\n  ?tourists p:name ?name .\n  ?tourists p:Activity ?activity_w .\n  ?tourists p:Activity ?activity_w2 .\n  ?tourists p:location ?location_w .\n  FILTER((((STR(?activity_w) = \"Tourist Attraction\" || STR(?activity_w2) = \"Local Market\")) && STR(?location_w) = \"Portobello\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?tourists a :Tourists .\n  ?tourists p:name ?name .\n  ?tourists p:Activity ?activity_w .\n  ?tourists p:Activity ?activity_w2 .\n  ?tourists p:location ?location_w .\n  FILTER((STR(?activity_w) = \"Tourist Attraction\" || (STR(?activity_w2) = \"Local Market\" && STR(?location_w) = \"Portobello\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

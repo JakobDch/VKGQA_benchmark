@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_music_festivals_genres",
+  "schema": "amb_scope_music_festivals_genres",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each music festival, show the music genres that they include.",
+      "qtype": "unambig",
+      "sql": "select music_festivals.festival_name , genres.genre_name from Music_Festivals_Genres join Genres on Music_Festivals_Genres.genre_id = Genres.genre_id join Music_Festivals on Music_Festivals_Genres.music_festival_id = Music_Festivals.festival_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?festival_name ?genre_name WHERE {\n  ?music_festivals_genres a :Music_Festivals_Genres .\n  ?genres a :Genres .\n  ?music_festivals_genres p:hasGenres ?genres .\n  ?music_festivals a :Music_Festivals .\n  ?music_festivals_genres p:hasMusic_Festivals ?music_festivals .\n  ?music_festivals p:festival_name ?festival_name .\n  ?genres p:genre_name ?genre_name .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the music genres that each music festival includes.",
+      "qtype": "ambig",
+      "sql": "SELECT Genres.genre_name  from Music_Festivals_Genres join Genres on Music_Festivals_Genres.genre_id = Genres.genre_id join Music_Festivals on Music_Festivals_Genres.music_festival_id = Music_Festivals.festival_id   GROUP BY Music_Festivals_Genres.genre_id HAVING COUNT(DISTINCT Music_Festivals_Genres.music_festival_id) = (SELECT COUNT(*) FROM  Music_Festivals)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?genre_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasMusic_Festivals ?parent . } GROUP BY ?child }\n  ?child p:genre_name ?genre_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Music_Festivals } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the music genres that each music festival includes.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?festival_name ?genre_name WHERE {\n  ?music_festivals_genres a :Music_Festivals_Genres .\n  ?genres a :Genres .\n  ?music_festivals_genres p:hasGenres ?genres .\n  ?music_festivals a :Music_Festivals .\n  ?music_festivals_genres p:hasMusic_Festivals ?music_festivals .\n  ?music_festivals p:festival_name ?festival_name .\n  ?genres p:genre_name ?genre_name .\n} }\n  collective: { SELECT ?genre_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasGenres ?child ; p:hasMusic_Festivals ?parent . } GROUP BY ?child }\n  ?child p:genre_name ?genre_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Music_Festivals } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

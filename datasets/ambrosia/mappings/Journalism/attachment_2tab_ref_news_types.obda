@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Authors`
+
+mappingId	Events_base
+target		ex:Events/{eventId} a :Events ; p:eventId {eventId} ; p:eventName {eventName} .
+source		SELECT `eventId`, `eventName` FROM `Events`
+
+mappingId	Breaking_News_base
+target		ex:Breaking_News/{newsId} a :Breaking_News ; p:newsId {newsId} ; p:headline {headline} ; p:content {content} ; p:authorId {authorId} ; p:eventId {eventId} .
+source		SELECT `newsId`, `headline`, `content`, `authorId`, `eventId` FROM `Breaking_News`
+
+mappingId	Breaking_News_eventId_fk
+target		ex:Breaking_News/{newsId} p:hasEvents ex:Events/{eventId} .
+source		SELECT `newsId`, `eventId` FROM `Breaking_News` WHERE `eventId` IS NOT NULL
+
+mappingId	Breaking_News_authorId_fk
+target		ex:Breaking_News/{newsId} p:hasAuthors ex:Authors/{authorId} .
+source		SELECT `newsId`, `authorId` FROM `Breaking_News` WHERE `authorId` IS NOT NULL
+
+mappingId	News_Analysis_base
+target		ex:News_Analysis/{analysisId} a :News_Analysis ; p:analysisId {analysisId} ; p:title {title} ; p:content {content} ; p:authorId {authorId} ; p:eventId {eventId} .
+source		SELECT `analysisId`, `title`, `content`, `authorId`, `eventId` FROM `News_Analysis`
+
+mappingId	News_Analysis_eventId_fk
+target		ex:News_Analysis/{analysisId} p:hasEvents ex:Events/{eventId} .
+source		SELECT `analysisId`, `eventId` FROM `News_Analysis` WHERE `eventId` IS NOT NULL
+
+mappingId	News_Analysis_authorId_fk
+target		ex:News_Analysis/{analysisId} p:hasAuthors ex:Authors/{authorId} .
+source		SELECT `analysisId`, `authorId` FROM `News_Analysis` WHERE `authorId` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{sourceId} a :Sources ; p:sourceId {sourceId} ; p:url {url} ; p:description {description} ; p:eventId {eventId} .
+source		SELECT `sourceId`, `url`, `description`, `eventId` FROM `Sources`
+
+mappingId	Sources_eventId_fk
+target		ex:Sources/{sourceId} p:hasEvents ex:Events/{eventId} .
+source		SELECT `sourceId`, `eventId` FROM `Sources` WHERE `eventId` IS NOT NULL
+
+mappingId	Comments_base
+target		ex:Comments/{commentId} a :Comments ; p:commentId {commentId} ; p:text {text} ; p:authorId {authorId} ; p:postType {postType} .
+source		SELECT `commentId`, `text`, `authorId`, `postType` FROM `Comments`
+
+mappingId	Comments_authorId_fk
+target		ex:Comments/{commentId} p:hasAuthors ex:Authors/{authorId} .
+source		SELECT `commentId`, `authorId` FROM `Comments` WHERE `authorId` IS NOT NULL
+
+]]

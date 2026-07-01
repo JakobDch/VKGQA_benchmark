@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Author_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Author`
+
+mappingId	Theatrical_Form_base
+target		ex:Theatrical_Form/{id} a :Theatrical_Form ; p:id {id} ; p:form {form} .
+source		SELECT `id`, `form` FROM `Theatrical_Form`
+
+mappingId	Play_base
+target		ex:Play/{id} a :Play ; p:id {id} ; p:title {title} ; p:authorId {authorId} ; p:theatricalFormId {theatricalFormId} .
+source		SELECT `id`, `title`, `authorId`, `theatricalFormId` FROM `Play`
+
+mappingId	Play_theatricalFormId_fk
+target		ex:Play/{id} p:hasTheatrical_Form ex:Theatrical_Form/{theatricalFormId} .
+source		SELECT `id`, `theatricalFormId` FROM `Play` WHERE `theatricalFormId` IS NOT NULL
+
+mappingId	Play_authorId_fk
+target		ex:Play/{id} p:hasAuthor ex:Author/{authorId} .
+source		SELECT `id`, `authorId` FROM `Play` WHERE `authorId` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:birthYear {birthYear} ; p:playId {playId} .
+source		SELECT `id`, `firstName`, `lastName`, `birthYear`, `playId` FROM `Actor`
+
+mappingId	Actor_playId_fk
+target		ex:Actor/{id} p:hasPlay ex:Play/{playId} .
+source		SELECT `id`, `playId` FROM `Actor` WHERE `playId` IS NOT NULL
+
+mappingId	Character_base
+target		ex:Character/{id} a :Character ; p:id {id} ; p:characterName {characterName} ; p:playId {playId} ; p:actorId {actorId} .
+source		SELECT `id`, `characterName`, `playId`, `actorId` FROM `Character`
+
+mappingId	Character_actorId_fk
+target		ex:Character/{id} p:hasActor ex:Actor/{actorId} .
+source		SELECT `id`, `actorId` FROM `Character` WHERE `actorId` IS NOT NULL
+
+mappingId	Character_playId_fk
+target		ex:Character/{id} p:hasPlay ex:Play/{playId} .
+source		SELECT `id`, `playId` FROM `Character` WHERE `playId` IS NOT NULL
+
+mappingId	Role_base
+target		ex:Role/{id} a :Role ; p:id {id} ; p:roleDescription {roleDescription} ; p:characterId {characterId} ; p:actorId {actorId} .
+source		SELECT `id`, `roleDescription`, `characterId`, `actorId` FROM `Role`
+
+mappingId	Role_actorId_fk
+target		ex:Role/{id} p:hasActor ex:Actor/{actorId} .
+source		SELECT `id`, `actorId` FROM `Role` WHERE `actorId` IS NOT NULL
+
+mappingId	Role_characterId_fk
+target		ex:Role/{id} p:hasCharacter ex:Character/{characterId} .
+source		SELECT `id`, `characterId` FROM `Role` WHERE `characterId` IS NOT NULL
+
+]]

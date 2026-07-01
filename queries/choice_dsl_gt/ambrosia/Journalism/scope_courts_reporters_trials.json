@@ -1,0 +1,108 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_courts_reporters_trials",
+  "schema": "amb_scope_courts_reporters_trials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each court reporter, what are the corresponding trial  types?",
+      "qtype": "unambig",
+      "sql": "select courts_reporters.name , trials.trialtype from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?trialtype WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:trialType ?trialtype .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me the case names and types of trials each reporter is covering.",
+      "qtype": "ambig",
+      "sql": "SELECT Trials.caseName, Trials.trialType  from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id   GROUP BY Courts_Reporters_Trials.trialId HAVING COUNT(DISTINCT Courts_Reporters_Trials.reporterId) = (SELECT COUNT(*) FROM  Courts_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?casename ?trialtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:caseName ?casename .\n  ?child p:trialType ?trialtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Tell me the case names and types of trials each reporter is covering.",
+      "qtype": "ambig",
+      "sql": "select courts_reporters.name , trials.casename , trials.trialtype from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?casename ?trialtype WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:caseName ?casename .\n  ?trials p:trialType ?trialtype .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "What cases are all court reporters equally covering?",
+      "qtype": "unambig",
+      "sql": "SELECT Trials.caseName  from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id   GROUP BY Courts_Reporters_Trials.trialId HAVING COUNT(DISTINCT Courts_Reporters_Trials.reporterId) = (SELECT COUNT(*) FROM  Courts_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?casename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:caseName ?casename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "what trial types are associated with each court reporter?",
+      "qtype": "ambig",
+      "sql": "SELECT Trials.trialType  from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id   GROUP BY Courts_Reporters_Trials.trialId HAVING COUNT(DISTINCT Courts_Reporters_Trials.reporterId) = (SELECT COUNT(*) FROM  Courts_Reporters)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?trialtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:trialType ?trialtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For every court reporter, list the cases they are covering.",
+      "qtype": "unambig",
+      "sql": "select courts_reporters.name , trials.casename from Courts_Reporters_Trials join Trials on Courts_Reporters_Trials.trialId = Trials.id join Courts_Reporters on Courts_Reporters_Trials.reporterId = Courts_Reporters.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?casename WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:caseName ?casename .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what trial types are associated with each court reporter?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?trialtype WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:trialType ?trialtype .\n} }\n  collective: { SELECT ?trialtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:trialType ?trialtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the cases each court reporter is covering.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?casename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:caseName ?casename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?casename WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:caseName ?casename .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the case names and types of trials each reporter is covering.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?casename ?trialtype WHERE {\n  ?courts_reporters_trials a :Courts_Reporters_Trials .\n  ?trials a :Trials .\n  ?courts_reporters_trials p:hasTrials ?trials .\n  ?courts_reporters a :Courts_Reporters .\n  ?courts_reporters_trials p:hasCourts_Reporters ?courts_reporters .\n  ?courts_reporters p:name ?name .\n  ?trials p:caseName ?casename .\n  ?trials p:trialType ?trialtype .\n} }\n  collective: { SELECT ?casename ?trialtype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTrials ?child ; p:hasCourts_Reporters ?parent . } GROUP BY ?child }\n  ?child p:caseName ?casename .\n  ?child p:trialType ?trialtype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Courts_Reporters } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

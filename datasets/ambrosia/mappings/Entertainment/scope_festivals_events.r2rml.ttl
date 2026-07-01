@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/entertainment#> .
+@prefix p: <http://ambrosia.example.org/entertainment/prop#> .
+@prefix ex: <http://ambrosia.example.org/entertainment/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_festivals_events_0_Festivals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FestivalID\", \"Name\", \"Location\" FROM \"Festivals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Festivals/{FestivalID}" ; rr:class :Festivals ] ;
+  rr:predicateObjectMap [ rr:predicate p:FestivalID ; rr:objectMap [ rr:column "FestivalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_festivals_events_1_Events_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EventTypeID\", \"EventName\", \"Description\" FROM \"Events\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Events/{EventTypeID}" ; rr:class :Events ] ;
+  rr:predicateObjectMap [ rr:predicate p:EventTypeID ; rr:objectMap [ rr:column "EventTypeID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EventName ; rr:objectMap [ rr:column "EventName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Description ; rr:objectMap [ rr:column "Description" ] ] .
+
+<#tm_scope_festivals_events_2_Festivals_Events_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FestivalID\", \"EventTypeID\" FROM \"Festivals_Events\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Festivals_Events/{_amb_rowid}" ; rr:class :Festivals_Events ] ;
+  rr:predicateObjectMap [ rr:predicate p:FestivalID ; rr:objectMap [ rr:column "FestivalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EventTypeID ; rr:objectMap [ rr:column "EventTypeID" ] ] .
+
+<#tm_scope_festivals_events_3_Festivals_Events_EventTypeID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"EventTypeID\" FROM \"Festivals_Events\" WHERE \"EventTypeID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Festivals_Events/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasEvents ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Events/{EventTypeID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_festivals_events_4_Festivals_Events_FestivalID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"FestivalID\" FROM \"Festivals_Events\" WHERE \"FestivalID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Festivals_Events/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasFestivals ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Festivals/{FestivalID}" ; rr:termType rr:IRI ] ] .
+

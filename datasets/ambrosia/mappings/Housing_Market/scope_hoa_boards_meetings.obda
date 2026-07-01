@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hoa_Boards_base
+target		ex:Hoa_Boards/{board_id} a :Hoa_Boards ; p:board_id {board_id} ; p:address {address} ; p:president_name {president_name} .
+source		SELECT `board_id`, `address`, `president_name` FROM `Hoa_Boards`
+
+mappingId	Meetings_base
+target		ex:Meetings/{meeting_id} a :Meetings ; p:meeting_id {meeting_id} ; p:meeting_type {meeting_type} .
+source		SELECT `meeting_id`, `meeting_type` FROM `Meetings`
+
+mappingId	Members_base
+target		ex:Members/{member_id} a :Members ; p:member_id {member_id} ; p:name {name} ; p:email {email} .
+source		SELECT `member_id`, `name`, `email` FROM `Members`
+
+mappingId	Hoa_Board_Members_base
+target		ex:Hoa_Board_Members/{hoa_board_id}/{member_id} a :Hoa_Board_Members ; p:hoa_board_id {hoa_board_id} ; p:member_id {member_id} .
+source		SELECT `hoa_board_id`, `member_id` FROM `Hoa_Board_Members`
+
+mappingId	Hoa_Board_Members_member_id_fk
+target		ex:Hoa_Board_Members/{hoa_board_id}/{member_id} p:hasMembers ex:Members/{member_id} .
+source		SELECT `hoa_board_id`, `member_id` FROM `Hoa_Board_Members` WHERE `member_id` IS NOT NULL
+
+mappingId	Hoa_Board_Members_hoa_board_id_fk
+target		ex:Hoa_Board_Members/{hoa_board_id}/{member_id} p:hasHoa_Boards ex:Hoa_Boards/{hoa_board_id} .
+source		SELECT `hoa_board_id`, `member_id` FROM `Hoa_Board_Members` WHERE `hoa_board_id` IS NOT NULL
+
+mappingId	Meeting_Attendees_base
+target		ex:Meeting_Attendees/{meeting_id}/{attendee_id} a :Meeting_Attendees ; p:meeting_id {meeting_id} ; p:attendee_id {attendee_id} .
+source		SELECT `meeting_id`, `attendee_id` FROM `Meeting_Attendees`
+
+mappingId	Meeting_Attendees_attendee_id_fk
+target		ex:Meeting_Attendees/{meeting_id}/{attendee_id} p:hasMembers ex:Members/{attendee_id} .
+source		SELECT `meeting_id`, `attendee_id` FROM `Meeting_Attendees` WHERE `attendee_id` IS NOT NULL
+
+mappingId	Meeting_Attendees_meeting_id_fk
+target		ex:Meeting_Attendees/{meeting_id}/{attendee_id} p:hasMeetings ex:Meetings/{meeting_id} .
+source		SELECT `meeting_id`, `attendee_id` FROM `Meeting_Attendees` WHERE `meeting_id` IS NOT NULL
+
+mappingId	Hoa_Boards_Meetings_base
+target		ex:Hoa_Boards_Meetings/{hoa_board_id}/{meeting_id} a :Hoa_Boards_Meetings ; p:hoa_board_id {hoa_board_id} ; p:meeting_id {meeting_id} .
+source		SELECT `hoa_board_id`, `meeting_id` FROM `Hoa_Boards_Meetings`
+
+mappingId	Hoa_Boards_Meetings_meeting_id_fk
+target		ex:Hoa_Boards_Meetings/{hoa_board_id}/{meeting_id} p:hasMeetings ex:Meetings/{meeting_id} .
+source		SELECT `hoa_board_id`, `meeting_id` FROM `Hoa_Boards_Meetings` WHERE `meeting_id` IS NOT NULL
+
+mappingId	Hoa_Boards_Meetings_hoa_board_id_fk
+target		ex:Hoa_Boards_Meetings/{hoa_board_id}/{meeting_id} p:hasHoa_Boards ex:Hoa_Boards/{hoa_board_id} .
+source		SELECT `hoa_board_id`, `meeting_id` FROM `Hoa_Boards_Meetings` WHERE `hoa_board_id` IS NOT NULL
+
+]]

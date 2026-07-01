@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_ref_accommodation",
+  "schema": "amb_attachment_2tab_ref_accommodation",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What glamping pods are in Snowdonia and what tree houses are located there?",
+      "qtype": "unambig",
+      "sql": "SELECT GlampingPod.pod\nFROM Location JOIN GlampingPod ON Location.id = GlampingPod.locationId\nWHERE Location.name = \"Snowdonia\"\nUNION\nSELECT TreeHouse.House\nFROM Location JOIN TreeHouse ON Location.id = TreeHouse.locationId\nWHERE Location.name = \"Snowdonia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Locations .\n    ?glampingpod a :GlampingPod .\n    ?glampingpod p:hasLocation ?location .\n    ?glampingpod p:pod ?pod .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?pod AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Locations .\n    ?treehouse a :TreeHouse .\n    ?treehouse p:hasLocation ?location .\n    ?treehouse p:house ?house .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?house AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Display glamping pods and tree houses in Snowdonia.",
+      "qtype": "ambig",
+      "sql": "SELECT GlampingPod.pod\nFROM Location JOIN GlampingPod ON Location.id = GlampingPod.locationId\nUNION\nSELECT TreeHouse.House\nFROM Location JOIN TreeHouse ON Location.id = TreeHouse.locationId\nWHERE Location.name = \"Snowdonia\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Locations .\n    ?glampingpod a :GlampingPod .\n    ?glampingpod p:hasLocation ?location .\n    ?glampingpod p:pod ?pod .\n    BIND(?pod AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Locations .\n    ?treehouse a :TreeHouse .\n    ?treehouse p:hasLocation ?location .\n    ?treehouse p:house ?house .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?house AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display glamping pods and tree houses in Snowdonia.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Locations .\n    ?glampingpod a :GlampingPod .\n    ?glampingpod p:hasLocation ?location .\n    ?glampingpod p:pod ?pod .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?pod AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Locations .\n    ?treehouse a :TreeHouse .\n    ?treehouse p:hasLocation ?location .\n    ?treehouse p:house ?house .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?house AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?location a :Locations .\n    ?glampingpod a :GlampingPod .\n    ?glampingpod p:hasLocation ?location .\n    ?glampingpod p:pod ?pod .\n    BIND(?pod AS ?o0)\n  }\n  UNION\n  {\n    ?location a :Locations .\n    ?treehouse a :TreeHouse .\n    ?treehouse p:hasLocation ?location .\n    ?treehouse p:house ?house .\n    ?location p:name ?name_f .\n    FILTER(STR(?name_f) = \"Snowdonia\")\n    BIND(?house AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

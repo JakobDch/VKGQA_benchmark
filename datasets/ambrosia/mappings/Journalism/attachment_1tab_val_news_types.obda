@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:name {FullName} ; p:email {EmailAddress} .
+source		SELECT `AuthorID`, `FullName`, `EmailAddress` FROM `Authors`
+
+mappingId	Keywords_base
+target		ex:Keywords/{KeywordID} a :Keywords ; p:KeywordID {KeywordID} ; p:KeywordText {KeywordText} .
+source		SELECT `KeywordID`, `KeywordText` FROM `Keywords`
+
+mappingId	ArticleCategoryLinks_base
+target		ex:ArticleCategories/{ArticleID}/{CategoryID} a :ArticleCategories ; p:ArticleID {ArticleID} ; p:CategoryID {CategoryID} .
+source		SELECT `ArticleID`, `CategoryID` FROM `ArticleCategoryLinks`
+
+mappingId	ArticleCategoryLinks_ArticleID_fk
+target		ex:ArticleCategories/{ArticleID}/{CategoryID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `ArticleID`, `CategoryID` FROM `ArticleCategoryLinks` WHERE `ArticleID` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:Event {Event} ; p:PublicationDate {PublicationDate} ; p:NewsType {NewsType} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `Event`, `PublicationDate`, `NewsType`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+]]

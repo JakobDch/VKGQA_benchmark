@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_visual_media",
+  "schema": "amb_attachment_2tab_val_visual_media",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display all the movies of any genre and just the fantasy TV shows.",
+      "qtype": "unambig",
+      "sql": "SELECT Movie.title as title\nFROM Movie\nUNION\nSELECT Tv_Show.showName as title\nFROM Tv_Show\nWHERE Tv_Show.genre = \"Fantasy\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?movie a :Movie .\n    ?movie p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?tv_show a :Tv_Show .\n    ?tv_show p:showName ?showname .\n    ?tv_show p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?showname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the movies and TV shows in the fantasy genre.",
+      "qtype": "ambig",
+      "sql": "SELECT Movie.title as title\nFROM Movie\nWHERE Movie.genre = \"Fantasy\"\nUNION\nSELECT Tv_Show.showName as title\nFROM Tv_Show\nWHERE Tv_Show.genre = \"Fantasy\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?movie a :Movie .\n    ?movie p:title ?title .\n    ?movie p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?tv_show a :Tv_Show .\n    ?tv_show p:showName ?showname .\n    ?tv_show p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?showname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all the movies and TV shows in the fantasy genre.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?movie a :Movie .\n    ?movie p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?tv_show a :Tv_Show .\n    ?tv_show p:showName ?showname .\n    ?tv_show p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?showname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?movie a :Movie .\n    ?movie p:title ?title .\n    ?movie p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?tv_show a :Tv_Show .\n    ?tv_show p:showName ?showname .\n    ?tv_show p:genre ?genre_f .\n    FILTER(STR(?genre_f) = \"Fantasy\")\n    BIND(?showname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

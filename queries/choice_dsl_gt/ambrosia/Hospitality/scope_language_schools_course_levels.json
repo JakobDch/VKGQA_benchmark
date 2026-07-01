@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_language_schools_course_levels",
+  "schema": "amb_scope_language_schools_course_levels",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the levels of courses that are available at all language schools?",
+      "qtype": "unambig",
+      "sql": "SELECT Course_Levels.level  from Language_Schools_Course_Levels join Course_Levels on Language_Schools_Course_Levels.course_levels_id = Course_Levels.id join Language_Schools on Language_Schools_Course_Levels.language_schools_id = Language_Schools.id   GROUP BY Language_Schools_Course_Levels.course_levels_id HAVING COUNT(DISTINCT Language_Schools_Course_Levels.language_schools_id) = (SELECT COUNT(*) FROM  Language_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?level WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourse_Levels ?child ; p:hasLanguage_Schools ?parent . } GROUP BY ?child }\n  ?child p:level ?level .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Language_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the level of courses each language school offers.",
+      "qtype": "ambig",
+      "sql": "select language_schools.name , course_levels.level from Language_Schools_Course_Levels join Course_Levels on Language_Schools_Course_Levels.course_levels_id = Course_Levels.id join Language_Schools on Language_Schools_Course_Levels.language_schools_id = Language_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?level WHERE {\n  ?language_schools_course_levels a :Language_Schools_Course_Levels .\n  ?course_levels a :Course_Levels .\n  ?language_schools_course_levels p:hasCourse_Levels ?course_levels .\n  ?language_schools a :Language_Schools .\n  ?language_schools_course_levels p:hasLanguage_Schools ?language_schools .\n  ?language_schools p:name ?name .\n  ?course_levels p:level ?level .\n}",
+      "status": "pass",
+      "note": "n=20"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the level of courses each language school offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?level WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourse_Levels ?child ; p:hasLanguage_Schools ?parent . } GROUP BY ?child }\n  ?child p:level ?level .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Language_Schools } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?level WHERE {\n  ?language_schools_course_levels a :Language_Schools_Course_Levels .\n  ?course_levels a :Course_Levels .\n  ?language_schools_course_levels p:hasCourse_Levels ?course_levels .\n  ?language_schools a :Language_Schools .\n  ?language_schools_course_levels p:hasLanguage_Schools ?language_schools .\n  ?language_schools p:name ?name .\n  ?course_levels p:level ?level .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

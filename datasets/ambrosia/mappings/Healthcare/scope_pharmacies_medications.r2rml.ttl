@@ -1,0 +1,70 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_pharmacies_medications_0_Pharmacies_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Pharmacies\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacies/{id}" ; rr:class :Pharmacies ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_scope_pharmacies_medications_1_Medications_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"medication_id\", \"type\", \"dosage\", \"side_effects\" FROM \"Medications\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medications/{medication_id}" ; rr:class :Medications ] ;
+  rr:predicateObjectMap [ rr:predicate p:medication_id ; rr:objectMap [ rr:column "medication_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:type ; rr:objectMap [ rr:column "type" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:dosage ; rr:objectMap [ rr:column "dosage" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:side_effects ; rr:objectMap [ rr:column "side_effects" ] ] .
+
+<#tm_scope_pharmacies_medications_2_Prescriptions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"pharmacy_id\", \"patient_name\", \"date\" FROM \"Prescriptions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ; rr:class :Prescriptions ] ;
+  rr:predicateObjectMap [ rr:predicate p:prescription_id ; rr:objectMap [ rr:column "prescription_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:pharmacy_id ; rr:objectMap [ rr:column "pharmacy_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:patient_name ; rr:objectMap [ rr:column "patient_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] .
+
+<#tm_scope_pharmacies_medications_3_Prescriptions_pharmacy_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"prescription_id\", \"pharmacy_id\" FROM \"Prescriptions\" WHERE \"pharmacy_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPharmacies ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacies/{pharmacy_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_pharmacies_medications_4_Pharmacy_Prescriptions_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_prescription_id\", \"pharmacy_id\", \"prescription_id\", \"quantity\" FROM \"Pharmacy_Prescriptions\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Prescriptions/{pharmacy_prescription_id}" ; rr:class :Pharmacy_Prescriptions ] ;
+  rr:predicateObjectMap [ rr:predicate p:pharmacy_prescription_id ; rr:objectMap [ rr:column "pharmacy_prescription_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:pharmacy_id ; rr:objectMap [ rr:column "pharmacy_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:prescription_id ; rr:objectMap [ rr:column "prescription_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:quantity ; rr:objectMap [ rr:column "quantity" ] ] .
+
+<#tm_scope_pharmacies_medications_5_Pharmacy_Prescriptions_prescription_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_prescription_id\", \"prescription_id\" FROM \"Pharmacy_Prescriptions\" WHERE \"prescription_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Prescriptions/{pharmacy_prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPrescriptions ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Prescriptions/{prescription_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_pharmacies_medications_6_Pharmacy_Prescriptions_pharmacy_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_prescription_id\", \"pharmacy_id\" FROM \"Pharmacy_Prescriptions\" WHERE \"pharmacy_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Prescriptions/{pharmacy_prescription_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPharmacies ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacies/{pharmacy_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_pharmacies_medications_7_Pharmacy_Medications_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_medication_id\", \"pharmacy_id\", \"medication_id\" FROM \"Pharmacy_Medications\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Medications/{pharmacy_medication_id}" ; rr:class :Pharmacy_Medications ] ;
+  rr:predicateObjectMap [ rr:predicate p:pharmacy_medication_id ; rr:objectMap [ rr:column "pharmacy_medication_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:pharmacy_id ; rr:objectMap [ rr:column "pharmacy_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:medication_id ; rr:objectMap [ rr:column "medication_id" ] ] .
+
+<#tm_scope_pharmacies_medications_8_Pharmacy_Medications_medication_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_medication_id\", \"medication_id\" FROM \"Pharmacy_Medications\" WHERE \"medication_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Medications/{pharmacy_medication_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedications ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Medications/{medication_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_pharmacies_medications_9_Pharmacy_Medications_pharmacy_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"pharmacy_medication_id\", \"pharmacy_id\" FROM \"Pharmacy_Medications\" WHERE \"pharmacy_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacy_Medications/{pharmacy_medication_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPharmacies ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Pharmacies/{pharmacy_id}" ; rr:termType rr:IRI ] ] .
+

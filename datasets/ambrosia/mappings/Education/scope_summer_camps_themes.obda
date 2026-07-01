@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Themes_base
+target		ex:Themes/{id} a :Themes ; p:id {id} ; p:themeName {themeName} .
+source		SELECT `id`, `themeName` FROM `Themes`
+
+mappingId	Summer_Camps_base
+target		ex:Summer_Camps/{id} a :Summer_Camps ; p:id {id} ; p:campName {campName} ; p:location {location} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `id`, `campName`, `location`, `startDate`, `endDate` FROM `Summer_Camps`
+
+mappingId	Summer_Camp_Themes_base
+target		ex:Summer_Camp_Themes/{_amb_rowid} a :Summer_Camp_Themes ; p:summerCampId {summerCampId} ; p:themeId {themeId} .
+source		SELECT `_amb_rowid`, `summerCampId`, `themeId` FROM `Summer_Camp_Themes`
+
+mappingId	Summer_Camp_Themes_themeId_fk
+target		ex:Summer_Camp_Themes/{_amb_rowid} p:hasThemes ex:Themes/{themeId} .
+source		SELECT `_amb_rowid`, `themeId` FROM `Summer_Camp_Themes` WHERE `themeId` IS NOT NULL
+
+mappingId	Summer_Camp_Themes_summerCampId_fk
+target		ex:Summer_Camp_Themes/{_amb_rowid} p:hasSummer_Camps ex:Summer_Camps/{summerCampId} .
+source		SELECT `_amb_rowid`, `summerCampId` FROM `Summer_Camp_Themes` WHERE `summerCampId` IS NOT NULL
+
+]]

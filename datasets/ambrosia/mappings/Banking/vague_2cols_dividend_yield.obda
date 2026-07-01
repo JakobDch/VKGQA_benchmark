@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} .
+source		SELECT `CustomerID`, `FirstName`, `LastName` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountNumber`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountNumber {AccountNumber} ; p:Amount {Amount} ; p:TransactionDate {TransactionDate} .
+source		SELECT `TransactionID`, `AccountNumber`, `Amount`, `TransactionDate` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	Shares_base
+target		ex:Shares/{ShareID} a :Shares ; p:ShareID {ShareID} ; p:Stock {Stock} ; p:NumberOfShares {NumberOfShares} .
+source		SELECT `ShareID`, `Stock`, `NumberOfShares` FROM `Shares`
+
+mappingId	ShareTransactions_base
+target		ex:ShareTransactions/{ShareTransactionID} a :ShareTransactions ; p:ShareTransactionID {ShareTransactionID} ; p:BuyOrSell {BuyOrSell} ; p:CustomerID {CustomerID} ; p:ShareID {ShareID} ; p:Quantity {Quantity} ; p:Price {Price} ; p:Commission {Commission} .
+source		SELECT `ShareTransactionID`, `BuyOrSell`, `CustomerID`, `ShareID`, `Quantity`, `Price`, `Commission` FROM `ShareTransactions`
+
+mappingId	ShareTransactions_ShareID_fk
+target		ex:ShareTransactions/{ShareTransactionID} p:hasShares ex:Shares/{ShareID} .
+source		SELECT `ShareTransactionID`, `ShareID` FROM `ShareTransactions` WHERE `ShareID` IS NOT NULL
+
+mappingId	ShareTransactions_CustomerID_fk
+target		ex:ShareTransactions/{ShareTransactionID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `ShareTransactionID`, `CustomerID` FROM `ShareTransactions` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Dividends_base
+target		ex:Dividends/{DividendID} a :Dividends ; p:DividendID {DividendID} ; p:ShareID {ShareID} ; p:DividendAmount {DividendAmount} ; p:ExpectedPaymentDate {ExpectedPaymentDate} ; p:Dividend_Percentage {Dividend_Percentage} ; p:Dividend_Value {Dividend_Value} .
+source		SELECT `DividendID`, `ShareID`, `DividendAmount`, `ExpectedPaymentDate`, `Dividend_Percentage`, `Dividend_Value` FROM `Dividends`
+
+mappingId	Dividends_ShareID_fk
+target		ex:Dividends/{DividendID} p:hasShares ex:Shares/{ShareID} .
+source		SELECT `DividendID`, `ShareID` FROM `Dividends` WHERE `ShareID` IS NOT NULL
+
+]]

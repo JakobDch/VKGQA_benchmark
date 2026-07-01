@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	TV_Shows_base
+target		ex:TV_Shows/{id} a :TV_Shows ; p:id {id} ; p:Title {Title} ; p:Released_Seasons {Released_Seasons} ; p:Planned_Seasons {Planned_Seasons} ; p:Series {Series} ; p:GenreID {GenreID} ; p:PlatformID {PlatformID} ; p:RatingID {RatingID} .
+source		SELECT `id`, `Title`, `Released_Seasons`, `Planned_Seasons`, `Series`, `GenreID`, `PlatformID`, `RatingID` FROM `TV_Shows`
+
+mappingId	TV_Shows_RatingID_fk
+target		ex:TV_Shows/{id} p:hasRatings ex:Ratings/{RatingID} .
+source		SELECT `id`, `RatingID` FROM `TV_Shows` WHERE `RatingID` IS NOT NULL
+
+mappingId	TV_Shows_PlatformID_fk
+target		ex:TV_Shows/{id} p:hasPlatforms ex:Platforms/{PlatformID} .
+source		SELECT `id`, `PlatformID` FROM `TV_Shows` WHERE `PlatformID` IS NOT NULL
+
+mappingId	TV_Shows_GenreID_fk
+target		ex:TV_Shows/{id} p:hasGenres ex:Genres/{GenreID} .
+source		SELECT `id`, `GenreID` FROM `TV_Shows` WHERE `GenreID` IS NOT NULL
+
+mappingId	Genre_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Genre`
+
+mappingId	Platforms_base
+target		ex:Platforms/{id} a :Platforms ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Platforms`
+
+mappingId	Ratings_base
+target		ex:Ratings/{id} a :Ratings ; p:id {id} ; p:RateValue {RateValue} .
+source		SELECT `id`, `RateValue` FROM `Ratings`
+
+mappingId	Users_base
+target		ex:Users/{id} a :Users ; p:id {id} ; p:Username {Username} ; p:email {Email} ; p:Password {Password} .
+source		SELECT `id`, `Username`, `Email`, `Password` FROM `Users`
+
+mappingId	User_Reviews_base
+target		ex:User_Reviews/{id} a :User_Reviews ; p:id {id} ; p:UserID {UserID} ; p:ShowID {ShowID} ; p:ReviewText {ReviewText} ; p:RatingID {RatingID} .
+source		SELECT `id`, `UserID`, `ShowID`, `ReviewText`, `RatingID` FROM `User_Reviews`
+
+mappingId	User_Reviews_RatingID_fk
+target		ex:User_Reviews/{id} p:hasRatings ex:Ratings/{RatingID} .
+source		SELECT `id`, `RatingID` FROM `User_Reviews` WHERE `RatingID` IS NOT NULL
+
+mappingId	User_Reviews_ShowID_fk
+target		ex:User_Reviews/{id} p:hasTV_Shows ex:TV_Shows/{ShowID} .
+source		SELECT `id`, `ShowID` FROM `User_Reviews` WHERE `ShowID` IS NOT NULL
+
+mappingId	User_Reviews_UserID_fk
+target		ex:User_Reviews/{id} p:hasUsers ex:Users/{UserID} .
+source		SELECT `id`, `UserID` FROM `User_Reviews` WHERE `UserID` IS NOT NULL
+
+]]

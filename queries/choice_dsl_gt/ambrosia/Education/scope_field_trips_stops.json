@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_field_trips_stops",
+  "schema": "amb_scope_field_trips_stops",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What stops were visited during each field trip?",
+      "qtype": "ambig",
+      "sql": "SELECT Stops.stopLocation  from Field_Trips_Stops join Stops on Field_Trips_Stops.stopID = Stops.stopID join Field_Trips on Field_Trips_Stops.tripID = Field_Trips.tripID   GROUP BY Field_Trips_Stops.stopID HAVING COUNT(DISTINCT Field_Trips_Stops.tripID) = (SELECT COUNT(*) FROM  Field_Trips)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?stoplocation WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStops ?child ; p:hasField_Trips ?parent . } GROUP BY ?child }\n  ?child p:stopLocation ?stoplocation .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Field_Trips } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What stops were visited during each field trip?",
+      "qtype": "ambig",
+      "sql": "select field_trips.fieldtripname , stops.stoplocation from Field_Trips_Stops join Stops on Field_Trips_Stops.stopID = Stops.stopID join Field_Trips on Field_Trips_Stops.tripID = Field_Trips.tripID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fieldtripname ?stoplocation WHERE {\n  ?field_trips_stops a :Field_Trips_Stops .\n  ?stops a :Stops .\n  ?field_trips_stops p:hasStops ?stops .\n  ?field_trips a :Field_Trips .\n  ?field_trips_stops p:hasField_Trips ?field_trips .\n  ?field_trips p:fieldTripName ?fieldtripname .\n  ?stops p:stopLocation ?stoplocation .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What stops were visited during each field trip?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?fieldtripname ?stoplocation WHERE {\n  ?field_trips_stops a :Field_Trips_Stops .\n  ?stops a :Stops .\n  ?field_trips_stops p:hasStops ?stops .\n  ?field_trips a :Field_Trips .\n  ?field_trips_stops p:hasField_Trips ?field_trips .\n  ?field_trips p:fieldTripName ?fieldtripname .\n  ?stops p:stopLocation ?stoplocation .\n} }\n  collective: { SELECT ?stoplocation WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasStops ?child ; p:hasField_Trips ?parent . } GROUP BY ?child }\n  ?child p:stopLocation ?stoplocation .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Field_Trips } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

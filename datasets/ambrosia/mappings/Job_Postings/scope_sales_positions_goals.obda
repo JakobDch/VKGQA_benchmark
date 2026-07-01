@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Sales_Positions_base
+target		ex:Sales_Positions/{id} a :Sales_Positions ; p:id {id} ; p:position_name {position_name} ; p:salary_range {salary_range} .
+source		SELECT `id`, `position_name`, `salary_range` FROM `Sales_Positions`
+
+mappingId	Goals_base
+target		ex:Goals/{id} a :Goals ; p:id {id} ; p:goal_type {goal_type} .
+source		SELECT `id`, `goal_type` FROM `Goals`
+
+mappingId	Sales_Positions_Goals_base
+target		ex:Sales_Positions_Goals/{sales_position_id}/{goal_id} a :Sales_Positions_Goals ; p:sales_position_id {sales_position_id} ; p:goal_id {goal_id} .
+source		SELECT `sales_position_id`, `goal_id` FROM `Sales_Positions_Goals`
+
+mappingId	Sales_Positions_Goals_goal_id_fk
+target		ex:Sales_Positions_Goals/{sales_position_id}/{goal_id} p:hasGoals ex:Goals/{goal_id} .
+source		SELECT `sales_position_id`, `goal_id` FROM `Sales_Positions_Goals` WHERE `goal_id` IS NOT NULL
+
+mappingId	Sales_Positions_Goals_sales_position_id_fk
+target		ex:Sales_Positions_Goals/{sales_position_id}/{goal_id} p:hasSales_Positions ex:Sales_Positions/{sales_position_id} .
+source		SELECT `sales_position_id`, `goal_id` FROM `Sales_Positions_Goals` WHERE `sales_position_id` IS NOT NULL
+
+]]

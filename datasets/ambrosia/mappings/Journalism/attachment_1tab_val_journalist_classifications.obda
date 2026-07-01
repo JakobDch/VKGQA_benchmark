@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:name {Name} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:Classification {Classification} ; p:Payment {Payment} .
+source		SELECT `AuthorID`, `Name`, `Email`, `PhoneNumber`, `Classification`, `Payment` FROM `Authors`
+
+mappingId	NewsOutlets_base
+target		ex:NewsOutlets/{OutletID} a :NewsOutlets ; p:OutletID {OutletID} ; p:name {Name} ; p:location {Location} ; p:Website {Website} .
+source		SELECT `OutletID`, `Name`, `Location`, `Website` FROM `NewsOutlets`
+
+mappingId	Submissions_base
+target		ex:Submissions/{SubmissionID} a :Submissions ; p:SubmissionID {SubmissionID} ; p:ArticleID {ArticleID} ; p:OutletID {OutletID} ; p:Accepted {Accepted} .
+source		SELECT `SubmissionID`, `ArticleID`, `OutletID`, `Accepted` FROM `Submissions`
+
+mappingId	Submissions_OutletID_fk
+target		ex:Submissions/{SubmissionID} p:hasNewsOutlets ex:NewsOutlets/{OutletID} .
+source		SELECT `SubmissionID`, `OutletID` FROM `Submissions` WHERE `OutletID` IS NOT NULL
+
+mappingId	Submissions_ArticleID_fk
+target		ex:Submissions/{SubmissionID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `SubmissionID`, `ArticleID` FROM `Submissions` WHERE `ArticleID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{SourceID} a :Sources ; p:SourceID {SourceID} ; p:name {Name} ; p:ContactInfo {ContactInfo} ; p:Reliability {Reliability} ; p:LastUsed {LastUsed} .
+source		SELECT `SourceID`, `Name`, `ContactInfo`, `Reliability`, `LastUsed` FROM `Sources`
+
+]]

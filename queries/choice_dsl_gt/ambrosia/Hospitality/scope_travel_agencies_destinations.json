@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_travel_agencies_destinations",
+  "schema": "amb_scope_travel_agencies_destinations",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each travel agency, provide the corresponding destination names of destinations.",
+      "qtype": "unambig",
+      "sql": "select travel_agencies.name , destinations.destination_name from Travel_Agencies_Destinations join Destinations on Travel_Agencies_Destinations.destination_id = Destinations.id join Travel_Agencies on Travel_Agencies_Destinations.travel_agency_id = Travel_Agencies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?destination_name WHERE {\n  ?travel_agencies_destinations a :Travel_Agencies_Destinations .\n  ?destinations a :Destinations .\n  ?travel_agencies_destinations p:destination_id ?destination_id_l .\n  ?destinations p:id ?id_r .\n  ?travel_agencies a :Travel_Agencies .\n  ?travel_agencies_destinations p:travel_agency_id ?travel_agency_id_l .\n  ?travel_agencies p:id ?id_r2 .\n  ?travel_agencies p:name ?name .\n  ?destinations p:destination_name ?destination_name .\n  FILTER(STR(?destination_id_l) = STR(?id_r))\n  FILTER(STR(?travel_agency_id_l) = STR(?id_r2))\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "Which destination name is shared by all travel agencies?",
+      "qtype": "unambig",
+      "sql": "SELECT Destinations.destination_name  from Travel_Agencies_Destinations join Destinations on Travel_Agencies_Destinations.destination_id = Destinations.id join Travel_Agencies on Travel_Agencies_Destinations.travel_agency_id = Travel_Agencies.id   GROUP BY Travel_Agencies_Destinations.destination_id HAVING COUNT(DISTINCT Travel_Agencies_Destinations.travel_agency_id) = (SELECT COUNT(*) FROM  Travel_Agencies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?destination_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:destination_id ?cg . ?child a :Destinations ; p:id ?cg . ?l p:travel_agency_id ?pg . ?parent a :Travel_Agencies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:destination_name ?destination_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agencies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What destination names are associated with each travel agency?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?destination_name WHERE {\n  ?travel_agencies_destinations a :Travel_Agencies_Destinations .\n  ?destinations a :Destinations .\n  ?travel_agencies_destinations p:destination_id ?destination_id_l .\n  ?destinations p:id ?id_r .\n  ?travel_agencies a :Travel_Agencies .\n  ?travel_agencies_destinations p:travel_agency_id ?travel_agency_id_l .\n  ?travel_agencies p:id ?id_r2 .\n  ?travel_agencies p:name ?name .\n  ?destinations p:destination_name ?destination_name .\n  FILTER(STR(?destination_id_l) = STR(?id_r))\n  FILTER(STR(?travel_agency_id_l) = STR(?id_r2))\n} }\n  collective: { SELECT ?destination_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:destination_id ?cg . ?child a :Destinations ; p:id ?cg . ?l p:travel_agency_id ?pg . ?parent a :Travel_Agencies ; p:id ?pg . } GROUP BY ?child }\n  ?child p:destination_name ?destination_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agencies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

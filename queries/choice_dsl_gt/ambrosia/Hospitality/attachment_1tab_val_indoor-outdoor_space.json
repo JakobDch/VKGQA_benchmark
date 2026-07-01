@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_indoor-outdoor_space",
+  "schema": "amb_attachment_1tab_val_indoor_outdoor_space",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all lobbies or terraces that can accomodate 500 people.",
+      "qtype": "ambig",
+      "sql": "SELECT Room.Name \nFROM Room\nWHERE (Room.Indoor_Outdoor_Space = \"Lobby\" OR Room.Indoor_Outdoor_Space = \"Terrace\") AND Room.Size = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?room a :Rooms .\n  ?room p:name ?name .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w2 .\n  ?room p:Size ?size_w .\n  FILTER((((STR(?indoor_outdoor_space_w) = \"Lobby\" || STR(?indoor_outdoor_space_w2) = \"Terrace\")) && (STR(?size_w) = \"500\" || STR(?size_w) = \"500.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all lobbies or terraces that can accomodate 500 people.",
+      "qtype": "ambig",
+      "sql": "SELECT Room.Name \nFROM Room\nWHERE Room.Indoor_Outdoor_Space = \"Lobby\" OR Room.Indoor_Outdoor_Space = \"Terrace\" AND Room.Size = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?room a :Rooms .\n  ?room p:name ?name .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w2 .\n  ?room p:Size ?size_w .\n  FILTER((STR(?indoor_outdoor_space_w) = \"Lobby\" || (STR(?indoor_outdoor_space_w2) = \"Terrace\" && (STR(?size_w) = \"500\" || STR(?size_w) = \"500.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all lobbies or terraces that can accomodate 500 people.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?room a :Rooms .\n  ?room p:name ?name .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w2 .\n  ?room p:Size ?size_w .\n  FILTER((STR(?indoor_outdoor_space_w) = \"Lobby\" || (STR(?indoor_outdoor_space_w2) = \"Terrace\" && (STR(?size_w) = \"500\" || STR(?size_w) = \"500.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?room a :Rooms .\n  ?room p:name ?name .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w .\n  ?room p:Indoor_Outdoor_Space ?indoor_outdoor_space_w2 .\n  ?room p:Size ?size_w .\n  FILTER((((STR(?indoor_outdoor_space_w) = \"Lobby\" || STR(?indoor_outdoor_space_w2) = \"Terrace\")) && (STR(?size_w) = \"500\" || STR(?size_w) = \"500.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

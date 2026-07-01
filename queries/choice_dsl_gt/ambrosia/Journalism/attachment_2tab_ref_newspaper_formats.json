@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_newspaper_formats",
+  "schema": "amb_attachment_2tab_ref_newspaper_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the broadsheets sold by Tesco and also the tabloids sold by Tesco?",
+      "qtype": "unambig",
+      "sql": "SELECT Broadsheet.Title\nFROM Distributor JOIN Broadsheet ON Distributor.ID = Broadsheet.DistributorID\nWHERE Distributor.Name = \"Tesco\"\nUNION\nSELECT Tabloid.Title\nFROM Distributor JOIN Tabloid ON Distributor.ID = Tabloid.DistributorID\nWHERE Distributor.Name = \"Tesco\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?distributor a :Distributors .\n    ?broadsheet a :Broadsheet .\n    ?broadsheet p:hasDistributor ?distributor .\n    ?broadsheet p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?distributor a :Distributors .\n    ?tabloid a :Tabloid .\n    ?tabloid p:hasDistributor ?distributor .\n    ?tabloid p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Show me broadsheets and tabloids sold by Tesco.",
+      "qtype": "ambig",
+      "sql": "SELECT Broadsheet.Title\nFROM Distributor JOIN Broadsheet ON Distributor.ID = Broadsheet.DistributorID\nUNION\nSELECT Tabloid.Title\nFROM Distributor JOIN Tabloid ON Distributor.ID = Tabloid.DistributorID\nWHERE Distributor.Name = \"Tesco\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?distributor a :Distributors .\n    ?broadsheet a :Broadsheet .\n    ?broadsheet p:hasDistributor ?distributor .\n    ?broadsheet p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?distributor a :Distributors .\n    ?tabloid a :Tabloid .\n    ?tabloid p:hasDistributor ?distributor .\n    ?tabloid p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me broadsheets and tabloids sold by Tesco.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?distributor a :Distributors .\n    ?broadsheet a :Broadsheet .\n    ?broadsheet p:hasDistributor ?distributor .\n    ?broadsheet p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?distributor a :Distributors .\n    ?tabloid a :Tabloid .\n    ?tabloid p:hasDistributor ?distributor .\n    ?tabloid p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?distributor a :Distributors .\n    ?broadsheet a :Broadsheet .\n    ?broadsheet p:hasDistributor ?distributor .\n    ?broadsheet p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?distributor a :Distributors .\n    ?tabloid a :Tabloid .\n    ?tabloid p:hasDistributor ?distributor .\n    ?tabloid p:Title ?title .\n    ?distributor p:name ?name_f .\n    FILTER(STR(?name_f) = \"Tesco\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Green_Buildings_base
+target		ex:Green_Buildings/{id} a :Green_Buildings ; p:id {id} ; p:address {address} ; p:price {price} .
+source		SELECT `id`, `address`, `price` FROM `Green_Buildings`
+
+mappingId	Features_base
+target		ex:Features/{feature_id} a :Features ; p:feature_id {feature_id} ; p:name {name} .
+source		SELECT `feature_id`, `name` FROM `Features`
+
+mappingId	Green_Buildings_Features_base
+target		ex:Green_Buildings_Features/{green_building_id}/{feature_id} a :Green_Buildings_Features ; p:green_building_id {green_building_id} ; p:feature_id {feature_id} .
+source		SELECT `green_building_id`, `feature_id` FROM `Green_Buildings_Features`
+
+mappingId	Green_Buildings_Features_feature_id_fk
+target		ex:Green_Buildings_Features/{green_building_id}/{feature_id} p:hasFeatures ex:Features/{feature_id} .
+source		SELECT `green_building_id`, `feature_id` FROM `Green_Buildings_Features` WHERE `feature_id` IS NOT NULL
+
+mappingId	Green_Buildings_Features_green_building_id_fk
+target		ex:Green_Buildings_Features/{green_building_id}/{feature_id} p:hasGreen_Buildings ex:Green_Buildings/{green_building_id} .
+source		SELECT `green_building_id`, `feature_id` FROM `Green_Buildings_Features` WHERE `green_building_id` IS NOT NULL
+
+]]

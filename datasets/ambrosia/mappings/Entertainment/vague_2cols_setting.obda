@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Composers_base
+target		ex:Composers/{composerId} a :Composers ; p:composerId {composerId} ; p:name {name} ; p:birthYear {birthYear} .
+source		SELECT `composerId`, `name`, `birthYear` FROM `Composers`
+
+mappingId	Operas_base
+target		ex:Operas/{operaID} a :Operas ; p:operaID {operaID} ; p:title {title} ; p:Historical_Era {Historical_Era} ; p:location {Location} ; p:Duration {Duration} ; p:composerId {composerId} .
+source		SELECT `operaID`, `title`, `Historical_Era`, `Location`, `Duration`, `composerId` FROM `Operas`
+
+mappingId	Operas_composerId_fk
+target		ex:Operas/{operaID} p:hasComposers ex:Composers/{composerId} .
+source		SELECT `operaID`, `composerId` FROM `Operas` WHERE `composerId` IS NOT NULL
+
+mappingId	Venues_base
+target		ex:Venue/{venueID} a :Venue ; p:venueID {venueID} ; p:name {name} ; p:capacity {capacity} .
+source		SELECT `venueID`, `name`, `capacity` FROM `Venues`
+
+mappingId	Performances_base
+target		ex:Performance/{performanceId} a :Performance ; p:performanceId {performanceId} ; p:date {date} ; p:startTime {startTime} ; p:venueId {venueId} ; p:operaId {operaId} .
+source		SELECT `performanceId`, `date`, `startTime`, `venueId`, `operaId` FROM `Performances`
+
+mappingId	Performances_operaId_fk
+target		ex:Performance/{performanceId} p:hasOperas ex:Operas/{operaId} .
+source		SELECT `performanceId`, `operaId` FROM `Performances` WHERE `operaId` IS NOT NULL
+
+mappingId	Performances_venueId_fk
+target		ex:Performance/{performanceId} p:hasVenue ex:Venue/{venueId} .
+source		SELECT `performanceId`, `venueId` FROM `Performances` WHERE `venueId` IS NOT NULL
+
+mappingId	CastMembers_base
+target		ex:CastMember/{castMemberId} a :CastMember ; p:castMemberId {castMemberId} ; p:name {name} ; p:roleInPerformance {roleInPerformance} ; p:performanceId {performanceId} .
+source		SELECT `castMemberId`, `name`, `roleInPerformance`, `performanceId` FROM `CastMembers`
+
+mappingId	CastMembers_performanceId_fk
+target		ex:CastMember/{castMemberId} p:hasPerformance ex:Performance/{performanceId} .
+source		SELECT `castMemberId`, `performanceId` FROM `CastMembers` WHERE `performanceId` IS NOT NULL
+
+]]

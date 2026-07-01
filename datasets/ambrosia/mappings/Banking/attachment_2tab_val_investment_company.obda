@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	growth_equity_base
+target		ex:growth_equity/{id} a :growth_equity ; p:id {id} ; p:firm_name {firm_name} ; p:funding_amount {funding_amount} ; p:deal_date {deal_date} ; p:notes {notes} .
+source		SELECT `id`, `firm_name`, `funding_amount`, `deal_date`, `notes` FROM `growth_equity`
+
+mappingId	venture_capital_base
+target		ex:venture_capital/{id} a :venture_capital ; p:id {id} ; p:trust_name {trust_name} ; p:funding_amount {funding_amount} ; p:investment_period {investment_period} ; p:exit_strategy {exit_strategy} .
+source		SELECT `id`, `trust_name`, `funding_amount`, `investment_period`, `exit_strategy` FROM `venture_capital`
+
+mappingId	customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:company_name {company_name} ; p:address {address} ; p:contact_person_name {contact_person_name} ; p:phone_number {phone_number} ; p:email {email} ; p:equity_firm_id {equity_firm_id} ; p:venture_capital_id {venture_capital_id} .
+source		SELECT `customer_id`, `company_name`, `address`, `contact_person_name`, `phone_number`, `email`, `equity_firm_id`, `venture_capital_id` FROM `customers`
+
+mappingId	customers_venture_capital_id_fk
+target		ex:Customers/{customer_id} p:hasventure_capital ex:venture_capital/{venture_capital_id} .
+source		SELECT `customer_id`, `venture_capital_id` FROM `customers` WHERE `venture_capital_id` IS NOT NULL
+
+mappingId	customers_equity_firm_id_fk
+target		ex:Customers/{customer_id} p:hasgrowth_equity ex:growth_equity/{equity_firm_id} .
+source		SELECT `customer_id`, `equity_firm_id` FROM `customers` WHERE `equity_firm_id` IS NOT NULL
+
+mappingId	employees_base
+target		ex:Employees/{employee_id} a :Employees ; p:employee_id {employee_id} ; p:name {name} ; p:hire_date {hire_date} ; p:position {position} ; p:assigned_customer_id {assigned_customer_id} .
+source		SELECT `employee_id`, `name`, `hire_date`, `position`, `assigned_customer_id` FROM `employees`
+
+mappingId	employees_assigned_customer_id_fk
+target		ex:Employees/{employee_id} p:hasCustomers ex:Customers/{assigned_customer_id} .
+source		SELECT `employee_id`, `assigned_customer_id` FROM `employees` WHERE `assigned_customer_id` IS NOT NULL
+
+]]

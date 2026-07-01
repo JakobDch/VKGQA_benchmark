@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Directors_base
+target		ex:Directors/{ID} a :Directors ; p:ID {ID} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `ID`, `Name`, `BirthDate`, `Country` FROM `Directors`
+
+mappingId	Editors_base
+target		ex:Editors/{ID} a :Editors ; p:ID {ID} ; p:name {Name} ; p:BirthDate {BirthDate} ; p:Country {Country} .
+source		SELECT `ID`, `Name`, `BirthDate`, `Country` FROM `Editors`
+
+mappingId	Episodes_base
+target		ex:Episodes/{ID} a :Episodes ; p:ID {ID} ; p:Title {Title} ; p:DirectorID {DirectorID} ; p:EditorID {EditorID} ; p:ReleaseDate {ReleaseDate} .
+source		SELECT `ID`, `Title`, `DirectorID`, `EditorID`, `ReleaseDate` FROM `Episodes`
+
+mappingId	Episodes_EditorID_fk
+target		ex:Episodes/{ID} p:hasEditors ex:Editors/{EditorID} .
+source		SELECT `ID`, `EditorID` FROM `Episodes` WHERE `EditorID` IS NOT NULL
+
+mappingId	Episodes_DirectorID_fk
+target		ex:Episodes/{ID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `ID`, `DirectorID` FROM `Episodes` WHERE `DirectorID` IS NOT NULL
+
+mappingId	Movies_base
+target		ex:Movies/{ID} a :Movies ; p:ID {ID} ; p:Title {Title} ; p:Year {Year} ; p:Genre {Genre} ; p:DirectorID {DirectorID} ; p:EditorID {EditorID} .
+source		SELECT `ID`, `Title`, `Year`, `Genre`, `DirectorID`, `EditorID` FROM `Movies`
+
+mappingId	Movies_EditorID_fk
+target		ex:Movies/{ID} p:hasEditors ex:Editors/{EditorID} .
+source		SELECT `ID`, `EditorID` FROM `Movies` WHERE `EditorID` IS NOT NULL
+
+mappingId	Movies_DirectorID_fk
+target		ex:Movies/{ID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `ID`, `DirectorID` FROM `Movies` WHERE `DirectorID` IS NOT NULL
+
+]]

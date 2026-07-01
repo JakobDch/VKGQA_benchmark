@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:DateOfBirth {DateOfBirth} ; p:HigherEducationInstitution {HigherEducationInstitution} ; p:AcademicProgram {AcademicProgram} ; p:name {FullName} .
+source		SELECT `StudentID`, `DateOfBirth`, `HigherEducationInstitution`, `AcademicProgram`, `FullName` FROM `Students`
+
+mappingId	Professors_base
+target		ex:Professors/{ProfessorID} a :Professors ; p:ProfessorID {ProfessorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Department {Department} ; p:OfficeNumber {OfficeNumber} .
+source		SELECT `ProfessorID`, `FirstName`, `LastName`, `Department`, `OfficeNumber` FROM `Professors`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:Title {Title} ; p:Description {Description} ; p:Department {Department} ; p:Credit {Credit} .
+source		SELECT `CourseID`, `Title`, `Description`, `Department`, `Credit` FROM `Courses`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Grade {Grade} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+]]

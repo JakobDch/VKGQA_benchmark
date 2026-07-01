@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Projects_base
+target		ex:Projects/{projectID} a :Projects ; p:projectID {projectID} ; p:name {name} ; p:startDate {startDate} ; p:endDate {endDate} ; p:budget {budget} ; p:contractorID {contractorID} .
+source		SELECT `projectID`, `name`, `startDate`, `endDate`, `budget`, `contractorID` FROM `Projects`
+
+mappingId	Projects_contractorID_fk
+target		ex:Projects/{projectID} p:hasContractors ex:Contractors/{contractorID} .
+source		SELECT `projectID`, `contractorID` FROM `Projects` WHERE `contractorID` IS NOT NULL
+
+mappingId	Contractors_base
+target		ex:Contractors/{contractorID} a :Contractors ; p:contractorID {contractorID} ; p:name {companyName} ; p:address {address} ; p:phoneNumber {phoneNumber} ; p:employeeCount {employeeCount} .
+source		SELECT `contractorID`, `companyName`, `address`, `phoneNumber`, `employeeCount` FROM `Contractors`
+
+mappingId	Employees_base
+target		ex:Employees/{employeeID} a :Employees ; p:employeeID {employeeID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:hireDate {hireDate} ; p:salary {salary} ; p:contractorID {contractorID} .
+source		SELECT `employeeID`, `firstName`, `lastName`, `hireDate`, `salary`, `contractorID` FROM `Employees`
+
+mappingId	Employees_contractorID_fk
+target		ex:Employees/{employeeID} p:hasContractors ex:Contractors/{contractorID} .
+source		SELECT `employeeID`, `contractorID` FROM `Employees` WHERE `contractorID` IS NOT NULL
+
+mappingId	Materials_base
+target		ex:Materials/{materialID} a :Materials ; p:materialID {materialID} ; p:description {description} ; p:quantity {quantity} ; p:unitCost {unitCost} ; p:projectID {projectID} .
+source		SELECT `materialID`, `description`, `quantity`, `unitCost`, `projectID` FROM `Materials`
+
+mappingId	Materials_projectID_fk
+target		ex:Materials/{materialID} p:hasProjects ex:Projects/{projectID} .
+source		SELECT `materialID`, `projectID` FROM `Materials` WHERE `projectID` IS NOT NULL
+
+mappingId	Payments_base
+target		ex:Payments/{paymentID} a :Payments ; p:paymentID {paymentID} ; p:amount {amount} ; p:paymentDate {paymentDate} ; p:projectID {projectID} ; p:contractorID {contractorID} .
+source		SELECT `paymentID`, `amount`, `paymentDate`, `projectID`, `contractorID` FROM `Payments`
+
+mappingId	Payments_contractorID_fk
+target		ex:Payments/{paymentID} p:hasContractors ex:Contractors/{contractorID} .
+source		SELECT `paymentID`, `contractorID` FROM `Payments` WHERE `contractorID` IS NOT NULL
+
+mappingId	Payments_projectID_fk
+target		ex:Payments/{paymentID} p:hasProjects ex:Projects/{projectID} .
+source		SELECT `paymentID`, `projectID` FROM `Payments` WHERE `projectID` IS NOT NULL
+
+mappingId	Funding_base
+target		ex:Funding/{id} a :Funding ; p:id {id} ; p:governmentAgency {governmentAgency} ; p:privateDonors {privateDonors} ; p:publicPark {publicPark} ; p:fundsAmount {fundsAmount} ; p:projectID {projectID} .
+source		SELECT `id`, `governmentAgency`, `privateDonors`, `publicPark`, `fundsAmount`, `projectID` FROM `Funding`
+
+mappingId	Funding_projectID_fk
+target		ex:Funding/{id} p:hasProjects ex:Projects/{projectID} .
+source		SELECT `id`, `projectID` FROM `Funding` WHERE `projectID` IS NOT NULL
+
+]]

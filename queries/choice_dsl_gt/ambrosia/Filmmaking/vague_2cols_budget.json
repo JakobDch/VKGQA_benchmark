@@ -1,0 +1,97 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "vague_2cols_budget",
+  "schema": "amb_vague_2cols_budget",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "show film and production cost ordered by production cost in ascending order",
+      "qtype": "unambig",
+      "sql": "select title, Production_Cost from Films order by Production_Cost asc",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?production_cost WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Production_Cost ?production_cost .\n  ?films p:Production_Cost ?production_cost_o .\n}\nORDER BY ASC(?production_cost_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "List the award-winning films and their production and marketing costs.",
+      "qtype": "unambig",
+      "sql": "select Films.title, Films.Production_Cost, Marketing_Expense, count(*) Awards_Won from Films JOIN Awards on Awards.id = Films.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?t ?pc ?me (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Production_Cost ?pc ; p:Marketing_Expense ?me } GROUP BY ?f ?t ?pc ?me",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold join Awards.id=Films.id is buggy (should be filmId) + no GROUP BY; NL = per"
+    },
+    {
+      "qid": 2,
+      "question": "show film and marketing expense ordered by production cost in ascending order",
+      "qtype": "unambig",
+      "sql": "select title, Marketing_Expense from Films order by Marketing_Expense asc",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?marketing_expense WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Marketing_Expense ?marketing_expense .\n  ?films p:Marketing_Expense ?marketing_expense_o .\n}\nORDER BY ASC(?marketing_expense_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "List the award-winning films and their production costs.",
+      "qtype": "unambig",
+      "sql": "select Films.title, Films.Production_Cost, count(*) Awards_Won from Films JOIN Awards on Awards.id = Films.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?t ?pc (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Production_Cost ?pc } GROUP BY ?f ?t ?pc",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold join buggy + no GROUP BY; NL = per-film production cost + #awards"
+    },
+    {
+      "qid": 4,
+      "question": "List the award-winning films and their marketing costs.",
+      "qtype": "unambig",
+      "sql": "select Films.title, Films.Marketing_Expense, count(*) Awards_Won from Films JOIN Awards on Awards.id = Films.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nSELECT ?t ?me (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Marketing_Expense ?me } GROUP BY ?f ?t ?me",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): gold join buggy + no GROUP BY; NL = per-film marketing expense + #awards"
+    },
+    {
+      "qid": 5,
+      "question": "show film, production cost and marketing expense ordered by the production cost in ascending order and then by production cost in ascending order",
+      "qtype": "unambig",
+      "sql": "select title, Production_Cost, Marketing_Expense from Films order by Production_Cost, Marketing_Expense asc",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?production_cost ?marketing_expense WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Production_Cost ?production_cost .\n  ?films p:Marketing_Expense ?marketing_expense .\n  ?films p:Production_Cost ?production_cost_o .\n  ?films p:Marketing_Expense ?marketing_expense_o .\n}\nORDER BY ASC(?production_cost_o) ASC(?marketing_expense_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display a list of films, with the smallest budget first",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?production_cost WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Production_Cost ?production_cost .\n  ?films p:Production_Cost ?production_cost_o .\n}\nORDER BY ASC(?production_cost_o) }\n  component_2: { SELECT ?title ?marketing_expense WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Marketing_Expense ?marketing_expense .\n  ?films p:Marketing_Expense ?marketing_expense_o .\n}\nORDER BY ASC(?marketing_expense_o) }\n  full: { SELECT ?title ?production_cost ?marketing_expense WHERE {\n  ?films a :Films .\n  ?films p:title ?title .\n  ?films p:Production_Cost ?production_cost .\n  ?films p:Marketing_Expense ?marketing_expense .\n  ?films p:Production_Cost ?production_cost_o .\n  ?films p:Marketing_Expense ?marketing_expense_o .\n}\nORDER BY ASC(?production_cost_o) ASC(?marketing_expense_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Display films that have won awards, along with their budget",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nCHOICE vague {\n  full: { SELECT ?t ?pc ?me (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Production_Cost ?pc ; p:Marketing_Expense ?me } GROUP BY ?f ?t ?pc ?me }\n  component: { SELECT ?t ?pc (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Production_Cost ?pc } GROUP BY ?f ?t ?pc }\n  component_2: { SELECT ?t ?me (COUNT(?aw) AS ?n) WHERE { ?aw a :Awards ; p:hasFilms ?f . ?f a :Films ; p:title ?t ; p:Marketing_Expense ?me } GROUP BY ?f ?t ?me }\n}",
+      "verified": true
+    }
+  ]
+}

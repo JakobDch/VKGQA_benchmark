@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_educational_venues",
+  "schema": "amb_attachment_1tab_val_educational_venues",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all museums and also provide a list of planetariums with tickets priced at $15.",
+      "qtype": "unambig",
+      "sql": "SELECT Venue.name \nFROM Venue\nWHERE Venue.educationalVenue = \"Museum\" OR Venue.educationalVenue = \"Planetarium\" AND Venue.ticketPrice = \"$15\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?venue a :Venue .\n  ?venue p:name ?name .\n  ?venue p:educationalVenue ?educationalvenue_w .\n  ?venue p:educationalVenue ?educationalvenue_w2 .\n  ?venue p:ticketPrice ?ticketprice_w .\n  FILTER((STR(?educationalvenue_w) = \"Museum\" || (STR(?educationalvenue_w2) = \"Planetarium\" && STR(?ticketprice_w) = \"$15\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the museums and planetariums with tickets priced at $15.",
+      "qtype": "ambig",
+      "sql": "SELECT Venue.name \nFROM Venue\nWHERE (Venue.educationalVenue = \"Museum\" OR Venue.educationalVenue = \"Planetarium\") AND Venue.ticketPrice = \"$15\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?venue a :Venue .\n  ?venue p:name ?name .\n  ?venue p:educationalVenue ?educationalvenue_w .\n  ?venue p:educationalVenue ?educationalvenue_w2 .\n  ?venue p:ticketPrice ?ticketprice_w .\n  FILTER((((STR(?educationalvenue_w) = \"Museum\" || STR(?educationalvenue_w2) = \"Planetarium\")) && STR(?ticketprice_w) = \"$15\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the museums and planetariums with tickets priced at $15.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?venue a :Venue .\n  ?venue p:name ?name .\n  ?venue p:educationalVenue ?educationalvenue_w .\n  ?venue p:educationalVenue ?educationalvenue_w2 .\n  ?venue p:ticketPrice ?ticketprice_w .\n  FILTER((STR(?educationalvenue_w) = \"Museum\" || (STR(?educationalvenue_w2) = \"Planetarium\" && STR(?ticketprice_w) = \"$15\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?venue a :Venue .\n  ?venue p:name ?name .\n  ?venue p:educationalVenue ?educationalvenue_w .\n  ?venue p:educationalVenue ?educationalvenue_w2 .\n  ?venue p:ticketPrice ?ticketprice_w .\n  FILTER((((STR(?educationalvenue_w) = \"Museum\" || STR(?educationalvenue_w2) = \"Planetarium\")) && STR(?ticketprice_w) = \"$15\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

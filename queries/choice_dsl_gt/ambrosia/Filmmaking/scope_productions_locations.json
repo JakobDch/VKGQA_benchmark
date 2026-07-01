@@ -1,0 +1,108 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_productions_locations",
+  "schema": "amb_scope_productions_locations",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide the type of locations associated with each production.",
+      "qtype": "ambig",
+      "sql": "SELECT Locations.Type  from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID   GROUP BY Productions_Locations.LocationID HAVING COUNT(DISTINCT Productions_Locations.ProductionID) = (SELECT COUNT(*) FROM  Productions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Provide the type of locations associated with each production.",
+      "qtype": "ambig",
+      "sql": "select productions.title , locations.type from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "for each production, what are the corresponding location names?",
+      "qtype": "unambig",
+      "sql": "select productions.title , locations.name from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "which names and types of locations are associated with every production?",
+      "qtype": "ambig",
+      "sql": "SELECT Locations.Name, Locations.Type  from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID   GROUP BY Productions_Locations.LocationID HAVING COUNT(DISTINCT Productions_Locations.ProductionID) = (SELECT COUNT(*) FROM  Productions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "which names and types of locations are associated with every production?",
+      "qtype": "ambig",
+      "sql": "select productions.title , locations.name , locations.type from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?name ?type WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:name ?name .\n  ?locations p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "which locations are associated with each production?",
+      "qtype": "ambig",
+      "sql": "SELECT Locations.Name  from Productions_Locations join Locations on Productions_Locations.LocationID = Locations.LocationID join Productions on Productions_Locations.ProductionID = Productions.ProductionID   GROUP BY Productions_Locations.LocationID HAVING COUNT(DISTINCT Productions_Locations.ProductionID) = (SELECT COUNT(*) FROM  Productions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide the type of locations associated with each production.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:Type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which locations are associated with each production?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?name WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which names and types of locations are associated with every production?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?name ?type WHERE {\n  ?productions_locations a :Productions_Locations .\n  ?locations a :Locations .\n  ?productions_locations p:hasLocations ?locations .\n  ?productions a :Productions .\n  ?productions_locations p:hasProductions ?productions .\n  ?productions p:Title ?title .\n  ?locations p:name ?name .\n  ?locations p:Type ?type .\n} }\n  collective: { SELECT ?name ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasLocations ?child ; p:hasProductions ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Productions } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

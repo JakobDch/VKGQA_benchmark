@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Research_Papers_base
+target		ex:Research_Papers/{id} a :Research_Papers ; p:id {id} ; p:title {title} ; p:abstract {abstract} ; p:publication_date {publication_date} ; p:citation_style {citation_style} .
+source		SELECT `id`, `title`, `abstract`, `publication_date`, `citation_style` FROM `Research_Papers`
+
+mappingId	Review_Articles_base
+target		ex:Review_Articles/{id} a :Review_Articles ; p:id {id} ; p:title {title} ; p:reviewer {reviewer} ; p:publication_date {publication_date} ; p:citation_style {citation_style} .
+source		SELECT `id`, `title`, `reviewer`, `publication_date`, `citation_style` FROM `Review_Articles`
+
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Authors`
+
+mappingId	Papers_Authors_base
+target		ex:Papers_Authors/{paper_id}/{author_id} a :Papers_Authors ; p:paper_id {paper_id} ; p:author_id {author_id} .
+source		SELECT `paper_id`, `author_id` FROM `Papers_Authors`
+
+mappingId	Papers_Authors_author_id_fk
+target		ex:Papers_Authors/{paper_id}/{author_id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `paper_id`, `author_id` FROM `Papers_Authors` WHERE `author_id` IS NOT NULL
+
+mappingId	Papers_Authors_paper_id_fk
+target		ex:Papers_Authors/{paper_id}/{author_id} p:hasResearch_Papers ex:Research_Papers/{paper_id} .
+source		SELECT `paper_id`, `author_id` FROM `Papers_Authors` WHERE `paper_id` IS NOT NULL
+
+mappingId	Journals_base
+target		ex:Journals/{id} a :Journals ; p:id {id} ; p:journal_name {journal_name} ; p:ISSN {ISSN} .
+source		SELECT `id`, `journal_name`, `ISSN` FROM `Journals`
+
+mappingId	Publications_base
+target		ex:Publications/{id} a :Publications ; p:id {id} ; p:paper_id {paper_id} ; p:journal_id {journal_id} ; p:volume {volume} ; p:issue {issue} ; p:page_start {page_start} ; p:page_end {page_end} .
+source		SELECT `id`, `paper_id`, `journal_id`, `volume`, `issue`, `page_start`, `page_end` FROM `Publications`
+
+mappingId	Publications_journal_id_fk
+target		ex:Publications/{id} p:hasJournals ex:Journals/{journal_id} .
+source		SELECT `id`, `journal_id` FROM `Publications` WHERE `journal_id` IS NOT NULL
+
+mappingId	Publications_paper_id_fk
+target		ex:Publications/{id} p:hasResearch_Papers ex:Research_Papers/{paper_id} .
+source		SELECT `id`, `paper_id` FROM `Publications` WHERE `paper_id` IS NOT NULL
+
+]]

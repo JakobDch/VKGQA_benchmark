@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Wine_Regions_base
+target		ex:Wine_Regions/{RegionID} a :Wine_Regions ; p:RegionID {RegionID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `RegionID`, `Name`, `Description` FROM `Wine_Regions`
+
+mappingId	Winery_Tours_base
+target		ex:Winery_Tours/{TourID} a :Winery_Tours ; p:TourID {TourID} ; p:Type {Type} ; p:Duration {Duration} .
+source		SELECT `TourID`, `Type`, `Duration` FROM `Winery_Tours`
+
+mappingId	Wine_Regions_Winery_Tours_base
+target		ex:Wine_Regions_Winery_Tours/{_amb_rowid} a :Wine_Regions_Winery_Tours ; p:WineRegionID {WineRegionID} ; p:TourType {TourType} .
+source		SELECT `_amb_rowid`, `WineRegionID`, `TourType` FROM `Wine_Regions_Winery_Tours`
+
+mappingId	Wine_Regions_Winery_Tours_TourType_fk
+target		ex:Wine_Regions_Winery_Tours/{_amb_rowid} p:hasWinery_Tours ex:Winery_Tours/{TourType} .
+source		SELECT `_amb_rowid`, `TourType` FROM `Wine_Regions_Winery_Tours` WHERE `TourType` IS NOT NULL
+
+mappingId	Wine_Regions_Winery_Tours_WineRegionID_fk
+target		ex:Wine_Regions_Winery_Tours/{_amb_rowid} p:hasWine_Regions ex:Wine_Regions/{WineRegionID} .
+source		SELECT `_amb_rowid`, `WineRegionID` FROM `Wine_Regions_Winery_Tours` WHERE `WineRegionID` IS NOT NULL
+
+]]

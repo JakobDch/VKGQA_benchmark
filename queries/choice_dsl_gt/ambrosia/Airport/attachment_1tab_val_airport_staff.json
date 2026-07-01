@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_airport_staff",
+  "schema": "amb_attachment_1tab_val_airport_staff",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all English speaking airline employees who work as either gate agents or pilots.",
+      "qtype": "unambig",
+      "sql": "SELECT Staff.FullName\nFROM Staff JOIN Languages ON Staff.LanguageID = Languages.LanguageID\nWHERE (Staff.Position = 'Gate Agent' OR Staff.Position = 'Pilot') AND Languages.name = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?fullname .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:name ?name_w .\n  FILTER((((STR(?position_w) = \"Gate Agent\" || STR(?position_w2) = \"Pilot\")) && STR(?name_w) = \"English\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all gate agents and pilots that speak English.",
+      "qtype": "ambig",
+      "sql": "SELECT Staff.FullName\nFROM Staff JOIN Languages ON Staff.LanguageID = Languages.LanguageID\nWHERE Staff.Position = 'Gate Agent' OR Staff.Position = 'Pilot' AND Languages.name = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?fullname .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:name ?name_w .\n  FILTER((STR(?position_w) = \"Gate Agent\" || (STR(?position_w2) = \"Pilot\" && STR(?name_w) = \"English\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all gate agents and pilots that speak English.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?fullname .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:name ?name_w .\n  FILTER((((STR(?position_w) = \"Gate Agent\" || STR(?position_w2) = \"Pilot\")) && STR(?name_w) = \"English\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?fullname .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:name ?name_w .\n  FILTER((STR(?position_w) = \"Gate Agent\" || (STR(?position_w2) = \"Pilot\" && STR(?name_w) = \"English\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

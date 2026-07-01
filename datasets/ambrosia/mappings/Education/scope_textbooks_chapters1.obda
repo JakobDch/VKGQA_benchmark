@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Textbooks_base
+target		ex:Textbooks/{id} a :Textbooks ; p:id {id} ; p:title {title} ; p:author {author} ; p:publication_year {publication_year} .
+source		SELECT `id`, `title`, `author`, `publication_year` FROM `Textbooks`
+
+mappingId	Textbook_Chapters_base
+target		ex:Textbook_Chapters/{textbook_chapter_id} a :Textbook_Chapters ; p:textbook_chapter_id {textbook_chapter_id} ; p:textbook_id {textbook_id} ; p:chapter_id {chapter_id} ; p:content {content} ; p:created_at {created_at} ; p:updated_at {updated_at} .
+source		SELECT `textbook_chapter_id`, `textbook_id`, `chapter_id`, `content`, `created_at`, `updated_at` FROM `Textbook_Chapters`
+
+mappingId	Textbook_Chapters_chapter_id_fk
+target		ex:Textbook_Chapters/{textbook_chapter_id} p:hasChapters ex:Chapters/{chapter_id} .
+source		SELECT `textbook_chapter_id`, `chapter_id` FROM `Textbook_Chapters` WHERE `chapter_id` IS NOT NULL
+
+mappingId	Textbook_Chapters_textbook_id_fk
+target		ex:Textbook_Chapters/{textbook_chapter_id} p:hasTextbooks ex:Textbooks/{textbook_id} .
+source		SELECT `textbook_chapter_id`, `textbook_id` FROM `Textbook_Chapters` WHERE `textbook_id` IS NOT NULL
+
+mappingId	Chapters_base
+target		ex:Chapters/{chapter_id} a :Chapters ; p:chapter_id {chapter_id} ; p:chapter_name {chapter_name} .
+source		SELECT `chapter_id`, `chapter_name` FROM `Chapters`
+
+]]

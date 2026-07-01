@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Person_base
+target		ex:Person/{ID} a :Person ; p:ID {ID} ; p:name {Name} ; p:Age {Age} .
+source		SELECT `ID`, `Name`, `Age` FROM `Person`
+
+mappingId	Address_base
+target		ex:Address/{ID} a :Address ; p:ID {ID} ; p:Street {Street} ; p:City {City} ; p:PersonId {PersonId} .
+source		SELECT `ID`, `Street`, `City`, `PersonId` FROM `Address`
+
+mappingId	Address_PersonId_fk
+target		ex:Address/{ID} p:hasPerson ex:Person/{PersonId} .
+source		SELECT `ID`, `PersonId` FROM `Address` WHERE `PersonId` IS NOT NULL
+
+mappingId	EmploymentStatus_base
+target		ex:EmploymentStatus/{ID} a :EmploymentStatus ; p:ID {ID} ; p:Status {Status} ; p:PersonId {PersonId} .
+source		SELECT `ID`, `Status`, `PersonId` FROM `EmploymentStatus`
+
+mappingId	EmploymentStatus_PersonId_fk
+target		ex:EmploymentStatus/{ID} p:hasPerson ex:Person/{PersonId} .
+source		SELECT `ID`, `PersonId` FROM `EmploymentStatus` WHERE `PersonId` IS NOT NULL
+
+mappingId	IncomeLevel_base
+target		ex:IncomeLevel/{ID} a :IncomeLevel ; p:ID {ID} ; p:Level {Level} ; p:PersonId {PersonId} .
+source		SELECT `ID`, `Level`, `PersonId` FROM `IncomeLevel`
+
+mappingId	IncomeLevel_PersonId_fk
+target		ex:IncomeLevel/{ID} p:hasPerson ex:Person/{PersonId} .
+source		SELECT `ID`, `PersonId` FROM `IncomeLevel` WHERE `PersonId` IS NOT NULL
+
+mappingId	OwnerPercentage_base
+target		ex:OwnerPercentage/{Year} a :OwnerPercentage ; p:Year {Year} ; p:Percentage {Percentage} ; p:TotalPopulation {TotalPopulation} .
+source		SELECT `Year`, `Percentage`, `TotalPopulation` FROM `OwnerPercentage`
+
+mappingId	NumbersOfOwners_base
+target		ex:NumbersOfOwners/{_amb_rowid} a :NumbersOfOwners ; p:Year {Year} ; p:NumberOfHouseholds {NumberOfHouseholds} .
+source		SELECT `_amb_rowid`, `Year`, `NumberOfHouseholds` FROM `NumbersOfOwners`
+
+mappingId	NumbersOfOwners_Year_fk
+target		ex:NumbersOfOwners/{_amb_rowid} p:hasOwnerPercentage ex:OwnerPercentage/{Year} .
+source		SELECT `_amb_rowid`, `Year` FROM `NumbersOfOwners` WHERE `Year` IS NOT NULL
+
+]]

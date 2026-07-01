@@ -1,0 +1,91 @@
+@prefix : <http://ambrosia.example.org/airport#> .
+@prefix p: <http://ambrosia.example.org/airport/prop#> .
+@prefix ex: <http://ambrosia.example.org/airport/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_exclusive_areas_0_Terminal_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\" FROM \"Terminal\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{id}" ; rr:class :Terminals ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_1_Gate_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"terminal_id\", \"gate_number\" FROM \"Gate\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Gates/{id}" ; rr:class :Gates ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:terminal_id ; rr:objectMap [ rr:column "terminal_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:gate_number ; rr:objectMap [ rr:column "gate_number" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_2_Gate_terminal_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"terminal_id\" FROM \"Gate\" WHERE \"terminal_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Gates/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{terminal_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_3_AircraftType_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"typeName\" FROM \"AircraftType\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/AircraftType/{id}" ; rr:class :AircraftType ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:typeName ; rr:objectMap [ rr:column "typeName" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_4_Flight_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"flightNumber\", \"aircraftTypeId\", \"departureTime\", \"arrivalTime\", \"originTerminalId\", \"destinationTerminalId\" FROM \"Flight\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{flightNumber}" ; rr:class :Flights ] ;
+  rr:predicateObjectMap [ rr:predicate p:flightNumber ; rr:objectMap [ rr:column "flightNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:aircraftTypeId ; rr:objectMap [ rr:column "aircraftTypeId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:departureTime ; rr:objectMap [ rr:column "departureTime" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:arrivalTime ; rr:objectMap [ rr:column "arrivalTime" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:originTerminalId ; rr:objectMap [ rr:column "originTerminalId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:destinationTerminalId ; rr:objectMap [ rr:column "destinationTerminalId" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_5_Flight_destinationTerminalId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"flightNumber\", \"destinationTerminalId\" FROM \"Flight\" WHERE \"destinationTerminalId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{flightNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals_destinationTerminalId ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{destinationTerminalId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_6_Flight_originTerminalId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"flightNumber\", \"originTerminalId\" FROM \"Flight\" WHERE \"originTerminalId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{flightNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals_originTerminalId ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{originTerminalId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_7_Flight_aircraftTypeId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"flightNumber\", \"aircraftTypeId\" FROM \"Flight\" WHERE \"aircraftTypeId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Flights/{flightNumber}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAircraftType ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/AircraftType/{aircraftTypeId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_8_ExclusiveArea_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"areaId\", \"terminalId\", \"exclusiveAreaValue\" FROM \"ExclusiveArea\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/ExclusiveArea/{areaId}" ; rr:class :ExclusiveArea ] ;
+  rr:predicateObjectMap [ rr:predicate p:areaId ; rr:objectMap [ rr:column "areaId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:terminalId ; rr:objectMap [ rr:column "terminalId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:exclusiveAreaValue ; rr:objectMap [ rr:column "exclusiveAreaValue" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_9_ExclusiveArea_terminalId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"areaId\", \"terminalId\" FROM \"ExclusiveArea\" WHERE \"terminalId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/ExclusiveArea/{areaId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTerminals ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Terminals/{terminalId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_10_Amenity_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"amenityId\", \"amenityValue\" FROM \"Amenity\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/Amenity/{amenityId}" ; rr:class :Amenity ] ;
+  rr:predicateObjectMap [ rr:predicate p:amenityId ; rr:objectMap [ rr:column "amenityId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:amenityValue ; rr:objectMap [ rr:column "amenityValue" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_11_AreaAmenityMap_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"areaId\", \"amenityId\" FROM \"AreaAmenityMap\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/AreaAmenityMap/{_amb_rowid}" ; rr:class :AreaAmenityMap ] ;
+  rr:predicateObjectMap [ rr:predicate p:areaId ; rr:objectMap [ rr:column "areaId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:amenityId ; rr:objectMap [ rr:column "amenityId" ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_12_AreaAmenityMap_amenityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"amenityId\" FROM \"AreaAmenityMap\" WHERE \"amenityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/AreaAmenityMap/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAmenity ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/Amenity/{amenityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_exclusive_areas_13_AreaAmenityMap_areaId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"areaId\" FROM \"AreaAmenityMap\" WHERE \"areaId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/airport/id/AreaAmenityMap/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasExclusiveArea ; rr:objectMap [ rr:template "http://ambrosia.example.org/airport/id/ExclusiveArea/{areaId}" ; rr:termType rr:IRI ] ] .
+

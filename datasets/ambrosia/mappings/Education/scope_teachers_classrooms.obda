@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Teachers_base
+target		ex:Teachers/{teacher_id} a :Teachers ; p:teacher_id {teacher_id} ; p:name {full_name} .
+source		SELECT `teacher_id`, `full_name` FROM `Teachers`
+
+mappingId	Classrooms_base
+target		ex:Classrooms/{classroom_id} a :Classrooms ; p:classroom_id {classroom_id} ; p:room_number {room_number} ; p:capacity {capacity} .
+source		SELECT `classroom_id`, `room_number`, `capacity` FROM `Classrooms`
+
+mappingId	Subjects_base
+target		ex:Subjects/{subject_id} a :Subjects ; p:subject_id {subject_id} ; p:name {name} ; p:description {description} .
+source		SELECT `subject_id`, `name`, `description` FROM `Subjects`
+
+mappingId	Students_base
+target		ex:Students/{student_id} a :Students ; p:student_id {student_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:enrollment_date {enrollment_date} .
+source		SELECT `student_id`, `first_name`, `last_name`, `date_of_birth`, `enrollment_date` FROM `Students`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollment_id} a :Enrollments ; p:enrollment_id {enrollment_id} ; p:student_id {student_id} ; p:subject_id {subject_id} ; p:classroom_id {classroom_id} ; p:grade {grade} .
+source		SELECT `enrollment_id`, `student_id`, `subject_id`, `classroom_id`, `grade` FROM `Enrollments`
+
+mappingId	Enrollments_classroom_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasClassrooms ex:Classrooms/{classroom_id} .
+source		SELECT `enrollment_id`, `classroom_id` FROM `Enrollments` WHERE `classroom_id` IS NOT NULL
+
+mappingId	Enrollments_subject_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasSubjects ex:Subjects/{subject_id} .
+source		SELECT `enrollment_id`, `subject_id` FROM `Enrollments` WHERE `subject_id` IS NOT NULL
+
+mappingId	Enrollments_student_id_fk
+target		ex:Enrollments/{enrollment_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `enrollment_id`, `student_id` FROM `Enrollments` WHERE `student_id` IS NOT NULL
+
+mappingId	Teachers_Classrooms_base
+target		ex:Teachers_Classrooms/{teachers_classrooms_id} a :Teachers_Classrooms ; p:teachers_classrooms_id {teachers_classrooms_id} ; p:teacher_id {teacher_id} ; p:classroom_id {classroom_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `teachers_classrooms_id`, `teacher_id`, `classroom_id`, `start_date`, `end_date` FROM `Teachers_Classrooms`
+
+mappingId	Teachers_Classrooms_classroom_id_fk
+target		ex:Teachers_Classrooms/{teachers_classrooms_id} p:hasClassrooms ex:Classrooms/{classroom_id} .
+source		SELECT `teachers_classrooms_id`, `classroom_id` FROM `Teachers_Classrooms` WHERE `classroom_id` IS NOT NULL
+
+mappingId	Teachers_Classrooms_teacher_id_fk
+target		ex:Teachers_Classrooms/{teachers_classrooms_id} p:hasTeachers ex:Teachers/{teacher_id} .
+source		SELECT `teachers_classrooms_id`, `teacher_id` FROM `Teachers_Classrooms` WHERE `teacher_id` IS NOT NULL
+
+]]

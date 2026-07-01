@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Language_Schools_base
+target		ex:Language_Schools/{id} a :Language_Schools ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Language_Schools`
+
+mappingId	Course_Levels_base
+target		ex:Course_Levels/{id} a :Course_Levels ; p:id {id} ; p:level {level} .
+source		SELECT `id`, `level` FROM `Course_Levels`
+
+mappingId	Language_Schools_Course_Levels_base
+target		ex:Language_Schools_Course_Levels/{language_schools_id}/{course_levels_id} a :Language_Schools_Course_Levels ; p:language_schools_id {language_schools_id} ; p:course_levels_id {course_levels_id} .
+source		SELECT `language_schools_id`, `course_levels_id` FROM `Language_Schools_Course_Levels`
+
+mappingId	Language_Schools_Course_Levels_course_levels_id_fk
+target		ex:Language_Schools_Course_Levels/{language_schools_id}/{course_levels_id} p:hasCourse_Levels ex:Course_Levels/{course_levels_id} .
+source		SELECT `language_schools_id`, `course_levels_id` FROM `Language_Schools_Course_Levels` WHERE `course_levels_id` IS NOT NULL
+
+mappingId	Language_Schools_Course_Levels_language_schools_id_fk
+target		ex:Language_Schools_Course_Levels/{language_schools_id}/{course_levels_id} p:hasLanguage_Schools ex:Language_Schools/{language_schools_id} .
+source		SELECT `language_schools_id`, `course_levels_id` FROM `Language_Schools_Course_Levels` WHERE `language_schools_id` IS NOT NULL
+
+]]

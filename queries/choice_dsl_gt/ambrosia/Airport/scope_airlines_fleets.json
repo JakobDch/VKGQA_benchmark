@@ -1,0 +1,108 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_airlines_fleets",
+  "schema": "amb_scope_airlines_fleets",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every airline, provide the corresponding capacities of their fleets.",
+      "qtype": "unambig",
+      "sql": "select airlines.name , fleets.capacity from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?capacity WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "For every airline what are all of the fleet names and capacities?",
+      "qtype": "unambig",
+      "sql": "select airlines.name , fleets.fleetname , fleets.capacity from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?fleetname ?capacity WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:fleetName ?fleetname .\n  ?fleets p:capacity ?capacity .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the fleets that each airline owns.",
+      "qtype": "ambig",
+      "sql": "SELECT Fleets.fleetName  from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id   GROUP BY Airlines_Fleets.fleetId HAVING COUNT(DISTINCT Airlines_Fleets.airlineId) = (SELECT COUNT(*) FROM  Airlines)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fleetname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:fleetName ?fleetname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the fleets that each airline owns.",
+      "qtype": "ambig",
+      "sql": "select airlines.name , fleets.fleetname from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?fleetname WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:fleetName ?fleetname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What are all the fleet names and capacities shown for every airline?",
+      "qtype": "ambig",
+      "sql": "SELECT Fleets.fleetName, Fleets.capacity  from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id   GROUP BY Airlines_Fleets.fleetId HAVING COUNT(DISTINCT Airlines_Fleets.airlineId) = (SELECT COUNT(*) FROM  Airlines)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fleetname ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:fleetName ?fleetname .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the capacity that is common for all airlines' fleets.",
+      "qtype": "unambig",
+      "sql": "SELECT Fleets.capacity  from Airlines_Fleets join Fleets on Airlines_Fleets.fleetId = Fleets.id join Airlines on Airlines_Fleets.airlineId = Airlines.id   GROUP BY Airlines_Fleets.fleetId HAVING COUNT(DISTINCT Airlines_Fleets.airlineId) = (SELECT COUNT(*) FROM  Airlines)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What capacities do the fleets associated with each airline have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?capacity WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:capacity ?capacity .\n} }\n  collective: { SELECT ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are all the fleet names and capacities shown for every airline?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?fleetname ?capacity WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:fleetName ?fleetname .\n  ?fleets p:capacity ?capacity .\n} }\n  collective: { SELECT ?fleetname ?capacity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:fleetName ?fleetname .\n  ?child p:capacity ?capacity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the fleets that each airline owns.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?fleetname WHERE {\n  ?airlines_fleets a :Airlines_Fleets .\n  ?fleets a :Fleets .\n  ?airlines_fleets p:hasFleets ?fleets .\n  ?airlines a :Airlines .\n  ?airlines_fleets p:hasAirlines ?airlines .\n  ?airlines p:name ?name .\n  ?fleets p:fleetName ?fleetname .\n} }\n  collective: { SELECT ?fleetname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFleets ?child ; p:hasAirlines ?parent . } GROUP BY ?child }\n  ?child p:fleetName ?fleetname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Airlines } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

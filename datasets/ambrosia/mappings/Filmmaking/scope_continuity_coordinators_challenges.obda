@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Continuity_Coordinators_base
+target		ex:Continuity_Coordinators/{ID} a :Continuity_Coordinators ; p:ID {ID} ; p:name {Name} ; p:Experience {Experience} .
+source		SELECT `ID`, `Name`, `Experience` FROM `Continuity_Coordinators`
+
+mappingId	Challenges_base
+target		ex:Challenges/{ChallengeID} a :Challenges ; p:ChallengeID {ChallengeID} ; p:ChallengeName {ChallengeName} .
+source		SELECT `ChallengeID`, `ChallengeName` FROM `Challenges`
+
+mappingId	Continuity_Coordinators_Challenges_base
+target		ex:Continuity_Coordinators_Challenges/{_amb_rowid} a :Continuity_Coordinators_Challenges ; p:CoordinatorID {CoordinatorID} ; p:ChallengeID {ChallengeID} .
+source		SELECT `_amb_rowid`, `CoordinatorID`, `ChallengeID` FROM `Continuity_Coordinators_Challenges`
+
+mappingId	Continuity_Coordinators_Challenges_ChallengeID_fk
+target		ex:Continuity_Coordinators_Challenges/{_amb_rowid} p:hasChallenges ex:Challenges/{ChallengeID} .
+source		SELECT `_amb_rowid`, `ChallengeID` FROM `Continuity_Coordinators_Challenges` WHERE `ChallengeID` IS NOT NULL
+
+mappingId	Continuity_Coordinators_Challenges_CoordinatorID_fk
+target		ex:Continuity_Coordinators_Challenges/{_amb_rowid} p:hasContinuity_Coordinators ex:Continuity_Coordinators/{CoordinatorID} .
+source		SELECT `_amb_rowid`, `CoordinatorID` FROM `Continuity_Coordinators_Challenges` WHERE `CoordinatorID` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_financial_analysts_metrics",
+  "schema": "amb_scope_financial_analysts_metrics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the metrics corresponding to each financial analyst.",
+      "qtype": "ambig",
+      "sql": "SELECT Metrics.metric_name  from Financial_Analysts_Metrics join Metrics on Financial_Analysts_Metrics.metric_id = Metrics.metric_id join Financial_Analysts on Financial_Analysts_Metrics.financial_analyst_id = Financial_Analysts.id   GROUP BY Financial_Analysts_Metrics.metric_id HAVING COUNT(DISTINCT Financial_Analysts_Metrics.financial_analyst_id) = (SELECT COUNT(*) FROM  Financial_Analysts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?metric_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metric_id ?cg . ?child a :Metrics ; p:metric_id ?cg . ?l p:financial_analyst_id ?pg . ?parent a :Financial_Analysts ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Financial_Analysts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the metrics corresponding to each financial analyst.",
+      "qtype": "ambig",
+      "sql": "select financial_analysts.name , metrics.metric_name from Financial_Analysts_Metrics join Metrics on Financial_Analysts_Metrics.metric_id = Metrics.metric_id join Financial_Analysts on Financial_Analysts_Metrics.financial_analyst_id = Financial_Analysts.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?metric_name WHERE {\n  ?financial_analysts_metrics a :Financial_Analysts_Metrics .\n  ?metrics a :Metrics .\n  ?financial_analysts_metrics p:hasMetrics ?metrics .\n  ?financial_analysts a :Financial_Analysts .\n  ?financial_analysts_metrics p:hasFinancial_Analysts ?financial_analysts .\n  ?financial_analysts p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the metrics corresponding to each financial analyst.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?metric_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:metric_id ?cg . ?child a :Metrics ; p:metric_id ?cg . ?l p:financial_analyst_id ?pg . ?parent a :Financial_Analysts ; p:id ?pg . } GROUP BY ?child }\n  ?child p:metric_name ?metric_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Financial_Analysts } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?metric_name WHERE {\n  ?financial_analysts_metrics a :Financial_Analysts_Metrics .\n  ?metrics a :Metrics .\n  ?financial_analysts_metrics p:hasMetrics ?metrics .\n  ?financial_analysts a :Financial_Analysts .\n  ?financial_analysts_metrics p:hasFinancial_Analysts ?financial_analysts .\n  ?financial_analysts p:name ?name .\n  ?metrics p:metric_name ?metric_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

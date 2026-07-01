@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_offer",
+  "schema": "amb_vague_2cols_offer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the benefits with each job type?",
+      "qtype": "unambig",
+      "sql": "SELECT T.typeName, J.Benefits\nFROM JobTypes AS T\nLEFT JOIN Jobs AS J ON T.id = J.jobTypeId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?typename ?benefits WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Benefits ?benefits .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "show me the location, base pay range and benefits for all jobs",
+      "qtype": "unambig",
+      "sql": "SELECT L.locationName, J.Base_Pay_Range, Benefits\nFROM Locations AS L\nLEFT JOIN Jobs AS J ON L.id = J.locationId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?locationname ?base_pay_range ?benefits WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Base_Pay_Range ?base_pay_range .\n  ?j p:Benefits ?benefits .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "show me the location and benefits for all jobs",
+      "qtype": "unambig",
+      "sql": "SELECT L.locationName, J.Benefits\nFROM Locations AS L\nLEFT JOIN Jobs AS J ON L.id = J.locationId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?locationname ?benefits WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Benefits ?benefits .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Return the offer for each job type",
+      "qtype": "ambig",
+      "sql": "SELECT T.typeName, J.Base_Pay_Range\nFROM JobTypes AS T\nLEFT JOIN Jobs AS J ON T.id = J.jobTypeId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?typename ?base_pay_range WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Base_Pay_Range ?base_pay_range .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Return the offer for each job type",
+      "qtype": "ambig",
+      "sql": "SELECT T.typeName, J.Base_Pay_Range, Benefits\nFROM JobTypes AS T\nLEFT JOIN Jobs AS J ON T.id = J.jobTypeId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?typename ?base_pay_range ?benefits WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Base_Pay_Range ?base_pay_range .\n  ?j p:Benefits ?benefits .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "show me the location and base pay range for all jobs",
+      "qtype": "unambig",
+      "sql": "SELECT L.locationName, J.Base_Pay_Range\nFROM Locations AS L\nLEFT JOIN Jobs AS J ON L.id = J.locationId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?locationname ?base_pay_range WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Base_Pay_Range ?base_pay_range .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Return the offer for each job type",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?typename ?benefits WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Benefits ?benefits .\n} }\n  full: { SELECT ?typename ?base_pay_range ?benefits WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Base_Pay_Range ?base_pay_range .\n  ?j p:Benefits ?benefits .\n} }\n  component_2: { SELECT ?typename ?base_pay_range WHERE {\n  ?t a :Job_Type .\n  ?j a :Jobs .\n  ?j p:hasJobTypes ?t .\n  ?t p:typeName ?typename .\n  ?j p:Base_Pay_Range ?base_pay_range .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Find all offers by location",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?locationname ?base_pay_range ?benefits WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Base_Pay_Range ?base_pay_range .\n  ?j p:Benefits ?benefits .\n} }\n  component: { SELECT ?locationname ?benefits WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Benefits ?benefits .\n} }\n  component_2: { SELECT ?locationname ?base_pay_range WHERE {\n  ?l a :Locations .\n  ?j a :Jobs .\n  ?j p:hasLocations ?l .\n  ?l p:locationName ?locationname .\n  ?j p:Base_Pay_Range ?base_pay_range .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

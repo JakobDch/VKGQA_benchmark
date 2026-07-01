@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:address {address} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `date_of_birth`, `address` FROM `customers`
+
+mappingId	accounts_base
+target		ex:Accounts/{account_number} a :Accounts ; p:account_number {account_number} ; p:customer_id {customer_id} ; p:account_type {account_type} ; p:balance {balance} .
+source		SELECT `account_number`, `customer_id`, `account_type`, `balance` FROM `accounts`
+
+mappingId	accounts_customer_id_fk
+target		ex:Accounts/{account_number} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `account_number`, `customer_id` FROM `accounts` WHERE `customer_id` IS NOT NULL
+
+mappingId	transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:account_number {account_number} ; p:amount {amount} ; p:transaction_date {transaction_date} .
+source		SELECT `transaction_id`, `account_number`, `amount`, `transaction_date` FROM `transactions`
+
+mappingId	transactions_account_number_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts ex:Accounts/{account_number} .
+source		SELECT `transaction_id`, `account_number` FROM `transactions` WHERE `account_number` IS NOT NULL
+
+mappingId	minimum_requirements_base
+target		ex:minimum_requirements/{requirement_id} a :minimum_requirements ; p:requirement_id {requirement_id} ; p:account_number {account_number} ; p:minimum_balance {minimum_balance} ; p:minimum_age {minimum_age} ; p:money_market_accounts {money_market_accounts} .
+source		SELECT `requirement_id`, `account_number`, `minimum_balance`, `minimum_age`, `money_market_accounts` FROM `minimum_requirements`
+
+mappingId	minimum_requirements_account_number_fk
+target		ex:minimum_requirements/{requirement_id} p:hasAccounts ex:Accounts/{account_number} .
+source		SELECT `requirement_id`, `account_number` FROM `minimum_requirements` WHERE `account_number` IS NOT NULL
+
+mappingId	loans_base
+target		ex:Loans/{loan_id} a :Loans ; p:loan_id {loan_id} ; p:customer_id {customer_id} ; p:loan_amount {loan_amount} ; p:interest_rate {interest_rate} ; p:repayment_term {repayment_term} ; p:start_date {start_date} .
+source		SELECT `loan_id`, `customer_id`, `loan_amount`, `interest_rate`, `repayment_term`, `start_date` FROM `loans`
+
+mappingId	loans_customer_id_fk
+target		ex:Loans/{loan_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `loan_id`, `customer_id` FROM `loans` WHERE `customer_id` IS NOT NULL
+
+mappingId	overdraft_facilities_base
+target		ex:overdraft_facilities/{facility_id} a :overdraft_facilities ; p:facility_id {facility_id} ; p:customer_id {customer_id} ; p:limit_amount {limit_amount} ; p:interest_rate {interest_rate} .
+source		SELECT `facility_id`, `customer_id`, `limit_amount`, `interest_rate` FROM `overdraft_facilities`
+
+mappingId	overdraft_facilities_customer_id_fk
+target		ex:overdraft_facilities/{facility_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `facility_id`, `customer_id` FROM `overdraft_facilities` WHERE `customer_id` IS NOT NULL
+
+]]

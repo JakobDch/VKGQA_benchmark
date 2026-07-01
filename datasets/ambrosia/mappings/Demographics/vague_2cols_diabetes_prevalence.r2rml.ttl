@@ -1,0 +1,80 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_diabetes_prevalence_0_Countries_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CountryID\", \"Name\", \"Population\" FROM \"Countries\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{CountryID}" ; rr:class :Countries ] ;
+  rr:predicateObjectMap [ rr:predicate p:CountryID ; rr:objectMap [ rr:column "CountryID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Population ; rr:objectMap [ rr:column "Population" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_1_States_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StateID\", \"CountryID\", \"Name\" FROM \"States\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/States/{StateID}" ; rr:class :States ] ;
+  rr:predicateObjectMap [ rr:predicate p:StateID ; rr:objectMap [ rr:column "StateID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CountryID ; rr:objectMap [ rr:column "CountryID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_2_States_CountryID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StateID\", \"CountryID\" FROM \"States\" WHERE \"CountryID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/States/{StateID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{CountryID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_3_Cities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityID\", \"StateID\", \"Name\" FROM \"Cities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ; rr:class :Cities ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityID ; rr:objectMap [ rr:column "CityID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StateID ; rr:objectMap [ rr:column "StateID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_4_Cities_StateID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityID\", \"StateID\" FROM \"Cities\" WHERE \"StateID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasStates ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/States/{StateID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_5_People_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PersonID\", \"Age\", \"Sex\", \"Occupation\", \"ResidenceCityId\" FROM \"People\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Person/{PersonID}" ; rr:class :Person ] ;
+  rr:predicateObjectMap [ rr:predicate p:PersonID ; rr:objectMap [ rr:column "PersonID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Age ; rr:objectMap [ rr:column "Age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Sex ; rr:objectMap [ rr:column "Sex" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Occupation ; rr:objectMap [ rr:column "Occupation" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ResidenceCityId ; rr:objectMap [ rr:column "ResidenceCityId" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_6_People_ResidenceCityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PersonID\", \"ResidenceCityId\" FROM \"People\" WHERE \"ResidenceCityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Person/{PersonID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{ResidenceCityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_7_DiabetesData_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DataID\", \"Percentage_Of_Diabetics\", \"Diabetic_Count\", \"Population\", \"CityId\" FROM \"DiabetesData\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/DiabetesData/{DataID}" ; rr:class :DiabetesData ] ;
+  rr:predicateObjectMap [ rr:predicate p:DataID ; rr:objectMap [ rr:column "DataID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Percentage_Of_Diabetics ; rr:objectMap [ rr:column "Percentage_Of_Diabetics" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Diabetic_Count ; rr:objectMap [ rr:column "Diabetic_Count" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Population ; rr:objectMap [ rr:column "Population" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityId ; rr:objectMap [ rr:column "CityId" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_8_DiabetesData_CityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DataID\", \"CityId\" FROM \"DiabetesData\" WHERE \"CityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/DiabetesData/{DataID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_9_HealthCareFacilities_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FacilityID\", \"Name\", \"Address\", \"PhoneNumber\", \"CityId\" FROM \"HealthCareFacilities\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/HealthCareFacilities/{FacilityID}" ; rr:class :HealthCareFacilities ] ;
+  rr:predicateObjectMap [ rr:predicate p:FacilityID ; rr:objectMap [ rr:column "FacilityID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Address ; rr:objectMap [ rr:column "Address" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PhoneNumber ; rr:objectMap [ rr:column "PhoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityId ; rr:objectMap [ rr:column "CityId" ] ] .
+
+<#tm_vague_2cols_diabetes_prevalence_10_HealthCareFacilities_CityId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"FacilityID\", \"CityId\" FROM \"HealthCareFacilities\" WHERE \"CityId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/HealthCareFacilities/{FacilityID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityId}" ; rr:termType rr:IRI ] ] .
+

@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:email {Email} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth`, `Email` FROM `Students`
+
+mappingId	Programs_base
+target		ex:Programs/{ProgramID} a :Programs ; p:ProgramID {ProgramID} ; p:name {Name} ; p:Description {Description} ; p:Amount_Per_Semester {Amount_Per_Semester} ; p:Annual_Cost {Annual_Cost} ; p:ProgramType {ProgramType} .
+source		SELECT `ProgramID`, `Name`, `Description`, `Amount_Per_Semester`, `Annual_Cost`, `ProgramType` FROM `Programs`
+
+mappingId	Departments_base
+target		ex:Departments/{DepartmentID} a :Departments ; p:DepartmentID {DepartmentID} ; p:name {Name} ; p:Description {Description} ; p:location {Location} .
+source		SELECT `DepartmentID`, `Name`, `Description`, `Location` FROM `Departments`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Semester {Semester} ; p:Grade {Grade} .
+source		SELECT `EnrollmentID`, `StudentID`, `CourseID`, `Semester`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Instructors_base
+target		ex:Instructors/{InstructorID} a :Instructors ; p:InstructorID {InstructorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:HireDate {HireDate} ; p:email {Email} .
+source		SELECT `InstructorID`, `FirstName`, `LastName`, `HireDate`, `Email` FROM `Instructors`
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:Title {Title} ; p:Description {Description} ; p:DepartmentID {DepartmentID} ; p:Credits {Credits} ; p:InstructorID {InstructorID} .
+source		SELECT `CourseID`, `Title`, `Description`, `DepartmentID`, `Credits`, `InstructorID` FROM `Courses`
+
+mappingId	Courses_InstructorID_fk
+target		ex:Courses/{CourseID} p:hasInstructors ex:Instructors/{InstructorID} .
+source		SELECT `CourseID`, `InstructorID` FROM `Courses` WHERE `InstructorID` IS NOT NULL
+
+mappingId	Courses_DepartmentID_fk
+target		ex:Courses/{CourseID} p:hasDepartments ex:Departments/{DepartmentID} .
+source		SELECT `CourseID`, `DepartmentID` FROM `Courses` WHERE `DepartmentID` IS NOT NULL
+
+]]

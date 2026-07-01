@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:Title {Title} ; p:Author {Author} ; p:Publication_Date {Publication_Date} ; p:Content {Content} .
+source		SELECT `id`, `Title`, `Author`, `Publication_Date`, `Content` FROM `Articles`
+
+mappingId	Sources_base
+target		ex:Sources/{id} a :Sources ; p:id {id} ; p:name {Name} ; p:Type {Type} ; p:Contact_Info {Contact_Info} .
+source		SELECT `id`, `Name`, `Type`, `Contact_Info` FROM `Sources`
+
+mappingId	Keywords_base
+target		ex:Keywords/{id} a :Keywords ; p:id {id} ; p:Word {Word} .
+source		SELECT `id`, `Word` FROM `Keywords`
+
+mappingId	Article_Keywords_base
+target		ex:Article_Keywords/{_amb_rowid} a :Article_Keywords ; p:article_id {article_id} ; p:keyword_id {keyword_id} .
+source		SELECT `_amb_rowid`, `article_id`, `keyword_id` FROM `Article_Keywords`
+
+mappingId	Article_Keywords_keyword_id_fk
+target		ex:Article_Keywords/{_amb_rowid} p:hasKeywords ex:Keywords/{keyword_id} .
+source		SELECT `_amb_rowid`, `keyword_id` FROM `Article_Keywords` WHERE `keyword_id` IS NOT NULL
+
+mappingId	Article_Keywords_article_id_fk
+target		ex:Article_Keywords/{_amb_rowid} p:hasArticles ex:Articles/{article_id} .
+source		SELECT `_amb_rowid`, `article_id` FROM `Article_Keywords` WHERE `article_id` IS NOT NULL
+
+mappingId	Interviews_base
+target		ex:Interviews/{id} a :Interviews ; p:id {id} ; p:Title {Title} ; p:Date {Date} ; p:location {Location} ; p:Interviewer {Interviewer} ; p:Participant_Type {Participant_Type} .
+source		SELECT `id`, `Title`, `Date`, `Location`, `Interviewer`, `Participant_Type` FROM `Interviews`
+
+mappingId	Press_Conferences_base
+target		ex:Press_Conferences/{id} a :Press_Conferences ; p:id {id} ; p:Title {Title} ; p:Date {Date} ; p:location {Location} ; p:Participant_Type {Participant_Type} ; p:Speaker1 {Speaker1} ; p:Speaker2 {Speaker2} .
+source		SELECT `id`, `Title`, `Date`, `Location`, `Participant_Type`, `Speaker1`, `Speaker2` FROM `Press_Conferences`
+
+]]

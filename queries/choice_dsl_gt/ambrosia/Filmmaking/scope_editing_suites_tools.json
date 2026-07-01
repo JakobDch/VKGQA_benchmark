@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_editing_suites_tools",
+  "schema": "amb_scope_editing_suites_tools",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each editing suite, show what type of tools they provide",
+      "qtype": "unambig",
+      "sql": "select editing_suites.name , tools.type from Editing_Suites_Tools join Tools on Editing_Suites_Tools.ToolID = Tools.ToolID join Editing_Suites on Editing_Suites_Tools.SuiteID = Editing_Suites.SuiteID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?editing_suites_tools a :Editing_Suites_Tools .\n  ?tools a :Tools .\n  ?editing_suites_tools p:hasTools ?tools .\n  ?editing_suites a :Editing_Suites .\n  ?editing_suites_tools p:hasEditing_Suites ?editing_suites .\n  ?editing_suites p:name ?name .\n  ?tools p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the type of tool common to all editing suites.",
+      "qtype": "unambig",
+      "sql": "SELECT Tools.Type  from Editing_Suites_Tools join Tools on Editing_Suites_Tools.ToolID = Tools.ToolID join Editing_Suites on Editing_Suites_Tools.SuiteID = Editing_Suites.SuiteID   GROUP BY Editing_Suites_Tools.ToolID HAVING COUNT(DISTINCT Editing_Suites_Tools.SuiteID) = (SELECT COUNT(*) FROM  Editing_Suites)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasEditing_Suites ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editing_Suites } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the type of tool for each editing suite?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?editing_suites_tools a :Editing_Suites_Tools .\n  ?tools a :Tools .\n  ?editing_suites_tools p:hasTools ?tools .\n  ?editing_suites a :Editing_Suites .\n  ?editing_suites_tools p:hasEditing_Suites ?editing_suites .\n  ?editing_suites p:name ?name .\n  ?tools p:Type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTools ?child ; p:hasEditing_Suites ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editing_Suites } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

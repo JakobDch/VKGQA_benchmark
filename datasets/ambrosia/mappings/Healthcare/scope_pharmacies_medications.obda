@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Pharmacies_base
+target		ex:Pharmacies/{id} a :Pharmacies ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Pharmacies`
+
+mappingId	Medications_base
+target		ex:Medications/{medication_id} a :Medications ; p:medication_id {medication_id} ; p:type {type} ; p:dosage {dosage} ; p:side_effects {side_effects} .
+source		SELECT `medication_id`, `type`, `dosage`, `side_effects` FROM `Medications`
+
+mappingId	Prescriptions_base
+target		ex:Prescriptions/{prescription_id} a :Prescriptions ; p:prescription_id {prescription_id} ; p:pharmacy_id {pharmacy_id} ; p:patient_name {patient_name} ; p:date {date} .
+source		SELECT `prescription_id`, `pharmacy_id`, `patient_name`, `date` FROM `Prescriptions`
+
+mappingId	Prescriptions_pharmacy_id_fk
+target		ex:Prescriptions/{prescription_id} p:hasPharmacies ex:Pharmacies/{pharmacy_id} .
+source		SELECT `prescription_id`, `pharmacy_id` FROM `Prescriptions` WHERE `pharmacy_id` IS NOT NULL
+
+mappingId	Pharmacy_Prescriptions_base
+target		ex:Pharmacy_Prescriptions/{pharmacy_prescription_id} a :Pharmacy_Prescriptions ; p:pharmacy_prescription_id {pharmacy_prescription_id} ; p:pharmacy_id {pharmacy_id} ; p:prescription_id {prescription_id} ; p:quantity {quantity} .
+source		SELECT `pharmacy_prescription_id`, `pharmacy_id`, `prescription_id`, `quantity` FROM `Pharmacy_Prescriptions`
+
+mappingId	Pharmacy_Prescriptions_prescription_id_fk
+target		ex:Pharmacy_Prescriptions/{pharmacy_prescription_id} p:hasPrescriptions ex:Prescriptions/{prescription_id} .
+source		SELECT `pharmacy_prescription_id`, `prescription_id` FROM `Pharmacy_Prescriptions` WHERE `prescription_id` IS NOT NULL
+
+mappingId	Pharmacy_Prescriptions_pharmacy_id_fk
+target		ex:Pharmacy_Prescriptions/{pharmacy_prescription_id} p:hasPharmacies ex:Pharmacies/{pharmacy_id} .
+source		SELECT `pharmacy_prescription_id`, `pharmacy_id` FROM `Pharmacy_Prescriptions` WHERE `pharmacy_id` IS NOT NULL
+
+mappingId	Pharmacy_Medications_base
+target		ex:Pharmacy_Medications/{pharmacy_medication_id} a :Pharmacy_Medications ; p:pharmacy_medication_id {pharmacy_medication_id} ; p:pharmacy_id {pharmacy_id} ; p:medication_id {medication_id} .
+source		SELECT `pharmacy_medication_id`, `pharmacy_id`, `medication_id` FROM `Pharmacy_Medications`
+
+mappingId	Pharmacy_Medications_medication_id_fk
+target		ex:Pharmacy_Medications/{pharmacy_medication_id} p:hasMedications ex:Medications/{medication_id} .
+source		SELECT `pharmacy_medication_id`, `medication_id` FROM `Pharmacy_Medications` WHERE `medication_id` IS NOT NULL
+
+mappingId	Pharmacy_Medications_pharmacy_id_fk
+target		ex:Pharmacy_Medications/{pharmacy_medication_id} p:hasPharmacies ex:Pharmacies/{pharmacy_id} .
+source		SELECT `pharmacy_medication_id`, `pharmacy_id` FROM `Pharmacy_Medications` WHERE `pharmacy_id` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_deadline",
+  "schema": "amb_vague_2tabs_deadline",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show me the description of each assignment along with its deadline?",
+      "qtype": "ambig",
+      "sql": "SELECT a.Description, d.Year, d.Month, d.Day\nFROM Assignments a\nJOIN Date d ON a.Due_Date = d.Date_ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?year ?month ?day WHERE {\n  ?a a :Assignments .\n  ?d a :Date .\n  ?a p:hasDate ?d .\n  ?a p:description ?description .\n  ?d p:year ?year .\n  ?d p:month ?month .\n  ?d p:day ?day .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Can you show me the description of each assignment along with its deadline?",
+      "qtype": "ambig",
+      "sql": "SELECT a.Description, d.hour, d.minute, d.second \nFROM Assignments a\nJOIN Time d ON a.Due_time = d.time_ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?hour ?minute ?second WHERE {\n  ?a a :Assignments .\n  ?d a :Time .\n  ?a p:hasTime ?d .\n  ?a p:description ?description .\n  ?d p:hour ?hour .\n  ?d p:minute ?minute .\n  ?d p:second ?second .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Can you show me the description of each assignment along with its deadline?",
+      "qtype": "ambig",
+      "sql": "SELECT a.Description, d.Year, d.Month, d.Day,  t.hour, t.minute, t.second\nFROM Assignments a\nJOIN Date d ON a.Due_Date = d.Date_ID\nJOIN Time t ON a.Due_time = t.time_ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?year ?month ?day ?hour ?minute ?second WHERE {\n  ?a a :Assignments .\n  ?d a :Date .\n  ?a p:hasDate ?d .\n  ?t a :Time .\n  ?a p:hasTime ?t .\n  ?a p:description ?description .\n  ?d p:year ?year .\n  ?d p:month ?month .\n  ?d p:day ?day .\n  ?t p:hour ?hour .\n  ?t p:minute ?minute .\n  ?t p:second ?second .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Can you show me the description of each assignment along with its deadline?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?description ?year ?month ?day WHERE {\n  ?a a :Assignments .\n  ?d a :Date .\n  ?a p:hasDate ?d .\n  ?a p:description ?description .\n  ?d p:year ?year .\n  ?d p:month ?month .\n  ?d p:day ?day .\n} }\n  full: { SELECT ?description ?year ?month ?day ?hour ?minute ?second WHERE {\n  ?a a :Assignments .\n  ?d a :Date .\n  ?a p:hasDate ?d .\n  ?t a :Time .\n  ?a p:hasTime ?t .\n  ?a p:description ?description .\n  ?d p:year ?year .\n  ?d p:month ?month .\n  ?d p:day ?day .\n  ?t p:hour ?hour .\n  ?t p:minute ?minute .\n  ?t p:second ?second .\n} }\n  component_2: { SELECT ?description ?hour ?minute ?second WHERE {\n  ?a a :Assignments .\n  ?d a :Time .\n  ?a p:hasTime ?d .\n  ?a p:description ?description .\n  ?d p:hour ?hour .\n  ?d p:minute ?minute .\n  ?d p:second ?second .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

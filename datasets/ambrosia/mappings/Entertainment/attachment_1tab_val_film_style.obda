@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Film_base
+target		ex:Film/{ID} a :Film ; p:ID {ID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} ; p:Runtime {Runtime} ; p:Film_Style {Film_Style} ; p:Director {Director} .
+source		SELECT `ID`, `Title`, `ReleaseYear`, `Runtime`, `Film_Style`, `Director` FROM `Film`
+
+mappingId	Actor_base
+target		ex:Actor/{ID} a :Actor ; p:ID {ID} ; p:name {Name} ; p:Birthdate {Birthdate} ; p:Nationality {Nationality} ; p:Gender {Gender} .
+source		SELECT `ID`, `Name`, `Birthdate`, `Nationality`, `Gender` FROM `Actor`
+
+mappingId	Character_base
+target		ex:Character/{ID} a :Character ; p:ID {ID} ; p:name {Name} ; p:Description {Description} ; p:Role {Role} ; p:Film_ID {Film_ID} .
+source		SELECT `ID`, `Name`, `Description`, `Role`, `Film_ID` FROM `Character`
+
+mappingId	Character_Film_ID_fk
+target		ex:Character/{ID} p:hasFilm ex:Film/{Film_ID} .
+source		SELECT `ID`, `Film_ID` FROM `Character` WHERE `Film_ID` IS NOT NULL
+
+mappingId	Character_Role_fk
+target		ex:Character/{ID} p:hasActor ex:Actor/{Role} .
+source		SELECT `ID`, `Role` FROM `Character` WHERE `Role` IS NOT NULL
+
+mappingId	ProductionCompany_base
+target		ex:ProductionCompany/{ID} a :ProductionCompany ; p:ID {ID} ; p:CompanyName {CompanyName} ; p:Address {Address} ; p:ContactEmail {ContactEmail} ; p:Founded {Founded} .
+source		SELECT `ID`, `CompanyName`, `Address`, `ContactEmail`, `Founded` FROM `ProductionCompany`
+
+mappingId	Producer_base
+target		ex:Producer/{ID} a :Producer ; p:ID {ID} ; p:name {Name} ; p:Birthdate {Birthdate} ; p:Nationality {Nationality} ; p:ProductionCompany_ID {ProductionCompany_ID} .
+source		SELECT `ID`, `Name`, `Birthdate`, `Nationality`, `ProductionCompany_ID` FROM `Producer`
+
+mappingId	Producer_ProductionCompany_ID_fk
+target		ex:Producer/{ID} p:hasProductionCompany ex:ProductionCompany/{ProductionCompany_ID} .
+source		SELECT `ID`, `ProductionCompany_ID` FROM `Producer` WHERE `ProductionCompany_ID` IS NOT NULL
+
+mappingId	FilmCrew_base
+target		ex:FilmCrew/{ID} a :FilmCrew ; p:ID {ID} ; p:Position {Position} ; p:Department {Department} ; p:Film_ID {Film_ID} .
+source		SELECT `ID`, `Position`, `Department`, `Film_ID` FROM `FilmCrew`
+
+mappingId	FilmCrew_Film_ID_fk
+target		ex:FilmCrew/{ID} p:hasFilm ex:Film/{Film_ID} .
+source		SELECT `ID`, `Film_ID` FROM `FilmCrew` WHERE `Film_ID` IS NOT NULL
+
+]]

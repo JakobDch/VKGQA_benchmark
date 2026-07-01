@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Country_base
+target		ex:Countries/{CountryID} a :Countries ; p:CountryID {CountryID} ; p:name {Name} .
+source		SELECT `CountryID`, `Name` FROM `Country`
+
+mappingId	City_base
+target		ex:Cities/{CityID} a :Cities ; p:CityID {CityID} ; p:name {Name} ; p:Population {Population} ; p:ForeignKeyID {ForeignKeyID} .
+source		SELECT `CityID`, `Name`, `Population`, `ForeignKeyID` FROM `City`
+
+mappingId	City_ForeignKeyID_fk
+target		ex:Cities/{CityID} p:hasCountries ex:Countries/{ForeignKeyID} .
+source		SELECT `CityID`, `ForeignKeyID` FROM `City` WHERE `ForeignKeyID` IS NOT NULL
+
+mappingId	EthnicGroup_base
+target		ex:EthnicGroup/{EthnicGroupID} a :EthnicGroup ; p:EthnicGroupID {EthnicGroupID} ; p:GroupName {GroupName} ; p:Population {Population} ; p:CityID {CityID} .
+source		SELECT `EthnicGroupID`, `GroupName`, `Population`, `CityID` FROM `EthnicGroup`
+
+mappingId	EthnicGroup_CityID_fk
+target		ex:EthnicGroup/{EthnicGroupID} p:hasCities ex:Cities/{CityID} .
+source		SELECT `EthnicGroupID`, `CityID` FROM `EthnicGroup` WHERE `CityID` IS NOT NULL
+
+mappingId	AgeGroup_base
+target		ex:AgeGroup/{AgeGroupID} a :AgeGroup ; p:AgeGroupID {AgeGroupID} ; p:LowerBound {LowerBound} ; p:UpperBound {UpperBound} ; p:TotalPopulation {TotalPopulation} ; p:CityID {CityID} .
+source		SELECT `AgeGroupID`, `LowerBound`, `UpperBound`, `TotalPopulation`, `CityID` FROM `AgeGroup`
+
+mappingId	AgeGroup_CityID_fk
+target		ex:AgeGroup/{AgeGroupID} p:hasCities ex:Cities/{CityID} .
+source		SELECT `AgeGroupID`, `CityID` FROM `AgeGroup` WHERE `CityID` IS NOT NULL
+
+mappingId	EducationLevel_base
+target		ex:EducationLevel/{EducationLevelID} a :EducationLevel ; p:EducationLevelID {EducationLevelID} ; p:LevelName {LevelName} ; p:CityID {CityID} ; p:TotalEnrolled {TotalEnrolled} ; p:TotalGraduated {TotalGraduated} .
+source		SELECT `EducationLevelID`, `LevelName`, `CityID`, `TotalEnrolled`, `TotalGraduated` FROM `EducationLevel`
+
+mappingId	EducationLevel_CityID_fk
+target		ex:EducationLevel/{EducationLevelID} p:hasCities ex:Cities/{CityID} .
+source		SELECT `EducationLevelID`, `CityID` FROM `EducationLevel` WHERE `CityID` IS NOT NULL
+
+mappingId	Language_base
+target		ex:Language/{LanguageID} a :Language ; p:LanguageID {LanguageID} ; p:name {Name} ; p:Number_of_speakers {Number_of_speakers} ; p:Percentage_of_population {Percentage_of_population} .
+source		SELECT `LanguageID`, `Name`, `Number_of_speakers`, `Percentage_of_population` FROM `Language`
+
+]]

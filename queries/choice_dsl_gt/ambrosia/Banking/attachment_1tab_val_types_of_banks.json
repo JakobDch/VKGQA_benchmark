@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_types_of_banks",
+  "schema": "amb_attachment_1tab_val_types_of_banks",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both central and commercial banks based in the UK.",
+      "qtype": "unambig",
+      "sql": "SELECT Banks.Name \nFROM Banks\nWHERE (Banks.types_of_bank = \"Central Bank\" OR Banks.types_of_bank = \"Commercial Bank\") AND Banks.country = \"UK\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?banks a :Banks .\n  ?banks p:name ?name .\n  ?banks p:types_of_bank ?types_of_bank_w .\n  ?banks p:types_of_bank ?types_of_bank_w2 .\n  ?banks p:country ?country_w .\n  FILTER((((STR(?types_of_bank_w) = \"Central Bank\" || STR(?types_of_bank_w2) = \"Commercial Bank\")) && STR(?country_w) = \"UK\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all central banks and commercial banks in the UK.",
+      "qtype": "ambig",
+      "sql": "SELECT Banks.Name \nFROM Banks\nWHERE Banks.types_of_bank = \"Central Bank\" OR Banks.types_of_bank = \"Commercial Bank\" AND Banks.country = \"UK\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?banks a :Banks .\n  ?banks p:name ?name .\n  ?banks p:types_of_bank ?types_of_bank_w .\n  ?banks p:types_of_bank ?types_of_bank_w2 .\n  ?banks p:country ?country_w .\n  FILTER((STR(?types_of_bank_w) = \"Central Bank\" || (STR(?types_of_bank_w2) = \"Commercial Bank\" && STR(?country_w) = \"UK\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all central banks and commercial banks in the UK.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?banks a :Banks .\n  ?banks p:name ?name .\n  ?banks p:types_of_bank ?types_of_bank_w .\n  ?banks p:types_of_bank ?types_of_bank_w2 .\n  ?banks p:country ?country_w .\n  FILTER((((STR(?types_of_bank_w) = \"Central Bank\" || STR(?types_of_bank_w2) = \"Commercial Bank\")) && STR(?country_w) = \"UK\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?banks a :Banks .\n  ?banks p:name ?name .\n  ?banks p:types_of_bank ?types_of_bank_w .\n  ?banks p:types_of_bank ?types_of_bank_w2 .\n  ?banks p:country ?country_w .\n  FILTER((STR(?types_of_bank_w) = \"Central Bank\" || (STR(?types_of_bank_w2) = \"Commercial Bank\" && STR(?country_w) = \"UK\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

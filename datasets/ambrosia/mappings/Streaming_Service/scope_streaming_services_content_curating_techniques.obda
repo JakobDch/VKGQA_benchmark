@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Content_Curating_Techniques_base
+target		ex:Content_Curating_Techniques/{id} a :Content_Curating_Techniques ; p:id {id} ; p:technique {technique} .
+source		SELECT `id`, `technique` FROM `Content_Curating_Techniques`
+
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{service_id} a :Streaming_Services ; p:service_id {service_id} ; p:name {name} ; p:genre {genre} .
+source		SELECT `service_id`, `name`, `genre` FROM `Streaming_Services`
+
+mappingId	Users_base
+target		ex:Users/{user_id} a :Users ; p:user_id {user_id} ; p:username {username} ; p:password {password} .
+source		SELECT `user_id`, `username`, `password` FROM `Users`
+
+mappingId	Views_base
+target		ex:Views/{view_id} a :Views ; p:view_id {view_id} ; p:user_id {user_id} ; p:streamed_service_id {streamed_service_id} ; p:viewed_date {viewed_date} .
+source		SELECT `view_id`, `user_id`, `streamed_service_id`, `viewed_date` FROM `Views`
+
+mappingId	Views_streamed_service_id_fk
+target		ex:Views/{view_id} p:hasStreaming_Services ex:Streaming_Services/{streamed_service_id} .
+source		SELECT `view_id`, `streamed_service_id` FROM `Views` WHERE `streamed_service_id` IS NOT NULL
+
+mappingId	Views_user_id_fk
+target		ex:Views/{view_id} p:hasUsers ex:Users/{user_id} .
+source		SELECT `view_id`, `user_id` FROM `Views` WHERE `user_id` IS NOT NULL
+
+mappingId	Streaming_Services_Content_Curating_Techniques_base
+target		ex:Streaming_Services_Content_Curating_Techniques/{streaming_services_content_curating_technique_id} a :Streaming_Services_Content_Curating_Techniques ; p:streaming_services_content_curating_technique_id {streaming_services_content_curating_technique_id} ; p:streaming_service_id {streaming_service_id} ; p:content_curating_technique_id {content_curating_technique_id} .
+source		SELECT `streaming_services_content_curating_technique_id`, `streaming_service_id`, `content_curating_technique_id` FROM `Streaming_Services_Content_Curating_Techniques`
+
+mappingId	Streaming_Services_Content_Curating_Techniques_content_curating_technique_id_fk
+target		ex:Streaming_Services_Content_Curating_Techniques/{streaming_services_content_curating_technique_id} p:hasContent_Curating_Techniques ex:Content_Curating_Techniques/{content_curating_technique_id} .
+source		SELECT `streaming_services_content_curating_technique_id`, `content_curating_technique_id` FROM `Streaming_Services_Content_Curating_Techniques` WHERE `content_curating_technique_id` IS NOT NULL
+
+mappingId	Streaming_Services_Content_Curating_Techniques_streaming_service_id_fk
+target		ex:Streaming_Services_Content_Curating_Techniques/{streaming_services_content_curating_technique_id} p:hasStreaming_Services ex:Streaming_Services/{streaming_service_id} .
+source		SELECT `streaming_services_content_curating_technique_id`, `streaming_service_id` FROM `Streaming_Services_Content_Curating_Techniques` WHERE `streaming_service_id` IS NOT NULL
+
+]]

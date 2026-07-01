@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_retirement_savings",
+  "schema": "amb_attachment_1tab_val_retirement_savings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all pension plan clients and brokerage account clients getting a return of 5%.",
+      "qtype": "ambig",
+      "sql": "SELECT Clients.FullName\nFROM Pensions JOIN Clients ON Clients.ClientID = Pensions.ClientID\nWHERE (Pensions.Retirement_Savings = \"Pension Plan\" OR Pensions.Retirement_Savings = \"Brokerage Account\") AND Pensions.Rate_of_return = \"5%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?pensions a :Pensions .\n  ?clients a :Clients .\n  ?pensions p:hasClients ?clients .\n  ?clients p:name ?fullname .\n  ?pensions p:Retirement_Savings ?retirement_savings_w .\n  ?pensions p:Retirement_Savings ?retirement_savings_w2 .\n  ?pensions p:Rate_of_return ?rate_of_return_w .\n  FILTER((((STR(?retirement_savings_w) = \"Pension Plan\" || STR(?retirement_savings_w2) = \"Brokerage Account\")) && STR(?rate_of_return_w) = \"5%\"))\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all pension plan clients and brokerage account clients getting a return of 5%.",
+      "qtype": "ambig",
+      "sql": "SELECT Clients.FullName\nFROM Pensions JOIN Clients ON Clients.ClientID = Pensions.ClientID\nWHERE Pensions.Retirement_Savings = \"Pension Plan\" OR Pensions.Retirement_Savings = \"Brokerage Account\" AND Pensions.Rate_of_return = \"5%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?pensions a :Pensions .\n  ?clients a :Clients .\n  ?pensions p:hasClients ?clients .\n  ?clients p:name ?fullname .\n  ?pensions p:Retirement_Savings ?retirement_savings_w .\n  ?pensions p:Retirement_Savings ?retirement_savings_w2 .\n  ?pensions p:Rate_of_return ?rate_of_return_w .\n  FILTER((STR(?retirement_savings_w) = \"Pension Plan\" || (STR(?retirement_savings_w2) = \"Brokerage Account\" && STR(?rate_of_return_w) = \"5%\")))\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all pension plan clients and brokerage account clients getting a return of 5%.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?pensions a :Pensions .\n  ?clients a :Clients .\n  ?pensions p:hasClients ?clients .\n  ?clients p:name ?fullname .\n  ?pensions p:Retirement_Savings ?retirement_savings_w .\n  ?pensions p:Retirement_Savings ?retirement_savings_w2 .\n  ?pensions p:Rate_of_return ?rate_of_return_w .\n  FILTER((((STR(?retirement_savings_w) = \"Pension Plan\" || STR(?retirement_savings_w2) = \"Brokerage Account\")) && STR(?rate_of_return_w) = \"5%\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?pensions a :Pensions .\n  ?clients a :Clients .\n  ?pensions p:hasClients ?clients .\n  ?clients p:name ?fullname .\n  ?pensions p:Retirement_Savings ?retirement_savings_w .\n  ?pensions p:Retirement_Savings ?retirement_savings_w2 .\n  ?pensions p:Rate_of_return ?rate_of_return_w .\n  FILTER((STR(?retirement_savings_w) = \"Pension Plan\" || (STR(?retirement_savings_w2) = \"Brokerage Account\" && STR(?rate_of_return_w) = \"5%\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

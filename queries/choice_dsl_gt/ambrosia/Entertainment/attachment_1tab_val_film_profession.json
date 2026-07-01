@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_film_profession",
+  "schema": "amb_attachment_1tab_val_film_profession",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which directors have won an Oscar award and which producers have won the same award?",
+      "qtype": "unambig",
+      "sql": "SELECT Production.FullName\nFROM Production\nWHERE (Production.Film_Profession = \"Director\" OR Production.Film_Profession = \"Producer\") AND Production.Award = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?production a :Production .\n  ?production p:name ?fullname .\n  ?production p:Film_Profession ?film_profession_w .\n  ?production p:Film_Profession ?film_profession_w2 .\n  ?production p:Award ?award_w .\n  FILTER((((STR(?film_profession_w) = \"Director\" || STR(?film_profession_w2) = \"Producer\")) && STR(?award_w) = \"Oscar\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show directors and producers who have won Oscar.",
+      "qtype": "ambig",
+      "sql": "SELECT Production.FullName\nFROM Production\nWHERE Production.Film_Profession = \"Director\" OR Production.Film_Profession = \"Producer\" AND Production.Award = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?production a :Production .\n  ?production p:name ?fullname .\n  ?production p:Film_Profession ?film_profession_w .\n  ?production p:Film_Profession ?film_profession_w2 .\n  ?production p:Award ?award_w .\n  FILTER((STR(?film_profession_w) = \"Director\" || (STR(?film_profession_w2) = \"Producer\" && STR(?award_w) = \"Oscar\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show directors and producers who have won Oscar.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?production a :Production .\n  ?production p:name ?fullname .\n  ?production p:Film_Profession ?film_profession_w .\n  ?production p:Film_Profession ?film_profession_w2 .\n  ?production p:Award ?award_w .\n  FILTER((((STR(?film_profession_w) = \"Director\" || STR(?film_profession_w2) = \"Producer\")) && STR(?award_w) = \"Oscar\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?production a :Production .\n  ?production p:name ?fullname .\n  ?production p:Film_Profession ?film_profession_w .\n  ?production p:Film_Profession ?film_profession_w2 .\n  ?production p:Award ?award_w .\n  FILTER((STR(?film_profession_w) = \"Director\" || (STR(?film_profession_w2) = \"Producer\" && STR(?award_w) = \"Oscar\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

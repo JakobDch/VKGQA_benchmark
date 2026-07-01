@@ -1,0 +1,108 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_homeowners_associations_rules",
+  "schema": "amb_scope_homeowners_associations_rules",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each homeowners association, provide the corresponding descriptions of rules.",
+      "qtype": "unambig",
+      "sql": "select homeowners_associations.name , rules.description from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "For each homeowners association, show the rules they have.",
+      "qtype": "unambig",
+      "sql": "select homeowners_associations.name , rules.rulename from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?rulename WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:rulename ?rulename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What descriptions are associated with each homeowners association?",
+      "qtype": "ambig",
+      "sql": "SELECT Rules.description  from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id   GROUP BY Homeowners_association_rules.ruleid HAVING COUNT(DISTINCT Homeowners_association_rules.associd) = (SELECT COUNT(*) FROM  Homeowners_associations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the rule name and description that is in common for all homeowners associations.",
+      "qtype": "unambig",
+      "sql": "SELECT Rules.rulename, Rules.description  from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id   GROUP BY Homeowners_association_rules.ruleid HAVING COUNT(DISTINCT Homeowners_association_rules.associd) = (SELECT COUNT(*) FROM  Homeowners_associations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rulename ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:rulename ?rulename .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the rule name and description corresponding to each homeowners association respectively.",
+      "qtype": "unambig",
+      "sql": "select homeowners_associations.name , rules.rulename , rules.description from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?rulename ?description WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:rulename ?rulename .\n  ?rules p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the rules that each homeowners association has.",
+      "qtype": "ambig",
+      "sql": "SELECT Rules.rulename  from Homeowners_association_rules join Rules on Homeowners_association_rules.ruleid = Rules.ruleid join Homeowners_associations on Homeowners_association_rules.associd = Homeowners_associations.id   GROUP BY Homeowners_association_rules.ruleid HAVING COUNT(DISTINCT Homeowners_association_rules.associd) = (SELECT COUNT(*) FROM  Homeowners_associations)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rulename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:rulename ?rulename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What descriptions are associated with each homeowners association?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the rules that each homeowners association has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?rulename WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:rulename ?rulename .\n} }\n  collective: { SELECT ?rulename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:rulename ?rulename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the rule name and description for each homeowners association.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?rulename ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRules ?child ; p:hasHomeowners_associations ?parent . } GROUP BY ?child }\n  ?child p:rulename ?rulename .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Homeowners_associations } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?rulename ?description WHERE {\n  ?homeowners_association_rules a :Homeowners_association_rules .\n  ?rules a :Rules .\n  ?homeowners_association_rules p:hasRules ?rules .\n  ?homeowners_associations a :Homeowners_associations .\n  ?homeowners_association_rules p:hasHomeowners_associations ?homeowners_associations .\n  ?homeowners_associations p:name ?name .\n  ?rules p:rulename ?rulename .\n  ?rules p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_lab_positions",
+  "schema": "amb_attachment_1tab_val_lab_positions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the salary range of female research scientists and laboratory technicians of the same gender?",
+      "qtype": "unambig",
+      "sql": "SELECT LabPosition.salaryRange \nFROM LabPosition\nWHERE (LabPosition.labPosition = \"Research Scientist\" OR LabPosition.labPosition = \"Laboratory Technician\") AND LabPosition.gender = \"Female\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salaryrange WHERE {\n  ?labposition a :LabPosition .\n  ?labposition p:salaryRange ?salaryrange .\n  ?labposition p:labPosition ?labposition_w .\n  ?labposition p:labPosition ?labposition_w2 .\n  ?labposition p:gender ?gender_w .\n  FILTER((((STR(?labposition_w) = \"Research Scientist\" || STR(?labposition_w2) = \"Laboratory Technician\")) && STR(?gender_w) = \"Female\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What is the salary range for female laboratory technicians and research scientists?",
+      "qtype": "ambig",
+      "sql": "SELECT LabPosition.salaryRange \nFROM LabPosition\nWHERE LabPosition.labPosition = \"Research Scientist\" OR LabPosition.labPosition = \"Laboratory Technician\" AND LabPosition.gender = \"Female\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?salaryrange WHERE {\n  ?labposition a :LabPosition .\n  ?labposition p:salaryRange ?salaryrange .\n  ?labposition p:labPosition ?labposition_w .\n  ?labposition p:labPosition ?labposition_w2 .\n  ?labposition p:gender ?gender_w .\n  FILTER((STR(?labposition_w) = \"Research Scientist\" || (STR(?labposition_w2) = \"Laboratory Technician\" && STR(?gender_w) = \"Female\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the salary range for female laboratory technicians and research scientists?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?salaryrange WHERE {\n  ?labposition a :LabPosition .\n  ?labposition p:salaryRange ?salaryrange .\n  ?labposition p:labPosition ?labposition_w .\n  ?labposition p:labPosition ?labposition_w2 .\n  ?labposition p:gender ?gender_w .\n  FILTER((((STR(?labposition_w) = \"Research Scientist\" || STR(?labposition_w2) = \"Laboratory Technician\")) && STR(?gender_w) = \"Female\"))\n} }\n  low: { SELECT ?salaryrange WHERE {\n  ?labposition a :LabPosition .\n  ?labposition p:salaryRange ?salaryrange .\n  ?labposition p:labPosition ?labposition_w .\n  ?labposition p:labPosition ?labposition_w2 .\n  ?labposition p:gender ?gender_w .\n  FILTER((STR(?labposition_w) = \"Research Scientist\" || (STR(?labposition_w2) = \"Laboratory Technician\" && STR(?gender_w) = \"Female\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:BirthDate {BirthDate} ; p:Field_Of_Study {Field_Of_Study} ; p:Degree_Program {Degree_Program} ; p:email {Email} ; p:name {fullname} .
+source		SELECT `ID`, `BirthDate`, `Field_Of_Study`, `Degree_Program`, `Email`, `fullname` FROM `Students`
+
+mappingId	Enrolments_base
+target		ex:Enrollments/{ID} a :Enrollments ; p:ID {ID} ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Semester {Semester} .
+source		SELECT `ID`, `StudentID`, `CourseID`, `Semester` FROM `Enrolments`
+
+mappingId	Enrolments_CourseID_fk
+target		ex:Enrollments/{ID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `ID`, `CourseID` FROM `Enrolments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Enrolments_StudentID_fk
+target		ex:Enrollments/{ID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `ID`, `StudentID` FROM `Enrolments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{ID} a :Courses ; p:ID {ID} ; p:Title {Title} ; p:Description {Description} ; p:Credit {Credit} .
+source		SELECT `ID`, `Title`, `Description`, `Credit` FROM `Courses`
+
+mappingId	Marks_base
+target		ex:Grades/{ID} a :Grades ; p:ID {ID} ; p:EnrollmentID {EnrollmentID} ; p:Grade {Grade} ; p:DateAssigned {DateAssigned} .
+source		SELECT `ID`, `EnrollmentID`, `Grade`, `DateAssigned` FROM `Marks`
+
+mappingId	Marks_EnrollmentID_fk
+target		ex:Grades/{ID} p:hasEnrollments ex:Enrollments/{EnrollmentID} .
+source		SELECT `ID`, `EnrollmentID` FROM `Marks` WHERE `EnrollmentID` IS NOT NULL
+
+]]

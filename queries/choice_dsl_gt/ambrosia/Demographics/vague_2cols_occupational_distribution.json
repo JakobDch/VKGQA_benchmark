@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2cols_occupational_distribution",
+  "schema": "amb_vague_2cols_occupational_distribution",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the percentage distribution of annual revenue per occupational category?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    Primary_Industry,\n    SUM(AnnualRevenue) AS RevenuePerOccupationalDistribution,\n    (SUM(AnnualRevenue) * 100.0) / SUM(SUM(AnnualRevenue)) OVER () AS PercentageOfTotalAnnualRevenue\nFROM \n    Industries\nGROUP BY \n    Primary_Industry;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?pi ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?pi (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Primary_Industry ?pi ; p:AnnualRevenue ?r } GROUP BY ?pi } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): window SUM(SUM) OVER () = % of total; per-industry SUM + grand-total subquery"
+    },
+    {
+      "qid": 1,
+      "question": "What is the percentage distribution of annual revenue per occupational category?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    Most_Common_Job,\n    SUM(AnnualRevenue) AS RevenuePerOccupationalDistribution,\n    (SUM(AnnualRevenue) * 100.0) / SUM(SUM(AnnualRevenue)) OVER () AS PercentageOfTotalAnnualRevenue\nFROM \n    Industries\nGROUP BY \n    Most_Common_Job;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mcj ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?mcj (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?r } GROUP BY ?mcj } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): window % of total, grouped by Most_Common_Job"
+    },
+    {
+      "qid": 2,
+      "question": "What is the percentage distribution of annual revenue per occupational category?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    Primary_Industry, Most_Common_Job,\n    SUM(AnnualRevenue) AS RevenuePerOccupationalDistribution,\n    (SUM(AnnualRevenue) * 100.0) / SUM(SUM(AnnualRevenue)) OVER () AS PercentageOfTotalAnnualRevenue\nFROM \n    Industries\nGROUP BY \n    Primary_Industry, Most_Common_Job;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?pi ?mcj ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?pi ?mcj (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Primary_Industry ?pi ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?r } GROUP BY ?pi ?mcj } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): window % of total, grouped by Primary_Industry + Most_Common_Job"
+    },
+    {
+      "qid": 3,
+      "question": "What is the average annual revenue per employee for each unique combination of industry ID and occupational distribution?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    IndustryID, \n    Primary_Industry,\n    SUM(AnnualRevenue) / SUM(NumberOfEmployees) AS AnnualRevenuePerEmployee\nFROM \n    Industries\nGROUP BY \n    IndustryID, Primary_Industry;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?iid ?pi ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Primary_Industry ?pi ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?pi",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What is the average annual revenue per employee for each unique combination of industry ID and occupational distribution?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    IndustryID, \n    Most_Common_Job,\n    SUM(AnnualRevenue) / SUM(NumberOfEmployees) AS AnnualRevenuePerEmployee\nFROM \n    Industries\nGROUP BY \n    IndustryID, Most_Common_Job;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?iid ?mcj ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?mcj",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "What is the average annual revenue per employee for each unique combination of industry ID and occupational distribution?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    IndustryID, \n    Primary_Industry, Most_Common_Job,\n    SUM(AnnualRevenue) / SUM(NumberOfEmployees) AS AnnualRevenuePerEmployee\nFROM \n    Industries\nGROUP BY \n    IndustryID, Primary_Industry, Most_Common_Job;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nSELECT ?iid ?pi ?mcj ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Primary_Industry ?pi ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?pi ?mcj",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the average annual revenue per employee for each unique combination of industry ID and occupational distribution?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        4,
+        5,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nCHOICE vague {\n  component: { SELECT ?iid ?mcj ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?mcj }\n  full: { SELECT ?iid ?pi ?mcj ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Primary_Industry ?pi ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?pi ?mcj }\n  component_2: { SELECT ?iid ?pi ((SUM(?rev)/SUM(?emp)) AS ?rpe) WHERE {\n  ?x a :Industries ; p:IndustryID ?iid ; p:Primary_Industry ?pi ; p:AnnualRevenue ?rev ; p:NumberOfEmployees ?emp .\n} GROUP BY ?iid ?pi }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the percentage distribution of annual revenue per occupational category?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?mcj ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?mcj (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?r } GROUP BY ?mcj } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } } }\n  component_2: { SELECT ?pi ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?pi (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Primary_Industry ?pi ; p:AnnualRevenue ?r } GROUP BY ?pi } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } } }\n  full: { SELECT ?pi ?mcj ?rev ((?rev*100.0)/?total AS ?pct) WHERE { { SELECT ?pi ?mcj (SUM(xsd:double(?r)) AS ?rev) WHERE { ?x a :Industries ; p:Primary_Industry ?pi ; p:Most_Common_Job ?mcj ; p:AnnualRevenue ?r } GROUP BY ?pi ?mcj } { SELECT (SUM(xsd:double(?r2)) AS ?total) WHERE { ?y a :Industries ; p:AnnualRevenue ?r2 } } } }\n}",
+      "verified": true
+    }
+  ]
+}

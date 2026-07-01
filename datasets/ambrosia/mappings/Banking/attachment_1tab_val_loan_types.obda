@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{customerID} a :Customers ; p:customerID {customerID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} ; p:address {address} .
+source		SELECT `customerID`, `firstName`, `lastName`, `dateOfBirth`, `address` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{accountID} a :Accounts ; p:accountID {accountID} ; p:customerID {customerID} ; p:balance {balance} .
+source		SELECT `accountID`, `customerID`, `balance` FROM `Accounts`
+
+mappingId	Accounts_customerID_fk
+target		ex:Accounts/{accountID} p:hasCustomers ex:Customers/{customerID} .
+source		SELECT `accountID`, `customerID` FROM `Accounts` WHERE `customerID` IS NOT NULL
+
+mappingId	Mortgages_base
+target		ex:Mortgages/{mortgageID} a :Mortgages ; p:mortgageID {mortgageID} ; p:accountID {accountID} ; p:loanType {loanType} ; p:principalAmount {principalAmount} ; p:annualInterestRate {annualInterestRate} ; p:repaymentPeriod {repaymentPeriod} .
+source		SELECT `mortgageID`, `accountID`, `loanType`, `principalAmount`, `annualInterestRate`, `repaymentPeriod` FROM `Mortgages`
+
+mappingId	Mortgages_accountID_fk
+target		ex:Mortgages/{mortgageID} p:hasAccounts ex:Accounts/{accountID} .
+source		SELECT `mortgageID`, `accountID` FROM `Mortgages` WHERE `accountID` IS NOT NULL
+
+mappingId	SavingsAccounts_base
+target		ex:SavingsAccounts/{savingsID} a :SavingsAccounts ; p:savingsID {savingsID} ; p:accountID {accountID} ; p:interestRate {interestRate} .
+source		SELECT `savingsID`, `accountID`, `interestRate` FROM `SavingsAccounts`
+
+mappingId	SavingsAccounts_accountID_fk
+target		ex:SavingsAccounts/{savingsID} p:hasAccounts ex:Accounts/{accountID} .
+source		SELECT `savingsID`, `accountID` FROM `SavingsAccounts` WHERE `accountID` IS NOT NULL
+
+]]

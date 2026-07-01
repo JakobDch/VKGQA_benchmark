@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountID} a :Accounts ; p:AccountID {AccountID} ; p:CustomerID {CustomerID} ; p:Balance {Balance} .
+source		SELECT `AccountID`, `CustomerID`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountID`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Loans_base
+target		ex:Loans/{LoanID} a :Loans ; p:LoanID {LoanID} ; p:CustomerID {CustomerID} ; p:Amount {Amount} ; p:InterestRate {InterestRate} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `LoanID`, `CustomerID`, `Amount`, `InterestRate`, `StartDate`, `EndDate` FROM `Loans`
+
+mappingId	Loans_CustomerID_fk
+target		ex:Loans/{LoanID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `LoanID`, `CustomerID` FROM `Loans` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountID {AccountID} ; p:Date {Date} ; p:Type {Type} ; p:Amount {Amount} .
+source		SELECT `TransactionID`, `AccountID`, `Date`, `Type`, `Amount` FROM `Transactions`
+
+mappingId	Transactions_AccountID_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountID} .
+source		SELECT `TransactionID`, `AccountID` FROM `Transactions` WHERE `AccountID` IS NOT NULL
+
+mappingId	Banks_base
+target		ex:Banks/{BankID} a :Banks ; p:BankID {BankID} ; p:Number_of_Branches {Number_of_Branches} ; p:Countries_served {Countries_served} ; p:Bank {Bank} .
+source		SELECT `BankID`, `Number_of_Branches`, `Countries_served`, `Bank` FROM `Banks`
+
+mappingId	Employees_base
+target		ex:Employees/{EmployeeID} a :Employees ; p:EmployeeID {EmployeeID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Position {Position} ; p:Salary {Salary} ; p:BankID {BankID} .
+source		SELECT `EmployeeID`, `FirstName`, `LastName`, `Position`, `Salary`, `BankID` FROM `Employees`
+
+mappingId	Employees_BankID_fk
+target		ex:Employees/{EmployeeID} p:hasBanks ex:Banks/{BankID} .
+source		SELECT `EmployeeID`, `BankID` FROM `Employees` WHERE `BankID` IS NOT NULL
+
+]]

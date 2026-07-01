@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:address {address} ; p:phoneNumber {phoneNumber} ; p:website {website} .
+source		SELECT `id`, `name`, `address`, `phoneNumber`, `website` FROM `Company`
+
+mappingId	Location_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:city {city} ; p:state {state} ; p:country {country} ; p:zipCode {zipCode} .
+source		SELECT `id`, `city`, `state`, `country`, `zipCode` FROM `Location`
+
+mappingId	Skills_base
+target		ex:Skill/{id} a :Skill ; p:id {id} ; p:skillName {skillName} .
+source		SELECT `id`, `skillName` FROM `Skills`
+
+mappingId	JobPosting_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:mediaCareer {mediaCareer} ; p:languages {languages} ; p:startDate {startDate} ; p:endDate {endDate} ; p:companyId {companyId} ; p:locationId {locationId} .
+source		SELECT `id`, `title`, `description`, `mediaCareer`, `languages`, `startDate`, `endDate`, `companyId`, `locationId` FROM `JobPosting`
+
+mappingId	JobPosting_locationId_fk
+target		ex:JobPostings/{id} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `id`, `locationId` FROM `JobPosting` WHERE `locationId` IS NOT NULL
+
+mappingId	JobPosting_companyId_fk
+target		ex:JobPostings/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `JobPosting` WHERE `companyId` IS NOT NULL
+
+]]

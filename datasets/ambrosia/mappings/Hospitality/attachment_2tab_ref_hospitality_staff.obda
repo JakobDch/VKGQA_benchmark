@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Languages_base
+target		ex:Languages/{LanguageID} a :Languages ; p:LanguageID {LanguageID} ; p:LanguageName {LanguageName} .
+source		SELECT `LanguageID`, `LanguageName` FROM `Languages`
+
+mappingId	Chefs_base
+target		ex:Chefs/{ChefID} a :Chefs ; p:ChefID {ChefID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:LanguageID {LanguageID} .
+source		SELECT `ChefID`, `FirstName`, `LastName`, `LanguageID` FROM `Chefs`
+
+mappingId	Chefs_LanguageID_fk
+target		ex:Chefs/{ChefID} p:hasLanguages ex:Languages/{LanguageID} .
+source		SELECT `ChefID`, `LanguageID` FROM `Chefs` WHERE `LanguageID` IS NOT NULL
+
+mappingId	Servers_base
+target		ex:Servers/{ServerID} a :Servers ; p:ServerID {ServerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:LanguageID {LanguageID} .
+source		SELECT `ServerID`, `FirstName`, `LastName`, `LanguageID` FROM `Servers`
+
+mappingId	Servers_LanguageID_fk
+target		ex:Servers/{ServerID} p:hasLanguages ex:Languages/{LanguageID} .
+source		SELECT `ServerID`, `LanguageID` FROM `Servers` WHERE `LanguageID` IS NOT NULL
+
+mappingId	Restaurants_base
+target		ex:Restaurants/{RestaurantID} a :Restaurants ; p:RestaurantID {RestaurantID} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:OpeningHours {OpeningHours} .
+source		SELECT `RestaurantID`, `Name`, `Address`, `PhoneNumber`, `OpeningHours` FROM `Restaurants`
+
+mappingId	ChefRestaurants_base
+target		ex:ChefRestaurants/{ChefID}/{RestaurantID} a :ChefRestaurants ; p:ChefID {ChefID} ; p:RestaurantID {RestaurantID} ; p:HireDate {HireDate} .
+source		SELECT `ChefID`, `RestaurantID`, `HireDate` FROM `ChefRestaurants`
+
+mappingId	ChefRestaurants_RestaurantID_fk
+target		ex:ChefRestaurants/{ChefID}/{RestaurantID} p:hasRestaurants ex:Restaurants/{RestaurantID} .
+source		SELECT `ChefID`, `RestaurantID` FROM `ChefRestaurants` WHERE `RestaurantID` IS NOT NULL
+
+mappingId	ChefRestaurants_ChefID_fk
+target		ex:ChefRestaurants/{ChefID}/{RestaurantID} p:hasChefs ex:Chefs/{ChefID} .
+source		SELECT `ChefID`, `RestaurantID` FROM `ChefRestaurants` WHERE `ChefID` IS NOT NULL
+
+mappingId	ServerRestaurants_base
+target		ex:ServerRestaurants/{ServerID}/{RestaurantID} a :ServerRestaurants ; p:ServerID {ServerID} ; p:RestaurantID {RestaurantID} ; p:HireDate {HireDate} .
+source		SELECT `ServerID`, `RestaurantID`, `HireDate` FROM `ServerRestaurants`
+
+mappingId	ServerRestaurants_RestaurantID_fk
+target		ex:ServerRestaurants/{ServerID}/{RestaurantID} p:hasRestaurants ex:Restaurants/{RestaurantID} .
+source		SELECT `ServerID`, `RestaurantID` FROM `ServerRestaurants` WHERE `RestaurantID` IS NOT NULL
+
+mappingId	ServerRestaurants_ServerID_fk
+target		ex:ServerRestaurants/{ServerID}/{RestaurantID} p:hasServers ex:Servers/{ServerID} .
+source		SELECT `ServerID`, `RestaurantID` FROM `ServerRestaurants` WHERE `ServerID` IS NOT NULL
+
+]]

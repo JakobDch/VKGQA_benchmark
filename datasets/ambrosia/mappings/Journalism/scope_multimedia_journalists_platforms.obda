@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Multimedia_Journalists_base
+target		ex:Multimedia_Journalists/{id} a :Multimedia_Journalists ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Multimedia_Journalists`
+
+mappingId	Platforms_base
+target		ex:Platforms/{id} a :Platforms ; p:id {id} ; p:platform_name {platform_name} .
+source		SELECT `id`, `platform_name` FROM `Platforms`
+
+mappingId	Multimedia_Journalists_Platforms_base
+target		ex:Multimedia_Journalists_Platforms/{multimedia_journalist_id}/{platforms_id} a :Multimedia_Journalists_Platforms ; p:multimedia_journalist_id {multimedia_journalist_id} ; p:platforms_id {platforms_id} .
+source		SELECT `multimedia_journalist_id`, `platforms_id` FROM `Multimedia_Journalists_Platforms`
+
+mappingId	Multimedia_Journalists_Platforms_platforms_id_fk
+target		ex:Multimedia_Journalists_Platforms/{multimedia_journalist_id}/{platforms_id} p:hasPlatforms ex:Platforms/{platforms_id} .
+source		SELECT `multimedia_journalist_id`, `platforms_id` FROM `Multimedia_Journalists_Platforms` WHERE `platforms_id` IS NOT NULL
+
+mappingId	Multimedia_Journalists_Platforms_multimedia_journalist_id_fk
+target		ex:Multimedia_Journalists_Platforms/{multimedia_journalist_id}/{platforms_id} p:hasMultimedia_Journalists ex:Multimedia_Journalists/{multimedia_journalist_id} .
+source		SELECT `multimedia_journalist_id`, `platforms_id` FROM `Multimedia_Journalists_Platforms` WHERE `multimedia_journalist_id` IS NOT NULL
+
+]]

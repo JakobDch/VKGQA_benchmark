@@ -1,0 +1,97 @@
+{
+  "domain": "Banking",
+  "db_base": "vague_2cols_issuer",
+  "schema": "amb_vague_2cols_issuer",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which bank and branch issued CD Special?",
+      "qtype": "unambig",
+      "sql": "SELECT Bank.BankName, Branch.BranchName FROM Branch JOIN BankingProducts ON BankingProducts.BranchName = Branch.BranchID JOIN Bank ON BankingProducts.BankName = Bank.BankName WHERE ProductName = 'CD Special'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?bankname ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?bank a :Banks .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which bank and their branches issue products where I can invest more than 50k?",
+      "qtype": "unambig",
+      "sql": "SELECT Bank.BankName, Branch.BranchName FROM Branch JOIN BankingProducts ON BankingProducts.BranchName = Branch.BranchID JOIN Bank ON BankingProducts.BankName = Bank.BankName where MaximumDepositAmount > 49999",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?bankname ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?bank a :Banks .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who issued products where I can invest more than 50k",
+      "qtype": "ambig",
+      "sql": "SELECT Branch.BranchName FROM Branch JOIN BankingProducts ON BankingProducts.BranchName = Branch.BranchID where MaximumDepositAmount > 49999",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who issued products where I can invest more than 50k",
+      "qtype": "ambig",
+      "sql": "SELECT Bank.BankName FROM Bank JOIN BankingProducts ON BankingProducts.BankName = Bank.BankName  where MaximumDepositAmount > 49999",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?bankname WHERE {\n  ?bank a :Banks .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who issued CD Special?",
+      "qtype": "ambig",
+      "sql": "SELECT Branch.BranchName FROM Branch JOIN BankingProducts ON BankingProducts.BranchName = Branch.BranchID WHERE ProductName = 'CD Special'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who issued CD Special?",
+      "qtype": "ambig",
+      "sql": "SELECT Bank.BankName FROM Bank JOIN BankingProducts ON BankingProducts.BankName = Bank.BankName WHERE ProductName = 'CD Special'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?bankname WHERE {\n  ?bank a :Banks .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who issued CD Special?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?bankname ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?bank a :Banks .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n} }\n  component: { SELECT ?bankname WHERE {\n  ?bank a :Banks .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n} }\n  component_2: { SELECT ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:ProductName ?productname_f .\n  FILTER(STR(?productname_f) = \"CD Special\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who issued products where I can invest more than 50k",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?bankname ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?bank a :Banks .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n} }\n  component: { SELECT ?bankname WHERE {\n  ?bank a :Banks .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBank ?bank .\n  ?bank p:BankName ?bankname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n} }\n  component_2: { SELECT ?branchname WHERE {\n  ?branch a :Branches .\n  ?bankingproducts a :BankingProducts .\n  ?bankingproducts p:hasBranch ?branch .\n  ?branch p:BranchName ?branchname .\n  ?bankingproducts p:MaximumDepositAmount ?maximumdepositamount_f .\n  FILTER(xsd:double(?maximumdepositamount_f) > 49999)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

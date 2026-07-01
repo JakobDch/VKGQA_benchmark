@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Rooms_base
+target		ex:Rooms/{id} a :Rooms ; p:id {id} ; p:roomType {roomType} .
+source		SELECT `id`, `roomType` FROM `Rooms`
+
+mappingId	HouseFeatures_base
+target		ex:HouseFeatures/{id} a :HouseFeatures ; p:id {id} ; p:featureName {featureName} .
+source		SELECT `id`, `featureName` FROM `HouseFeatures`
+
+mappingId	Houses_base
+target		ex:Houses/{id} a :Houses ; p:id {id} ; p:address {address} ; p:price {price} ; p:numOfFloors {numOfFloors} .
+source		SELECT `id`, `address`, `price`, `numOfFloors` FROM `Houses`
+
+mappingId	Houses_Rooms_base
+target		ex:Houses_Rooms/{houseId}/{roomId} a :Houses_Rooms ; p:houseId {houseId} ; p:roomId {roomId} .
+source		SELECT `houseId`, `roomId` FROM `Houses_Rooms`
+
+mappingId	Houses_Rooms_roomId_fk
+target		ex:Houses_Rooms/{houseId}/{roomId} p:hasRooms ex:Rooms/{roomId} .
+source		SELECT `houseId`, `roomId` FROM `Houses_Rooms` WHERE `roomId` IS NOT NULL
+
+mappingId	Houses_Rooms_houseId_fk
+target		ex:Houses_Rooms/{houseId}/{roomId} p:hasHouses ex:Houses/{houseId} .
+source		SELECT `houseId`, `roomId` FROM `Houses_Rooms` WHERE `houseId` IS NOT NULL
+
+]]

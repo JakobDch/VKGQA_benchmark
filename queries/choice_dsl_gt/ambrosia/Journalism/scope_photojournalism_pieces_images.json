@@ -1,0 +1,75 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_photojournalism_pieces_images",
+  "schema": "amb_scope_photojournalism_pieces_images",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the image names that are common to all pieces",
+      "qtype": "unambig",
+      "sql": "SELECT Images.image_name  from Photojournalism_Pieces_Images join Images on Photojournalism_Pieces_Images.image_id = Images.id join Photojournalism_Pieces on Photojournalism_Pieces_Images.photojournalism_piece_id = Photojournalism_Pieces.id   GROUP BY Photojournalism_Pieces_Images.image_id HAVING COUNT(DISTINCT Photojournalism_Pieces_Images.photojournalism_piece_id) = (SELECT COUNT(*) FROM  Photojournalism_Pieces)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?image_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasImages ?child ; p:hasPhotojournalism_Pieces ?parent . } GROUP BY ?child }\n  ?child p:image_name ?image_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photojournalism_Pieces } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me image names and descriptions each photojournalism piece uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Images.image_name, Images.description  from Photojournalism_Pieces_Images join Images on Photojournalism_Pieces_Images.image_id = Images.id join Photojournalism_Pieces on Photojournalism_Pieces_Images.photojournalism_piece_id = Photojournalism_Pieces.id   GROUP BY Photojournalism_Pieces_Images.image_id HAVING COUNT(DISTINCT Photojournalism_Pieces_Images.photojournalism_piece_id) = (SELECT COUNT(*) FROM  Photojournalism_Pieces)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?image_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasImages ?child ; p:hasPhotojournalism_Pieces ?parent . } GROUP BY ?child }\n  ?child p:image_name ?image_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photojournalism_Pieces } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me image names and descriptions each photojournalism piece uses.",
+      "qtype": "ambig",
+      "sql": "select photojournalism_pieces.title , images.image_name , images.description from Photojournalism_Pieces_Images join Images on Photojournalism_Pieces_Images.image_id = Images.id join Photojournalism_Pieces on Photojournalism_Pieces_Images.photojournalism_piece_id = Photojournalism_Pieces.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?image_name ?description WHERE {\n  ?photojournalism_pieces_images a :Photojournalism_Pieces_Images .\n  ?images a :Images .\n  ?photojournalism_pieces_images p:hasImages ?images .\n  ?photojournalism_pieces a :Photojournalism_Pieces .\n  ?photojournalism_pieces_images p:hasPhotojournalism_Pieces ?photojournalism_pieces .\n  ?photojournalism_pieces p:title ?title .\n  ?images p:image_name ?image_name .\n  ?images p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "For every piece, show me the image names it contains",
+      "qtype": "unambig",
+      "sql": "select photojournalism_pieces.title , images.image_name from Photojournalism_Pieces_Images join Images on Photojournalism_Pieces_Images.image_id = Images.id join Photojournalism_Pieces on Photojournalism_Pieces_Images.photojournalism_piece_id = Photojournalism_Pieces.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?image_name WHERE {\n  ?photojournalism_pieces_images a :Photojournalism_Pieces_Images .\n  ?images a :Images .\n  ?photojournalism_pieces_images p:hasImages ?images .\n  ?photojournalism_pieces a :Photojournalism_Pieces .\n  ?photojournalism_pieces_images p:hasPhotojournalism_Pieces ?photojournalism_pieces .\n  ?photojournalism_pieces p:title ?title .\n  ?images p:image_name ?image_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the image names for every piece?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?image_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasImages ?child ; p:hasPhotojournalism_Pieces ?parent . } GROUP BY ?child }\n  ?child p:image_name ?image_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photojournalism_Pieces } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?image_name WHERE {\n  ?photojournalism_pieces_images a :Photojournalism_Pieces_Images .\n  ?images a :Images .\n  ?photojournalism_pieces_images p:hasImages ?images .\n  ?photojournalism_pieces a :Photojournalism_Pieces .\n  ?photojournalism_pieces_images p:hasPhotojournalism_Pieces ?photojournalism_pieces .\n  ?photojournalism_pieces p:title ?title .\n  ?images p:image_name ?image_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me image names and descriptions each photojournalism piece uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?image_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasImages ?child ; p:hasPhotojournalism_Pieces ?parent . } GROUP BY ?child }\n  ?child p:image_name ?image_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photojournalism_Pieces } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?image_name ?description WHERE {\n  ?photojournalism_pieces_images a :Photojournalism_Pieces_Images .\n  ?images a :Images .\n  ?photojournalism_pieces_images p:hasImages ?images .\n  ?photojournalism_pieces a :Photojournalism_Pieces .\n  ?photojournalism_pieces_images p:hasPhotojournalism_Pieces ?photojournalism_pieces .\n  ?photojournalism_pieces p:title ?title .\n  ?images p:image_name ?image_name .\n  ?images p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Awards_base
+target		ex:Awards/{id} a :Awards ; p:id {id} ; p:awardName {awardName} ; p:year {year} .
+source		SELECT `id`, `awardName`, `year` FROM `Awards`
+
+mappingId	Categories_base
+target		ex:Categories/{categoryId} a :Categories ; p:categoryId {categoryId} ; p:categoryName {categoryName} .
+source		SELECT `categoryId`, `categoryName` FROM `Categories`
+
+mappingId	Awards_Categories_base
+target		ex:Awards_Categories/{awardsID}/{categoriesID} a :Awards_Categories ; p:awardsID {awardsID} ; p:categoriesID {categoriesID} .
+source		SELECT `awardsID`, `categoriesID` FROM `Awards_Categories`
+
+mappingId	Awards_Categories_categoriesID_fk
+target		ex:Awards_Categories/{awardsID}/{categoriesID} p:hasCategories ex:Categories/{categoriesID} .
+source		SELECT `awardsID`, `categoriesID` FROM `Awards_Categories` WHERE `categoriesID` IS NOT NULL
+
+mappingId	Awards_Categories_awardsID_fk
+target		ex:Awards_Categories/{awardsID}/{categoriesID} p:hasAwards ex:Awards/{awardsID} .
+source		SELECT `awardsID`, `categoriesID` FROM `Awards_Categories` WHERE `awardsID` IS NOT NULL
+
+]]

@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Students`
+
+mappingId	EngineeringClasses_base
+target		ex:EngineeringClasses/{ClassID} a :EngineeringClasses ; p:ClassID {ClassID} ; p:ClassName {ClassName} .
+source		SELECT `ClassID`, `ClassName` FROM `EngineeringClasses`
+
+mappingId	DesignClasses_base
+target		ex:DesignClasses/{ClassID} a :DesignClasses ; p:ClassID {ClassID} ; p:ClassName {ClassName} .
+source		SELECT `ClassID`, `ClassName` FROM `DesignClasses`
+
+mappingId	Projects_base
+target		ex:Projects/{ProjectID} a :Projects ; p:ProjectID {ProjectID} ; p:ProjectName {ProjectName} ; p:EngineeringClassId {EngineeringClassId} ; p:DesignClassId {DesignClassId} .
+source		SELECT `ProjectID`, `ProjectName`, `EngineeringClassId`, `DesignClassId` FROM `Projects`
+
+mappingId	Projects_DesignClassId_fk
+target		ex:Projects/{ProjectID} p:hasDesignClasses ex:DesignClasses/{DesignClassId} .
+source		SELECT `ProjectID`, `DesignClassId` FROM `Projects` WHERE `DesignClassId` IS NOT NULL
+
+mappingId	Projects_EngineeringClassId_fk
+target		ex:Projects/{ProjectID} p:hasEngineeringClasses ex:EngineeringClasses/{EngineeringClassId} .
+source		SELECT `ProjectID`, `EngineeringClassId` FROM `Projects` WHERE `EngineeringClassId` IS NOT NULL
+
+mappingId	EnrolledStudents_base
+target		ex:EnrolledStudents/{_amb_rowid} a :EnrolledStudents ; p:StudentID {StudentID} ; p:ProjectID {ProjectID} ; p:Grade {Grade} .
+source		SELECT `_amb_rowid`, `StudentID`, `ProjectID`, `Grade` FROM `EnrolledStudents`
+
+mappingId	EnrolledStudents_ProjectID_fk
+target		ex:EnrolledStudents/{_amb_rowid} p:hasProjects ex:Projects/{ProjectID} .
+source		SELECT `_amb_rowid`, `ProjectID` FROM `EnrolledStudents` WHERE `ProjectID` IS NOT NULL
+
+mappingId	EnrolledStudents_StudentID_fk
+target		ex:EnrolledStudents/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `EnrolledStudents` WHERE `StudentID` IS NOT NULL
+
+mappingId	CourseEnrollments_base
+target		ex:CourseEnrollments/{_amb_rowid} a :CourseEnrollments ; p:StudentID {StudentID} ; p:EngineeringClassId {EngineeringClassId} ; p:DesignClassId {DesignClassId} .
+source		SELECT `_amb_rowid`, `StudentID`, `EngineeringClassId`, `DesignClassId` FROM `CourseEnrollments`
+
+mappingId	CourseEnrollments_DesignClassId_fk
+target		ex:CourseEnrollments/{_amb_rowid} p:hasDesignClasses ex:DesignClasses/{DesignClassId} .
+source		SELECT `_amb_rowid`, `DesignClassId` FROM `CourseEnrollments` WHERE `DesignClassId` IS NOT NULL
+
+mappingId	CourseEnrollments_EngineeringClassId_fk
+target		ex:CourseEnrollments/{_amb_rowid} p:hasEngineeringClasses ex:EngineeringClasses/{EngineeringClassId} .
+source		SELECT `_amb_rowid`, `EngineeringClassId` FROM `CourseEnrollments` WHERE `EngineeringClassId` IS NOT NULL
+
+mappingId	CourseEnrollments_StudentID_fk
+target		ex:CourseEnrollments/{_amb_rowid} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `_amb_rowid`, `StudentID` FROM `CourseEnrollments` WHERE `StudentID` IS NOT NULL
+
+]]

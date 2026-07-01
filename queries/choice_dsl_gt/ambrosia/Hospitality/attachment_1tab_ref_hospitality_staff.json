@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_ref_hospitality_staff",
+  "schema": "amb_attachment_1tab_ref_hospitality_staff",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all chefs and also provide a list of all Spanish-speaking servers.",
+      "qtype": "unambig",
+      "sql": "SELECT Staff.name \nFROM Staff JOIN Languages ON Staff.LanguageID = Languages.ID\nWHERE Staff.Position = \"Chef\" OR Staff.Position = \"Server\" AND Languages.Language = \"Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?name .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:Language ?language_w .\n  FILTER((STR(?position_w) = \"Chef\" || (STR(?position_w2) = \"Server\" && STR(?language_w) = \"Spanish\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What chefs speak Spanish and what servers also speak it?",
+      "qtype": "unambig",
+      "sql": "SELECT Staff.name \nFROM Staff JOIN Languages ON Staff.LanguageID = Languages.ID\nWHERE (Staff.Position = \"Chef\" OR Staff.Position = \"Server\") AND Languages.Language = \"Spanish\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?name .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:Language ?language_w .\n  FILTER((((STR(?position_w) = \"Chef\" || STR(?position_w2) = \"Server\")) && STR(?language_w) = \"Spanish\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show Spanish-speaking servers and chefs.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?name .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:Language ?language_w .\n  FILTER((STR(?position_w) = \"Chef\" || (STR(?position_w2) = \"Server\" && STR(?language_w) = \"Spanish\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?staff a :Staff .\n  ?languages a :Languages .\n  ?staff p:hasLanguages ?languages .\n  ?staff p:name ?name .\n  ?staff p:Position ?position_w .\n  ?staff p:Position ?position_w2 .\n  ?languages p:Language ?language_w .\n  FILTER((((STR(?position_w) = \"Chef\" || STR(?position_w2) = \"Server\")) && STR(?language_w) = \"Spanish\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

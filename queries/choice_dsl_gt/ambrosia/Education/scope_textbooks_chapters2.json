@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_textbooks_chapters2",
+  "schema": "amb_scope_textbooks_chapters2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me chapters each textbook has.",
+      "qtype": "ambig",
+      "sql": "SELECT Chapters.chapterName  from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id   GROUP BY Textbooks_Chapters.chapterName HAVING COUNT(DISTINCT Textbooks_Chapters.textbookId) = (SELECT COUNT(*) FROM  Textbooks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?chaptername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapterName ?chaptername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me chapters each textbook has.",
+      "qtype": "ambig",
+      "sql": "select textbooks.title , chapters.chaptername from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?chaptername WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapterName ?chaptername .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "What are the subjects and names of chapters that correspond to every textbook?",
+      "qtype": "ambig",
+      "sql": "SELECT Chapters.chapterName, Chapters.subject  from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id   GROUP BY Textbooks_Chapters.chapterName HAVING COUNT(DISTINCT Textbooks_Chapters.textbookId) = (SELECT COUNT(*) FROM  Textbooks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?chaptername ?subject WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapterName ?chaptername .\n  ?child p:subject ?subject .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are the subjects and names of chapters that correspond to every textbook?",
+      "qtype": "ambig",
+      "sql": "select textbooks.title , chapters.chaptername , chapters.subject from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?chaptername ?subject WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapterName ?chaptername .\n  ?chapters p:subject ?subject .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "For each textbook chapter, list the subjects.",
+      "qtype": "unambig",
+      "sql": "select textbooks.title , chapters.subject from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?subject WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:subject ?subject .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "Tell me the subject of each textbook chapter.",
+      "qtype": "ambig",
+      "sql": "SELECT Chapters.subject  from Textbooks_Chapters join Chapters on Textbooks_Chapters.chapterName = Chapters.chapterName join Textbooks on Textbooks_Chapters.textbookId = Textbooks.id   GROUP BY Textbooks_Chapters.chapterName HAVING COUNT(DISTINCT Textbooks_Chapters.textbookId) = (SELECT COUNT(*) FROM  Textbooks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?subject WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:subject ?subject .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the subject of each textbook chapter.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?subject WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:subject ?subject .\n} }\n  collective: { SELECT ?subject WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:subject ?subject .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me chapters each textbook has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?chaptername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapterName ?chaptername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?chaptername WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapterName ?chaptername .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the subjects and names of chapters that correspond to every textbook?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?chaptername ?subject WHERE {\n  ?textbooks_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbooks_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbooks_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapterName ?chaptername .\n  ?chapters p:subject ?subject .\n} }\n  collective: { SELECT ?chaptername ?subject WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapterName ?chaptername .\n  ?child p:subject ?subject .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

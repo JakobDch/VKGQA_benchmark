@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_maintenance_cost",
+  "schema": "amb_vague_2cols_maintenance_cost",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What's the monetary value of the longest project?",
+      "qtype": "unambig",
+      "sql": "SELECT Monetary_Value\nFROM Project\nWHERE JULIANDAY(EndDate) - JULIANDAY(StartDate) = (\n    SELECT MAX(JULIANDAY(EndDate) - JULIANDAY(StartDate))\n    FROM Project\n)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?mv WHERE { ?p a :Projects ; p:Monetary_Value ?mv ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): longest-project value via derived durationDays = DATEDIFF(End,Start) (Ontop can'"
+    },
+    {
+      "qid": 1,
+      "question": "What's the maintenance cost of Residential Building?",
+      "qtype": "ambig",
+      "sql": "SELECT Monetary_Value\nFROM Project\nWHERE Infrastructure = \"Residential Building\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?monetary_value WHERE {\n  ?project a :Projects .\n  ?project p:Monetary_Value ?monetary_value .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What's the maintenance cost of Residential Building?",
+      "qtype": "ambig",
+      "sql": "SELECT Percentage_Of_Budget\nFROM Project\nWHERE Infrastructure = \"Residential Building\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?percentage_of_budget WHERE {\n  ?project a :Projects .\n  ?project p:Percentage_Of_Budget ?percentage_of_budget .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What's the maintenance cost of Residential Building?",
+      "qtype": "ambig",
+      "sql": "SELECT Monetary_Value, Percentage_Of_Budget\nFROM Project\nWHERE Infrastructure = \"Residential Building\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?monetary_value ?percentage_of_budget WHERE {\n  ?project a :Projects .\n  ?project p:Monetary_Value ?monetary_value .\n  ?project p:Percentage_Of_Budget ?percentage_of_budget .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What's the maintenance cost of the longest Project?",
+      "qtype": "ambig",
+      "sql": "SELECT Percentage_Of_Budget\nFROM Project\nWHERE JULIANDAY(EndDate) - JULIANDAY(StartDate) = (\n    SELECT MAX(JULIANDAY(EndDate) - JULIANDAY(StartDate))\n    FROM Project\n)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?pb WHERE { ?p a :Projects ; p:Percentage_Of_Budget ?pb ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): longest-project budget% via derived durationDays"
+    },
+    {
+      "qid": 5,
+      "question": "What's the maintenance cost of the longest Project?",
+      "qtype": "ambig",
+      "sql": "SELECT Monetary_Value, Percentage_Of_Budget\nFROM Project\nWHERE JULIANDAY(EndDate) - JULIANDAY(StartDate) = (\n    SELECT MAX(JULIANDAY(EndDate) - JULIANDAY(StartDate))\n    FROM Project\n)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?mv ?pb WHERE { ?p a :Projects ; p:Monetary_Value ?mv ; p:Percentage_Of_Budget ?pb ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): longest-project value+budget% via derived durationDays"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What's the maintenance cost of the longest Project?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nCHOICE vague {\n  component: { SELECT ?mv WHERE { ?p a :Projects ; p:Monetary_Value ?mv ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) } }\n  component_2: { SELECT ?pb WHERE { ?p a :Projects ; p:Percentage_Of_Budget ?pb ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) } }\n  full: { SELECT ?mv ?pb WHERE { ?p a :Projects ; p:Monetary_Value ?mv ; p:Percentage_Of_Budget ?pb ; p:durationDays ?d . { SELECT (MAX(?d2) AS ?mx) WHERE { ?q a :Projects ; p:durationDays ?d2 } } FILTER(?d = ?mx) } }\n}",
+      "verified": true
+    },
+    {
+      "question": "What's the maintenance cost of Residential Building?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?monetary_value ?percentage_of_budget WHERE {\n  ?project a :Projects .\n  ?project p:Monetary_Value ?monetary_value .\n  ?project p:Percentage_Of_Budget ?percentage_of_budget .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n} }\n  component: { SELECT ?monetary_value WHERE {\n  ?project a :Projects .\n  ?project p:Monetary_Value ?monetary_value .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n} }\n  component_2: { SELECT ?percentage_of_budget WHERE {\n  ?project a :Projects .\n  ?project p:Percentage_Of_Budget ?percentage_of_budget .\n  ?project p:Infrastructure ?infrastructure_f .\n  FILTER(?infrastructure_f = \"Residential Building\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

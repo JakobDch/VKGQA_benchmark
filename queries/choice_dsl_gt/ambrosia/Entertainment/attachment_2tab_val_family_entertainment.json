@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_family_entertainment",
+  "schema": "amb_attachment_2tab_val_family_entertainment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show both amusement parks in Orlando, Florida and water parks located there?",
+      "qtype": "unambig",
+      "sql": "SELECT Amusement_Parks.name\nFROM Amusement_Parks\nWHERE Amusement_Parks.Location = \"Orlando, Florida\"\nUNION\nSELECT Water_Parks.name\nFROM Water_Parks\nWHERE Water_Parks.Location = \"Orlando, Florida\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?amusement_parks a :AmusementPark .\n    ?amusement_parks p:name ?name .\n    ?amusement_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?water_parks a :WaterPark .\n    ?water_parks p:name ?name .\n    ?water_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Display amusement parks and water parks in Orlando, Florida.",
+      "qtype": "ambig",
+      "sql": "SELECT Amusement_Parks.name\nFROM Amusement_Parks\nUNION\nSELECT Water_Parks.name\nFROM Water_Parks\nWHERE Water_Parks.Location = \"Orlando, Florida\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?amusement_parks a :AmusementPark .\n    ?amusement_parks p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?water_parks a :WaterPark .\n    ?water_parks p:name ?name .\n    ?water_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display amusement parks and water parks in Orlando, Florida.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?amusement_parks a :AmusementPark .\n    ?amusement_parks p:name ?name .\n    ?amusement_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?water_parks a :WaterPark .\n    ?water_parks p:name ?name .\n    ?water_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?amusement_parks a :AmusementPark .\n    ?amusement_parks p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?water_parks a :WaterPark .\n    ?water_parks p:name ?name .\n    ?water_parks p:location ?location_f .\n    FILTER(STR(?location_f) = \"Orlando, Florida\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

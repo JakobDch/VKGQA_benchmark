@@ -1,0 +1,53 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_allowance",
+  "schema": "amb_vague_2cols_allowance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What's the maximum bag weight and maximum number of individual bag pieces allowed?",
+      "qtype": "unambig",
+      "sql": "SELECT MAX(BagWeightLimit, BagPieceLimit) FROM BaggageLimits",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?mx WHERE { ?x a :BaggageLimits ; p:BagWeightLimit ?w ; p:BagPieceLimit ?pc . BIND(IF(xsd:double(?w) > xsd:double(?pc), ?w, ?pc) AS ?mx) }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SQLite 2-arg MAX(BagWeightLimit,BagPieceLimit) is row-wise greatest -> SPARQL IF"
+    },
+    {
+      "qid": 1,
+      "question": "What's the maximum bag weight allowed?",
+      "qtype": "unambig",
+      "sql": "SELECT MAX(BagWeightLimit) FROM BaggageLimits",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MAX(?bagweightlimit_a) AS ?agg) WHERE {\n  ?baggagelimits a :BaggageLimits .\n  ?baggagelimits p:BagWeightLimit ?bagweightlimit_a .\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What are the maximum number of bag pieces allowed?",
+      "qtype": "unambig",
+      "sql": "SELECT MAX(BagPieceLimit) FROM BaggageLimits",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (MAX(?bagpiecelimit_a) AS ?agg) WHERE {\n  ?baggagelimits a :BaggageLimits .\n  ?baggagelimits p:BagPieceLimit ?bagpiecelimit_a .\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the maximum baggage allowance?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?mx WHERE { ?x a :BaggageLimits ; p:BagWeightLimit ?w ; p:BagPieceLimit ?pc . BIND(IF(xsd:double(?w) > xsd:double(?pc), ?w, ?pc) AS ?mx) } }\n  component: { SELECT (MAX(?bagweightlimit_a) AS ?agg) WHERE {\n  ?baggagelimits a :BaggageLimits .\n  ?baggagelimits p:BagWeightLimit ?bagweightlimit_a .\n} }\n  component_2: { SELECT (MAX(?bagpiecelimit_a) AS ?agg) WHERE {\n  ?baggagelimits a :BaggageLimits .\n  ?baggagelimits p:BagPieceLimit ?bagpiecelimit_a .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

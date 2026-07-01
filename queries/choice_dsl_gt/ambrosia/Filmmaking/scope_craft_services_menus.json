@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_craft_services_menus",
+  "schema": "amb_scope_craft_services_menus",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What menu does each craft service have?",
+      "qtype": "ambig",
+      "sql": "SELECT Menus.Name  from Craft_Services_Menus join Menus on Craft_Services_Menus.MenuID = Menus.MenuID join Craft_Services on Craft_Services_Menus.ServiceID = Craft_Services.ServiceID   GROUP BY Craft_Services_Menus.MenuID HAVING COUNT(DISTINCT Craft_Services_Menus.ServiceID) = (SELECT COUNT(*) FROM  Craft_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMenus ?child ; p:hasCraft_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Craft_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What menu does each craft service have?",
+      "qtype": "ambig",
+      "sql": "select craft_services.description , menus.name from Craft_Services_Menus join Menus on Craft_Services_Menus.MenuID = Menus.MenuID join Craft_Services on Craft_Services_Menus.ServiceID = Craft_Services.ServiceID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?name WHERE {\n  ?craft_services_menus a :Craft_Services_Menus .\n  ?menus a :Menus .\n  ?craft_services_menus p:hasMenus ?menus .\n  ?craft_services a :Craft_Services .\n  ?craft_services_menus p:hasCraft_Services ?craft_services .\n  ?craft_services p:Description ?description .\n  ?menus p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What menu does each craft service have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?description ?name WHERE {\n  ?craft_services_menus a :Craft_Services_Menus .\n  ?menus a :Menus .\n  ?craft_services_menus p:hasMenus ?menus .\n  ?craft_services a :Craft_Services .\n  ?craft_services_menus p:hasCraft_Services ?craft_services .\n  ?craft_services p:Description ?description .\n  ?menus p:name ?name .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMenus ?child ; p:hasCraft_Services ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Craft_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

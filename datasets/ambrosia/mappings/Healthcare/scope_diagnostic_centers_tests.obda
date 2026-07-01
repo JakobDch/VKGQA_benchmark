@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Diagnostic_Centers_base
+target		ex:Diagnostic_Centers/{CenterID} a :Diagnostic_Centers ; p:CenterID {CenterID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `CenterID`, `Name`, `Address` FROM `Diagnostic_Centers`
+
+mappingId	Tests_base
+target		ex:Tests/{TestTypeID} a :Tests ; p:TestTypeID {TestTypeID} ; p:TestName {TestName} .
+source		SELECT `TestTypeID`, `TestName` FROM `Tests`
+
+mappingId	Patients_base
+target		ex:Patients/{PatientID} a :Patients ; p:PatientID {PatientID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `PatientID`, `FirstName`, `LastName`, `DateOfBirth`, `PhoneNumber` FROM `Patients`
+
+mappingId	Appointments_base
+target		ex:Appointments/{AppointmentID} a :Appointments ; p:AppointmentID {AppointmentID} ; p:CenterID {CenterID} ; p:PatientID {PatientID} ; p:AppointmentDate {AppointmentDate} .
+source		SELECT `AppointmentID`, `CenterID`, `PatientID`, `AppointmentDate` FROM `Appointments`
+
+mappingId	Appointments_PatientID_fk
+target		ex:Appointments/{AppointmentID} p:hasPatients ex:Patients/{PatientID} .
+source		SELECT `AppointmentID`, `PatientID` FROM `Appointments` WHERE `PatientID` IS NOT NULL
+
+mappingId	Appointments_CenterID_fk
+target		ex:Appointments/{AppointmentID} p:hasDiagnostic_Centers ex:Diagnostic_Centers/{CenterID} .
+source		SELECT `AppointmentID`, `CenterID` FROM `Appointments` WHERE `CenterID` IS NOT NULL
+
+mappingId	Results_base
+target		ex:Results/{ResultID} a :Results ; p:ResultID {ResultID} ; p:AppointmentID {AppointmentID} ; p:TestResultText {TestResultText} ; p:ResultDate {ResultDate} .
+source		SELECT `ResultID`, `AppointmentID`, `TestResultText`, `ResultDate` FROM `Results`
+
+mappingId	Results_AppointmentID_fk
+target		ex:Results/{ResultID} p:hasAppointments ex:Appointments/{AppointmentID} .
+source		SELECT `ResultID`, `AppointmentID` FROM `Results` WHERE `AppointmentID` IS NOT NULL
+
+mappingId	Diagnostic_Centers_Tests_base
+target		ex:Diagnostic_Centers_Tests/{DiagnosticCenterID}/{TestTypeID} a :Diagnostic_Centers_Tests ; p:DiagnosticCenterID {DiagnosticCenterID} ; p:TestTypeID {TestTypeID} .
+source		SELECT `DiagnosticCenterID`, `TestTypeID` FROM `Diagnostic_Centers_Tests`
+
+mappingId	Diagnostic_Centers_Tests_TestTypeID_fk
+target		ex:Diagnostic_Centers_Tests/{DiagnosticCenterID}/{TestTypeID} p:hasTests ex:Tests/{TestTypeID} .
+source		SELECT `DiagnosticCenterID`, `TestTypeID` FROM `Diagnostic_Centers_Tests` WHERE `TestTypeID` IS NOT NULL
+
+mappingId	Diagnostic_Centers_Tests_DiagnosticCenterID_fk
+target		ex:Diagnostic_Centers_Tests/{DiagnosticCenterID}/{TestTypeID} p:hasDiagnostic_Centers ex:Diagnostic_Centers/{DiagnosticCenterID} .
+source		SELECT `DiagnosticCenterID`, `TestTypeID` FROM `Diagnostic_Centers_Tests` WHERE `DiagnosticCenterID` IS NOT NULL
+
+]]

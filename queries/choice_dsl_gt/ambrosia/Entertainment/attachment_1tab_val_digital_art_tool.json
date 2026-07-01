@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_digital_art_tool",
+  "schema": "amb_attachment_1tab_val_digital_art_tool",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the graphic design tools, also show the web design tools that run on a subscription model.",
+      "qtype": "unambig",
+      "sql": "SELECT Digital_Tools.Name \nFROM Digital_Tools\nWHERE Digital_Tools.Category = \"Graphic Design\" OR Digital_Tools.Category = \"Web Design\" AND Digital_Tools.Access = \"Subscription\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?digital_tools a :Digital_Tools .\n  ?digital_tools p:name ?name .\n  ?digital_tools p:Category ?category_w .\n  ?digital_tools p:Category ?category_w2 .\n  ?digital_tools p:Access ?access_w .\n  FILTER((STR(?category_w) = \"Graphic Design\" || (STR(?category_w2) = \"Web Design\" && STR(?access_w) = \"Subscription\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "Show all graphic design tools and web design tools which need a subscription.",
+      "qtype": "ambig",
+      "sql": "SELECT Digital_Tools.Name \nFROM Digital_Tools\nWHERE (Digital_Tools.Category = \"Graphic Design\" OR Digital_Tools.Category = \"Web Design\") AND Digital_Tools.Access = \"Subscription\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?digital_tools a :Digital_Tools .\n  ?digital_tools p:name ?name .\n  ?digital_tools p:Category ?category_w .\n  ?digital_tools p:Category ?category_w2 .\n  ?digital_tools p:Access ?access_w .\n  FILTER((((STR(?category_w) = \"Graphic Design\" || STR(?category_w2) = \"Web Design\")) && STR(?access_w) = \"Subscription\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all graphic design tools and web design tools which need a subscription.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?digital_tools a :Digital_Tools .\n  ?digital_tools p:name ?name .\n  ?digital_tools p:Category ?category_w .\n  ?digital_tools p:Category ?category_w2 .\n  ?digital_tools p:Access ?access_w .\n  FILTER((STR(?category_w) = \"Graphic Design\" || (STR(?category_w2) = \"Web Design\" && STR(?access_w) = \"Subscription\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?digital_tools a :Digital_Tools .\n  ?digital_tools p:name ?name .\n  ?digital_tools p:Category ?category_w .\n  ?digital_tools p:Category ?category_w2 .\n  ?digital_tools p:Access ?access_w .\n  FILTER((((STR(?category_w) = \"Graphic Design\" || STR(?category_w2) = \"Web Design\")) && STR(?access_w) = \"Subscription\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_vacation_option",
+  "schema": "amb_attachment_2tab_val_vacation_option",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display all the cruise ships but only the resorts that offer a dance class.",
+      "qtype": "unambig",
+      "sql": "SELECT Cruise_Ship.name\nFROM Cruise_Ship\nUNION\nSELECT All_Inclusive_Resort.name\nFROM All_Inclusive_Resort\nWHERE All_Inclusive_Resort.activities = \"Dance Class\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cruise_ship a :Cruise_Ships .\n    ?cruise_ship p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?all_inclusive_resort a :All_Inclusive_Resort .\n    ?all_inclusive_resort p:name ?name .\n    ?all_inclusive_resort p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show cruise ships and resorts that offer a dance class.",
+      "qtype": "ambig",
+      "sql": "SELECT Cruise_Ship.name\nFROM Cruise_Ship\nWHERE Cruise_Ship.activities = \"Dance Class\"\nUNION\nSELECT All_Inclusive_Resort.name\nFROM All_Inclusive_Resort\nWHERE All_Inclusive_Resort.activities = \"Dance Class\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cruise_ship a :Cruise_Ships .\n    ?cruise_ship p:name ?name .\n    ?cruise_ship p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?all_inclusive_resort a :All_Inclusive_Resort .\n    ?all_inclusive_resort p:name ?name .\n    ?all_inclusive_resort p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show cruise ships and resorts that offer a dance class.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cruise_ship a :Cruise_Ships .\n    ?cruise_ship p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?all_inclusive_resort a :All_Inclusive_Resort .\n    ?all_inclusive_resort p:name ?name .\n    ?all_inclusive_resort p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cruise_ship a :Cruise_Ships .\n    ?cruise_ship p:name ?name .\n    ?cruise_ship p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?all_inclusive_resort a :All_Inclusive_Resort .\n    ?all_inclusive_resort p:name ?name .\n    ?all_inclusive_resort p:activities ?activities_f .\n    FILTER(STR(?activities_f) = \"Dance Class\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

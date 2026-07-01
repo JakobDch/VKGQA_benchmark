@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_journalist_classifications",
+  "schema": "amb_attachment_2tab_val_journalist_classifications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List singers and editors who received 2000.0.",
+      "qtype": "ambig",
+      "sql": "SELECT Stringers.name\nFROM Stringers\nWHERE Stringers.Payment = 2000.0\nUNION\nSELECT Editors.name\nFROM Editors\nWHERE Editors.Payment = 2000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stringers a :Stringers .\n    ?stringers p:name ?name .\n    ?stringers p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List singers and editors who received 2000.0.",
+      "qtype": "ambig",
+      "sql": "SELECT Stringers.name\nFROM Stringers\nUNION\nSELECT Editors.name\nFROM Editors\nWHERE Editors.Payment = 2000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?stringers a :Stringers .\n    ?stringers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List singers and editors who received 2000.0.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stringers a :Stringers .\n    ?stringers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?stringers a :Stringers .\n    ?stringers p:name ?name .\n    ?stringers p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?editors a :Editors .\n    ?editors p:name ?name .\n    ?editors p:Payment ?payment_f .\n    FILTER((STR(?payment_f) = \"2000\" || STR(?payment_f) = \"2000.0\"))\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

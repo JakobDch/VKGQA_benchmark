@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	It_Support_Specialists_base
+target		ex:It_Support_Specialists/{id} a :It_Support_Specialists ; p:id {id} ; p:name {name} ; p:experience {experience} .
+source		SELECT `id`, `name`, `experience` FROM `It_Support_Specialists`
+
+mappingId	Systems_base
+target		ex:Systems/{system_id} a :Systems ; p:system_id {system_id} ; p:system_name {system_name} ; p:is_active {is_active} .
+source		SELECT `system_id`, `system_name`, `is_active` FROM `Systems`
+
+mappingId	It_Support_Specialists_Systems_base
+target		ex:It_Support_Specialists_Systems/{_amb_rowid} a :It_Support_Specialists_Systems ; p:it_specialist_id {it_specialist_id} ; p:system_id {system_id} .
+source		SELECT `_amb_rowid`, `it_specialist_id`, `system_id` FROM `It_Support_Specialists_Systems`
+
+mappingId	It_Support_Specialists_Systems_system_id_fk
+target		ex:It_Support_Specialists_Systems/{_amb_rowid} p:hasSystems ex:Systems/{system_id} .
+source		SELECT `_amb_rowid`, `system_id` FROM `It_Support_Specialists_Systems` WHERE `system_id` IS NOT NULL
+
+mappingId	It_Support_Specialists_Systems_it_specialist_id_fk
+target		ex:It_Support_Specialists_Systems/{_amb_rowid} p:hasIt_Support_Specialists ex:It_Support_Specialists/{it_specialist_id} .
+source		SELECT `_amb_rowid`, `it_specialist_id` FROM `It_Support_Specialists_Systems` WHERE `it_specialist_id` IS NOT NULL
+
+mappingId	Companies_base
+target		ex:Companies/{company_id} a :Companies ; p:company_id {company_id} ; p:company_name {company_name} ; p:location {location} .
+source		SELECT `company_id`, `company_name`, `location` FROM `Companies`
+
+]]

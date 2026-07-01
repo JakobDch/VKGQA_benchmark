@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2cols_supervisor",
+  "schema": "amb_vague_2cols_supervisor",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who is Linda Green's department head?",
+      "qtype": "unambig",
+      "sql": "select M.Department_Head from Management M inner join positions P on P.positionId = M.positionId inner join Employees E on E.positionId = P.positionId where E.fullName = 'Linda Green'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?department_head WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Department_Head ?department_head .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List all the department heads in Company B.",
+      "qtype": "unambig",
+      "sql": "select distinct M.Department_Head from Management M inner join positions P on P.positionId = M.positionId inner join Teams T on T.teamId = P.TeamId inner join Departments D on D.deptId = T.deptId inner join Companies C on C.companyId = D.companyId where C.name = 'Company B'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?department_head WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Department_Head ?department_head .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List all the department heads in Company B and team leaders in the same company.",
+      "qtype": "unambig",
+      "sql": "select distinct M.Department_Head, Team_Leader from Management M inner join positions P on P.positionId = M.positionId inner join Teams T on T.teamId = P.TeamId inner join Departments D on D.deptId = T.deptId inner join Companies C on C.companyId = D.companyId where C.name = 'Company B'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?department_head ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Department_Head ?department_head .\n  ?m p:Team_Leader ?team_leader .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List all the supervisors in Company B",
+      "qtype": "ambig",
+      "sql": "select distinct M.Team_Leader from Management M inner join positions P on P.positionId = M.positionId inner join Teams T on T.teamId = P.TeamId inner join Departments D on D.deptId = T.deptId inner join Companies C on C.companyId = D.companyId where C.name = 'Company B'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Team_Leader ?team_leader .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who is the supervisor of Linda Green?",
+      "qtype": "ambig",
+      "sql": "select M.Team_Leader from Management M inner join positions P on P.positionId = M.positionId inner join Employees E on E.positionId = P.positionId where E.fullName = 'Linda Green'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Team_Leader ?team_leader .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who is the supervisor of Linda Green?",
+      "qtype": "ambig",
+      "sql": "select M.Department_Head, Team_Leader from Management M inner join positions P on P.positionId = M.positionId inner join Employees E on E.positionId = P.positionId where E.fullName = 'Linda Green'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?department_head ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Department_Head ?department_head .\n  ?m p:Team_Leader ?team_leader .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who is the supervisor of Linda Green?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?department_head WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Department_Head ?department_head .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n} }\n  component_2: { SELECT ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Team_Leader ?team_leader .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n} }\n  full: { SELECT ?department_head ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?e a :Employees .\n  ?e p:hasPositions ?p .\n  ?m p:Department_Head ?department_head .\n  ?m p:Team_Leader ?team_leader .\n  ?e p:name ?fullname_f .\n  FILTER(STR(?fullname_f) = \"Linda Green\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List all the supervisors in Company B",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT DISTINCT ?department_head WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Department_Head ?department_head .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n} }\n  full: { SELECT DISTINCT ?department_head ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Department_Head ?department_head .\n  ?m p:Team_Leader ?team_leader .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n} }\n  component_2: { SELECT DISTINCT ?team_leader WHERE {\n  ?m a :Management .\n  ?p a :Position .\n  ?m p:hasPositions ?p .\n  ?t a :Teams .\n  ?p p:hasTeams ?t .\n  ?d a :Departments .\n  ?t p:hasDepartments ?d .\n  ?c a :Companies .\n  ?d p:hasCompanies ?c .\n  ?m p:Team_Leader ?team_leader .\n  ?c p:name ?name_f .\n  FILTER(STR(?name_f) = \"Company B\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

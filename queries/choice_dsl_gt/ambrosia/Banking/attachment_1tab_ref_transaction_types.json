@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_ref_transaction_types",
+  "schema": "amb_attachment_1tab_ref_transaction_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show LMN Bank transaction amounts that are either payments or remittance transfers.",
+      "qtype": "unambig",
+      "sql": "SELECT Transactions.Amount \nFROM Transactions JOIN Accounts ON Transactions.ToAccountId = Accounts.AccountID JOIN Customers ON Accounts.CustomerID = Customers.CustomerID JOIN Banks ON Customers.BankID = Banks.BankID JOIN Transaction_Types ON Transaction_Types.Typeid = Transactions.Typeid\nWHERE (Transaction_Types.TypeName = 'Payment' OR Transaction_Types.TypeName = 'Remittance Transfer') AND Banks.Name = 'LMN Bank'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount WHERE {\n  ?transactions a :Transactions .\n  ?accounts a :Accounts .\n  ?transactions p:hasAccounts_ToAccountId ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?banks a :Banks .\n  ?customers p:hasBanks ?banks .\n  ?transaction_types a :Transaction_Types .\n  ?transactions p:hasTransaction_Types ?transaction_types .\n  ?transactions p:Amount ?amount .\n  ?transaction_types p:TypeName ?typename_w .\n  ?transaction_types p:TypeName ?typename_w2 .\n  ?banks p:name ?name_w .\n  FILTER((((STR(?typename_w) = \"Payment\" || STR(?typename_w2) = \"Remittance Transfer\")) && STR(?name_w) = \"LMN Bank\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the amounts of all payments and remittance transfers from LMN Bank.",
+      "qtype": "ambig",
+      "sql": "SELECT Transactions.Amount \nFROM Transactions JOIN Accounts ON Transactions.ToAccountId = Accounts.AccountID JOIN Customers ON Accounts.CustomerID = Customers.CustomerID JOIN Banks ON Customers.BankID = Banks.BankID JOIN Transaction_Types ON Transaction_Types.Typeid = Transactions.Typeid\nWHERE Transaction_Types.TypeName = 'Payment' OR Transaction_Types.TypeName = 'Remittance Transfer' AND Banks.Name = 'LMN Bank'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?amount WHERE {\n  ?transactions a :Transactions .\n  ?accounts a :Accounts .\n  ?transactions p:hasAccounts_ToAccountId ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?banks a :Banks .\n  ?customers p:hasBanks ?banks .\n  ?transaction_types a :Transaction_Types .\n  ?transactions p:hasTransaction_Types ?transaction_types .\n  ?transactions p:Amount ?amount .\n  ?transaction_types p:TypeName ?typename_w .\n  ?transaction_types p:TypeName ?typename_w2 .\n  ?banks p:name ?name_w .\n  FILTER((STR(?typename_w) = \"Payment\" || (STR(?typename_w2) = \"Remittance Transfer\" && STR(?name_w) = \"LMN Bank\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the amounts of all payments and remittance transfers from LMN Bank.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?amount WHERE {\n  ?transactions a :Transactions .\n  ?accounts a :Accounts .\n  ?transactions p:hasAccounts_ToAccountId ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?banks a :Banks .\n  ?customers p:hasBanks ?banks .\n  ?transaction_types a :Transaction_Types .\n  ?transactions p:hasTransaction_Types ?transaction_types .\n  ?transactions p:Amount ?amount .\n  ?transaction_types p:TypeName ?typename_w .\n  ?transaction_types p:TypeName ?typename_w2 .\n  ?banks p:name ?name_w .\n  FILTER((((STR(?typename_w) = \"Payment\" || STR(?typename_w2) = \"Remittance Transfer\")) && STR(?name_w) = \"LMN Bank\"))\n} }\n  low: { SELECT ?amount WHERE {\n  ?transactions a :Transactions .\n  ?accounts a :Accounts .\n  ?transactions p:hasAccounts_ToAccountId ?accounts .\n  ?customers a :Customers .\n  ?accounts p:hasCustomers ?customers .\n  ?banks a :Banks .\n  ?customers p:hasBanks ?banks .\n  ?transaction_types a :Transaction_Types .\n  ?transactions p:hasTransaction_Types ?transaction_types .\n  ?transactions p:Amount ?amount .\n  ?transaction_types p:TypeName ?typename_w .\n  ?transaction_types p:TypeName ?typename_w2 .\n  ?banks p:name ?name_w .\n  FILTER((STR(?typename_w) = \"Payment\" || (STR(?typename_w2) = \"Remittance Transfer\" && STR(?name_w) = \"LMN Bank\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

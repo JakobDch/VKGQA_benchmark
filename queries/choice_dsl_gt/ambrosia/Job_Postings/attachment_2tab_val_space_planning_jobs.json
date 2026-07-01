@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_space_planning_jobs",
+  "schema": "amb_attachment_2tab_val_space_planning_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which interior designers are minimalists and which landscape architects have the same style?",
+      "qtype": "unambig",
+      "sql": "SELECT Interior_Designers.Name\nFROM Interior_Designers\nWHERE Interior_Designers.Style = \"Minimalism\"\nUNION\nSELECT Landscape_Architects.Name\nFROM Landscape_Architects\nWHERE Landscape_Architects.Style = \"Minimalism\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?interior_designers a :Interior_Designers .\n    ?interior_designers p:name ?name .\n    ?interior_designers p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?landscape_architects a :Landscape_Architects .\n    ?landscape_architects p:name ?name .\n    ?landscape_architects p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show minimalist landscape architects and interior designers.",
+      "qtype": "ambig",
+      "sql": "SELECT Interior_Designers.Name\nFROM Interior_Designers\nUNION\nSELECT Landscape_Architects.Name\nFROM Landscape_Architects\nWHERE Landscape_Architects.Style = \"Minimalism\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?interior_designers a :Interior_Designers .\n    ?interior_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?landscape_architects a :Landscape_Architects .\n    ?landscape_architects p:name ?name .\n    ?landscape_architects p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show minimalist landscape architects and interior designers.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?interior_designers a :Interior_Designers .\n    ?interior_designers p:name ?name .\n    ?interior_designers p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?landscape_architects a :Landscape_Architects .\n    ?landscape_architects p:name ?name .\n    ?landscape_architects p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?interior_designers a :Interior_Designers .\n    ?interior_designers p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?landscape_architects a :Landscape_Architects .\n    ?landscape_architects p:name ?name .\n    ?landscape_architects p:Style ?style_f .\n    FILTER(STR(?style_f) = \"Minimalism\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} .
+source		SELECT `StudentID`, `FirstName`, `LastName` FROM `Students`
+
+mappingId	Departments_base
+target		ex:Departments/{DepartmentID} a :Departments ; p:DepartmentID {DepartmentID} ; p:DepartmentName {DepartmentName} .
+source		SELECT `DepartmentID`, `DepartmentName` FROM `Departments`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:CourseID {CourseID} ; p:StudentID {StudentID} .
+source		SELECT `EnrollmentID`, `CourseID`, `StudentID` FROM `Enrollments`
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Enrollments_CourseID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `EnrollmentID`, `CourseID` FROM `Enrollments` WHERE `CourseID` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{CourseID} a :Courses ; p:CourseID {CourseID} ; p:CourseTitle {CourseTitle} ; p:RoomNumber {RoomNumber} ; p:Building {Building} ; p:StartTime {StartTime} ; p:EndTime {EndTime} .
+source		SELECT `CourseID`, `CourseTitle`, `RoomNumber`, `Building`, `StartTime`, `EndTime` FROM `Courses`
+
+mappingId	Buildings_base
+target		ex:Buildings/{BuildingID} a :Buildings ; p:BuildingID {BuildingID} ; p:name {Name} ; p:Address {Address} .
+source		SELECT `BuildingID`, `Name`, `Address` FROM `Buildings`
+
+mappingId	Rooms_base
+target		ex:Rooms/{RoomID} a :Rooms ; p:RoomID {RoomID} ; p:BuildingID {BuildingID} ; p:Capacity {Capacity} .
+source		SELECT `RoomID`, `BuildingID`, `Capacity` FROM `Rooms`
+
+mappingId	Rooms_BuildingID_fk
+target		ex:Rooms/{RoomID} p:hasBuildings ex:Buildings/{BuildingID} .
+source		SELECT `RoomID`, `BuildingID` FROM `Rooms` WHERE `BuildingID` IS NOT NULL
+
+]]

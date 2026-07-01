@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_communities_features1",
+  "schema": "amb_scope_communities_features1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which feature value of features is common across all communities?",
+      "qtype": "unambig",
+      "sql": "SELECT Features.feature_value  from Communities_Features join Features on Communities_Features.feature_id = Features.feature_id join Communities on Communities_Features.community_id = Communities.community_id   GROUP BY Communities_Features.feature_id HAVING COUNT(DISTINCT Communities_Features.community_id) = (SELECT COUNT(*) FROM  Communities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?feature_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasCommunities ?parent . } GROUP BY ?child }\n  ?child p:feature_value ?feature_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Communities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What feature values are associated with each community?",
+      "qtype": "ambig",
+      "sql": "select communities.community_name , features.feature_value from Communities_Features join Features on Communities_Features.feature_id = Features.feature_id join Communities on Communities_Features.community_id = Communities.community_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?community_name ?feature_value WHERE {\n  ?communities_features a :Communities_Features .\n  ?features a :Features .\n  ?communities_features p:hasFeatures ?features .\n  ?communities a :Communities .\n  ?communities_features p:hasCommunities ?communities .\n  ?communities p:community_name ?community_name .\n  ?features p:feature_value ?feature_value .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What feature values are associated with each community?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?feature_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasCommunities ?parent . } GROUP BY ?child }\n  ?child p:feature_value ?feature_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Communities } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?community_name ?feature_value WHERE {\n  ?communities_features a :Communities_Features .\n  ?features a :Features .\n  ?communities_features p:hasFeatures ?features .\n  ?communities a :Communities .\n  ?communities_features p:hasCommunities ?communities .\n  ?communities p:community_name ?community_name .\n  ?features p:feature_value ?feature_value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

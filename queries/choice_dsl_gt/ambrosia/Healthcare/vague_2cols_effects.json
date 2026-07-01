@@ -1,0 +1,97 @@
+{
+  "domain": "Healthcare",
+  "db_base": "vague_2cols_effects",
+  "schema": "amb_vague_2cols_effects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all analgesic drugs, their side effects and manufacturers.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Manufacturer, Side_Effects FROM Medications WHERE Classification = 'Analgesic'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?manufacturer ?side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the drugs manufactured by 'Bayer' along with their side effects and effectiveness.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Side_Effects, Effectiveness FROM Medications WHERE Manufacturer = 'Bayer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?side_effects ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List all analgesic drugs, their effectiveness and manufacturers.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Manufacturer, Effectiveness FROM Medications WHERE Classification = 'Analgesic'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?manufacturer ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List all drugs, their effects and manufacturers that are analgesic.",
+      "qtype": "ambig",
+      "sql": "SELECT Name, Manufacturer, Side_Effects, Effectiveness FROM Medications WHERE Classification = 'Analgesic'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?manufacturer ?side_effects ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show all the drugs manufactured by 'Bayer' and their effectiveness.",
+      "qtype": "unambig",
+      "sql": "SELECT Name, Effectiveness FROM Medications WHERE Manufacturer = 'Bayer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show all the drugs and their effects that are manufactured by 'Bayer'",
+      "qtype": "ambig",
+      "sql": "SELECT Name, Side_Effects FROM Medications WHERE Manufacturer = 'Bayer'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all drugs, their effects and manufacturers that are analgesic.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?manufacturer ?side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n} }\n  component_2: { SELECT ?name ?manufacturer ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n} }\n  full: { SELECT ?name ?manufacturer ?side_effects ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Manufacturer ?manufacturer .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Classification ?classification_f .\n  FILTER(STR(?classification_f) = STR(\"Analgesic\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show all the drugs and their effects that are manufactured by 'Bayer'",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?side_effects ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n} }\n  component: { SELECT ?name ?effectiveness WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Effectiveness ?effectiveness .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n} }\n  component_2: { SELECT ?name ?side_effects WHERE {\n  ?medications a :Medications .\n  ?medications p:name ?name .\n  ?medications p:Side_Effects ?side_effects .\n  ?medications p:Manufacturer ?manufacturer_f .\n  FILTER(STR(?manufacturer_f) = STR(\"Bayer\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

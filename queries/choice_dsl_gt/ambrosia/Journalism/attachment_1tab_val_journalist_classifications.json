@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_journalist_classifications",
+  "schema": "amb_attachment_1tab_val_journalist_classifications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all stringers and editors paid 2000.",
+      "qtype": "ambig",
+      "sql": "SELECT Authors.Name \nFROM Authors\nWHERE (Authors.Classification = \"Stringer\" OR Authors.Classification = \"Editor\") AND Authors.Payment = 2000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?authors a :Authors .\n  ?authors p:name ?name .\n  ?authors p:Classification ?classification_w .\n  ?authors p:Classification ?classification_w2 .\n  ?authors p:Payment ?payment_w .\n  FILTER((((STR(?classification_w) = \"Stringer\" || STR(?classification_w2) = \"Editor\")) && (STR(?payment_w) = \"2000\" || STR(?payment_w) = \"2000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all stringers and editors paid 2000.",
+      "qtype": "ambig",
+      "sql": "SELECT Authors.Name \nFROM Authors\nWHERE Authors.Classification = \"Stringer\" OR Authors.Classification = \"Editor\" AND Authors.Payment = 2000",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?authors a :Authors .\n  ?authors p:name ?name .\n  ?authors p:Classification ?classification_w .\n  ?authors p:Classification ?classification_w2 .\n  ?authors p:Payment ?payment_w .\n  FILTER((STR(?classification_w) = \"Stringer\" || (STR(?classification_w2) = \"Editor\" && (STR(?payment_w) = \"2000\" || STR(?payment_w) = \"2000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all stringers and editors paid 2000.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?authors a :Authors .\n  ?authors p:name ?name .\n  ?authors p:Classification ?classification_w .\n  ?authors p:Classification ?classification_w2 .\n  ?authors p:Payment ?payment_w .\n  FILTER((((STR(?classification_w) = \"Stringer\" || STR(?classification_w2) = \"Editor\")) && (STR(?payment_w) = \"2000\" || STR(?payment_w) = \"2000.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?authors a :Authors .\n  ?authors p:name ?name .\n  ?authors p:Classification ?classification_w .\n  ?authors p:Classification ?classification_w2 .\n  ?authors p:Payment ?payment_w .\n  FILTER((STR(?classification_w) = \"Stringer\" || (STR(?classification_w2) = \"Editor\" && (STR(?payment_w) = \"2000\" || STR(?payment_w) = \"2000.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

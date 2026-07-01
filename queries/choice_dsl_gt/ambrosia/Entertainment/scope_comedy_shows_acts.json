@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "scope_comedy_shows_acts",
+  "schema": "amb_scope_comedy_shows_acts",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What acts are performed at each comedy show?",
+      "qtype": "ambig",
+      "sql": "SELECT Acts.act_name  from Comedy_Shows_Acts join Comedy_Shows on Comedy_Shows_Acts.comedy_show_id = Comedy_Shows.comedy_show_id join Acts on Comedy_Shows_Acts.acts_comedy_shows_id = Acts.act_id   GROUP BY Comedy_Shows_Acts.acts_comedy_shows_id HAVING COUNT(DISTINCT Comedy_Shows_Acts.comedy_show_id) = (SELECT COUNT(*) FROM  Comedy_Shows)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?act_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:acts_comedy_shows_id ?cg . ?child a :Acts ; p:act_id ?cg . ?l p:comedy_show_id ?pg . ?parent a :Comedy_Shows ; p:comedy_show_id ?pg . } GROUP BY ?child }\n  ?child p:act_name ?act_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Comedy_Shows } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What acts are performed at each comedy show?",
+      "qtype": "ambig",
+      "sql": "select comedy_shows.show_title , acts.act_name from Comedy_Shows_Acts join Comedy_Shows on Comedy_Shows_Acts.comedy_show_id = Comedy_Shows.comedy_show_id join Acts on Comedy_Shows_Acts.acts_comedy_shows_id = Acts.act_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?show_title ?act_name WHERE {\n  ?comedy_shows_acts a :Comedy_Shows_Acts .\n  ?comedy_shows a :Comedy_Shows .\n  ?comedy_shows_acts p:hasComedy_Shows ?comedy_shows .\n  ?acts a :Acts .\n  ?comedy_shows_acts p:hasActs ?acts .\n  ?comedy_shows p:show_title ?show_title .\n  ?acts p:act_name ?act_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What acts are performed at each comedy show?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?act_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:acts_comedy_shows_id ?cg . ?child a :Acts ; p:act_id ?cg . ?l p:comedy_show_id ?pg . ?parent a :Comedy_Shows ; p:comedy_show_id ?pg . } GROUP BY ?child }\n  ?child p:act_name ?act_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Comedy_Shows } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?show_title ?act_name WHERE {\n  ?comedy_shows_acts a :Comedy_Shows_Acts .\n  ?comedy_shows a :Comedy_Shows .\n  ?comedy_shows_acts p:hasComedy_Shows ?comedy_shows .\n  ?acts a :Acts .\n  ?comedy_shows_acts p:hasActs ?acts .\n  ?comedy_shows p:show_title ?show_title .\n  ?acts p:act_name ?act_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

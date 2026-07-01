@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_ref_airport_services",
+  "schema": "amb_attachment_2tab_ref_airport_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Can you show all complaints for January 6, 2023 and also all lost properties on any given day?",
+      "qtype": "unambig",
+      "sql": "SELECT LostProperties.itemdescription as description\nFROM Calendar JOIN LostProperties ON Calendar.Date = LostProperties.DateOfLoss\nUNION\nSELECT Complaints.description\nFROM Calendar JOIN Complaints ON Calendar.Date = Complaints.SubmissionDate\nWHERE Calendar.Date = \"2023-01-06\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?calendar a :Calendar .\n    ?lostproperties a :LostProperties .\n    ?calendar p:Date ?date_l .\n    ?lostproperties p:DateOfLoss ?dateofloss_r .\n    ?lostproperties p:ItemDescription ?itemdescription .\n    FILTER(STR(?date_l) = STR(?dateofloss_r))\n    BIND(?itemdescription AS ?o0)\n  }\n  UNION\n  {\n    ?calendar a :Calendar .\n    ?complaints a :Complaints .\n    ?calendar p:Date ?date_l .\n    ?complaints p:SubmissionDate ?submissiondate_r .\n    ?complaints p:Description ?description .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?submissiondate_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Which lost properties and complaints are associated with January 6, 2023?",
+      "qtype": "unambig",
+      "sql": "SELECT LostProperties.itemdescription as description\nFROM Calendar JOIN LostProperties ON Calendar.Date = LostProperties.DateOfLoss\nWHERE Calendar.Date = \"2023-01-06\"\nUNION\nSELECT Complaints.description\nFROM Calendar JOIN Complaints ON Calendar.Date = Complaints.SubmissionDate\nWHERE Calendar.Date = \"2023-01-06\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?calendar a :Calendar .\n    ?lostproperties a :LostProperties .\n    ?calendar p:Date ?date_l .\n    ?lostproperties p:DateOfLoss ?dateofloss_r .\n    ?lostproperties p:ItemDescription ?itemdescription .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?dateofloss_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?itemdescription AS ?o0)\n  }\n  UNION\n  {\n    ?calendar a :Calendar .\n    ?complaints a :Complaints .\n    ?calendar p:Date ?date_l .\n    ?complaints p:SubmissionDate ?submissiondate_r .\n    ?complaints p:Description ?description .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?submissiondate_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display lost properties and complaints for January 6, 2023.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?calendar a :Calendar .\n    ?lostproperties a :LostProperties .\n    ?calendar p:Date ?date_l .\n    ?lostproperties p:DateOfLoss ?dateofloss_r .\n    ?lostproperties p:ItemDescription ?itemdescription .\n    FILTER(STR(?date_l) = STR(?dateofloss_r))\n    BIND(?itemdescription AS ?o0)\n  }\n  UNION\n  {\n    ?calendar a :Calendar .\n    ?complaints a :Complaints .\n    ?calendar p:Date ?date_l .\n    ?complaints p:SubmissionDate ?submissiondate_r .\n    ?complaints p:Description ?description .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?submissiondate_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?description AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?calendar a :Calendar .\n    ?lostproperties a :LostProperties .\n    ?calendar p:Date ?date_l .\n    ?lostproperties p:DateOfLoss ?dateofloss_r .\n    ?lostproperties p:ItemDescription ?itemdescription .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?dateofloss_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?itemdescription AS ?o0)\n  }\n  UNION\n  {\n    ?calendar a :Calendar .\n    ?complaints a :Complaints .\n    ?calendar p:Date ?date_l .\n    ?complaints p:SubmissionDate ?submissiondate_r .\n    ?complaints p:Description ?description .\n    ?calendar p:Date ?date_f .\n    FILTER(STR(?date_l) = STR(?submissiondate_r))\n    FILTER(STR(?date_f) = \"2023-01-06\")\n    BIND(?description AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

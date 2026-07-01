@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Exam_base
+target		ex:Exams/{id} a :Exams ; p:id {id} ; p:examName {examName} ; p:date {date} .
+source		SELECT `id`, `examName`, `date` FROM `Exam`
+
+mappingId	Type_Of_Question_base
+target		ex:Type_Of_Question/{id} a :Type_Of_Question ; p:id {id} ; p:questionType {questionType} .
+source		SELECT `id`, `questionType` FROM `Type_Of_Question`
+
+mappingId	Exam_Type_Of_Question_base
+target		ex:Exam_Type_Of_Question/{_amb_rowid} a :Exam_Type_Of_Question ; p:examID {examID} ; p:questionTypeID {questionTypeID} .
+source		SELECT `_amb_rowid`, `examID`, `questionTypeID` FROM `Exam_Type_Of_Question`
+
+mappingId	Exam_Type_Of_Question_questionTypeID_fk
+target		ex:Exam_Type_Of_Question/{_amb_rowid} p:hasType_Of_Question ex:Type_Of_Question/{questionTypeID} .
+source		SELECT `_amb_rowid`, `questionTypeID` FROM `Exam_Type_Of_Question` WHERE `questionTypeID` IS NOT NULL
+
+mappingId	Exam_Type_Of_Question_examID_fk
+target		ex:Exam_Type_Of_Question/{_amb_rowid} p:hasExams ex:Exams/{examID} .
+source		SELECT `_amb_rowid`, `examID` FROM `Exam_Type_Of_Question` WHERE `examID` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{studentId} a :Students ; p:studentId {studentId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:enrollmentDate {enrollmentDate} .
+source		SELECT `studentId`, `firstName`, `lastName`, `enrollmentDate` FROM `Students`
+
+mappingId	Student_Grades_base
+target		ex:Student_Grades/{_amb_rowid} a :Student_Grades ; p:studentId {studentId} ; p:examId {examId} ; p:grade {grade} .
+source		SELECT `_amb_rowid`, `studentId`, `examId`, `grade` FROM `Student_Grades`
+
+mappingId	Student_Grades_examId_fk
+target		ex:Student_Grades/{_amb_rowid} p:hasExams ex:Exams/{examId} .
+source		SELECT `_amb_rowid`, `examId` FROM `Student_Grades` WHERE `examId` IS NOT NULL
+
+mappingId	Student_Grades_studentId_fk
+target		ex:Student_Grades/{_amb_rowid} p:hasStudents ex:Students/{studentId} .
+source		SELECT `_amb_rowid`, `studentId` FROM `Student_Grades` WHERE `studentId` IS NOT NULL
+
+]]

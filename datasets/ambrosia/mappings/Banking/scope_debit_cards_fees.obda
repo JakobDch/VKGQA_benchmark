@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Debit_Cards_base
+target		ex:Debit_Cards/{CardID} a :Debit_Cards ; p:CardID {CardID} ; p:CustomerName {CustomerName} ; p:AccountBalance {AccountBalance} .
+source		SELECT `CardID`, `CustomerName`, `AccountBalance` FROM `Debit_Cards`
+
+mappingId	Fees_base
+target		ex:Fees/{FeeType} a :Fees ; p:FeeType {FeeType} ; p:FeeValue {FeeValue} .
+source		SELECT `FeeType`, `FeeValue` FROM `Fees`
+
+mappingId	Debit_Card_Fees_base
+target		ex:Debit_Card_Fees/{_amb_rowid} a :Debit_Card_Fees ; p:CardID {CardID} ; p:FeeType {FeeType} ; p:AmountPaid {AmountPaid} .
+source		SELECT `_amb_rowid`, `CardID`, `FeeType`, `AmountPaid` FROM `Debit_Card_Fees`
+
+mappingId	Debit_Card_Fees_FeeType_fk
+target		ex:Debit_Card_Fees/{_amb_rowid} p:hasFees ex:Fees/{FeeType} .
+source		SELECT `_amb_rowid`, `FeeType` FROM `Debit_Card_Fees` WHERE `FeeType` IS NOT NULL
+
+mappingId	Debit_Card_Fees_CardID_fk
+target		ex:Debit_Card_Fees/{_amb_rowid} p:hasDebit_Cards ex:Debit_Cards/{CardID} .
+source		SELECT `_amb_rowid`, `CardID` FROM `Debit_Card_Fees` WHERE `CardID` IS NOT NULL
+
+]]

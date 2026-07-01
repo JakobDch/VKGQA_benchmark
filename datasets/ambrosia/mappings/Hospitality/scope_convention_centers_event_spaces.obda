@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Convention_Centers_base
+target		ex:Convention_Centers/{id} a :Convention_Centers ; p:id {id} ; p:name {name} ; p:capacity {capacity} .
+source		SELECT `id`, `name`, `capacity` FROM `Convention_Centers`
+
+mappingId	Event_Spaces_base
+target		ex:EventSpaces/{id} a :EventSpaces ; p:id {id} ; p:space_name {space_name} ; p:type {type} .
+source		SELECT `id`, `space_name`, `type` FROM `Event_Spaces`
+
+mappingId	Rooms_base
+target		ex:Rooms/{id} a :Rooms ; p:id {id} ; p:room_number {room_number} ; p:floor_no {floor_no} ; p:capacity {capacity} .
+source		SELECT `id`, `room_number`, `floor_no`, `capacity` FROM `Rooms`
+
+mappingId	Guests_base
+target		ex:Guests/{id} a :Guests ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} .
+source		SELECT `id`, `first_name`, `last_name`, `email` FROM `Guests`
+
+mappingId	Reservations_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:guest_id {guest_id} ; p:event_space_id {event_space_id} ; p:checkin {checkin} ; p:checkout {checkout} .
+source		SELECT `id`, `guest_id`, `event_space_id`, `checkin`, `checkout` FROM `Reservations`
+
+mappingId	Reservations_event_space_id_fk
+target		ex:Reservations/{id} p:hasEventSpaces ex:EventSpaces/{event_space_id} .
+source		SELECT `id`, `event_space_id` FROM `Reservations` WHERE `event_space_id` IS NOT NULL
+
+mappingId	Reservations_guest_id_fk
+target		ex:Reservations/{id} p:hasGuests ex:Guests/{guest_id} .
+source		SELECT `id`, `guest_id` FROM `Reservations` WHERE `guest_id` IS NOT NULL
+
+mappingId	Convention_Centers_Event_Spaces_base
+target		ex:Convention_Centers_Event_Spaces/{_amb_rowid} a :Convention_Centers_Event_Spaces ; p:convention_center_id {convention_center_id} ; p:event_space_id {event_space_id} .
+source		SELECT `_amb_rowid`, `convention_center_id`, `event_space_id` FROM `Convention_Centers_Event_Spaces`
+
+mappingId	Convention_Centers_Event_Spaces_event_space_id_fk
+target		ex:Convention_Centers_Event_Spaces/{_amb_rowid} p:hasEventSpaces ex:EventSpaces/{event_space_id} .
+source		SELECT `_amb_rowid`, `event_space_id` FROM `Convention_Centers_Event_Spaces` WHERE `event_space_id` IS NOT NULL
+
+mappingId	Convention_Centers_Event_Spaces_convention_center_id_fk
+target		ex:Convention_Centers_Event_Spaces/{_amb_rowid} p:hasConvention_Centers ex:Convention_Centers/{convention_center_id} .
+source		SELECT `_amb_rowid`, `convention_center_id` FROM `Convention_Centers_Event_Spaces` WHERE `convention_center_id` IS NOT NULL
+
+]]

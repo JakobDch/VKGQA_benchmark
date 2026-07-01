@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_literature_type",
+  "schema": "amb_attachment_2tab_val_literature_type",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display novels and poems written in Italian.",
+      "qtype": "ambig",
+      "sql": "SELECT Novels.title as title\nFROM Novels\nWHERE Novels.language = \"Italian\"\nUNION\nSELECT Poems.poem_name as title\nFROM Poems\nWHERE Poems.language = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novel .\n    ?novels p:title ?title .\n    ?novels p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?poems a :Poems .\n    ?poems p:poem_name ?poem_name .\n    ?poems p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?poem_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display novels and poems written in Italian.",
+      "qtype": "ambig",
+      "sql": "SELECT Novels.title as title\nFROM Novels\nUNION\nSELECT Poems.poem_name as title\nFROM Poems\nWHERE Poems.language = \"Italian\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novel .\n    ?novels p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?poems a :Poems .\n    ?poems p:poem_name ?poem_name .\n    ?poems p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?poem_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display novels and poems written in Italian.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novel .\n    ?novels p:title ?title .\n    ?novels p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?poems a :Poems .\n    ?poems p:poem_name ?poem_name .\n    ?poems p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?poem_name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?novels a :Novel .\n    ?novels p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?poems a :Poems .\n    ?poems p:poem_name ?poem_name .\n    ?poems p:language ?language_f .\n    FILTER(STR(?language_f) = \"Italian\")\n    BIND(?poem_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

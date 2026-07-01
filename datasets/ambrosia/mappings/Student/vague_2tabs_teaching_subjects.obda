@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Academic_Discipline_base
+target		ex:Academic_Discipline/{DisciplineID} a :Academic_Discipline ; p:DisciplineID {DisciplineID} ; p:name {Name} ; p:Description {Description} .
+source		SELECT `DisciplineID`, `Name`, `Description` FROM `Academic_Discipline`
+
+mappingId	Grade_Level_base
+target		ex:Grade_Level/{LevelID} a :Grade_Level ; p:LevelID {LevelID} ; p:name {Name} ; p:MinAge {MinAge} ; p:MaxAge {MaxAge} .
+source		SELECT `LevelID`, `Name`, `MinAge`, `MaxAge` FROM `Grade_Level`
+
+mappingId	Student_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:BirthDate {BirthDate} ; p:GradeLevelID {GradeLevelID} ; p:DisciplineID {DisciplineID} ; p:name {fullname} .
+source		SELECT `ID`, `BirthDate`, `GradeLevelID`, `DisciplineID`, `fullname` FROM `Student`
+
+mappingId	Student_DisciplineID_fk
+target		ex:Students/{ID} p:hasAcademic_Discipline ex:Academic_Discipline/{DisciplineID} .
+source		SELECT `ID`, `DisciplineID` FROM `Student` WHERE `DisciplineID` IS NOT NULL
+
+mappingId	Student_GradeLevelID_fk
+target		ex:Students/{ID} p:hasGrade_Level ex:Grade_Level/{GradeLevelID} .
+source		SELECT `ID`, `GradeLevelID` FROM `Student` WHERE `GradeLevelID` IS NOT NULL
+
+mappingId	Teacher_base
+target		ex:Teachers/{ID} a :Teachers ; p:ID {ID} ; p:HireDate {HireDate} ; p:GradeLevelID {GradeLevelID} ; p:DisciplineID {DisciplineID} ; p:name {fullname} .
+source		SELECT `ID`, `HireDate`, `GradeLevelID`, `DisciplineID`, `fullname` FROM `Teacher`
+
+mappingId	Teacher_DisciplineID_fk
+target		ex:Teachers/{ID} p:hasAcademic_Discipline ex:Academic_Discipline/{DisciplineID} .
+source		SELECT `ID`, `DisciplineID` FROM `Teacher` WHERE `DisciplineID` IS NOT NULL
+
+mappingId	Teacher_GradeLevelID_fk
+target		ex:Teachers/{ID} p:hasGrade_Level ex:Grade_Level/{GradeLevelID} .
+source		SELECT `ID`, `GradeLevelID` FROM `Teacher` WHERE `GradeLevelID` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Theme_Parks_base
+target		ex:Theme_Parks/{park_id} a :Theme_Parks ; p:park_id {park_id} ; p:name {name} ; p:location {location} .
+source		SELECT `park_id`, `name`, `location` FROM `Theme_Parks`
+
+mappingId	Attractions_base
+target		ex:Attractions/{attraction_id} a :Attractions ; p:attraction_id {attraction_id} ; p:type {type} ; p:description {description} .
+source		SELECT `attraction_id`, `type`, `description` FROM `Attractions`
+
+mappingId	Theme_Parks_Attractions_base
+target		ex:Theme_Parks_Attractions/{_amb_rowid} a :Theme_Parks_Attractions ; p:theme_park_id {theme_park_id} ; p:attraction_id {attraction_id} .
+source		SELECT `_amb_rowid`, `theme_park_id`, `attraction_id` FROM `Theme_Parks_Attractions`
+
+mappingId	Theme_Parks_Attractions_attraction_id_fk
+target		ex:Theme_Parks_Attractions/{_amb_rowid} p:hasAttractions ex:Attractions/{attraction_id} .
+source		SELECT `_amb_rowid`, `attraction_id` FROM `Theme_Parks_Attractions` WHERE `attraction_id` IS NOT NULL
+
+mappingId	Theme_Parks_Attractions_theme_park_id_fk
+target		ex:Theme_Parks_Attractions/{_amb_rowid} p:hasTheme_Parks ex:Theme_Parks/{theme_park_id} .
+source		SELECT `_amb_rowid`, `theme_park_id` FROM `Theme_Parks_Attractions` WHERE `theme_park_id` IS NOT NULL
+
+]]

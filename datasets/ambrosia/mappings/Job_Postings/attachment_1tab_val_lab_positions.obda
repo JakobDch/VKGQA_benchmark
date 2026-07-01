@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Company`
+
+mappingId	Department_base
+target		ex:Departments/{id} a :Departments ; p:id {id} ; p:companyId {companyId} ; p:departmentName {departmentName} .
+source		SELECT `id`, `companyId`, `departmentName` FROM `Department`
+
+mappingId	Department_companyId_fk
+target		ex:Departments/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Department` WHERE `companyId` IS NOT NULL
+
+mappingId	PositionType_base
+target		ex:PositionType/{id} a :PositionType ; p:id {id} ; p:typeName {typeName} .
+source		SELECT `id`, `typeName` FROM `PositionType`
+
+mappingId	LabPosition_base
+target		ex:LabPosition/{id} a :LabPosition ; p:id {id} ; p:positionTypeId {positionTypeId} ; p:labPosition {labPosition} ; p:gender {gender} ; p:minimumEducation {minimumEducation} ; p:experienceInYears {experienceInYears} ; p:salaryRange {salaryRange} .
+source		SELECT `id`, `positionTypeId`, `labPosition`, `gender`, `minimumEducation`, `experienceInYears`, `salaryRange` FROM `LabPosition`
+
+mappingId	LabPosition_positionTypeId_fk
+target		ex:LabPosition/{id} p:hasPositionType ex:PositionType/{positionTypeId} .
+source		SELECT `id`, `positionTypeId` FROM `LabPosition` WHERE `positionTypeId` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:hireDate {hireDate} ; p:jobTitle {jobTitle} ; p:departmentId {departmentId} ; p:gender {gender} .
+source		SELECT `id`, `firstName`, `lastName`, `dateOfBirth`, `email`, `phoneNumber`, `hireDate`, `jobTitle`, `departmentId`, `gender` FROM `Employee`
+
+mappingId	Employee_departmentId_fk
+target		ex:Employees/{id} p:hasDepartments ex:Departments/{departmentId} .
+source		SELECT `id`, `departmentId` FROM `Employee` WHERE `departmentId` IS NOT NULL
+
+]]

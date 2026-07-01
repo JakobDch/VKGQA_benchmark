@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Live_Event_base
+target		ex:Live_Event/{EventID} a :Live_Event ; p:EventID {EventID} ; p:Title {Title} ; p:Date {Date} ; p:Time {Time} ; p:VenueName {VenueName} ; p:Live_Performance {Live_Performance} ; p:Venue_Capacity {Venue_Capacity} .
+source		SELECT `EventID`, `Title`, `Date`, `Time`, `VenueName`, `Live_Performance`, `Venue_Capacity` FROM `Live_Event`
+
+mappingId	Artist_base
+target		ex:Artist/{ArtistID} a :Artist ; p:ArtistID {ArtistID} ; p:name {Name} ; p:Genre {Genre} .
+source		SELECT `ArtistID`, `Name`, `Genre` FROM `Artist`
+
+mappingId	Theater_Play_base
+target		ex:Theater_Play/{PlayID} a :Theater_Play ; p:PlayID {PlayID} ; p:Title {Title} ; p:Author {Author} ; p:Year {Year} .
+source		SELECT `PlayID`, `Title`, `Author`, `Year` FROM `Theater_Play`
+
+mappingId	Concert_base
+target		ex:Concert/{ConcertID} a :Concert ; p:ConcertID {ConcertID} ; p:Band_or_Artist_name {Band_or_Artist_name} ; p:Album {Album} .
+source		SELECT `ConcertID`, `Band_or_Artist_name`, `Album` FROM `Concert`
+
+mappingId	Artists_in_Concert_base
+target		ex:Artists_in_Concert/{ConcertID}/{ArtistID} a :Artists_in_Concert ; p:ConcertID {ConcertID} ; p:ArtistID {ArtistID} .
+source		SELECT `ConcertID`, `ArtistID` FROM `Artists_in_Concert`
+
+mappingId	Artists_in_Concert_ArtistID_fk
+target		ex:Artists_in_Concert/{ConcertID}/{ArtistID} p:hasArtist ex:Artist/{ArtistID} .
+source		SELECT `ConcertID`, `ArtistID` FROM `Artists_in_Concert` WHERE `ArtistID` IS NOT NULL
+
+mappingId	Artists_in_Concert_ConcertID_fk
+target		ex:Artists_in_Concert/{ConcertID}/{ArtistID} p:hasConcert ex:Concert/{ConcertID} .
+source		SELECT `ConcertID`, `ArtistID` FROM `Artists_in_Concert` WHERE `ConcertID` IS NOT NULL
+
+mappingId	Plays_at_Venues_base
+target		ex:Plays_at_Venues/{PlayID}/{VenueName} a :Plays_at_Venues ; p:PlayID {PlayID} ; p:VenueName {VenueName} .
+source		SELECT `PlayID`, `VenueName` FROM `Plays_at_Venues`
+
+mappingId	Plays_at_Venues_VenueName_fk
+target		ex:Plays_at_Venues/{PlayID}/{VenueName} p:hasLive_Event ex:Live_Event/{VenueName} .
+source		SELECT `PlayID`, `VenueName` FROM `Plays_at_Venues` WHERE `VenueName` IS NOT NULL
+
+mappingId	Plays_at_Venues_PlayID_fk
+target		ex:Plays_at_Venues/{PlayID}/{VenueName} p:hasTheater_Play ex:Theater_Play/{PlayID} .
+source		SELECT `PlayID`, `VenueName` FROM `Plays_at_Venues` WHERE `PlayID` IS NOT NULL
+
+]]

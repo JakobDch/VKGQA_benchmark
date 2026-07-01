@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_ref_sales_and_marketing_jobs",
+  "schema": "amb_attachment_2tab_ref_sales_and_marketing_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What sales associates have a target market of B2C and what marketing specialists have the same target market?",
+      "qtype": "unambig",
+      "sql": "SELECT Position.title\nFROM TargetMarket JOIN SalesAssociates ON TargetMarket.id = SalesAssociates.target_market_id JOIN Position ON Position.id = SalesAssociates.Position_id\nWHERE TargetMarket.type = 'B2C'\nUNION\nSELECT Position.title\nFROM TargetMarket JOIN MarketingSpecialists ON TargetMarket.id = MarketingSpecialists.target_market_id JOIN Position ON Position.id = MarketingSpecialists.Position_id\nWHERE TargetMarket.type = 'B2C'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?targetmarket a :TargetMarket .\n    ?salesassociates a :SalesAssociates .\n    ?salesassociates p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?salesassociates p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?targetmarket a :TargetMarket .\n    ?marketingspecialists a :MarketingSpecialists .\n    ?marketingspecialists p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?marketingspecialists p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all sales associates and also provide a list of marketing specialists with a target market of B2C.",
+      "qtype": "unambig",
+      "sql": "SELECT Position.title\nFROM TargetMarket JOIN SalesAssociates ON TargetMarket.id = SalesAssociates.target_market_id JOIN Position ON Position.id = SalesAssociates.Position_id\nUNION\nSELECT Position.title\nFROM TargetMarket JOIN MarketingSpecialists ON TargetMarket.id = MarketingSpecialists.target_market_id JOIN Position ON Position.id = MarketingSpecialists.Position_id\nWHERE TargetMarket.type = 'B2C'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?targetmarket a :TargetMarket .\n    ?salesassociates a :SalesAssociates .\n    ?salesassociates p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?salesassociates p:hasPosition ?position .\n    ?position p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?targetmarket a :TargetMarket .\n    ?marketingspecialists a :MarketingSpecialists .\n    ?marketingspecialists p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?marketingspecialists p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show sales associates and marketing specialists with a target market of B2C.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?targetmarket a :TargetMarket .\n    ?salesassociates a :SalesAssociates .\n    ?salesassociates p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?salesassociates p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?targetmarket a :TargetMarket .\n    ?marketingspecialists a :MarketingSpecialists .\n    ?marketingspecialists p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?marketingspecialists p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?targetmarket a :TargetMarket .\n    ?salesassociates a :SalesAssociates .\n    ?salesassociates p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?salesassociates p:hasPosition ?position .\n    ?position p:title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?targetmarket a :TargetMarket .\n    ?marketingspecialists a :MarketingSpecialists .\n    ?marketingspecialists p:hasTargetMarket ?targetmarket .\n    ?position a :Position .\n    ?marketingspecialists p:hasPosition ?position .\n    ?position p:title ?title .\n    ?targetmarket p:type ?type_f .\n    FILTER(STR(?type_f) = \"B2C\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

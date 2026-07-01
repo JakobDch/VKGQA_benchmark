@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Scholarships_base
+target		ex:Scholarships/{id} a :Scholarships ; p:id {id} ; p:name {name} ; p:amount {amount} .
+source		SELECT `id`, `name`, `amount` FROM `Scholarships`
+
+mappingId	Criteria_base
+target		ex:Criteria/{id} a :Criteria ; p:id {id} ; p:value {value} .
+source		SELECT `id`, `value` FROM `Criteria`
+
+mappingId	Scholarship_Criteria_base
+target		ex:Scholarship_Criteria/{_amb_rowid} a :Scholarship_Criteria ; p:scholarship_id {scholarship_id} ; p:criterion_id {criterion_id} .
+source		SELECT `_amb_rowid`, `scholarship_id`, `criterion_id` FROM `Scholarship_Criteria`
+
+mappingId	Scholarship_Criteria_criterion_id_fk
+target		ex:Scholarship_Criteria/{_amb_rowid} p:hasCriteria ex:Criteria/{criterion_id} .
+source		SELECT `_amb_rowid`, `criterion_id` FROM `Scholarship_Criteria` WHERE `criterion_id` IS NOT NULL
+
+mappingId	Scholarship_Criteria_scholarship_id_fk
+target		ex:Scholarship_Criteria/{_amb_rowid} p:hasScholarships ex:Scholarships/{scholarship_id} .
+source		SELECT `_amb_rowid`, `scholarship_id` FROM `Scholarship_Criteria` WHERE `scholarship_id` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{student_id} a :Students ; p:student_id {student_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} ; p:admission_date {admission_date} .
+source		SELECT `student_id`, `first_name`, `last_name`, `email`, `phone_number`, `admission_date` FROM `Students`
+
+mappingId	Applications_base
+target		ex:Applications/{application_id} a :Applications ; p:application_id {application_id} ; p:student_id {student_id} ; p:scholarship_id {scholarship_id} ; p:submission_date {submission_date} ; p:status {status} .
+source		SELECT `application_id`, `student_id`, `scholarship_id`, `submission_date`, `status` FROM `Applications`
+
+mappingId	Applications_scholarship_id_fk
+target		ex:Applications/{application_id} p:hasScholarships ex:Scholarships/{scholarship_id} .
+source		SELECT `application_id`, `scholarship_id` FROM `Applications` WHERE `scholarship_id` IS NOT NULL
+
+mappingId	Applications_student_id_fk
+target		ex:Applications/{application_id} p:hasStudents ex:Students/{student_id} .
+source		SELECT `application_id`, `student_id` FROM `Applications` WHERE `student_id` IS NOT NULL
+
+]]

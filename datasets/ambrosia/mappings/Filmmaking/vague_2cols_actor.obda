@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Director_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:name {name} ; p:birthDate {birthDate} .
+source		SELECT `id`, `name`, `birthDate` FROM `Director`
+
+mappingId	Actor_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:name {fullName} ; p:birthDate {birthDate} .
+source		SELECT `id`, `fullName`, `birthDate` FROM `Actor`
+
+mappingId	Movie_base
+target		ex:Movies/{id} a :Movies ; p:id {id} ; p:title {title} ; p:releaseYear {releaseYear} ; p:directorId {directorId} .
+source		SELECT `id`, `title`, `releaseYear`, `directorId` FROM `Movie`
+
+mappingId	Movie_directorId_fk
+target		ex:Movies/{id} p:hasDirectors ex:Directors/{directorId} .
+source		SELECT `id`, `directorId` FROM `Movie` WHERE `directorId` IS NOT NULL
+
+mappingId	Role_base
+target		ex:Role/{id} a :Role ; p:id {id} ; p:movieId {movieId} ; p:leadRole {leadRole} ; p:supportingRole {supportingRole} ; p:actorId {actorId} ; p:genreId {genreId} ; p:rating {rating} .
+source		SELECT `id`, `movieId`, `leadRole`, `supportingRole`, `actorId`, `genreId`, `rating` FROM `Role`
+
+mappingId	Role_genreId_fk
+target		ex:Role/{id} p:hasGenres ex:Genres/{genreId} .
+source		SELECT `id`, `genreId` FROM `Role` WHERE `genreId` IS NOT NULL
+
+mappingId	Role_actorId_fk
+target		ex:Role/{id} p:hasActors ex:Actors/{actorId} .
+source		SELECT `id`, `actorId` FROM `Role` WHERE `actorId` IS NOT NULL
+
+mappingId	Role_movieId_fk
+target		ex:Role/{id} p:hasMovies ex:Movies/{movieId} .
+source		SELECT `id`, `movieId` FROM `Role` WHERE `movieId` IS NOT NULL
+
+mappingId	Genre_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Genre`
+
+mappingId	Rating_base
+target		ex:Rating/{id} a :Rating ; p:id {id} ; p:roleId {roleId} ; p:score {score} .
+source		SELECT `id`, `roleId`, `score` FROM `Rating`
+
+mappingId	Rating_roleId_fk
+target		ex:Rating/{id} p:hasRole ex:Role/{roleId} .
+source		SELECT `id`, `roleId` FROM `Rating` WHERE `roleId` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:City/{ID} a :City ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `City`
+
+mappingId	Hotel_base
+target		ex:Hotels/{ID} a :Hotels ; p:ID {ID} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:PriceRange {PriceRange} .
+source		SELECT `ID`, `Name`, `Address`, `PhoneNumber`, `PriceRange` FROM `Hotel`
+
+mappingId	Hotel_ID_fk
+target		ex:Hotels/{ID} p:hasCity ex:City/{ID} .
+source		SELECT `ID` FROM `Hotel` WHERE `ID` IS NOT NULL
+
+mappingId	Amenities_base
+target		ex:Amenities/{ID} a :Amenities ; p:ID {ID} ; p:Description {Description} .
+source		SELECT `ID`, `Description` FROM `Amenities`
+
+mappingId	HotelAmenities_base
+target		ex:HotelAmenities/{_amb_rowid} a :HotelAmenities ; p:HotelID {HotelID} ; p:AmenityID {AmenityID} ; p:Available {Available} .
+source		SELECT `_amb_rowid`, `HotelID`, `AmenityID`, `Available` FROM `HotelAmenities`
+
+mappingId	HotelAmenities_AmenityID_fk
+target		ex:HotelAmenities/{_amb_rowid} p:hasAmenities ex:Amenities/{AmenityID} .
+source		SELECT `_amb_rowid`, `AmenityID` FROM `HotelAmenities` WHERE `AmenityID` IS NOT NULL
+
+mappingId	HotelAmenities_HotelID_fk
+target		ex:HotelAmenities/{_amb_rowid} p:hasHotels ex:Hotels/{HotelID} .
+source		SELECT `_amb_rowid`, `HotelID` FROM `HotelAmenities` WHERE `HotelID` IS NOT NULL
+
+mappingId	SwimmingPool_base
+target		ex:SwimmingPool/{ID} a :SwimmingPool ; p:ID {ID} ; p:PoolType {PoolType} ; p:Size {Size} ; p:MaintenanceFrequency {MaintenanceFrequency} .
+source		SELECT `ID`, `PoolType`, `Size`, `MaintenanceFrequency` FROM `SwimmingPool`
+
+mappingId	SwimmingPool_ID_fk
+target		ex:SwimmingPool/{ID} p:hasHotels ex:Hotels/{ID} .
+source		SELECT `ID` FROM `SwimmingPool` WHERE `ID` IS NOT NULL
+
+mappingId	HotTub_base
+target		ex:HotTub/{ID} a :HotTub ; p:ID {ID} ; p:Capacity {Capacity} ; p:HeatingMethod {HeatingMethod} .
+source		SELECT `ID`, `Capacity`, `HeatingMethod` FROM `HotTub`
+
+mappingId	HotTub_ID_fk
+target		ex:HotTub/{ID} p:hasHotels ex:Hotels/{ID} .
+source		SELECT `ID` FROM `HotTub` WHERE `ID` IS NOT NULL
+
+]]

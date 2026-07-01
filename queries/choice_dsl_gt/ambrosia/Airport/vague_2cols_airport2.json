@@ -1,0 +1,86 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_airport2",
+  "schema": "amb_vague_2cols_airport2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the cities with airports ordered by the number of runways alongside the runway details for each.",
+      "qtype": "unambig",
+      "sql": "select cities.name, Airports.RunwayCount from Airports JOIN Cities ON Cities.Id = Airports.Id order by RunwayCount",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Display a list of the delayed flights and what airport city they are in",
+      "qtype": "unambig",
+      "sql": "select cities.name, flights.FlightId from Airports JOIN flights ON flights.DepartureAirportId = airports.Id JOIN Cities ON Cities.Id = Airports.Id where status = 'Delayed'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?flightid WHERE {\n  ?airports a :Airports .\n  ?flights a :Flights .\n  ?flights p:hasAirports_DepartureAirportId ?airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?flights p:FlightId ?flightid .\n  ?flights p:Status ?status_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?status_f) = \"Delayed\")\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Display a list of the delayed flights and what airport code they are in",
+      "qtype": "unambig",
+      "sql": "select Airports.Code, flights.FlightId from Airports JOIN flights ON flights.DepartureAirportId = airports.Id JOIN Cities ON Cities.Id = Airports.Id where status = 'Delayed'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?code ?flightid WHERE {\n  ?airports a :Airports .\n  ?flights a :Flights .\n  ?flights p:hasAirports_DepartureAirportId ?airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?airports p:Code ?code .\n  ?flights p:FlightId ?flightid .\n  ?flights p:Status ?status_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?status_f) = \"Delayed\")\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Show the airport codes and runway information all ordered by the number of runways.",
+      "qtype": "unambig",
+      "sql": "select Airports.Code, Airports.RunwayCount from Airports JOIN Cities ON Cities.Id = Airports.Id order by RunwayCount",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?code ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?airports p:Code ?code .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Show the airports by city and code, including the runway data, ordered by the amount of runways.",
+      "qtype": "unambig",
+      "sql": "select cities.name, Airports.Code, Airports.RunwayCount from Airports JOIN Cities ON Cities.Id = Airports.Id order by RunwayCount",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?code ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?airports p:Code ?code .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o)",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display the airports and their runways in order of the number of runways they have",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o) }\n  component_2: { SELECT ?code ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?airports p:Code ?code .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o) }\n  full: { SELECT ?name ?code ?runwaycount WHERE {\n  ?airports a :Airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?airports p:Code ?code .\n  ?airports p:RunwayCount ?runwaycount .\n  ?airports p:RunwayCount ?runwaycount_o .\n  FILTER(STR(?id_l) = STR(?id_r))\n}\nORDER BY ASC(?runwaycount_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Display a list of the delayed flights and what airport they are in",
+      "ambig_type": "vague",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?flightid WHERE {\n  ?airports a :Airports .\n  ?flights a :Flights .\n  ?flights p:hasAirports_DepartureAirportId ?airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?cities p:name ?name .\n  ?flights p:FlightId ?flightid .\n  ?flights p:Status ?status_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?status_f) = \"Delayed\")\n} }\n  component_2: { SELECT ?code ?flightid WHERE {\n  ?airports a :Airports .\n  ?flights a :Flights .\n  ?flights p:hasAirports_DepartureAirportId ?airports .\n  ?cities a :Cities .\n  ?cities p:Id ?id_l .\n  ?airports p:Id ?id_r .\n  ?airports p:Code ?code .\n  ?flights p:FlightId ?flightid .\n  ?flights p:Status ?status_f .\n  FILTER(STR(?id_l) = STR(?id_r))\n  FILTER(STR(?status_f) = \"Delayed\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

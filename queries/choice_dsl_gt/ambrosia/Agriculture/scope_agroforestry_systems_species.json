@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_agroforestry_systems_species",
+  "schema": "amb_scope_agroforestry_systems_species",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which species are the same for all agroforestry systems?",
+      "qtype": "unambig",
+      "sql": "SELECT Species.name  from System_Species join Species on System_Species.species_id = Species.id join Agroforestry_Systems on System_Species.agroforestry_system_id = Agroforestry_Systems.id   GROUP BY System_Species.species_id HAVING COUNT(DISTINCT System_Species.agroforestry_system_id) = (SELECT COUNT(*) FROM  Agroforestry_Systems)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSpecies ?child ; p:hasAgroforestry_Systems ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agroforestry_Systems } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every agroforestry system, show the species that they contain.",
+      "qtype": "unambig",
+      "sql": "select agroforestry_systems.system_name , species.name from System_Species join Species on System_Species.species_id = Species.id join Agroforestry_Systems on System_Species.agroforestry_system_id = Agroforestry_Systems.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?system_name ?name WHERE {\n  ?system_species a :System_Species .\n  ?species a :Species .\n  ?system_species p:hasSpecies ?species .\n  ?agroforestry_systems a :Agroforestry_Systems .\n  ?system_species p:hasAgroforestry_Systems ?agroforestry_systems .\n  ?agroforestry_systems p:name ?system_name .\n  ?species p:name ?name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the species that each agroforestry system contains.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSpecies ?child ; p:hasAgroforestry_Systems ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agroforestry_Systems } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?system_name ?name WHERE {\n  ?system_species a :System_Species .\n  ?species a :Species .\n  ?system_species p:hasSpecies ?species .\n  ?agroforestry_systems a :Agroforestry_Systems .\n  ?system_species p:hasAgroforestry_Systems ?agroforestry_systems .\n  ?agroforestry_systems p:name ?system_name .\n  ?species p:name ?name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

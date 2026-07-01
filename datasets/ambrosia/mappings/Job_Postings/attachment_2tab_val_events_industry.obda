@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Company`
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `id`, `firstName`, `lastName`, `email` FROM `Employee`
+
+mappingId	Salary_base
+target		ex:Salary/{id} a :Salary ; p:id {id} ; p:employeeId {employeeId} ; p:salary {salary} ; p:startDate {startDate} ; p:endDate {endDate} .
+source		SELECT `id`, `employeeId`, `salary`, `startDate`, `endDate` FROM `Salary`
+
+mappingId	Salary_employeeId_fk
+target		ex:Salary/{id} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `id`, `employeeId` FROM `Salary` WHERE `employeeId` IS NOT NULL
+
+mappingId	Benefits_base
+target		ex:Benefits/{id} a :Benefits ; p:id {id} ; p:employeeId {employeeId} ; p:healthInsurance {healthInsurance} ; p:retirementPlan {retirementPlan} ; p:vacationDays {vacationDays} .
+source		SELECT `id`, `employeeId`, `healthInsurance`, `retirementPlan`, `vacationDays` FROM `Benefits`
+
+mappingId	Benefits_employeeId_fk
+target		ex:Benefits/{id} p:hasEmployees ex:Employees/{employeeId} .
+source		SELECT `id`, `employeeId` FROM `Benefits` WHERE `employeeId` IS NOT NULL
+
+mappingId	Wedding_Coordinator_base
+target		ex:Wedding_Coordinator/{id} a :Wedding_Coordinator ; p:id {id} ; p:Position {Position} ; p:companyId {companyId} ; p:experience {experience} ; p:skills {skills} .
+source		SELECT `id`, `Position`, `companyId`, `experience`, `skills` FROM `Wedding_Coordinator`
+
+mappingId	Wedding_Coordinator_companyId_fk
+target		ex:Wedding_Coordinator/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Wedding_Coordinator` WHERE `companyId` IS NOT NULL
+
+mappingId	Event_Planner_base
+target		ex:Event_Planner/{id} a :Event_Planner ; p:id {id} ; p:Position {Position} ; p:companyId {companyId} ; p:experience {experience} ; p:skills {skills} .
+source		SELECT `id`, `Position`, `companyId`, `experience`, `skills` FROM `Event_Planner`
+
+mappingId	Event_Planner_companyId_fk
+target		ex:Event_Planner/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Event_Planner` WHERE `companyId` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_laboratory_essentials",
+  "schema": "amb_attachment_2tab_val_laboratory_essentials",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the lab equipment and just the safety gear that was purchased in January 2023.",
+      "qtype": "unambig",
+      "sql": "SELECT Lab_Equipments.equipName as name\nFROM Lab_Equipments\nUNION\nSELECT Safety_Gears.gearName as name\nFROM Safety_Gears\nWHERE Safety_Gears.dateOfPurchase = \"January 2023\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lab_equipments a :Lab_Equipments .\n    ?lab_equipments p:equipName ?equipname .\n    BIND(?equipname AS ?o0)\n  }\n  UNION\n  {\n    ?safety_gears a :Safety_Gears .\n    ?safety_gears p:gearName ?gearname .\n    ?safety_gears p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?gearname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show all items purchased in January 2023 from both lab equipment and safety gear.",
+      "qtype": "unambig",
+      "sql": "SELECT Lab_Equipments.equipName as name\nFROM Lab_Equipments\nWHERE Lab_Equipments.dateOfPurchase = \"January 2023\"\nUNION\nSELECT Safety_Gears.gearName as name\nFROM Safety_Gears\nWHERE Safety_Gears.dateOfPurchase = \"January 2023\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?lab_equipments a :Lab_Equipments .\n    ?lab_equipments p:equipName ?equipname .\n    ?lab_equipments p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?equipname AS ?o0)\n  }\n  UNION\n  {\n    ?safety_gears a :Safety_Gears .\n    ?safety_gears p:gearName ?gearname .\n    ?safety_gears p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?gearname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all lab equipment and safety gear that was purchased in January 2023.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lab_equipments a :Lab_Equipments .\n    ?lab_equipments p:equipName ?equipname .\n    BIND(?equipname AS ?o0)\n  }\n  UNION\n  {\n    ?safety_gears a :Safety_Gears .\n    ?safety_gears p:gearName ?gearname .\n    ?safety_gears p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?gearname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?lab_equipments a :Lab_Equipments .\n    ?lab_equipments p:equipName ?equipname .\n    ?lab_equipments p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?equipname AS ?o0)\n  }\n  UNION\n  {\n    ?safety_gears a :Safety_Gears .\n    ?safety_gears p:gearName ?gearname .\n    ?safety_gears p:dateOfPurchase ?dateofpurchase_f .\n    FILTER(STR(?dateofpurchase_f) = \"January 2023\")\n    BIND(?gearname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

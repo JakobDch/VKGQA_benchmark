@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Team_Type_base
+target		ex:Team_Type/{id} a :Team_Type ; p:id {id} ; p:TypeName {TypeName} .
+source		SELECT `id`, `TypeName` FROM `Team_Type`
+
+mappingId	Sports_base
+target		ex:Sports/{id} a :Sports ; p:id {id} ; p:SportName {SportName} .
+source		SELECT `id`, `SportName` FROM `Sports`
+
+mappingId	Players_base
+target		ex:Players/{id} a :Players ; p:id {id} ; p:name {Name} ; p:Age {Age} ; p:TeamTypeId {TeamTypeId} ; p:SportId {SportId} .
+source		SELECT `id`, `Name`, `Age`, `TeamTypeId`, `SportId` FROM `Players`
+
+mappingId	Players_SportId_fk
+target		ex:Players/{id} p:hasSports ex:Sports/{SportId} .
+source		SELECT `id`, `SportId` FROM `Players` WHERE `SportId` IS NOT NULL
+
+mappingId	Players_TeamTypeId_fk
+target		ex:Players/{id} p:hasTeam_Type ex:Team_Type/{TeamTypeId} .
+source		SELECT `id`, `TeamTypeId` FROM `Players` WHERE `TeamTypeId` IS NOT NULL
+
+mappingId	FitnessLevels_base
+target		ex:Fitness_Level/{id} a :Fitness_Level ; p:id {id} ; p:LevelName {LevelName} .
+source		SELECT `id`, `LevelName` FROM `FitnessLevels`
+
+mappingId	PlayerStats_base
+target		ex:PlayerStats/{id} a :PlayerStats ; p:id {id} ; p:PlayerId {PlayerId} ; p:FitnessLevelId {FitnessLevelId} ; p:StatsText {StatsText} .
+source		SELECT `id`, `PlayerId`, `FitnessLevelId`, `StatsText` FROM `PlayerStats`
+
+mappingId	PlayerStats_FitnessLevelId_fk
+target		ex:PlayerStats/{id} p:hasFitness_Level ex:Fitness_Level/{FitnessLevelId} .
+source		SELECT `id`, `FitnessLevelId` FROM `PlayerStats` WHERE `FitnessLevelId` IS NOT NULL
+
+mappingId	PlayerStats_PlayerId_fk
+target		ex:PlayerStats/{id} p:hasPlayers ex:Players/{PlayerId} .
+source		SELECT `id`, `PlayerId` FROM `PlayerStats` WHERE `PlayerId` IS NOT NULL
+
+]]

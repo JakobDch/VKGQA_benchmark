@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Gate_Agents_base
+target		ex:GateAgents/{ID} a :GateAgents ; p:ID {ID} ; p:name {Name} ; p:Language {Language} ; p:YearsOfExperience {YearsOfExperience} ; p:LicenseNumber {LicenseNumber} .
+source		SELECT `ID`, `Name`, `Language`, `YearsOfExperience`, `LicenseNumber` FROM `Gate_Agents`
+
+mappingId	Pilots_base
+target		ex:Pilots/{ID} a :Pilots ; p:ID {ID} ; p:name {Name} ; p:Language {Language} ; p:FlightHours {FlightHours} ; p:LicenseNumber {LicenseNumber} .
+source		SELECT `ID`, `Name`, `Language`, `FlightHours`, `LicenseNumber` FROM `Pilots`
+
+mappingId	Airlines_base
+target		ex:Airlines/{ID} a :Airlines ; p:ID {ID} ; p:name {Name} ; p:Code {Code} ; p:Headquarters {Headquarters} .
+source		SELECT `ID`, `Name`, `Code`, `Headquarters` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{ID} a :Flights ; p:ID {ID} ; p:AirlineID {AirlineID} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:DestinationAirport {DestinationAirport} .
+source		SELECT `ID`, `AirlineID`, `DepartureTime`, `ArrivalTime`, `DestinationAirport` FROM `Flights`
+
+mappingId	Flights_AirlineID_fk
+target		ex:Flights/{ID} p:hasAirlines ex:Airlines/{AirlineID} .
+source		SELECT `ID`, `AirlineID` FROM `Flights` WHERE `AirlineID` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{ID} a :Passengers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:Nationality {Nationality} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Age`, `Nationality` FROM `Passengers`
+
+mappingId	Baggage_base
+target		ex:Baggage/{ID} a :Baggage ; p:ID {ID} ; p:FlightID {FlightID} ; p:OwnerID {OwnerID} ; p:Weight {Weight} ; p:Description {Description} .
+source		SELECT `ID`, `FlightID`, `OwnerID`, `Weight`, `Description` FROM `Baggage`
+
+mappingId	Baggage_OwnerID_fk
+target		ex:Baggage/{ID} p:hasPassengers ex:Passengers/{OwnerID} .
+source		SELECT `ID`, `OwnerID` FROM `Baggage` WHERE `OwnerID` IS NOT NULL
+
+mappingId	Baggage_FlightID_fk
+target		ex:Baggage/{ID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `ID`, `FlightID` FROM `Baggage` WHERE `FlightID` IS NOT NULL
+
+]]

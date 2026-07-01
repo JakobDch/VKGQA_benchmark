@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Studio_base
+target		ex:Studio/{id} a :Studio ; p:id {id} ; p:studio_name {studio_name} ; p:address {address} ; p:podcast {podcast} ; p:genre {genre} ; p:rating {rating} .
+source		SELECT `id`, `studio_name`, `address`, `podcast`, `genre`, `rating` FROM `Studio`
+
+mappingId	SubscriptionPlan_base
+target		ex:Subscription_Plan/{plan_id} a :Subscription_Plan ; p:plan_id {plan_id} ; p:plan_name {plan_name} ; p:monthly_price {monthly_price} ; p:annual_price {annual_price} ; p:features {features} .
+source		SELECT `plan_id`, `plan_name`, `monthly_price`, `annual_price`, `features` FROM `SubscriptionPlan`
+
+mappingId	ContentLibrary_base
+target		ex:ContentLibrary/{content_id} a :ContentLibrary ; p:content_id {content_id} ; p:title {title} ; p:description {description} ; p:duration {duration} ; p:release_date {release_date} ; p:category {category} .
+source		SELECT `content_id`, `title`, `description`, `duration`, `release_date`, `category` FROM `ContentLibrary`
+
+mappingId	Customer_base
+target		ex:Customer/{customer_id} a :Customer ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:password {password} ; p:subscription_plan_id {subscription_plan_id} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email`, `password`, `subscription_plan_id` FROM `Customer`
+
+mappingId	Customer_subscription_plan_id_fk
+target		ex:Customer/{customer_id} p:hasSubscription_Plan ex:Subscription_Plan/{subscription_plan_id} .
+source		SELECT `customer_id`, `subscription_plan_id` FROM `Customer` WHERE `subscription_plan_id` IS NOT NULL
+
+mappingId	PlayHistory_base
+target		ex:PlayHistory/{history_id} a :PlayHistory ; p:history_id {history_id} ; p:customer_id {customer_id} ; p:content_id {content_id} ; p:play_date {play_date} .
+source		SELECT `history_id`, `customer_id`, `content_id`, `play_date` FROM `PlayHistory`
+
+mappingId	PlayHistory_content_id_fk
+target		ex:PlayHistory/{history_id} p:hasContentLibrary ex:ContentLibrary/{content_id} .
+source		SELECT `history_id`, `content_id` FROM `PlayHistory` WHERE `content_id` IS NOT NULL
+
+mappingId	PlayHistory_customer_id_fk
+target		ex:PlayHistory/{history_id} p:hasCustomer ex:Customer/{customer_id} .
+source		SELECT `history_id`, `customer_id` FROM `PlayHistory` WHERE `customer_id` IS NOT NULL
+
+]]

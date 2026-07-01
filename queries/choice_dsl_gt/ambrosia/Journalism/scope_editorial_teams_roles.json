@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_editorial_teams_roles",
+  "schema": "amb_scope_editorial_teams_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the role that is in common for all editorial teams.",
+      "qtype": "unambig",
+      "sql": "SELECT Roles.RoleName  from Editorial_Teams_Roles join Roles on Editorial_Teams_Roles.RoleID = Roles.RoleID join Editorial_Teams on Editorial_Teams_Roles.TeamID = Editorial_Teams.TeamID   GROUP BY Editorial_Teams_Roles.RoleID HAVING COUNT(DISTINCT Editorial_Teams_Roles.TeamID) = (SELECT COUNT(*) FROM  Editorial_Teams)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRoles ?child ; p:hasEditorial_Teams ?parent . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editorial_Teams } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the role associated with each editorial team.",
+      "qtype": "ambig",
+      "sql": "select editorial_teams.teamname , roles.rolename from Editorial_Teams_Roles join Roles on Editorial_Teams_Roles.RoleID = Roles.RoleID join Editorial_Teams on Editorial_Teams_Roles.TeamID = Editorial_Teams.TeamID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?teamname ?rolename WHERE {\n  ?editorial_teams_roles a :Editorial_Teams_Roles .\n  ?roles a :Roles .\n  ?editorial_teams_roles p:hasRoles ?roles .\n  ?editorial_teams a :Editorial_Teams .\n  ?editorial_teams_roles p:hasEditorial_Teams ?editorial_teams .\n  ?editorial_teams p:TeamName ?teamname .\n  ?roles p:RoleName ?rolename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the role associated with each editorial team.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?rolename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRoles ?child ; p:hasEditorial_Teams ?parent . } GROUP BY ?child }\n  ?child p:RoleName ?rolename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Editorial_Teams } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?teamname ?rolename WHERE {\n  ?editorial_teams_roles a :Editorial_Teams_Roles .\n  ?roles a :Roles .\n  ?editorial_teams_roles p:hasRoles ?roles .\n  ?editorial_teams a :Editorial_Teams .\n  ?editorial_teams_roles p:hasEditorial_Teams ?editorial_teams .\n  ?editorial_teams p:TeamName ?teamname .\n  ?roles p:RoleName ?rolename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

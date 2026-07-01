@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:customer_id {customer_id} ; p:account_type {account_type} ; p:balance {balance} .
+source		SELECT `account_id`, `customer_id`, `account_type`, `balance` FROM `Accounts`
+
+mappingId	Accounts_customer_id_fk
+target		ex:Accounts/{account_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `account_id`, `customer_id` FROM `Accounts` WHERE `customer_id` IS NOT NULL
+
+mappingId	Mobile_Banking_App_base
+target		ex:MobileBankingApps/{app_id} a :MobileBankingApps ; p:app_id {app_id} ; p:app_version {app_version} ; p:release_date {release_date} ; p:platform {platform} .
+source		SELECT `app_id`, `app_version`, `release_date`, `platform` FROM `Mobile_Banking_App`
+
+mappingId	Features_base
+target		ex:Features/{feature_id} a :Features ; p:feature_id {feature_id} ; p:feature_value {feature_value} .
+source		SELECT `feature_id`, `feature_value` FROM `Features`
+
+mappingId	Mobile_Banking_App_Features_base
+target		ex:Mobile_Banking_App_Features/{mobile_app_feature_id}/{mobile_banking_app_id}/{feature_id} a :Mobile_Banking_App_Features ; p:mobile_app_feature_id {mobile_app_feature_id} ; p:mobile_banking_app_id {mobile_banking_app_id} ; p:feature_id {feature_id} .
+source		SELECT `mobile_app_feature_id`, `mobile_banking_app_id`, `feature_id` FROM `Mobile_Banking_App_Features`
+
+mappingId	Mobile_Banking_App_Features_mobile_banking_app_id_fk
+target		ex:Mobile_Banking_App_Features/{mobile_app_feature_id}/{mobile_banking_app_id}/{feature_id} p:hasMobileBankingApps ex:MobileBankingApps/{mobile_banking_app_id} .
+source		SELECT `mobile_app_feature_id`, `mobile_banking_app_id`, `feature_id` FROM `Mobile_Banking_App_Features` WHERE `mobile_banking_app_id` IS NOT NULL
+
+mappingId	Mobile_Banking_App_Features_feature_id_fk
+target		ex:Mobile_Banking_App_Features/{mobile_app_feature_id}/{mobile_banking_app_id}/{feature_id} p:hasFeatures ex:Features/{feature_id} .
+source		SELECT `mobile_app_feature_id`, `mobile_banking_app_id`, `feature_id` FROM `Mobile_Banking_App_Features` WHERE `feature_id` IS NOT NULL
+
+]]

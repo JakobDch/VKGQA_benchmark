@@ -1,0 +1,68 @@
+@prefix : <http://ambrosia.example.org/entertainment#> .
+@prefix p: <http://ambrosia.example.org/entertainment/prop#> .
+@prefix ex: <http://ambrosia.example.org/entertainment/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_setting_0_Composers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"composerId\", \"name\", \"birthYear\" FROM \"Composers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Composers/{composerId}" ; rr:class :Composers ] ;
+  rr:predicateObjectMap [ rr:predicate p:composerId ; rr:objectMap [ rr:column "composerId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:birthYear ; rr:objectMap [ rr:column "birthYear" ] ] .
+
+<#tm_vague_2cols_setting_1_Operas_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"operaID\", \"title\", \"Historical_Era\", \"Location\", \"Duration\", \"composerId\" FROM \"Operas\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Operas/{operaID}" ; rr:class :Operas ] ;
+  rr:predicateObjectMap [ rr:predicate p:operaID ; rr:objectMap [ rr:column "operaID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Historical_Era ; rr:objectMap [ rr:column "Historical_Era" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Duration ; rr:objectMap [ rr:column "Duration" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:composerId ; rr:objectMap [ rr:column "composerId" ] ] .
+
+<#tm_vague_2cols_setting_2_Operas_composerId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"operaID\", \"composerId\" FROM \"Operas\" WHERE \"composerId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Operas/{operaID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasComposers ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Composers/{composerId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_setting_3_Venues_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"venueID\", \"name\", \"capacity\" FROM \"Venues\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Venue/{venueID}" ; rr:class :Venue ] ;
+  rr:predicateObjectMap [ rr:predicate p:venueID ; rr:objectMap [ rr:column "venueID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:capacity ; rr:objectMap [ rr:column "capacity" ] ] .
+
+<#tm_vague_2cols_setting_4_Performances_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"performanceId\", \"date\", \"startTime\", \"venueId\", \"operaId\" FROM \"Performances\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Performance/{performanceId}" ; rr:class :Performance ] ;
+  rr:predicateObjectMap [ rr:predicate p:performanceId ; rr:objectMap [ rr:column "performanceId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:startTime ; rr:objectMap [ rr:column "startTime" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:venueId ; rr:objectMap [ rr:column "venueId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:operaId ; rr:objectMap [ rr:column "operaId" ] ] .
+
+<#tm_vague_2cols_setting_5_Performances_operaId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"performanceId\", \"operaId\" FROM \"Performances\" WHERE \"operaId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Performance/{performanceId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasOperas ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Operas/{operaId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_setting_6_Performances_venueId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"performanceId\", \"venueId\" FROM \"Performances\" WHERE \"venueId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Performance/{performanceId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasVenue ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Venue/{venueId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_setting_7_CastMembers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"castMemberId\", \"name\", \"roleInPerformance\", \"performanceId\" FROM \"CastMembers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/CastMember/{castMemberId}" ; rr:class :CastMember ] ;
+  rr:predicateObjectMap [ rr:predicate p:castMemberId ; rr:objectMap [ rr:column "castMemberId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:roleInPerformance ; rr:objectMap [ rr:column "roleInPerformance" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:performanceId ; rr:objectMap [ rr:column "performanceId" ] ] .
+
+<#tm_vague_2cols_setting_8_CastMembers_performanceId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"castMemberId\", \"performanceId\" FROM \"CastMembers\" WHERE \"performanceId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/entertainment/id/CastMember/{castMemberId}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPerformance ; rr:objectMap [ rr:template "http://ambrosia.example.org/entertainment/id/Performance/{performanceId}" ; rr:termType rr:IRI ] ] .
+

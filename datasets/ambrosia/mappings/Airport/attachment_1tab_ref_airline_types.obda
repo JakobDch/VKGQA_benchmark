@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:name {name} ; p:city {city} ; p:country {country} ; p:latitude {latitude} ; p:longitude {longitude} .
+source		SELECT `id`, `name`, `city`, `country`, `latitude`, `longitude` FROM `Airports`
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:airline_name {airline_name} ; p:type_of_alliance {type_of_alliance} ; p:home_airport_id {home_airport_id} .
+source		SELECT `id`, `airline_name`, `type_of_alliance`, `home_airport_id` FROM `Airlines`
+
+mappingId	Airlines_home_airport_id_fk
+target		ex:Airlines/{id} p:hasAirports ex:Airports/{home_airport_id} .
+source		SELECT `id`, `home_airport_id` FROM `Airlines` WHERE `home_airport_id` IS NOT NULL
+
+mappingId	Flights_base
+target		ex:Flights/{flight_number} a :Flights ; p:flight_number {flight_number} ; p:departure_time {departure_time} ; p:arrival_time {arrival_time} ; p:airline_id {airline_id} ; p:aircraft_model {aircraft_model} ; p:source_airport_id {source_airport_id} ; p:destination_airport_id {destination_airport_id} .
+source		SELECT `flight_number`, `departure_time`, `arrival_time`, `airline_id`, `aircraft_model`, `source_airport_id`, `destination_airport_id` FROM `Flights`
+
+mappingId	Flights_destination_airport_id_fk
+target		ex:Flights/{flight_number} p:hasAirports_destination_airport_id ex:Airports/{destination_airport_id} .
+source		SELECT `flight_number`, `destination_airport_id` FROM `Flights` WHERE `destination_airport_id` IS NOT NULL
+
+mappingId	Flights_source_airport_id_fk
+target		ex:Flights/{flight_number} p:hasAirports_source_airport_id ex:Airports/{source_airport_id} .
+source		SELECT `flight_number`, `source_airport_id` FROM `Flights` WHERE `source_airport_id` IS NOT NULL
+
+mappingId	Flights_airline_id_fk
+target		ex:Flights/{flight_number} p:hasAirlines ex:Airlines/{airline_id} .
+source		SELECT `flight_number`, `airline_id` FROM `Flights` WHERE `airline_id` IS NOT NULL
+
+mappingId	Pilots_base
+target		ex:Pilots/{pilot_license_number} a :Pilots ; p:pilot_license_number {pilot_license_number} ; p:first_name {first_name} ; p:last_name {last_name} ; p:date_of_birth {date_of_birth} ; p:rating_level {rating_level} .
+source		SELECT `pilot_license_number`, `first_name`, `last_name`, `date_of_birth`, `rating_level` FROM `Pilots`
+
+mappingId	Assignments_base
+target		ex:Assignments/{assignment_id} a :Assignments ; p:assignment_id {assignment_id} ; p:flight_number {flight_number} ; p:pilot_license_number {pilot_license_number} .
+source		SELECT `assignment_id`, `flight_number`, `pilot_license_number` FROM `Assignments`
+
+mappingId	Assignments_pilot_license_number_fk
+target		ex:Assignments/{assignment_id} p:hasPilots ex:Pilots/{pilot_license_number} .
+source		SELECT `assignment_id`, `pilot_license_number` FROM `Assignments` WHERE `pilot_license_number` IS NOT NULL
+
+mappingId	Assignments_flight_number_fk
+target		ex:Assignments/{assignment_id} p:hasFlights ex:Flights/{flight_number} .
+source		SELECT `assignment_id`, `flight_number` FROM `Assignments` WHERE `flight_number` IS NOT NULL
+
+]]

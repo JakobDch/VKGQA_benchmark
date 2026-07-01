@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_genre2",
+  "schema": "amb_attachment_1tab_ref_genre2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display action films and adventure films which star Tom Cruise.",
+      "qtype": "ambig",
+      "sql": "SELECT Films.title \nFROM Genres JOIN Film_Genres ON Genres.id = Film_Genres.film_genre_id JOIN Films ON Film_Genres.film_id = Films.film_id JOIN Film_Stars ON Films.film_id = Film_Stars.film_id JOIN Stars ON Film_Stars.film_star_id = Stars.id\nWHERE (Genres.genre = \"Action\" OR Genres.genre = \"Adventure\") AND Stars.star_name = \"Tom Cruise\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?film_genres a :Film_Genre .\n  ?film_genres p:hasGenres ?genres .\n  ?films a :Films .\n  ?film_genres p:hasFilms ?films .\n  ?film_stars a :Film_Stars .\n  ?film_stars p:hasFilms ?films .\n  ?stars a :Stars .\n  ?film_stars p:hasStars ?stars .\n  ?films p:title ?title .\n  ?genres p:genre ?genre_w .\n  ?genres p:genre ?genre_w2 .\n  ?stars p:star_name ?star_name_w .\n  FILTER((((STR(?genre_w) = \"Action\" || STR(?genre_w2) = \"Adventure\")) && STR(?star_name_w) = \"Tom Cruise\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display action films and adventure films which star Tom Cruise.",
+      "qtype": "ambig",
+      "sql": "SELECT Films.title \nFROM Genres JOIN Film_Genres ON Genres.id = Film_Genres.film_genre_id JOIN Films ON Film_Genres.film_id = Films.film_id JOIN Film_Stars ON Films.film_id = Film_Stars.film_id JOIN Stars ON Film_Stars.film_star_id = Stars.id\nWHERE Genres.genre = \"Action\" OR Genres.genre = \"Adventure\" AND Stars.star_name = \"Tom Cruise\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?genres a :Genres .\n  ?film_genres a :Film_Genre .\n  ?film_genres p:hasGenres ?genres .\n  ?films a :Films .\n  ?film_genres p:hasFilms ?films .\n  ?film_stars a :Film_Stars .\n  ?film_stars p:hasFilms ?films .\n  ?stars a :Stars .\n  ?film_stars p:hasStars ?stars .\n  ?films p:title ?title .\n  ?genres p:genre ?genre_w .\n  ?genres p:genre ?genre_w2 .\n  ?stars p:star_name ?star_name_w .\n  FILTER((STR(?genre_w) = \"Action\" || (STR(?genre_w2) = \"Adventure\" && STR(?star_name_w) = \"Tom Cruise\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display action films and adventure films which star Tom Cruise.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?film_genres a :Film_Genre .\n  ?film_genres p:hasGenres ?genres .\n  ?films a :Films .\n  ?film_genres p:hasFilms ?films .\n  ?film_stars a :Film_Stars .\n  ?film_stars p:hasFilms ?films .\n  ?stars a :Stars .\n  ?film_stars p:hasStars ?stars .\n  ?films p:title ?title .\n  ?genres p:genre ?genre_w .\n  ?genres p:genre ?genre_w2 .\n  ?stars p:star_name ?star_name_w .\n  FILTER((((STR(?genre_w) = \"Action\" || STR(?genre_w2) = \"Adventure\")) && STR(?star_name_w) = \"Tom Cruise\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?genres a :Genres .\n  ?film_genres a :Film_Genre .\n  ?film_genres p:hasGenres ?genres .\n  ?films a :Films .\n  ?film_genres p:hasFilms ?films .\n  ?film_stars a :Film_Stars .\n  ?film_stars p:hasFilms ?films .\n  ?stars a :Stars .\n  ?film_stars p:hasStars ?stars .\n  ?films p:title ?title .\n  ?genres p:genre ?genre_w .\n  ?genres p:genre ?genre_w2 .\n  ?stars p:star_name ?star_name_w .\n  FILTER((STR(?genre_w) = \"Action\" || (STR(?genre_w2) = \"Adventure\" && STR(?star_name_w) = \"Tom Cruise\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

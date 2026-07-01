@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:name {name} ; p:country {country} .
+source		SELECT `id`, `name`, `country` FROM `Airlines`
+
+mappingId	Airports_base
+target		ex:Airports/{id} a :Airports ; p:id {id} ; p:airportName {airportName} ; p:city {city} ; p:country {country} .
+source		SELECT `id`, `airportName`, `city`, `country` FROM `Airports`
+
+mappingId	Flights_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:flightNumber {flightNumber} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:airlineId {airlineId} ; p:originAirportId {originAirportId} ; p:destinationAirportId {destinationAirportId} .
+source		SELECT `id`, `flightNumber`, `departureTime`, `arrivalTime`, `airlineId`, `originAirportId`, `destinationAirportId` FROM `Flights`
+
+mappingId	Flights_destinationAirportId_fk
+target		ex:Flights/{id} p:hasAirports_destinationAirportId ex:Airports/{destinationAirportId} .
+source		SELECT `id`, `destinationAirportId` FROM `Flights` WHERE `destinationAirportId` IS NOT NULL
+
+mappingId	Flights_originAirportId_fk
+target		ex:Flights/{id} p:hasAirports_originAirportId ex:Airports/{originAirportId} .
+source		SELECT `id`, `originAirportId` FROM `Flights` WHERE `originAirportId` IS NOT NULL
+
+mappingId	Flights_airlineId_fk
+target		ex:Flights/{id} p:hasAirlines ex:Airlines/{airlineId} .
+source		SELECT `id`, `airlineId` FROM `Flights` WHERE `airlineId` IS NOT NULL
+
+mappingId	Gates_base
+target		ex:Gates/{id} a :Gates ; p:id {id} ; p:gateNumber {gateNumber} ; p:terminal {terminal} ; p:airportId {airportId} .
+source		SELECT `id`, `gateNumber`, `terminal`, `airportId` FROM `Gates`
+
+mappingId	Gates_airportId_fk
+target		ex:Gates/{id} p:hasAirports ex:Airports/{airportId} .
+source		SELECT `id`, `airportId` FROM `Gates` WHERE `airportId` IS NOT NULL
+
+mappingId	Services_base
+target		ex:Services/{id} a :Services ; p:id {id} ; p:serviceName {serviceName} .
+source		SELECT `id`, `serviceName` FROM `Services`
+
+mappingId	Gates_Services_base
+target		ex:Gates_Services/{gateId}/{serviceId} a :Gates_Services ; p:gateId {gateId} ; p:serviceId {serviceId} .
+source		SELECT `gateId`, `serviceId` FROM `Gates_Services`
+
+mappingId	Gates_Services_serviceId_fk
+target		ex:Gates_Services/{gateId}/{serviceId} p:hasServices ex:Services/{serviceId} .
+source		SELECT `gateId`, `serviceId` FROM `Gates_Services` WHERE `serviceId` IS NOT NULL
+
+mappingId	Gates_Services_gateId_fk
+target		ex:Gates_Services/{gateId}/{serviceId} p:hasGates ex:Gates/{gateId} .
+source		SELECT `gateId`, `serviceId` FROM `Gates_Services` WHERE `gateId` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_val_event",
+  "schema": "amb_attachment_1tab_val_event",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all awards where Gerardo Prat was on the awarding committee along with the festivals in which Gerardo Prat also participated.",
+      "qtype": "unambig",
+      "sql": "SELECT Festival.name \nFROM Festival\nWHERE (Festival.event = \"Film Festival\" OR Festival.event = \"Award\") AND Festival.committee_members = \"Gerardo Prat\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?festival a :Festival .\n  ?festival p:name ?name .\n  ?festival p:event ?event_w .\n  ?festival p:event ?event_w2 .\n  ?festival p:committee_members ?committee_members_w .\n  FILTER((((STR(?event_w) = \"Film Festival\" || STR(?event_w2) = \"Award\")) && STR(?committee_members_w) = \"Gerardo Prat\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all awards and festivals where Gerardo Prat was on the committee.",
+      "qtype": "ambig",
+      "sql": "SELECT Festival.name \nFROM Festival\nWHERE Festival.event = \"Film Festival\" OR Festival.event = \"Award\" AND Festival.committee_members = \"Gerardo Prat\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?festival a :Festival .\n  ?festival p:name ?name .\n  ?festival p:event ?event_w .\n  ?festival p:event ?event_w2 .\n  ?festival p:committee_members ?committee_members_w .\n  FILTER((STR(?event_w) = \"Film Festival\" || (STR(?event_w2) = \"Award\" && STR(?committee_members_w) = \"Gerardo Prat\")))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all awards and festivals where Gerardo Prat was on the committee.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?festival a :Festival .\n  ?festival p:name ?name .\n  ?festival p:event ?event_w .\n  ?festival p:event ?event_w2 .\n  ?festival p:committee_members ?committee_members_w .\n  FILTER((((STR(?event_w) = \"Film Festival\" || STR(?event_w2) = \"Award\")) && STR(?committee_members_w) = \"Gerardo Prat\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?festival a :Festival .\n  ?festival p:name ?name .\n  ?festival p:event ?event_w .\n  ?festival p:event ?event_w2 .\n  ?festival p:committee_members ?committee_members_w .\n  FILTER((STR(?event_w) = \"Film Festival\" || (STR(?event_w2) = \"Award\" && STR(?committee_members_w) = \"Gerardo Prat\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

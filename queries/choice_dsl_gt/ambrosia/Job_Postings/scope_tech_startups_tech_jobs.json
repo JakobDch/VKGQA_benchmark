@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_tech_startups_tech_jobs",
+  "schema": "amb_scope_tech_startups_tech_jobs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each tech startup, list information about the jobs they have.",
+      "qtype": "unambig",
+      "sql": "select tech_startups.name , tech_jobs.job_title , tech_jobs.description from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?job_title ?description WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:job_title ?job_title .\n  ?tech_jobs p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the titles and descriptions of the jobs that every tech startup has.",
+      "qtype": "ambig",
+      "sql": "SELECT Tech_Jobs.job_title, Tech_Jobs.description  from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id   GROUP BY Tech_Startups_Tech_Jobs.tech_job_id HAVING COUNT(DISTINCT Tech_Startups_Tech_Jobs.tech_startup_id) = (SELECT COUNT(*) FROM  Tech_Startups)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?job_title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:job_title ?job_title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the tech job description of each tech startup?",
+      "qtype": "ambig",
+      "sql": "SELECT Tech_Jobs.description  from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id   GROUP BY Tech_Startups_Tech_Jobs.tech_job_id HAVING COUNT(DISTINCT Tech_Startups_Tech_Jobs.tech_startup_id) = (SELECT COUNT(*) FROM  Tech_Startups)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the tech job description of each tech startup?",
+      "qtype": "ambig",
+      "sql": "select tech_startups.name , tech_jobs.description from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every startup, list the jobs they have.",
+      "qtype": "unambig",
+      "sql": "select tech_startups.name , tech_jobs.job_title from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?job_title WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:job_title ?job_title .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the jobs each startup has.",
+      "qtype": "ambig",
+      "sql": "SELECT Tech_Jobs.job_title  from Tech_Startups_Tech_Jobs join Tech_Jobs on Tech_Startups_Tech_Jobs.tech_job_id = Tech_Jobs.id join Tech_Startups on Tech_Startups_Tech_Jobs.tech_startup_id = Tech_Startups.id   GROUP BY Tech_Startups_Tech_Jobs.tech_job_id HAVING COUNT(DISTINCT Tech_Startups_Tech_Jobs.tech_startup_id) = (SELECT COUNT(*) FROM  Tech_Startups)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?job_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:job_title ?job_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the titles and descriptions of the jobs that every tech startup has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?job_title ?description WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:job_title ?job_title .\n  ?tech_jobs p:description ?description .\n} }\n  collective: { SELECT ?job_title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:job_title ?job_title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the jobs each startup has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?job_title WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:job_title ?job_title .\n} }\n  collective: { SELECT ?job_title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:job_title ?job_title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the tech job description of each tech startup?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?tech_startups_tech_jobs a :Tech_Startups_Tech_Jobs .\n  ?tech_jobs a :TechJob .\n  ?tech_startups_tech_jobs p:hasTech_Jobs ?tech_jobs .\n  ?tech_startups a :Tech_Startups .\n  ?tech_startups_tech_jobs p:hasTech_Startups ?tech_startups .\n  ?tech_startups p:name ?name .\n  ?tech_jobs p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:tech_job_id ?cg . ?child a :TechJob ; p:id ?cg . ?l p:tech_startup_id ?pg . ?parent a :Tech_Startups ; p:id ?pg . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Tech_Startups } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

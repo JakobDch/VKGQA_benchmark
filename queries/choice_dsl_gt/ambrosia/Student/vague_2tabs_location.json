@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_location",
+  "schema": "amb_vague_2tabs_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all libraries and their locations",
+      "qtype": "ambig",
+      "sql": "select lc.name, lb.library_name as library from Libraries lb inner join Building_Name lc on lb.building_id = lc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name .\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "List all libraries and their locations",
+      "qtype": "ambig",
+      "sql": "select lc.university_name, lb.library_name as library from Libraries lb inner join University lc on lb.university_id = lc.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?university_name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Universities .\n  ?lb p:hasUniversity ?lc .\n  ?lc p:university_name ?university_name .\n  ?lb p:library_name ?library_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "List all libraries and their locations",
+      "qtype": "ambig",
+      "sql": "select un.university_name, lc.name, lb.library_name as library from Libraries lb inner join Building_Name lc on lb.building_id = lc.id  join University un on lb.university_id = un.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?university_name ?name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?un a :Universities .\n  ?lb p:hasUniversity ?un .\n  ?un p:university_name ?university_name .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "In what university is library A located?",
+      "qtype": "unambig",
+      "sql": "select university_name from Libraries lb inner join University lc on lb.university_id = lc.id where lb.library_name = 'Library A';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?university_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Universities .\n  ?lb p:hasUniversity ?lc .\n  ?lc p:university_name ?university_name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What is the location of library A?",
+      "qtype": "ambig",
+      "sql": "select name from Libraries lb inner join Building_Name lc on lb.building_id = lc.id where lb.library_name = 'Library A';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the location of library A?",
+      "qtype": "ambig",
+      "sql": "select university_name, name from Libraries lb inner join Building_Name lc on lb.building_id = lc.id join University un on lb.university_id = un.id where lb.library_name = 'Library A';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?university_name ?name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?un a :Universities .\n  ?lb p:hasUniversity ?un .\n  ?un p:university_name ?university_name .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all libraries and their locations",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        0
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?university_name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Universities .\n  ?lb p:hasUniversity ?lc .\n  ?lc p:university_name ?university_name .\n  ?lb p:library_name ?library_name .\n} }\n  full: { SELECT ?university_name ?name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?un a :Universities .\n  ?lb p:hasUniversity ?un .\n  ?un p:university_name ?university_name .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name .\n} }\n  component_2: { SELECT ?name ?library_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the location of library A?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?university_name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Universities .\n  ?lb p:hasUniversity ?lc .\n  ?lc p:university_name ?university_name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n} }\n  component_2: { SELECT ?name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n} }\n  full: { SELECT ?university_name ?name WHERE {\n  ?lb a :Libraries .\n  ?lc a :Buildings .\n  ?lb p:hasBuilding_Name ?lc .\n  ?un a :Universities .\n  ?lb p:hasUniversity ?un .\n  ?un p:university_name ?university_name .\n  ?lc p:name ?name .\n  ?lb p:library_name ?library_name_f .\n  FILTER(STR(?library_name_f) = STR(\"Library A\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

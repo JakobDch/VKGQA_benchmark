@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Founding_Year_base
+target		ex:Founding_Year/{id} a :Founding_Year ; p:id {id} ; p:year {year} .
+source		SELECT `id`, `year` FROM `Founding_Year`
+
+mappingId	Past_Owners_base
+target		ex:Past_Owners/{id} a :Past_Owners ; p:id {id} ; p:owner_name {owner_name} ; p:acquisition_year {acquisition_year} .
+source		SELECT `id`, `owner_name`, `acquisition_year` FROM `Past_Owners`
+
+mappingId	Healthcare_Facilities_base
+target		ex:Healthcare_Facilities/{id} a :Healthcare_Facilities ; p:id {id} ; p:name {name} ; p:address {address} ; p:founding_id {founding_id} ; p:past_owner_id {past_owner_id} .
+source		SELECT `id`, `name`, `address`, `founding_id`, `past_owner_id` FROM `Healthcare_Facilities`
+
+mappingId	Healthcare_Facilities_past_owner_id_fk
+target		ex:Healthcare_Facilities/{id} p:hasPast_Owners ex:Past_Owners/{past_owner_id} .
+source		SELECT `id`, `past_owner_id` FROM `Healthcare_Facilities` WHERE `past_owner_id` IS NOT NULL
+
+mappingId	Healthcare_Facilities_founding_id_fk
+target		ex:Healthcare_Facilities/{id} p:hasFounding_Year ex:Founding_Year/{founding_id} .
+source		SELECT `id`, `founding_id` FROM `Healthcare_Facilities` WHERE `founding_id` IS NOT NULL
+
+mappingId	Employees_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:employee_name {employee_name} ; p:position {position} ; p:healthcare_facility_id {healthcare_facility_id} .
+source		SELECT `id`, `employee_name`, `position`, `healthcare_facility_id` FROM `Employees`
+
+mappingId	Employees_healthcare_facility_id_fk
+target		ex:Employees/{id} p:hasHealthcare_Facilities ex:Healthcare_Facilities/{healthcare_facility_id} .
+source		SELECT `id`, `healthcare_facility_id` FROM `Employees` WHERE `healthcare_facility_id` IS NOT NULL
+
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:patient_name {patient_name} ; p:age {age} ; p:healthcare_facility_id {healthcare_facility_id} .
+source		SELECT `id`, `patient_name`, `age`, `healthcare_facility_id` FROM `Patients`
+
+mappingId	Patients_healthcare_facility_id_fk
+target		ex:Patients/{id} p:hasHealthcare_Facilities ex:Healthcare_Facilities/{healthcare_facility_id} .
+source		SELECT `id`, `healthcare_facility_id` FROM `Patients` WHERE `healthcare_facility_id` IS NOT NULL
+
+mappingId	Treatments_base
+target		ex:Treatments/{id} a :Treatments ; p:id {id} ; p:treatment_name {treatment_name} ; p:start_date {start_date} ; p:end_date {end_date} ; p:patient_id {patient_id} ; p:healthcare_facility_id {healthcare_facility_id} .
+source		SELECT `id`, `treatment_name`, `start_date`, `end_date`, `patient_id`, `healthcare_facility_id` FROM `Treatments`
+
+mappingId	Treatments_healthcare_facility_id_fk
+target		ex:Treatments/{id} p:hasHealthcare_Facilities ex:Healthcare_Facilities/{healthcare_facility_id} .
+source		SELECT `id`, `healthcare_facility_id` FROM `Treatments` WHERE `healthcare_facility_id` IS NOT NULL
+
+mappingId	Treatments_patient_id_fk
+target		ex:Treatments/{id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `id`, `patient_id` FROM `Treatments` WHERE `patient_id` IS NOT NULL
+
+]]

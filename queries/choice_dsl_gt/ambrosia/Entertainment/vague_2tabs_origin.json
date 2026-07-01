@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_origin",
+  "schema": "amb_vague_2tabs_origin",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "From what culture and associated geographical area did all the dances originate?",
+      "qtype": "unambig",
+      "sql": "SELECT name, region FROM Culture JOIN Dance ON Dance.culture_id = Culture.id JOIN Geographical_Area ON Dance.Geographical_Area_id = Geographical_Area.id  GROUP BY culture_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?region WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?geographical_area a :Geographical_Area .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?dance p:culture_id ?culture_id_g .\n  ?culture p:name ?name .\n  ?geographical_area p:region ?region .\n}\nGROUP BY ?culture_id_g ?name ?region",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "From what culture did capoeira originate?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Culture JOIN Dance ON Dance.culture_id = Culture.id  WHERE dance_name = 'Capoeira'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?culture p:name ?name .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "In what geographical area did capoeira originate?",
+      "qtype": "unambig",
+      "sql": "SELECT region FROM Geographical_Area JOIN Dance ON Dance.Geographical_Area_id = Geographical_Area.id  WHERE dance_name = 'Capoeira'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?region WHERE {\n  ?geographical_area a :Geographical_Area .\n  ?dance a :Dance .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?geographical_area p:region ?region .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "From what culture did all the dances originate?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Culture JOIN Dance ON Dance.culture_id = Culture.id  GROUP BY culture_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?dance p:culture_id ?culture_id_g .\n  ?culture p:name ?name .\n}\nGROUP BY ?culture_id_g ?name",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Where did all the dances presented in the table originate?",
+      "qtype": "ambig",
+      "sql": "SELECT region FROM Geographical_Area JOIN Dance ON Dance.Geographical_Area_id = Geographical_Area.id  GROUP BY culture_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?region WHERE {\n  ?geographical_area a :Geographical_Area .\n  ?dance a :Dance .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?dance p:culture_id ?culture_id_g .\n  ?geographical_area p:region ?region .\n}\nGROUP BY ?culture_id_g ?region",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Where did capoeira come from?",
+      "qtype": "ambig",
+      "sql": "SELECT name, region FROM Culture JOIN Dance ON Dance.culture_id = Culture.id JOIN Geographical_Area ON Dance.Geographical_Area_id = Geographical_Area.id   WHERE dance_name = 'Capoeira'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?region WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?geographical_area a :Geographical_Area .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?culture p:name ?name .\n  ?geographical_area p:region ?region .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Where did all the dances presented in the table originate?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?region WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?geographical_area a :Geographical_Area .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?dance p:culture_id ?culture_id_g .\n  ?culture p:name ?name .\n  ?geographical_area p:region ?region .\n}\nGROUP BY ?culture_id_g ?name ?region }\n  component: { SELECT ?name WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?dance p:culture_id ?culture_id_g .\n  ?culture p:name ?name .\n}\nGROUP BY ?culture_id_g ?name }\n  component_2: { SELECT ?region WHERE {\n  ?geographical_area a :Geographical_Area .\n  ?dance a :Dance .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?dance p:culture_id ?culture_id_g .\n  ?geographical_area p:region ?region .\n}\nGROUP BY ?culture_id_g ?region }\n}",
+      "verified": true
+    },
+    {
+      "question": "Where did capoeira come from?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?culture p:name ?name .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n} }\n  component_2: { SELECT ?region WHERE {\n  ?geographical_area a :Geographical_Area .\n  ?dance a :Dance .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?geographical_area p:region ?region .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n} }\n  full: { SELECT ?name ?region WHERE {\n  ?culture a :Culture .\n  ?dance a :Dance .\n  ?dance p:hasCulture ?culture .\n  ?geographical_area a :Geographical_Area .\n  ?dance p:hasGeographical_Area ?geographical_area .\n  ?culture p:name ?name .\n  ?geographical_area p:region ?region .\n  ?dance p:dance_name ?dance_name_f .\n  FILTER(STR(?dance_name_f) = \"Capoeira\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

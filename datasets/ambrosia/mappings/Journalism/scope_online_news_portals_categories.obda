@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Online_News_Portals_base
+target		ex:Online_News_Portals/{id} a :Online_News_Portals ; p:id {id} ; p:name {name} ; p:website {website} .
+source		SELECT `id`, `name`, `website` FROM `Online_News_Portals`
+
+mappingId	Categories_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:category_name {category_name} .
+source		SELECT `id`, `category_name` FROM `Categories`
+
+mappingId	Online_News_Portals_Categories_base
+target		ex:Online_News_Portals_Categories/{_amb_rowid} a :Online_News_Portals_Categories ; p:online_news_portal_id {online_news_portal_id} ; p:category_id {category_id} .
+source		SELECT `_amb_rowid`, `online_news_portal_id`, `category_id` FROM `Online_News_Portals_Categories`
+
+mappingId	Online_News_Portals_Categories_category_id_fk
+target		ex:Online_News_Portals_Categories/{_amb_rowid} p:hasCategory ex:Category/{category_id} .
+source		SELECT `_amb_rowid`, `category_id` FROM `Online_News_Portals_Categories` WHERE `category_id` IS NOT NULL
+
+mappingId	Online_News_Portals_Categories_online_news_portal_id_fk
+target		ex:Online_News_Portals_Categories/{_amb_rowid} p:hasOnline_News_Portals ex:Online_News_Portals/{online_news_portal_id} .
+source		SELECT `_amb_rowid`, `online_news_portal_id` FROM `Online_News_Portals_Categories` WHERE `online_news_portal_id` IS NOT NULL
+
+]]

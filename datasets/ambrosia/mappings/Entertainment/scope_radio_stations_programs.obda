@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Radio_Stations_base
+target		ex:Radio_Stations/{station_id} a :Radio_Stations ; p:station_id {station_id} ; p:station_name {station_name} ; p:frequency {frequency} .
+source		SELECT `station_id`, `station_name`, `frequency` FROM `Radio_Stations`
+
+mappingId	Programs_base
+target		ex:Programs/{program_type_id} a :Programs ; p:program_type_id {program_type_id} ; p:program_type_name {program_type_name} .
+source		SELECT `program_type_id`, `program_type_name` FROM `Programs`
+
+mappingId	Hosts_base
+target		ex:Hosts/{host_id} a :Hosts ; p:host_id {host_id} ; p:host_name {host_name} ; p:host_gender {host_gender} .
+source		SELECT `host_id`, `host_name`, `host_gender` FROM `Hosts`
+
+mappingId	Radio_Stations_Hosts_base
+target		ex:Radio_Stations_Hosts/{radio_station_id}/{host_id} a :Radio_Stations_Hosts ; p:radio_station_id {radio_station_id} ; p:host_id {host_id} .
+source		SELECT `radio_station_id`, `host_id` FROM `Radio_Stations_Hosts`
+
+mappingId	Radio_Stations_Hosts_host_id_fk
+target		ex:Radio_Stations_Hosts/{radio_station_id}/{host_id} p:hasHosts ex:Hosts/{host_id} .
+source		SELECT `radio_station_id`, `host_id` FROM `Radio_Stations_Hosts` WHERE `host_id` IS NOT NULL
+
+mappingId	Radio_Stations_Hosts_radio_station_id_fk
+target		ex:Radio_Stations_Hosts/{radio_station_id}/{host_id} p:hasRadio_Stations ex:Radio_Stations/{radio_station_id} .
+source		SELECT `radio_station_id`, `host_id` FROM `Radio_Stations_Hosts` WHERE `radio_station_id` IS NOT NULL
+
+mappingId	Radio_Stations_Programs_base
+target		ex:Radio_Stations_Programs/{radio_station_id}/{program_type_id}/{day_of_week}/{start_time} a :Radio_Stations_Programs ; p:radio_station_id {radio_station_id} ; p:program_type_id {program_type_id} ; p:day_of_week {day_of_week} ; p:start_time {start_time} ; p:end_time {end_time} .
+source		SELECT `radio_station_id`, `program_type_id`, `day_of_week`, `start_time`, `end_time` FROM `Radio_Stations_Programs`
+
+mappingId	Radio_Stations_Programs_program_type_id_fk
+target		ex:Radio_Stations_Programs/{radio_station_id}/{program_type_id}/{day_of_week}/{start_time} p:hasPrograms ex:Programs/{program_type_id} .
+source		SELECT `radio_station_id`, `program_type_id`, `day_of_week`, `start_time` FROM `Radio_Stations_Programs` WHERE `program_type_id` IS NOT NULL
+
+mappingId	Radio_Stations_Programs_radio_station_id_fk
+target		ex:Radio_Stations_Programs/{radio_station_id}/{program_type_id}/{day_of_week}/{start_time} p:hasRadio_Stations ex:Radio_Stations/{radio_station_id} .
+source		SELECT `radio_station_id`, `program_type_id`, `day_of_week`, `start_time` FROM `Radio_Stations_Programs` WHERE `radio_station_id` IS NOT NULL
+
+]]

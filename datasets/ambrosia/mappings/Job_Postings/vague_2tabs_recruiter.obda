@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Company`
+
+mappingId	Recruitment_Agency_base
+target		ex:Recruitment_Agency/{id} a :Recruitment_Agency ; p:id {id} ; p:agencyName {agencyName} ; p:contactEmail {contactEmail} ; p:contactPhone {contactPhone} .
+source		SELECT `id`, `agencyName`, `contactEmail`, `contactPhone` FROM `Recruitment_Agency`
+
+mappingId	Position_base
+target		ex:Position/{id} a :Position ; p:id {id} ; p:title {title} ; p:description {description} ; p:salary {salary} ; p:companyId {companyId} ; p:recruitmentAgencyId {recruitmentAgencyId} .
+source		SELECT `id`, `title`, `description`, `salary`, `companyId`, `recruitmentAgencyId` FROM `Position`
+
+mappingId	Position_recruitmentAgencyId_fk
+target		ex:Position/{id} p:hasRecruitment_Agency ex:Recruitment_Agency/{recruitmentAgencyId} .
+source		SELECT `id`, `recruitmentAgencyId` FROM `Position` WHERE `recruitmentAgencyId` IS NOT NULL
+
+mappingId	Position_companyId_fk
+target		ex:Position/{id} p:hasCompanies ex:Companies/{companyId} .
+source		SELECT `id`, `companyId` FROM `Position` WHERE `companyId` IS NOT NULL
+
+mappingId	Applicant_base
+target		ex:Applicants/{id} a :Applicants ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:positionId {positionId} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `phoneNumber`, `positionId` FROM `Applicant`
+
+mappingId	Applicant_positionId_fk
+target		ex:Applicants/{id} p:hasPosition ex:Position/{positionId} .
+source		SELECT `id`, `positionId` FROM `Applicant` WHERE `positionId` IS NOT NULL
+
+mappingId	Interview_base
+target		ex:Interview/{id} a :Interview ; p:id {id} ; p:date {date} ; p:time {time} ; p:applicantId {applicantId} ; p:interviewerId {interviewerId} ; p:positionId {positionId} ; p:status {status} .
+source		SELECT `id`, `date`, `time`, `applicantId`, `interviewerId`, `positionId`, `status` FROM `Interview`
+
+mappingId	Interview_positionId_fk
+target		ex:Interview/{id} p:hasPosition ex:Position/{positionId} .
+source		SELECT `id`, `positionId` FROM `Interview` WHERE `positionId` IS NOT NULL
+
+mappingId	Interview_interviewerId_fk
+target		ex:Interview/{id} p:hasEmployees ex:Employees/{interviewerId} .
+source		SELECT `id`, `interviewerId` FROM `Interview` WHERE `interviewerId` IS NOT NULL
+
+mappingId	Interview_applicantId_fk
+target		ex:Interview/{id} p:hasApplicants ex:Applicants/{applicantId} .
+source		SELECT `id`, `applicantId` FROM `Interview` WHERE `applicantId` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{id} a :Employees ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:role {role} ; p:hireDate {hireDate} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `phoneNumber`, `role`, `hireDate` FROM `Employee`
+
+]]

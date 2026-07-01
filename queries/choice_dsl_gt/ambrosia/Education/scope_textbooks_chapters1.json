@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_textbooks_chapters1",
+  "schema": "amb_scope_textbooks_chapters1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the chapters corresponding to each text book.",
+      "qtype": "ambig",
+      "sql": "SELECT Chapters.chapter_name  from Textbook_Chapters join Chapters on Textbook_Chapters.chapter_id = Chapters.chapter_id join Textbooks on Textbook_Chapters.textbook_id = Textbooks.id   GROUP BY Textbook_Chapters.chapter_id HAVING COUNT(DISTINCT Textbook_Chapters.textbook_id) = (SELECT COUNT(*) FROM  Textbooks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?chapter_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapter_name ?chapter_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the chapters corresponding to each text book.",
+      "qtype": "ambig",
+      "sql": "select textbooks.title , chapters.chapter_name from Textbook_Chapters join Chapters on Textbook_Chapters.chapter_id = Chapters.chapter_id join Textbooks on Textbook_Chapters.textbook_id = Textbooks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?chapter_name WHERE {\n  ?textbook_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbook_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbook_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapter_name ?chapter_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the chapters corresponding to each text book.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?chapter_name WHERE {\n  ?textbook_chapters a :Textbook_Chapters .\n  ?chapters a :Chapters .\n  ?textbook_chapters p:hasChapters ?chapters .\n  ?textbooks a :Textbooks .\n  ?textbook_chapters p:hasTextbooks ?textbooks .\n  ?textbooks p:title ?title .\n  ?chapters p:chapter_name ?chapter_name .\n} }\n  collective: { SELECT ?chapter_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasChapters ?child ; p:hasTextbooks ?parent . } GROUP BY ?child }\n  ?child p:chapter_name ?chapter_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Textbooks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

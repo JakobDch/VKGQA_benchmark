@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:email {Email} ; p:name {fullname} .
+source		SELECT `CustomerID`, `Email`, `fullname` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountNumber} a :Accounts ; p:AccountNumber {AccountNumber} ; p:Balance {Balance} ; p:InterestRate {InterestRate} ; p:OpenDate {OpenDate} ; p:CustomerID {CustomerID} .
+source		SELECT `AccountNumber`, `Balance`, `InterestRate`, `OpenDate`, `CustomerID` FROM `Accounts`
+
+mappingId	Accounts_CustomerID_fk
+target		ex:Accounts/{AccountNumber} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `AccountNumber`, `CustomerID` FROM `Accounts` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Stocks_base
+target		ex:Stocks/{StockSymbol} a :Stocks ; p:StockSymbol {StockSymbol} ; p:CompanyName {CompanyName} ; p:CurrentPrice {CurrentPrice} .
+source		SELECT `StockSymbol`, `CompanyName`, `CurrentPrice` FROM `Stocks`
+
+mappingId	Investments_base
+target		ex:Investments/{InvestmentID} a :Investments ; p:InvestmentID {InvestmentID} ; p:AccountNumber {AccountNumber} ; p:StockSymbol {StockSymbol} ; p:Quantity {Quantity} ; p:PurchaseDate {PurchaseDate} .
+source		SELECT `InvestmentID`, `AccountNumber`, `StockSymbol`, `Quantity`, `PurchaseDate` FROM `Investments`
+
+mappingId	Investments_StockSymbol_fk
+target		ex:Investments/{InvestmentID} p:hasStocks ex:Stocks/{StockSymbol} .
+source		SELECT `InvestmentID`, `StockSymbol` FROM `Investments` WHERE `StockSymbol` IS NOT NULL
+
+mappingId	Investments_AccountNumber_fk
+target		ex:Investments/{InvestmentID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `InvestmentID`, `AccountNumber` FROM `Investments` WHERE `AccountNumber` IS NOT NULL
+
+mappingId	PortfolioPerformance_base
+target		ex:PortfolioPerformance/{PerformanceID} a :PortfolioPerformance ; p:PerformanceID {PerformanceID} ; p:InvestmentID {InvestmentID} ; p:Stock_Percentage {Stock_Percentage} ; p:Stock_Value {Stock_Value} ; p:Investment_Portfolios {Investment_Portfolios} .
+source		SELECT `PerformanceID`, `InvestmentID`, `Stock_Percentage`, `Stock_Value`, `Investment_Portfolios` FROM `PortfolioPerformance`
+
+mappingId	PortfolioPerformance_InvestmentID_fk
+target		ex:PortfolioPerformance/{PerformanceID} p:hasInvestments ex:Investments/{InvestmentID} .
+source		SELECT `PerformanceID`, `InvestmentID` FROM `PortfolioPerformance` WHERE `InvestmentID` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionID} a :Transactions ; p:TransactionID {TransactionID} ; p:AccountNumber {AccountNumber} ; p:Amount {Amount} ; p:Type {Type} ; p:Date {Date} .
+source		SELECT `TransactionID`, `AccountNumber`, `Amount`, `Type`, `Date` FROM `Transactions`
+
+mappingId	Transactions_AccountNumber_fk
+target		ex:Transactions/{TransactionID} p:hasAccounts ex:Accounts/{AccountNumber} .
+source		SELECT `TransactionID`, `AccountNumber` FROM `Transactions` WHERE `AccountNumber` IS NOT NULL
+
+]]

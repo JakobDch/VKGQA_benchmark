@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Employees_base
+target		ex:Employees/{emp_id} a :Employees ; p:emp_id {emp_id} ; p:position {position} ; p:Board_Member {Board_Member} ; p:Organization {Organization} ; p:name {FullName} .
+source		SELECT `emp_id`, `position`, `Board_Member`, `Organization`, `FullName` FROM `Employees`
+
+mappingId	Customers_base
+target		ex:Customers/{cust_id} a :Customers ; p:cust_id {cust_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} ; p:emp_id {emp_id} .
+source		SELECT `cust_id`, `first_name`, `last_name`, `email`, `phone_number`, `emp_id` FROM `Customers`
+
+mappingId	Customers_emp_id_fk
+target		ex:Customers/{cust_id} p:hasEmployees ex:Employees/{emp_id} .
+source		SELECT `cust_id`, `emp_id` FROM `Customers` WHERE `emp_id` IS NOT NULL
+
+mappingId	Accounts_base
+target		ex:Accounts/{account_id} a :Accounts ; p:account_id {account_id} ; p:cust_id {cust_id} ; p:balance {balance} .
+source		SELECT `account_id`, `cust_id`, `balance` FROM `Accounts`
+
+mappingId	Accounts_cust_id_fk
+target		ex:Accounts/{account_id} p:hasCustomers ex:Customers/{cust_id} .
+source		SELECT `account_id`, `cust_id` FROM `Accounts` WHERE `cust_id` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{transaction_id} a :Transactions ; p:transaction_id {transaction_id} ; p:account_id {account_id} ; p:amount {amount} ; p:date {date} .
+source		SELECT `transaction_id`, `account_id`, `amount`, `date` FROM `Transactions`
+
+mappingId	Transactions_account_id_fk
+target		ex:Transactions/{transaction_id} p:hasAccounts ex:Accounts/{account_id} .
+source		SELECT `transaction_id`, `account_id` FROM `Transactions` WHERE `account_id` IS NOT NULL
+
+]]

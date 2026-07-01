@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_ref_written_journalism",
+  "schema": "amb_attachment_1tab_ref_written_journalism",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all news articles and also provide a list of feature articles of 1,000 words.",
+      "qtype": "unambig",
+      "sql": "SELECT Articles.Title \nFROM Articles JOIN WordCounts ON Articles.word_count = WordCounts.column\nWHERE Articles.Written_journalism = \"News Article\" OR Articles.Written_journalism = \"Feature Article\" AND WordCounts.column = \"1,000 words\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?wordcounts a :WordCounts .\n  ?articles p:word_count ?word_count_l .\n  ?wordcounts p:column ?column_r .\n  ?articles p:title ?title .\n  ?articles p:Written_journalism ?written_journalism_w .\n  ?articles p:Written_journalism ?written_journalism_w2 .\n  ?wordcounts p:column ?column_w .\n  FILTER(STR(?word_count_l) = STR(?column_r))\n  FILTER((STR(?written_journalism_w) = \"News Article\" || (STR(?written_journalism_w2) = \"Feature Article\" && STR(?column_w) = \"1,000 words\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show me news articles and feature articles of 1,000 words.",
+      "qtype": "ambig",
+      "sql": "SELECT Articles.Title \nFROM Articles JOIN WordCounts ON Articles.word_count = WordCounts.column\nWHERE (Articles.Written_journalism = \"News Article\" OR Articles.Written_journalism = \"Feature Article\") AND WordCounts.column = \"1,000 words\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?articles a :Articles .\n  ?wordcounts a :WordCounts .\n  ?articles p:word_count ?word_count_l .\n  ?wordcounts p:column ?column_r .\n  ?articles p:title ?title .\n  ?articles p:Written_journalism ?written_journalism_w .\n  ?articles p:Written_journalism ?written_journalism_w2 .\n  ?wordcounts p:column ?column_w .\n  FILTER(STR(?word_count_l) = STR(?column_r))\n  FILTER((((STR(?written_journalism_w) = \"News Article\" || STR(?written_journalism_w2) = \"Feature Article\")) && STR(?column_w) = \"1,000 words\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me news articles and feature articles of 1,000 words.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?wordcounts a :WordCounts .\n  ?articles p:word_count ?word_count_l .\n  ?wordcounts p:column ?column_r .\n  ?articles p:title ?title .\n  ?articles p:Written_journalism ?written_journalism_w .\n  ?articles p:Written_journalism ?written_journalism_w2 .\n  ?wordcounts p:column ?column_w .\n  FILTER(STR(?word_count_l) = STR(?column_r))\n  FILTER((STR(?written_journalism_w) = \"News Article\" || (STR(?written_journalism_w2) = \"Feature Article\" && STR(?column_w) = \"1,000 words\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?articles a :Articles .\n  ?wordcounts a :WordCounts .\n  ?articles p:word_count ?word_count_l .\n  ?wordcounts p:column ?column_r .\n  ?articles p:title ?title .\n  ?articles p:Written_journalism ?written_journalism_w .\n  ?articles p:Written_journalism ?written_journalism_w2 .\n  ?wordcounts p:column ?column_w .\n  FILTER(STR(?word_count_l) = STR(?column_r))\n  FILTER((((STR(?written_journalism_w) = \"News Article\" || STR(?written_journalism_w2) = \"Feature Article\")) && STR(?column_w) = \"1,000 words\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

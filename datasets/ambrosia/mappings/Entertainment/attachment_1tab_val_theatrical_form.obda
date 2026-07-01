@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Play_base
+target		ex:Play/{ID} a :Play ; p:ID {ID} ; p:Title {Title} ; p:Theatrical_Form {Theatrical_Form} ; p:Author {Author} ; p:Year_Published {Year_Published} .
+source		SELECT `ID`, `Title`, `Theatrical_Form`, `Author`, `Year_Published` FROM `Play`
+
+mappingId	Character_base
+target		ex:Character/{ID} a :Character ; p:ID {ID} ; p:name {Name} ; p:PlayID {PlayID} .
+source		SELECT `ID`, `Name`, `PlayID` FROM `Character`
+
+mappingId	Character_PlayID_fk
+target		ex:Character/{ID} p:hasPlay ex:Play/{PlayID} .
+source		SELECT `ID`, `PlayID` FROM `Character` WHERE `PlayID` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actor/{ID} a :Actor ; p:ID {ID} ; p:name {Name} ; p:Birthdate {Birthdate} .
+source		SELECT `ID`, `Name`, `Birthdate` FROM `Actor`
+
+mappingId	Role_base
+target		ex:Role/{ID} a :Role ; p:ID {ID} ; p:CharacterID {CharacterID} ; p:ActorID {ActorID} ; p:PerformanceDate {PerformanceDate} .
+source		SELECT `ID`, `CharacterID`, `ActorID`, `PerformanceDate` FROM `Role`
+
+mappingId	Role_ActorID_fk
+target		ex:Role/{ID} p:hasActor ex:Actor/{ActorID} .
+source		SELECT `ID`, `ActorID` FROM `Role` WHERE `ActorID` IS NOT NULL
+
+mappingId	Role_CharacterID_fk
+target		ex:Role/{ID} p:hasCharacter ex:Character/{CharacterID} .
+source		SELECT `ID`, `CharacterID` FROM `Role` WHERE `CharacterID` IS NOT NULL
+
+mappingId	Theater_base
+target		ex:Theatre/{ID} a :Theatre ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Theater`
+
+mappingId	Production_base
+target		ex:Production/{ID} a :Production ; p:ID {ID} ; p:PlayID {PlayID} ; p:TheaterID {TheaterID} ; p:Start_Date {Start_Date} ; p:End_Date {End_Date} .
+source		SELECT `ID`, `PlayID`, `TheaterID`, `Start_Date`, `End_Date` FROM `Production`
+
+mappingId	Production_TheaterID_fk
+target		ex:Production/{ID} p:hasTheatre ex:Theatre/{TheaterID} .
+source		SELECT `ID`, `TheaterID` FROM `Production` WHERE `TheaterID` IS NOT NULL
+
+mappingId	Production_PlayID_fk
+target		ex:Production/{ID} p:hasPlay ex:Play/{PlayID} .
+source		SELECT `ID`, `PlayID` FROM `Production` WHERE `PlayID` IS NOT NULL
+
+]]

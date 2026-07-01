@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	journalists_base
+target		ex:Journalists/{id} a :Journalists ; p:id {id} ; p:name {name} ; p:email {email} ; p:phone {phone} .
+source		SELECT `id`, `name`, `email`, `phone` FROM `journalists`
+
+mappingId	news_agencies_base
+target		ex:News_Agency/{id} a :News_Agency ; p:id {id} ; p:name {name} ; p:location {location} ; p:contact_email {contact_email} .
+source		SELECT `id`, `name`, `location`, `contact_email` FROM `news_agencies`
+
+mappingId	stories_base
+target		ex:Stories/{id} a :Stories ; p:id {id} ; p:title {title} ; p:content {content} ; p:publish_date {publish_date} ; p:journalist_id {journalist_id} ; p:news_agency_id {news_agency_id} .
+source		SELECT `id`, `title`, `content`, `publish_date`, `journalist_id`, `news_agency_id` FROM `stories`
+
+mappingId	stories_news_agency_id_fk
+target		ex:Stories/{id} p:hasNews_Agency ex:News_Agency/{news_agency_id} .
+source		SELECT `id`, `news_agency_id` FROM `stories` WHERE `news_agency_id` IS NOT NULL
+
+mappingId	stories_journalist_id_fk
+target		ex:Stories/{id} p:hasJournalists ex:Journalists/{journalist_id} .
+source		SELECT `id`, `journalist_id` FROM `stories` WHERE `journalist_id` IS NOT NULL
+
+mappingId	story_categories_base
+target		ex:story_categories/{id} a :story_categories ; p:id {id} ; p:category_name {category_name} ; p:description {description} .
+source		SELECT `id`, `category_name`, `description` FROM `story_categories`
+
+mappingId	assigned_stories_base
+target		ex:assigned_stories/{id} a :assigned_stories ; p:id {id} ; p:story_id {story_id} ; p:journalist_id {journalist_id} ; p:start_date {start_date} ; p:end_date {end_date} .
+source		SELECT `id`, `story_id`, `journalist_id`, `start_date`, `end_date` FROM `assigned_stories`
+
+mappingId	assigned_stories_journalist_id_fk
+target		ex:assigned_stories/{id} p:hasJournalists ex:Journalists/{journalist_id} .
+source		SELECT `id`, `journalist_id` FROM `assigned_stories` WHERE `journalist_id` IS NOT NULL
+
+mappingId	assigned_stories_story_id_fk
+target		ex:assigned_stories/{id} p:hasStories ex:Stories/{story_id} .
+source		SELECT `id`, `story_id` FROM `assigned_stories` WHERE `story_id` IS NOT NULL
+
+]]

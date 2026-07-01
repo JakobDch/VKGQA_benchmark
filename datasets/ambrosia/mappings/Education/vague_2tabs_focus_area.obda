@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Topic_base
+target		ex:Topics/{id} a :Topics ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Topic`
+
+mappingId	Field_Of_Study_base
+target		ex:Field_Of_Study/{id} a :Field_Of_Study ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Field_Of_Study`
+
+mappingId	Project_base
+target		ex:Projects/{id} a :Projects ; p:id {id} ; p:title {title} ; p:details {details} ; p:topicId {topicId} ; p:fieldOfStudyId {fieldOfStudyId} .
+source		SELECT `id`, `title`, `details`, `topicId`, `fieldOfStudyId` FROM `Project`
+
+mappingId	Project_fieldOfStudyId_fk
+target		ex:Projects/{id} p:hasField_Of_Study ex:Field_Of_Study/{fieldOfStudyId} .
+source		SELECT `id`, `fieldOfStudyId` FROM `Project` WHERE `fieldOfStudyId` IS NOT NULL
+
+mappingId	Project_topicId_fk
+target		ex:Projects/{id} p:hasTopics ex:Topics/{topicId} .
+source		SELECT `id`, `topicId` FROM `Project` WHERE `topicId` IS NOT NULL
+
+mappingId	Student_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:majorId {majorId} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `majorId` FROM `Student`
+
+mappingId	Student_majorId_fk
+target		ex:Students/{id} p:hasField_Of_Study ex:Field_Of_Study/{majorId} .
+source		SELECT `id`, `majorId` FROM `Student` WHERE `majorId` IS NOT NULL
+
+mappingId	Enrollment_base
+target		ex:Enrollments/{id} a :Enrollments ; p:id {id} ; p:studentId {studentId} ; p:projectId {projectId} ; p:grade {grade} ; p:enrolledDate {enrolledDate} ; p:completionDate {completionDate} .
+source		SELECT `id`, `studentId`, `projectId`, `grade`, `enrolledDate`, `completionDate` FROM `Enrollment`
+
+mappingId	Enrollment_projectId_fk
+target		ex:Enrollments/{id} p:hasProjects ex:Projects/{projectId} .
+source		SELECT `id`, `projectId` FROM `Enrollment` WHERE `projectId` IS NOT NULL
+
+mappingId	Enrollment_studentId_fk
+target		ex:Enrollments/{id} p:hasStudents ex:Students/{studentId} .
+source		SELECT `id`, `studentId` FROM `Enrollment` WHERE `studentId` IS NOT NULL
+
+mappingId	Instructor_base
+target		ex:Instructors/{id} a :Instructors ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:fieldOfStudyId {fieldOfStudyId} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `fieldOfStudyId` FROM `Instructor`
+
+mappingId	Instructor_fieldOfStudyId_fk
+target		ex:Instructors/{id} p:hasField_Of_Study ex:Field_Of_Study/{fieldOfStudyId} .
+source		SELECT `id`, `fieldOfStudyId` FROM `Instructor` WHERE `fieldOfStudyId` IS NOT NULL
+
+]]

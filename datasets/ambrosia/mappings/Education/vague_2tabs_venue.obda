@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Campus_Building_base
+target		ex:Campus_Building/{id} a :Campus_Building ; p:id {id} ; p:name {name} ; p:capacity {capacity} .
+source		SELECT `id`, `name`, `capacity` FROM `Campus_Building`
+
+mappingId	Online_Platform_base
+target		ex:Online_Learning_Platforms/{id} a :Online_Learning_Platforms ; p:id {id} ; p:platformName {platformName} ; p:URL {URL} .
+source		SELECT `id`, `platformName`, `URL` FROM `Online_Platform`
+
+mappingId	Lecture_base
+target		ex:Lecture/{id} a :Lecture ; p:id {id} ; p:title {title} ; p:duration {duration} ; p:campusId {campusId} ; p:onlineId {onlineId} .
+source		SELECT `id`, `title`, `duration`, `campusId`, `onlineId` FROM `Lecture`
+
+mappingId	Lecture_onlineId_fk
+target		ex:Lecture/{id} p:hasOnline_Learning_Platforms ex:Online_Learning_Platforms/{onlineId} .
+source		SELECT `id`, `onlineId` FROM `Lecture` WHERE `onlineId` IS NOT NULL
+
+mappingId	Lecture_campusId_fk
+target		ex:Lecture/{id} p:hasCampus_Building ex:Campus_Building/{campusId} .
+source		SELECT `id`, `campusId` FROM `Lecture` WHERE `campusId` IS NOT NULL
+
+mappingId	Student_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `id`, `firstName`, `lastName`, `email` FROM `Student`
+
+mappingId	Enrollment_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:studentId {studentId} ; p:lectureId {lectureId} ; p:grade {grade} .
+source		SELECT `_amb_rowid`, `studentId`, `lectureId`, `grade` FROM `Enrollment`
+
+mappingId	Enrollment_lectureId_fk
+target		ex:Enrollments/{_amb_rowid} p:hasLecture ex:Lecture/{lectureId} .
+source		SELECT `_amb_rowid`, `lectureId` FROM `Enrollment` WHERE `lectureId` IS NOT NULL
+
+mappingId	Enrollment_studentId_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{studentId} .
+source		SELECT `_amb_rowid`, `studentId` FROM `Enrollment` WHERE `studentId` IS NOT NULL
+
+mappingId	Course_base
+target		ex:Courses/{id} a :Courses ; p:id {id} ; p:courseCode {courseCode} ; p:courseTitle {courseTitle} ; p:lecturesInCourse {lecturesInCourse} .
+source		SELECT `id`, `courseCode`, `courseTitle`, `lecturesInCourse` FROM `Course`
+
+mappingId	Course_lecturesInCourse_fk
+target		ex:Courses/{id} p:hasLecture ex:Lecture/{lecturesInCourse} .
+source		SELECT `id`, `lecturesInCourse` FROM `Course` WHERE `lecturesInCourse` IS NOT NULL
+
+]]

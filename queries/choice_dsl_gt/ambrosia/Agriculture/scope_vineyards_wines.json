@@ -1,0 +1,108 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_vineyards_wines",
+  "schema": "amb_scope_vineyards_wines",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the wines produced across the vineyards.",
+      "qtype": "unambig",
+      "sql": "select vineyards.name , wines.name from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:name ?name2 .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 1,
+      "question": "What name and variety of wine do we have at every vineyard?",
+      "qtype": "ambig",
+      "sql": "SELECT Wines.name, Wines.variety  from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId   GROUP BY Vineyards_Wines.wineId HAVING COUNT(DISTINCT Vineyards_Wines.vineyardId) = (SELECT COUNT(*) FROM  Vineyards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?variety WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:variety ?variety .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 2,
+      "question": "What name and variety of wine do we have at every vineyard?",
+      "qtype": "ambig",
+      "sql": "select vineyards.name , wines.name , wines.variety from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?variety WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:name ?name2 .\n  ?wines p:variety ?variety .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 3,
+      "question": "What types of wines are typical for all vineyards?",
+      "qtype": "unambig",
+      "sql": "SELECT Wines.variety  from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId   GROUP BY Vineyards_Wines.wineId HAVING COUNT(DISTINCT Vineyards_Wines.vineyardId) = (SELECT COUNT(*) FROM  Vineyards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?variety WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:variety ?variety .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 4,
+      "question": "For each vineyard, what is the variety of wines there",
+      "qtype": "unambig",
+      "sql": "select vineyards.name , wines.variety from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?variety WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:variety ?variety .\n}",
+      "status": "pass",
+      "note": "n=0"
+    },
+    {
+      "qid": 5,
+      "question": "List the wines produced at each vineyard.",
+      "qtype": "ambig",
+      "sql": "SELECT Wines.name  from Vineyards_Wines join Wines on Vineyards_Wines.wineId = Wines.wineId join Vineyards on Vineyards_Wines.vineyardId = Vineyards.vineyardId   GROUP BY Vineyards_Wines.wineId HAVING COUNT(DISTINCT Vineyards_Wines.vineyardId) = (SELECT COUNT(*) FROM  Vineyards)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=0"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the wines produced at each vineyard.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:name ?name2 .\n} }\n  collective: { SELECT ?name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What name and variety of wine do we have at every vineyard?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?name2 ?variety WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:name ?name2 .\n  ?wines p:variety ?variety .\n} }\n  collective: { SELECT ?name ?variety WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:name ?name .\n  ?child p:variety ?variety .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What types of wines do we have in each vineyard?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?variety WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasWines ?child ; p:hasVineyards ?parent . } GROUP BY ?child }\n  ?child p:variety ?variety .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Vineyards } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?variety WHERE {\n  ?vineyards_wines a :Vineyards_Wines .\n  ?wines a :Wines .\n  ?vineyards_wines p:hasWines ?wines .\n  ?vineyards a :Vineyards .\n  ?vineyards_wines p:hasVineyards ?vineyards .\n  ?vineyards p:name ?name .\n  ?wines p:variety ?variety .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

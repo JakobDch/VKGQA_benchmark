@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Venue_base
+target		ex:Venue/{id} a :Venue ; p:id {id} ; p:name {name} ; p:address {address} ; p:venue_capacity {venue_capacity} .
+source		SELECT `id`, `name`, `address`, `venue_capacity` FROM `Venue`
+
+mappingId	Concert_base
+target		ex:Concert/{id} a :Concert ; p:id {id} ; p:title {title} ; p:date {date} ; p:artist_name {artist_name} ; p:venue_id {venue_id} .
+source		SELECT `id`, `title`, `date`, `artist_name`, `venue_id` FROM `Concert`
+
+mappingId	Concert_venue_id_fk
+target		ex:Concert/{id} p:hasVenue ex:Venue/{venue_id} .
+source		SELECT `id`, `venue_id` FROM `Concert` WHERE `venue_id` IS NOT NULL
+
+mappingId	Theater_Play_base
+target		ex:Theater_Play/{id} a :Theater_Play ; p:id {id} ; p:title {title} ; p:start_date {start_date} ; p:end_date {end_date} ; p:theater_company {theater_company} ; p:venue_id {venue_id} .
+source		SELECT `id`, `title`, `start_date`, `end_date`, `theater_company`, `venue_id` FROM `Theater_Play`
+
+mappingId	Theater_Play_venue_id_fk
+target		ex:Theater_Play/{id} p:hasVenue ex:Venue/{venue_id} .
+source		SELECT `id`, `venue_id` FROM `Theater_Play` WHERE `venue_id` IS NOT NULL
+
+]]

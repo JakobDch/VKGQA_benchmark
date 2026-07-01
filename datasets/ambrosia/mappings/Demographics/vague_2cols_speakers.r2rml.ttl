@@ -1,0 +1,75 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_speakers_0_Country_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CountryID\", \"Name\" FROM \"Country\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{CountryID}" ; rr:class :Countries ] ;
+  rr:predicateObjectMap [ rr:predicate p:CountryID ; rr:objectMap [ rr:column "CountryID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_vague_2cols_speakers_1_City_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityID\", \"Name\", \"Population\", \"ForeignKeyID\" FROM \"City\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ; rr:class :Cities ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityID ; rr:objectMap [ rr:column "CityID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Population ; rr:objectMap [ rr:column "Population" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ForeignKeyID ; rr:objectMap [ rr:column "ForeignKeyID" ] ] .
+
+<#tm_vague_2cols_speakers_2_City_ForeignKeyID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"CityID\", \"ForeignKeyID\" FROM \"City\" WHERE \"ForeignKeyID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{ForeignKeyID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_speakers_3_EthnicGroup_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EthnicGroupID\", \"GroupName\", \"Population\", \"CityID\" FROM \"EthnicGroup\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/EthnicGroup/{EthnicGroupID}" ; rr:class :EthnicGroup ] ;
+  rr:predicateObjectMap [ rr:predicate p:EthnicGroupID ; rr:objectMap [ rr:column "EthnicGroupID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:GroupName ; rr:objectMap [ rr:column "GroupName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Population ; rr:objectMap [ rr:column "Population" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityID ; rr:objectMap [ rr:column "CityID" ] ] .
+
+<#tm_vague_2cols_speakers_4_EthnicGroup_CityID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EthnicGroupID\", \"CityID\" FROM \"EthnicGroup\" WHERE \"CityID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/EthnicGroup/{EthnicGroupID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_speakers_5_AgeGroup_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AgeGroupID\", \"LowerBound\", \"UpperBound\", \"TotalPopulation\", \"CityID\" FROM \"AgeGroup\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/AgeGroup/{AgeGroupID}" ; rr:class :AgeGroup ] ;
+  rr:predicateObjectMap [ rr:predicate p:AgeGroupID ; rr:objectMap [ rr:column "AgeGroupID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LowerBound ; rr:objectMap [ rr:column "LowerBound" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:UpperBound ; rr:objectMap [ rr:column "UpperBound" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalPopulation ; rr:objectMap [ rr:column "TotalPopulation" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityID ; rr:objectMap [ rr:column "CityID" ] ] .
+
+<#tm_vague_2cols_speakers_6_AgeGroup_CityID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AgeGroupID\", \"CityID\" FROM \"AgeGroup\" WHERE \"CityID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/AgeGroup/{AgeGroupID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_speakers_7_EducationLevel_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EducationLevelID\", \"LevelName\", \"CityID\", \"TotalEnrolled\", \"TotalGraduated\" FROM \"EducationLevel\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/EducationLevel/{EducationLevelID}" ; rr:class :EducationLevel ] ;
+  rr:predicateObjectMap [ rr:predicate p:EducationLevelID ; rr:objectMap [ rr:column "EducationLevelID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LevelName ; rr:objectMap [ rr:column "LevelName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:CityID ; rr:objectMap [ rr:column "CityID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalEnrolled ; rr:objectMap [ rr:column "TotalEnrolled" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:TotalGraduated ; rr:objectMap [ rr:column "TotalGraduated" ] ] .
+
+<#tm_vague_2cols_speakers_8_EducationLevel_CityID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"EducationLevelID\", \"CityID\" FROM \"EducationLevel\" WHERE \"CityID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/EducationLevel/{EducationLevelID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCities ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Cities/{CityID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_speakers_9_Language_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"LanguageID\", \"Name\", \"Number_of_speakers\", \"Percentage_of_population\" FROM \"Language\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Language/{LanguageID}" ; rr:class :Language ] ;
+  rr:predicateObjectMap [ rr:predicate p:LanguageID ; rr:objectMap [ rr:column "LanguageID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Number_of_speakers ; rr:objectMap [ rr:column "Number_of_speakers" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Percentage_of_population ; rr:objectMap [ rr:column "Percentage_of_population" ] ] .
+

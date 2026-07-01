@@ -1,0 +1,174 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_duty_free_shops_products",
+  "schema": "amb_scope_duty_free_shops_products",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each duty-free shop, list the price of its products.",
+      "qtype": "unambig",
+      "sql": "select duty_free_shops.name , products.price from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the ids and prices of products that are common to all duty free shops.",
+      "qtype": "unambig",
+      "sql": "SELECT Products.product_id, Products.price  from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id   GROUP BY Duty_Free_Shops_Products.product_id HAVING COUNT(DISTINCT Duty_Free_Shops_Products.shop_id) = (SELECT COUNT(*) FROM  Duty_Free_Shops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?product_id ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Tell me the ids and categories of the products every shop sells.",
+      "qtype": "ambig",
+      "sql": "SELECT Products.product_id, Products.category  from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id   GROUP BY Duty_Free_Shops_Products.product_id HAVING COUNT(DISTINCT Duty_Free_Shops_Products.shop_id) = (SELECT COUNT(*) FROM  Duty_Free_Shops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?product_id ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Tell me the ids and categories of the products every shop sells.",
+      "qtype": "ambig",
+      "sql": "select duty_free_shops.name , products.product_id , products.category from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?product_id ?category WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:category ?category .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 4,
+      "question": "For each duty free shop, what are the corresponding product ids and prices?",
+      "qtype": "unambig",
+      "sql": "select duty_free_shops.name , products.product_id , products.price from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?product_id ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 5,
+      "question": "List the price of products sold in every duty-free shop.",
+      "qtype": "ambig",
+      "sql": "SELECT Products.price  from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id   GROUP BY Duty_Free_Shops_Products.product_id HAVING COUNT(DISTINCT Duty_Free_Shops_Products.shop_id) = (SELECT COUNT(*) FROM  Duty_Free_Shops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "For each duty free shop, list the ids, categories and prices of the products being sold.",
+      "qtype": "unambig",
+      "sql": "select duty_free_shops.name , products.product_id , products.category , products.price from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?product_id ?category ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:category ?category .\n  ?products p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 7,
+      "question": "What are the categories and prices of the products common to all duty free shops?",
+      "qtype": "unambig",
+      "sql": "SELECT Products.category, Products.price  from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id   GROUP BY Duty_Free_Shops_Products.product_id HAVING COUNT(DISTINCT Duty_Free_Shops_Products.shop_id) = (SELECT COUNT(*) FROM  Duty_Free_Shops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?category ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:category ?category .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 8,
+      "question": "Tell me about the ids, categories and prices of the products every duty free shop sells.",
+      "qtype": "ambig",
+      "sql": "SELECT Products.product_id, Products.category, Products.price  from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id   GROUP BY Duty_Free_Shops_Products.product_id HAVING COUNT(DISTINCT Duty_Free_Shops_Products.shop_id) = (SELECT COUNT(*) FROM  Duty_Free_Shops)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?product_id ?category ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:category ?category .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 9,
+      "question": "For every duty free shop, list the categories and prices of the products sold.",
+      "qtype": "unambig",
+      "sql": "select duty_free_shops.name , products.category , products.price from Duty_Free_Shops_Products join Products on Duty_Free_Shops_Products.product_id = Products.product_id join Duty_Free_Shops on Duty_Free_Shops_Products.shop_id = Duty_Free_Shops.shop_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?category ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:category ?category .\n  ?products p:price ?price .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the price of products sold in every duty-free shop.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:price ?price .\n} }\n  collective: { SELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the ids and prices of products that each duty free shop has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?product_id ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?product_id ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:price ?price .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the ids and categories of the products every shop sells.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?product_id ?category WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:category ?category .\n} }\n  collective: { SELECT ?product_id ?category WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:category ?category .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me about the ids, categories and prices of the products every duty free shop sells.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        6,
+        8
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?product_id ?category ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:product_id ?product_id .\n  ?products p:category ?category .\n  ?products p:price ?price .\n} }\n  collective: { SELECT ?product_id ?category ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:product_id ?product_id .\n  ?child p:category ?category .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the categories and prices of the products every duty free shop sells.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        7,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?category ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProducts ?child ; p:hasDuty_Free_Shops ?parent . } GROUP BY ?child }\n  ?child p:category ?category .\n  ?child p:price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Duty_Free_Shops } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?category ?price WHERE {\n  ?duty_free_shops_products a :Duty_Free_Shops_Products .\n  ?products a :Products .\n  ?duty_free_shops_products p:hasProducts ?products .\n  ?duty_free_shops a :Duty_Free_Shops .\n  ?duty_free_shops_products p:hasDuty_Free_Shops ?duty_free_shops .\n  ?duty_free_shops p:name ?name .\n  ?products p:category ?category .\n  ?products p:price ?price .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

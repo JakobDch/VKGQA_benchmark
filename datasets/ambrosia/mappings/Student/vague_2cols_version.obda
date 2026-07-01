@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Email` FROM `Students`
+
+mappingId	Instructors_base
+target		ex:Instructors/{ID} a :Instructors ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Department {Department} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Department` FROM `Instructors`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{RegistrationID} a :Enrollments ; p:RegistrationID {RegistrationID} ; p:StudentID {StudentID} ; p:CourseCode {CourseCode} ; p:Grade {Grade} .
+source		SELECT `RegistrationID`, `StudentID`, `CourseCode`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{RegistrationID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `RegistrationID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	TextbookEditions_base
+target		ex:TextbookEditions/{EditionNumber} a :TextbookEditions ; p:EditionNumber {EditionNumber} ; p:YearPublished {YearPublished} ; p:Publisher {Publisher} ; p:ISBN {ISBN} ; p:Textbooks {Textbooks} .
+source		SELECT `EditionNumber`, `YearPublished`, `Publisher`, `ISBN`, `Textbooks` FROM `TextbookEditions`
+
+mappingId	CourseOfferings_base
+target		ex:CourseOfferings/{OfferingID} a :CourseOfferings ; p:OfferingID {OfferingID} ; p:CourseCode {CourseCode} ; p:Semester {Semester} ; p:Year {Year} ; p:InstructorID {InstructorID} .
+source		SELECT `OfferingID`, `CourseCode`, `Semester`, `Year`, `InstructorID` FROM `CourseOfferings`
+
+mappingId	CourseOfferings_InstructorID_fk
+target		ex:CourseOfferings/{OfferingID} p:hasInstructors ex:Instructors/{InstructorID} .
+source		SELECT `OfferingID`, `InstructorID` FROM `CourseOfferings` WHERE `InstructorID` IS NOT NULL
+
+mappingId	BookCopies_base
+target		ex:BookCopies/{CopyID} a :BookCopies ; p:CopyID {CopyID} ; p:CourseOfferingID {CourseOfferingID} ; p:TextbookEditionID {TextbookEditionID} ; p:Quantity {Quantity} .
+source		SELECT `CopyID`, `CourseOfferingID`, `TextbookEditionID`, `Quantity` FROM `BookCopies`
+
+mappingId	BookCopies_TextbookEditionID_fk
+target		ex:BookCopies/{CopyID} p:hasTextbookEditions ex:TextbookEditions/{TextbookEditionID} .
+source		SELECT `CopyID`, `TextbookEditionID` FROM `BookCopies` WHERE `TextbookEditionID` IS NOT NULL
+
+mappingId	BookCopies_CourseOfferingID_fk
+target		ex:BookCopies/{CopyID} p:hasCourseOfferings ex:CourseOfferings/{CourseOfferingID} .
+source		SELECT `CopyID`, `CourseOfferingID` FROM `BookCopies` WHERE `CourseOfferingID` IS NOT NULL
+
+]]

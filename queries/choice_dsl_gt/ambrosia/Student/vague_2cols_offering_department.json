@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_offering_department",
+  "schema": "amb_vague_2cols_offering_department",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the number of credits that students from each college and university completed and did not fail for the year 2021",
+      "qtype": "unambig",
+      "sql": "SELECT college, university, SUM(C.credits) as Num_Credits\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id\nWHERE E.year = 2021\nAND E.grade not like '%F%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?col ?uni (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:college ?col ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?col ?uni",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = total credits per college,university (year 2021, passing gr"
+    },
+    {
+      "qid": 1,
+      "question": "How many students from each college and university are enrolled in Calculus I?",
+      "qtype": "unambig",
+      "sql": "SELECT college, university, COUNT(student_id) AS Num_Students\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id AND title = 'Calculus I'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?col ?uni (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:college ?col ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?col ?uni",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = #enrollments per college,university (Calculus filter in ON "
+    },
+    {
+      "qid": 2,
+      "question": "Show the number of credits that students from each college completed and did not fail for the year 2021",
+      "qtype": "unambig",
+      "sql": "SELECT college, SUM(C.credits) as Num_Credits\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id\nWHERE E.year = 2021\nAND E.grade not like '%F%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?col (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:college ?col . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?col",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = total credits per college (year 2021, passing)"
+    },
+    {
+      "qid": 3,
+      "question": "How many students from each college are enrolled in Calculus I?",
+      "qtype": "unambig",
+      "sql": "SELECT college, COUNT(student_id) AS Num_Students\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id AND title = 'Calculus I'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?col (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:college ?col . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?col",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = #enrollments per college"
+    },
+    {
+      "qid": 4,
+      "question": "Find how many students from each offering department are enrolled in Calculus I.",
+      "qtype": "ambig",
+      "sql": "SELECT university, COUNT(student_id) AS Num_Students\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id AND title = 'Calculus I'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?uni (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?uni",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = #enrollments per university"
+    },
+    {
+      "qid": 5,
+      "question": "Show the number of credits that students from each offering department completed and did not fail for the year 2021.",
+      "qtype": "ambig",
+      "sql": "SELECT university, SUM(C.credits) as Num_Credits\nFROM Students S\nLEFT JOIN CourseEnrollments E ON S.id = E.student_id\nLEFT JOIN Courses C ON C.id = E.course_id\nWHERE E.year = 2021\nAND E.grade not like '%F%'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nSELECT ?uni (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?uni",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): omits GROUP BY; NL = total credits per university (year 2021, passing)"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the number of credits that students from each offering department completed and did not fail for the year 2021.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nCHOICE vague {\n  full: { SELECT ?col ?uni (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:college ?col ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?col ?uni }\n  component: { SELECT ?col (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:college ?col . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?col }\n  component_2: { SELECT ?uni (SUM(?cr) AS ?n) WHERE { ?s a :Students ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:year ?y ; p:grade ?g ; p:hasCourses ?c . ?c p:credits ?cr . FILTER(STR(?y)=\"2021\") FILTER(!REGEX(STR(?g),\"F\")) } GROUP BY ?uni }\n}",
+      "verified": true
+    },
+    {
+      "question": "Find how many students from each offering department are enrolled in Calculus I.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nCHOICE vague {\n  full: { SELECT ?col ?uni (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:college ?col ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?col ?uni }\n  component: { SELECT ?col (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:college ?col . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?col }\n  component_2: { SELECT ?uni (COUNT(?sid) AS ?n) WHERE { ?s a :Students ; p:university ?uni . ?e a :Enrollments ; p:hasStudents ?s ; p:student_id ?sid } GROUP BY ?uni }\n}",
+      "verified": true
+    }
+  ]
+}

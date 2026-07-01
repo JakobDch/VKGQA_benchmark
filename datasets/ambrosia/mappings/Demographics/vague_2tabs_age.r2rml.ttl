@@ -1,0 +1,69 @@
+@prefix : <http://ambrosia.example.org/demographics#> .
+@prefix p: <http://ambrosia.example.org/demographics/prop#> .
+@prefix ex: <http://ambrosia.example.org/demographics/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_age_0_Country_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\" FROM \"Country\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{id}" ; rr:class :Countries ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] .
+
+<#tm_vague_2tabs_age_1_Region_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"region_name\", \"country_id\" FROM \"Region\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{id}" ; rr:class :Regions ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:region_name ; rr:objectMap [ rr:column "region_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country_id ; rr:objectMap [ rr:column "country_id" ] ] .
+
+<#tm_vague_2tabs_age_2_Region_country_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"country_id\" FROM \"Region\" WHERE \"country_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Regions/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{country_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_age_3_Population_Group_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"group_name\", \"population\", \"median_age\", \"age_range_id\" FROM \"Population_Group\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Population_Group/{id}" ; rr:class :Population_Group ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:group_name ; rr:objectMap [ rr:column "group_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:population ; rr:objectMap [ rr:column "population" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:median_age ; rr:objectMap [ rr:column "median_age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age_range_id ; rr:objectMap [ rr:column "age_range_id" ] ] .
+
+<#tm_vague_2tabs_age_4_Population_Group_age_range_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"age_range_id\" FROM \"Population_Group\" WHERE \"age_range_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Population_Group/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAge_Range ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Age_Range/{age_range_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_age_5_Population_Group_median_age_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"median_age\" FROM \"Population_Group\" WHERE \"median_age\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Population_Group/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMedian_Age ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Median_Age/{median_age}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_age_6_Age_Range_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"start_age\", \"end_age\", \"country\" FROM \"Age_Range\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Age_Range/{id}" ; rr:class :Age_Range ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:start_age ; rr:objectMap [ rr:column "start_age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:end_age ; rr:objectMap [ rr:column "end_age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country ; rr:objectMap [ rr:column "country" ] ] .
+
+<#tm_vague_2tabs_age_7_Age_Range_country_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"country\" FROM \"Age_Range\" WHERE \"country\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Age_Range/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{country}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_age_8_Median_Age_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"age\", \"country\" FROM \"Median_Age\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Median_Age/{id}" ; rr:class :Median_Age ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:age ; rr:objectMap [ rr:column "age" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:country ; rr:objectMap [ rr:column "country" ] ] .
+
+<#tm_vague_2tabs_age_9_Median_Age_country_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"country\" FROM \"Median_Age\" WHERE \"country\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/demographics/id/Median_Age/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCountries ; rr:objectMap [ rr:template "http://ambrosia.example.org/demographics/id/Countries/{country}" ; rr:termType rr:IRI ] ] .
+

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_assessment_methods",
+  "schema": "amb_attachment_2tab_val_assessment_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all exams and also show quizzes graded by Professor Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Exams.CourseTitle as title\nFROM Exams JOIN Assessors ON Exams.AssessorId = Assessors.AssessorID\nUNION\nSELECT Quizzes.Description as title\nFROM Quizzes JOIN Assessors ON Quizzes.AssessorId = Assessors.AssessorID\nWHERE Assessors.name = \"Professor Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?exams a :Exams .\n    ?assessors a :Assessors .\n    ?exams p:hasAssessors ?assessors .\n    ?exams p:CourseTitle ?coursetitle .\n    BIND(?coursetitle AS ?o0)\n  }\n  UNION\n  {\n    ?quizzes a :Quizzes .\n    ?assessors a :Assessors .\n    ?quizzes p:hasAssessors ?assessors .\n    ?quizzes p:Description ?description .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show both exams graded by Professor Smith and quizzes graded by the same person.",
+      "qtype": "unambig",
+      "sql": "SELECT Exams.CourseTitle as title\nFROM Exams JOIN Assessors ON Exams.AssessorId = Assessors.AssessorID\nWHERE Assessors.name = \"Professor Smith\"\nUNION\nSELECT Quizzes.Description as title\nFROM Quizzes JOIN Assessors ON Quizzes.AssessorId = Assessors.AssessorID\nWHERE Assessors.name = \"Professor Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?exams a :Exams .\n    ?assessors a :Assessors .\n    ?exams p:hasAssessors ?assessors .\n    ?exams p:CourseTitle ?coursetitle .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?coursetitle AS ?o0)\n  }\n  UNION\n  {\n    ?quizzes a :Quizzes .\n    ?assessors a :Assessors .\n    ?quizzes p:hasAssessors ?assessors .\n    ?quizzes p:Description ?description .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?description AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show exams and quizzes graded by Professor Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?exams a :Exams .\n    ?assessors a :Assessors .\n    ?exams p:hasAssessors ?assessors .\n    ?exams p:CourseTitle ?coursetitle .\n    BIND(?coursetitle AS ?o0)\n  }\n  UNION\n  {\n    ?quizzes a :Quizzes .\n    ?assessors a :Assessors .\n    ?quizzes p:hasAssessors ?assessors .\n    ?quizzes p:Description ?description .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?description AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?exams a :Exams .\n    ?assessors a :Assessors .\n    ?exams p:hasAssessors ?assessors .\n    ?exams p:CourseTitle ?coursetitle .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?coursetitle AS ?o0)\n  }\n  UNION\n  {\n    ?quizzes a :Quizzes .\n    ?assessors a :Assessors .\n    ?quizzes p:hasAssessors ?assessors .\n    ?quizzes p:Description ?description .\n    ?assessors p:name ?name_f .\n    FILTER(STR(?name_f) = \"Professor Smith\")\n    BIND(?description AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

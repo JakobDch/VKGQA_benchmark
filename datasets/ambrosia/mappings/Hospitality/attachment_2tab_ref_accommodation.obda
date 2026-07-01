@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Location_base
+target		ex:Locations/{id} a :Locations ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Location`
+
+mappingId	AccommodationType_base
+target		ex:AccommodationType/{id} a :AccommodationType ; p:id {id} ; p:typeName {typeName} .
+source		SELECT `id`, `typeName` FROM `AccommodationType`
+
+mappingId	GlampingPod_base
+target		ex:GlampingPod/{id} a :GlampingPod ; p:id {id} ; p:pod {pod} ; p:capacity {capacity} ; p:locationId {locationId} ; p:accommodationTypeId {accommodationTypeId} .
+source		SELECT `id`, `pod`, `capacity`, `locationId`, `accommodationTypeId` FROM `GlampingPod`
+
+mappingId	GlampingPod_accommodationTypeId_fk
+target		ex:GlampingPod/{id} p:hasAccommodationType ex:AccommodationType/{accommodationTypeId} .
+source		SELECT `id`, `accommodationTypeId` FROM `GlampingPod` WHERE `accommodationTypeId` IS NOT NULL
+
+mappingId	GlampingPod_locationId_fk
+target		ex:GlampingPod/{id} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `id`, `locationId` FROM `GlampingPod` WHERE `locationId` IS NOT NULL
+
+mappingId	TreeHouse_base
+target		ex:TreeHouse/{id} a :TreeHouse ; p:id {id} ; p:house {house} ; p:capacity {capacity} ; p:locationId {locationId} ; p:accommodationTypeId {accommodationTypeId} .
+source		SELECT `id`, `house`, `capacity`, `locationId`, `accommodationTypeId` FROM `TreeHouse`
+
+mappingId	TreeHouse_accommodationTypeId_fk
+target		ex:TreeHouse/{id} p:hasAccommodationType ex:AccommodationType/{accommodationTypeId} .
+source		SELECT `id`, `accommodationTypeId` FROM `TreeHouse` WHERE `accommodationTypeId` IS NOT NULL
+
+mappingId	TreeHouse_locationId_fk
+target		ex:TreeHouse/{id} p:hasLocations ex:Locations/{locationId} .
+source		SELECT `id`, `locationId` FROM `TreeHouse` WHERE `locationId` IS NOT NULL
+
+mappingId	Booking_base
+target		ex:Bookings/{id} a :Bookings ; p:id {id} ; p:guestID {guestID} ; p:glampingPodId {glampingPodId} ; p:checkInDate {checkInDate} ; p:checkOutDate {checkOutDate} ; p:totalPrice {totalPrice} .
+source		SELECT `id`, `guestID`, `glampingPodId`, `checkInDate`, `checkOutDate`, `totalPrice` FROM `Booking`
+
+mappingId	Booking_glampingPodId_fk
+target		ex:Bookings/{id} p:hasGlampingPod ex:GlampingPod/{glampingPodId} .
+source		SELECT `id`, `glampingPodId` FROM `Booking` WHERE `glampingPodId` IS NOT NULL
+
+mappingId	Booking_guestID_fk
+target		ex:Bookings/{id} p:hasGuests ex:Guests/{guestID} .
+source		SELECT `id`, `guestID` FROM `Booking` WHERE `guestID` IS NOT NULL
+
+mappingId	Guest_base
+target		ex:Guests/{id} a :Guests ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} ; p:phoneNumber {phoneNumber} .
+source		SELECT `id`, `firstName`, `lastName`, `email`, `phoneNumber` FROM `Guest`
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_loan_types",
+  "schema": "amb_attachment_1tab_val_loan_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the mortgage amounts and home equity loan amounts with 30 years of repayment.",
+      "qtype": "ambig",
+      "sql": "SELECT Mortgages.principalAmount \nFROM Mortgages\nWHERE (Mortgages.loanType = \"Mortgage\" OR Mortgages.loanType = \"Home Equity Loan\") AND Mortgages.repaymentPeriod = \"30\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?principalamount WHERE {\n  ?mortgages a :Mortgages .\n  ?mortgages p:principalAmount ?principalamount .\n  ?mortgages p:loanType ?loantype_w .\n  ?mortgages p:loanType ?loantype_w2 .\n  ?mortgages p:repaymentPeriod ?repaymentperiod_w .\n  FILTER((((STR(?loantype_w) = \"Mortgage\" || STR(?loantype_w2) = \"Home Equity Loan\")) && (STR(?repaymentperiod_w) = \"30\" || STR(?repaymentperiod_w) = \"30.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the mortgage amounts and home equity loan amounts with 30 years of repayment.",
+      "qtype": "ambig",
+      "sql": "SELECT Mortgages.principalAmount \nFROM Mortgages\nWHERE Mortgages.loanType = \"Mortgage\" OR Mortgages.loanType = \"Home Equity Loan\" AND Mortgages.repaymentPeriod = \"30\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?principalamount WHERE {\n  ?mortgages a :Mortgages .\n  ?mortgages p:principalAmount ?principalamount .\n  ?mortgages p:loanType ?loantype_w .\n  ?mortgages p:loanType ?loantype_w2 .\n  ?mortgages p:repaymentPeriod ?repaymentperiod_w .\n  FILTER((STR(?loantype_w) = \"Mortgage\" || (STR(?loantype_w2) = \"Home Equity Loan\" && (STR(?repaymentperiod_w) = \"30\" || STR(?repaymentperiod_w) = \"30.0\"))))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the mortgage amounts and home equity loan amounts with 30 years of repayment.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?principalamount WHERE {\n  ?mortgages a :Mortgages .\n  ?mortgages p:principalAmount ?principalamount .\n  ?mortgages p:loanType ?loantype_w .\n  ?mortgages p:loanType ?loantype_w2 .\n  ?mortgages p:repaymentPeriod ?repaymentperiod_w .\n  FILTER((STR(?loantype_w) = \"Mortgage\" || (STR(?loantype_w2) = \"Home Equity Loan\" && (STR(?repaymentperiod_w) = \"30\" || STR(?repaymentperiod_w) = \"30.0\"))))\n} }\n  high: { SELECT ?principalamount WHERE {\n  ?mortgages a :Mortgages .\n  ?mortgages p:principalAmount ?principalamount .\n  ?mortgages p:loanType ?loantype_w .\n  ?mortgages p:loanType ?loantype_w2 .\n  ?mortgages p:repaymentPeriod ?repaymentperiod_w .\n  FILTER((((STR(?loantype_w) = \"Mortgage\" || STR(?loantype_w2) = \"Home Equity Loan\")) && (STR(?repaymentperiod_w) = \"30\" || STR(?repaymentperiod_w) = \"30.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

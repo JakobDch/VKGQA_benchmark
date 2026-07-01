@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_newsroom_roles",
+  "schema": "amb_attachment_2tab_ref_newsroom_roles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all reporters and only those photographers who worked on articles with a deadline of April 28th 2020.",
+      "qtype": "unambig",
+      "sql": "SELECT Reporters.name\nFROM Articles JOIN Reporters ON Articles.reporter_id = Reporters.id\nUNION\nSELECT Photographers.name\nFROM Articles JOIN Photographers ON Articles.photographer_id = Photographers.id\nWHERE Articles.deadline = \"2020-04-28\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?reporters a :Reporters .\n    ?articles p:hasReporters ?reporters .\n    ?reporters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?photographers a :Photographers .\n    ?articles p:hasPhotographers ?photographers .\n    ?photographers p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show reporters and photographers both who worked on articles with a deadline of April 28th 2020.",
+      "qtype": "unambig",
+      "sql": "SELECT Reporters.name\nFROM Articles JOIN Reporters ON Articles.reporter_id = Reporters.id\nWHERE Articles.deadline = \"2020-04-28\"\nUNION\nSELECT Photographers.name\nFROM Articles JOIN Photographers ON Articles.photographer_id = Photographers.id\nWHERE Articles.deadline = \"2020-04-28\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?reporters a :Reporters .\n    ?articles p:hasReporters ?reporters .\n    ?reporters p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?photographers a :Photographers .\n    ?articles p:hasPhotographers ?photographers .\n    ?photographers p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me reporters and photographers who worked on articles with a deadline of April 28th 2020.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?reporters a :Reporters .\n    ?articles p:hasReporters ?reporters .\n    ?reporters p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?photographers a :Photographers .\n    ?articles p:hasPhotographers ?photographers .\n    ?photographers p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?reporters a :Reporters .\n    ?articles p:hasReporters ?reporters .\n    ?reporters p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?photographers a :Photographers .\n    ?articles p:hasPhotographers ?photographers .\n    ?photographers p:name ?name .\n    ?articles p:deadline ?deadline_f .\n    FILTER(STR(?deadline_f) = \"2020-04-28\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

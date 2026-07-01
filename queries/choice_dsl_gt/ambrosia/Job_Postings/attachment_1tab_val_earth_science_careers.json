@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_val_earth_science_careers",
+  "schema": "amb_attachment_1tab_val_earth_science_careers",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all chemists from MIT, also show all the geoscientists from the same university.",
+      "qtype": "unambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE (Employees.title = \"Chemist\" OR Employees.title = \"Geoscientist\") AND Employees.university = \"MIT\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:title ?title_w .\n  ?employees p:title ?title_w2 .\n  ?employees p:university ?university_w .\n  FILTER((((STR(?title_w) = \"Chemist\" || STR(?title_w2) = \"Geoscientist\")) && STR(?university_w) = \"MIT\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all chemists and geoscientists from MIT.",
+      "qtype": "ambig",
+      "sql": "SELECT Employees.FullName\nFROM Employees\nWHERE Employees.title = \"Chemist\" OR Employees.title = \"Geoscientist\" AND Employees.university = \"MIT\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:title ?title_w .\n  ?employees p:title ?title_w2 .\n  ?employees p:university ?university_w .\n  FILTER((STR(?title_w) = \"Chemist\" || (STR(?title_w2) = \"Geoscientist\" && STR(?university_w) = \"MIT\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all chemists and geoscientists from MIT.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:title ?title_w .\n  ?employees p:title ?title_w2 .\n  ?employees p:university ?university_w .\n  FILTER((((STR(?title_w) = \"Chemist\" || STR(?title_w2) = \"Geoscientist\")) && STR(?university_w) = \"MIT\"))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?employees a :Employees .\n  ?employees p:name ?fullname .\n  ?employees p:title ?title_w .\n  ?employees p:title ?title_w2 .\n  ?employees p:university ?university_w .\n  FILTER((STR(?title_w) = \"Chemist\" || (STR(?title_w2) = \"Geoscientist\" && STR(?university_w) = \"MIT\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

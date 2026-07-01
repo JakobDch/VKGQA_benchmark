@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_news_agencies_departments",
+  "schema": "amb_scope_news_agencies_departments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the departments corresponding to each news agency.",
+      "qtype": "ambig",
+      "sql": "SELECT Departments.department_name  from News_Agencies_Departments join Departments on News_Agencies_Departments.department_id = Departments.department_id join News_Agencies on News_Agencies_Departments.agency_id = News_Agencies.id   GROUP BY News_Agencies_Departments.department_id HAVING COUNT(DISTINCT News_Agencies_Departments.agency_id) = (SELECT COUNT(*) FROM  News_Agencies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?department_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDepartments ?child ; p:hasNews_Agencies ?parent . } GROUP BY ?child }\n  ?child p:department_name ?department_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :News_Agency } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the departments corresponding to each news agency.",
+      "qtype": "ambig",
+      "sql": "select news_agencies.name , departments.department_name from News_Agencies_Departments join Departments on News_Agencies_Departments.department_id = Departments.department_id join News_Agencies on News_Agencies_Departments.agency_id = News_Agencies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?department_name WHERE {\n  ?news_agencies_departments a :News_Agencies_Departments .\n  ?departments a :Departments .\n  ?news_agencies_departments p:hasDepartments ?departments .\n  ?news_agencies a :News_Agency .\n  ?news_agencies_departments p:hasNews_Agencies ?news_agencies .\n  ?news_agencies p:name ?name .\n  ?departments p:department_name ?department_name .\n}",
+      "status": "pass",
+      "note": "n=13"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the departments corresponding to each news agency.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?department_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasDepartments ?child ; p:hasNews_Agencies ?parent . } GROUP BY ?child }\n  ?child p:department_name ?department_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :News_Agency } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?department_name WHERE {\n  ?news_agencies_departments a :News_Agencies_Departments .\n  ?departments a :Departments .\n  ?news_agencies_departments p:hasDepartments ?departments .\n  ?news_agencies a :News_Agency .\n  ?news_agencies_departments p:hasNews_Agencies ?news_agencies .\n  ?news_agencies p:name ?name .\n  ?departments p:department_name ?department_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

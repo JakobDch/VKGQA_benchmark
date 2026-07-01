@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Farms_base
+target		ex:Farm/{FarmID} a :Farm ; p:FarmID {FarmID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `FarmID`, `Name`, `Location` FROM `Farms`
+
+mappingId	Crops_base
+target		ex:Crop/{CropID} a :Crop ; p:CropID {CropID} ; p:name {CropName} ; p:yieldPerAcre {YieldPerAcre} .
+source		SELECT `CropID`, `CropName`, `YieldPerAcre` FROM `Crops`
+
+mappingId	SoilTypes_base
+target		ex:SoilTypes/{TypeID} a :SoilTypes ; p:TypeID {TypeID} ; p:name {TypeName} .
+source		SELECT `TypeID`, `TypeName` FROM `SoilTypes`
+
+mappingId	WeatherConditions_base
+target		ex:WeatherConditions/{ConditionID} a :WeatherConditions ; p:ConditionID {ConditionID} ; p:description {Description} .
+source		SELECT `ConditionID`, `Description` FROM `WeatherConditions`
+
+mappingId	FarmsSoil_base
+target		ex:FarmsSoil/{_amb_rowid} a :FarmsSoil ; p:FarmID {FarmID} ; p:SoilTypeID {SoilTypeID} .
+source		SELECT `_amb_rowid`, `FarmID`, `SoilTypeID` FROM `FarmsSoil`
+
+mappingId	FarmsSoil_SoilTypeID_fk
+target		ex:FarmsSoil/{_amb_rowid} p:hasSoilTypes ex:SoilTypes/{SoilTypeID} .
+source		SELECT `_amb_rowid`, `SoilTypeID` FROM `FarmsSoil` WHERE `SoilTypeID` IS NOT NULL
+
+mappingId	FarmsSoil_FarmID_fk
+target		ex:FarmsSoil/{_amb_rowid} p:hasFarm ex:Farm/{FarmID} .
+source		SELECT `_amb_rowid`, `FarmID` FROM `FarmsSoil` WHERE `FarmID` IS NOT NULL
+
+mappingId	CropsWeather_base
+target		ex:CropsWeather/{_amb_rowid} a :CropsWeather ; p:CropID {CropID} ; p:ConditionID {ConditionID} .
+source		SELECT `_amb_rowid`, `CropID`, `ConditionID` FROM `CropsWeather`
+
+mappingId	CropsWeather_ConditionID_fk
+target		ex:CropsWeather/{_amb_rowid} p:hasWeatherConditions ex:WeatherConditions/{ConditionID} .
+source		SELECT `_amb_rowid`, `ConditionID` FROM `CropsWeather` WHERE `ConditionID` IS NOT NULL
+
+mappingId	CropsWeather_CropID_fk
+target		ex:CropsWeather/{_amb_rowid} p:hasCrop ex:Crop/{CropID} .
+source		SELECT `_amb_rowid`, `CropID` FROM `CropsWeather` WHERE `CropID` IS NOT NULL
+
+mappingId	FarmsCrops_base
+target		ex:FarmsCrops/{_amb_rowid} a :FarmsCrops ; p:FarmID {FarmID} ; p:CropID {CropID} ; p:quantity {Quantity} ; p:plantingDate {PlantingDate} ; p:harvestDate {HarvestDate} .
+source		SELECT `_amb_rowid`, `FarmID`, `CropID`, `Quantity`, `PlantingDate`, `HarvestDate` FROM `FarmsCrops`
+
+mappingId	FarmsCrops_CropID_fk
+target		ex:FarmsCrops/{_amb_rowid} p:hasCrop ex:Crop/{CropID} .
+source		SELECT `_amb_rowid`, `CropID` FROM `FarmsCrops` WHERE `CropID` IS NOT NULL
+
+mappingId	FarmsCrops_FarmID_fk
+target		ex:FarmsCrops/{_amb_rowid} p:hasFarm ex:Farm/{FarmID} .
+source		SELECT `_amb_rowid`, `FarmID` FROM `FarmsCrops` WHERE `FarmID` IS NOT NULL
+
+]]

@@ -1,0 +1,36 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_music_critics_genres_0_Music_Critics_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"critic_id\", \"name\", \"email\" FROM \"Music_Critics\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Music_Critics/{critic_id}" ; rr:class :Music_Critics ] ;
+  rr:predicateObjectMap [ rr:predicate p:critic_id ; rr:objectMap [ rr:column "critic_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] .
+
+<#tm_scope_music_critics_genres_1_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"genre_id\", \"name\" FROM \"Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Genres/{genre_id}" ; rr:class :Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:genre_id ; rr:objectMap [ rr:column "genre_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] .
+
+<#tm_scope_music_critics_genres_2_Music_Critics_Genres_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"music_critic_id\", \"genre_id\" FROM \"Music_Critics_Genres\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Music_Critics_Genres/{music_critic_id}/{genre_id}" ; rr:class :Music_Critics_Genres ] ;
+  rr:predicateObjectMap [ rr:predicate p:music_critic_id ; rr:objectMap [ rr:column "music_critic_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:genre_id ; rr:objectMap [ rr:column "genre_id" ] ] .
+
+<#tm_scope_music_critics_genres_3_Music_Critics_Genres_genre_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"music_critic_id\", \"genre_id\" FROM \"Music_Critics_Genres\" WHERE \"genre_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Music_Critics_Genres/{music_critic_id}/{genre_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasGenres ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Genres/{genre_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_music_critics_genres_4_Music_Critics_Genres_music_critic_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"music_critic_id\", \"genre_id\" FROM \"Music_Critics_Genres\" WHERE \"music_critic_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Music_Critics_Genres/{music_critic_id}/{genre_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMusic_Critics ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Music_Critics/{music_critic_id}" ; rr:termType rr:IRI ] ] .
+

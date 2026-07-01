@@ -1,0 +1,42 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_diagnostic_centers_tests",
+  "schema": "amb_scope_diagnostic_centers_tests",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every diagnostic center, what are the corresponding test names?",
+      "qtype": "unambig",
+      "sql": "select diagnostic_centers.name , tests.testname from Diagnostic_Centers_Tests join Tests on Diagnostic_Centers_Tests.TestTypeID = Tests.TestTypeID join Diagnostic_Centers on Diagnostic_Centers_Tests.DiagnosticCenterID = Diagnostic_Centers.CenterID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?testname WHERE {\n  ?diagnostic_centers_tests a :Diagnostic_Centers_Tests .\n  ?tests a :Tests .\n  ?diagnostic_centers_tests p:hasTests ?tests .\n  ?diagnostic_centers a :Diagnostic_Centers .\n  ?diagnostic_centers_tests p:hasDiagnostic_Centers ?diagnostic_centers .\n  ?diagnostic_centers p:name ?name .\n  ?tests p:TestName ?testname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which test names are associated with every diagnostic center?",
+      "qtype": "ambig",
+      "sql": "SELECT Tests.TestName  from Diagnostic_Centers_Tests join Tests on Diagnostic_Centers_Tests.TestTypeID = Tests.TestTypeID join Diagnostic_Centers on Diagnostic_Centers_Tests.DiagnosticCenterID = Diagnostic_Centers.CenterID   GROUP BY Diagnostic_Centers_Tests.TestTypeID HAVING COUNT(DISTINCT Diagnostic_Centers_Tests.DiagnosticCenterID) = (SELECT COUNT(*) FROM  Diagnostic_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?testname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTests ?child ; p:hasDiagnostic_Centers ?parent . } GROUP BY ?child }\n  ?child p:TestName ?testname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Diagnostic_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which test names are associated with every diagnostic center?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?testname WHERE {\n  ?diagnostic_centers_tests a :Diagnostic_Centers_Tests .\n  ?tests a :Tests .\n  ?diagnostic_centers_tests p:hasTests ?tests .\n  ?diagnostic_centers a :Diagnostic_Centers .\n  ?diagnostic_centers_tests p:hasDiagnostic_Centers ?diagnostic_centers .\n  ?diagnostic_centers p:name ?name .\n  ?tests p:TestName ?testname .\n} }\n  collective: { SELECT ?testname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTests ?child ; p:hasDiagnostic_Centers ?parent . } GROUP BY ?child }\n  ?child p:TestName ?testname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Diagnostic_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

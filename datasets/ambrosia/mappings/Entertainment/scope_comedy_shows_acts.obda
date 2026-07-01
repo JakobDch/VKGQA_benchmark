@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Acts_base
+target		ex:Acts/{act_id} a :Acts ; p:act_id {act_id} ; p:act_name {act_name} .
+source		SELECT `act_id`, `act_name` FROM `Acts`
+
+mappingId	Comedy_Shows_base
+target		ex:Comedy_Shows/{comedy_show_id} a :Comedy_Shows ; p:comedy_show_id {comedy_show_id} ; p:show_title {show_title} ; p:date {date} ; p:location {location} .
+source		SELECT `comedy_show_id`, `show_title`, `date`, `location` FROM `Comedy_Shows`
+
+mappingId	Comedy_Shows_Acts_base
+target		ex:Comedy_Shows_Acts/{_amb_rowid} a :Comedy_Shows_Acts ; p:acts_comedy_shows_id {acts_comedy_shows_id} ; p:comedy_show_id {comedy_show_id} .
+source		SELECT `_amb_rowid`, `acts_comedy_shows_id`, `comedy_show_id` FROM `Comedy_Shows_Acts`
+
+mappingId	Comedy_Shows_Acts_comedy_show_id_fk
+target		ex:Comedy_Shows_Acts/{_amb_rowid} p:hasComedy_Shows ex:Comedy_Shows/{comedy_show_id} .
+source		SELECT `_amb_rowid`, `comedy_show_id` FROM `Comedy_Shows_Acts` WHERE `comedy_show_id` IS NOT NULL
+
+mappingId	Comedy_Shows_Acts_acts_comedy_shows_id_fk
+target		ex:Comedy_Shows_Acts/{_amb_rowid} p:hasActs ex:Acts/{acts_comedy_shows_id} .
+source		SELECT `_amb_rowid`, `acts_comedy_shows_id` FROM `Comedy_Shows_Acts` WHERE `acts_comedy_shows_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_investigative_reports_elements",
+  "schema": "amb_scope_investigative_reports_elements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each report, list the elements it has.",
+      "qtype": "unambig",
+      "sql": "select investigative_reports.report_name , elements.element_value from Investigative_Reports_Elements join Investigative_Reports on Investigative_Reports_Elements.investigative_report_id = Investigative_Reports.id join Elements on Investigative_Reports_Elements.element_id = Elements.element_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?report_name ?element_value WHERE {\n  ?investigative_reports_elements a :Investigative_Reports_Elements .\n  ?investigative_reports a :Investigative_Reports .\n  ?investigative_reports_elements p:hasInvestigative_Reports ?investigative_reports .\n  ?elements a :Elements .\n  ?investigative_reports_elements p:element_id ?element_id_l .\n  ?elements p:element_id ?element_id_r .\n  ?investigative_reports p:report_name ?report_name .\n  ?elements p:element_value ?element_value .\n  FILTER(STR(?element_id_l) = STR(?element_id_r))\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What elements do all reports have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Elements.element_value  from Investigative_Reports_Elements join Investigative_Reports on Investigative_Reports_Elements.investigative_report_id = Investigative_Reports.id join Elements on Investigative_Reports_Elements.element_id = Elements.element_id   GROUP BY Investigative_Reports_Elements.element_id HAVING COUNT(DISTINCT Investigative_Reports_Elements.investigative_report_id) = (SELECT COUNT(*) FROM  Investigative_Reports)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?element_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasInvestigative_Reports ?parent . } GROUP BY ?child }\n  ?child p:element_value ?element_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Investigative_Reports } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the elements each report has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?report_name ?element_value WHERE {\n  ?investigative_reports_elements a :Investigative_Reports_Elements .\n  ?investigative_reports a :Investigative_Reports .\n  ?investigative_reports_elements p:hasInvestigative_Reports ?investigative_reports .\n  ?elements a :Elements .\n  ?investigative_reports_elements p:element_id ?element_id_l .\n  ?elements p:element_id ?element_id_r .\n  ?investigative_reports p:report_name ?report_name .\n  ?elements p:element_value ?element_value .\n  FILTER(STR(?element_id_l) = STR(?element_id_r))\n} }\n  collective: { SELECT ?element_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasElements ?child ; p:hasInvestigative_Reports ?parent . } GROUP BY ?child }\n  ?child p:element_value ?element_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Investigative_Reports } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

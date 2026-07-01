@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_activity",
+  "schema": "amb_attachment_2tab_val_activity",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all tourist attractions and also provide a list of local markets in London.",
+      "qtype": "unambig",
+      "sql": "SELECT Tourist_Attractions.name\nFROM Tourist_Attractions\nUNION\nSELECT Local_Markets.name\nFROM Local_Markets\nWHERE Local_Markets.Location = \"London\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?tourist_attractions a :Tourist_Attractions .\n    ?tourist_attractions p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?local_markets a :Local_Markets .\n    ?local_markets p:name ?name .\n    ?local_markets p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show tourist attractions and local markets in London.",
+      "qtype": "ambig",
+      "sql": "SELECT Tourist_Attractions.name\nFROM Tourist_Attractions\nWHERE Tourist_Attractions.Location = \"London\"\nUNION\nSELECT Local_Markets.name\nFROM Local_Markets\nWHERE Local_Markets.Location = \"London\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?tourist_attractions a :Tourist_Attractions .\n    ?tourist_attractions p:name ?name .\n    ?tourist_attractions p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?local_markets a :Local_Markets .\n    ?local_markets p:name ?name .\n    ?local_markets p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show tourist attractions and local markets in London.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?tourist_attractions a :Tourist_Attractions .\n    ?tourist_attractions p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?local_markets a :Local_Markets .\n    ?local_markets p:name ?name .\n    ?local_markets p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?tourist_attractions a :Tourist_Attractions .\n    ?tourist_attractions p:name ?name .\n    ?tourist_attractions p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?local_markets a :Local_Markets .\n    ?local_markets p:name ?name .\n    ?local_markets p:location ?location_f .\n    FILTER(STR(?location_f) = \"London\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

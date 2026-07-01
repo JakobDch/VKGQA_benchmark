@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_resorts_activities",
+  "schema": "amb_scope_resorts_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the activities offered by every resort.",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.activityName  from Resorts_Activities join Activities on Resorts_Activities.activityID = Activities.activityID join Resorts on Resorts_Activities.resortID = Resorts.id   GROUP BY Resorts_Activities.activityID HAVING COUNT(DISTINCT Resorts_Activities.resortID) = (SELECT COUNT(*) FROM  Resorts)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasResorts ?parent . } GROUP BY ?child }\n  ?child p:activityName ?activityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Resorts } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the activities offered by every resort.",
+      "qtype": "ambig",
+      "sql": "select resorts.name , activities.activityname from Resorts_Activities join Activities on Resorts_Activities.activityID = Activities.activityID join Resorts on Resorts_Activities.resortID = Resorts.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?activityname WHERE {\n  ?resorts_activities a :Resorts_Activities .\n  ?activities a :Activities .\n  ?resorts_activities p:hasActivities ?activities .\n  ?resorts a :Resorts .\n  ?resorts_activities p:hasResorts ?resorts .\n  ?resorts p:name ?name .\n  ?activities p:activityName ?activityname .\n}",
+      "status": "pass",
+      "note": "n=13"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the activities offered by every resort.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?activityname WHERE {\n  ?resorts_activities a :Resorts_Activities .\n  ?activities a :Activities .\n  ?resorts_activities p:hasActivities ?activities .\n  ?resorts a :Resorts .\n  ?resorts_activities p:hasResorts ?resorts .\n  ?resorts p:name ?name .\n  ?activities p:activityName ?activityname .\n} }\n  collective: { SELECT ?activityname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasResorts ?parent . } GROUP BY ?child }\n  ?child p:activityName ?activityname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Resorts } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

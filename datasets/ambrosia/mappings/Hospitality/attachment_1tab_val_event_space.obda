@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	EventSpaces_base
+target		ex:EventSpaces/{id} a :EventSpaces ; p:id {id} ; p:name {Name} ; p:Event_Space {Event_Space} ; p:Capacity {Capacity} ; p:Address {Address} ; p:ContactInfo {ContactInfo} .
+source		SELECT `id`, `Name`, `Event_Space`, `Capacity`, `Address`, `ContactInfo` FROM `EventSpaces`
+
+mappingId	Bookings_base
+target		ex:Bookings/{id} a :Bookings ; p:id {id} ; p:EventSpaceId {EventSpaceId} ; p:Date {Date} ; p:Time {Time} ; p:NumberOfGuests {NumberOfGuests} .
+source		SELECT `id`, `EventSpaceId`, `Date`, `Time`, `NumberOfGuests` FROM `Bookings`
+
+mappingId	Bookings_EventSpaceId_fk
+target		ex:Bookings/{id} p:hasEventSpaces ex:EventSpaces/{EventSpaceId} .
+source		SELECT `id`, `EventSpaceId` FROM `Bookings` WHERE `EventSpaceId` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `id`, `FirstName`, `LastName`, `Email`, `PhoneNumber` FROM `Customers`
+
+mappingId	Payments_base
+target		ex:Payments/{id} a :Payments ; p:id {id} ; p:BookingId {BookingId} ; p:Amount {Amount} ; p:PaymentDate {PaymentDate} ; p:CustomerId {CustomerId} .
+source		SELECT `id`, `BookingId`, `Amount`, `PaymentDate`, `CustomerId` FROM `Payments`
+
+mappingId	Payments_CustomerId_fk
+target		ex:Payments/{id} p:hasCustomers ex:Customers/{CustomerId} .
+source		SELECT `id`, `CustomerId` FROM `Payments` WHERE `CustomerId` IS NOT NULL
+
+mappingId	Payments_BookingId_fk
+target		ex:Payments/{id} p:hasBookings ex:Bookings/{BookingId} .
+source		SELECT `id`, `BookingId` FROM `Payments` WHERE `BookingId` IS NOT NULL
+
+]]

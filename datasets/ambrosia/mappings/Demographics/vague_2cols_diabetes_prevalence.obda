@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Countries_base
+target		ex:Countries/{CountryID} a :Countries ; p:CountryID {CountryID} ; p:name {Name} ; p:Population {Population} .
+source		SELECT `CountryID`, `Name`, `Population` FROM `Countries`
+
+mappingId	States_base
+target		ex:States/{StateID} a :States ; p:StateID {StateID} ; p:CountryID {CountryID} ; p:name {Name} .
+source		SELECT `StateID`, `CountryID`, `Name` FROM `States`
+
+mappingId	States_CountryID_fk
+target		ex:States/{StateID} p:hasCountries ex:Countries/{CountryID} .
+source		SELECT `StateID`, `CountryID` FROM `States` WHERE `CountryID` IS NOT NULL
+
+mappingId	Cities_base
+target		ex:Cities/{CityID} a :Cities ; p:CityID {CityID} ; p:StateID {StateID} ; p:name {Name} .
+source		SELECT `CityID`, `StateID`, `Name` FROM `Cities`
+
+mappingId	Cities_StateID_fk
+target		ex:Cities/{CityID} p:hasStates ex:States/{StateID} .
+source		SELECT `CityID`, `StateID` FROM `Cities` WHERE `StateID` IS NOT NULL
+
+mappingId	People_base
+target		ex:Person/{PersonID} a :Person ; p:PersonID {PersonID} ; p:Age {Age} ; p:Sex {Sex} ; p:Occupation {Occupation} ; p:ResidenceCityId {ResidenceCityId} .
+source		SELECT `PersonID`, `Age`, `Sex`, `Occupation`, `ResidenceCityId` FROM `People`
+
+mappingId	People_ResidenceCityId_fk
+target		ex:Person/{PersonID} p:hasCities ex:Cities/{ResidenceCityId} .
+source		SELECT `PersonID`, `ResidenceCityId` FROM `People` WHERE `ResidenceCityId` IS NOT NULL
+
+mappingId	DiabetesData_base
+target		ex:DiabetesData/{DataID} a :DiabetesData ; p:DataID {DataID} ; p:Percentage_Of_Diabetics {Percentage_Of_Diabetics} ; p:Diabetic_Count {Diabetic_Count} ; p:Population {Population} ; p:CityId {CityId} .
+source		SELECT `DataID`, `Percentage_Of_Diabetics`, `Diabetic_Count`, `Population`, `CityId` FROM `DiabetesData`
+
+mappingId	DiabetesData_CityId_fk
+target		ex:DiabetesData/{DataID} p:hasCities ex:Cities/{CityId} .
+source		SELECT `DataID`, `CityId` FROM `DiabetesData` WHERE `CityId` IS NOT NULL
+
+mappingId	HealthCareFacilities_base
+target		ex:HealthCareFacilities/{FacilityID} a :HealthCareFacilities ; p:FacilityID {FacilityID} ; p:name {Name} ; p:Address {Address} ; p:PhoneNumber {PhoneNumber} ; p:CityId {CityId} .
+source		SELECT `FacilityID`, `Name`, `Address`, `PhoneNumber`, `CityId` FROM `HealthCareFacilities`
+
+mappingId	HealthCareFacilities_CityId_fk
+target		ex:HealthCareFacilities/{FacilityID} p:hasCities ex:Cities/{CityId} .
+source		SELECT `FacilityID`, `CityId` FROM `HealthCareFacilities` WHERE `CityId` IS NOT NULL
+
+]]

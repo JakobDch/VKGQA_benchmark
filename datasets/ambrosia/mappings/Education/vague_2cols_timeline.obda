@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `DateOfBirth` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{TeacherID} a :Teachers ; p:TeacherID {TeacherID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Subject {Subject} .
+source		SELECT `TeacherID`, `FirstName`, `LastName`, `Subject` FROM `Teachers`
+
+mappingId	Classes_base
+target		ex:Classes/{ClassID} a :Classes ; p:ClassID {ClassID} ; p:TeacherID {TeacherID} ; p:RoomNumber {RoomNumber} ; p:DayOfWeek {DayOfWeek} ; p:TimeStart {TimeStart} .
+source		SELECT `ClassID`, `TeacherID`, `RoomNumber`, `DayOfWeek`, `TimeStart` FROM `Classes`
+
+mappingId	Classes_TeacherID_fk
+target		ex:Classes/{ClassID} p:hasTeachers ex:Teachers/{TeacherID} .
+source		SELECT `ClassID`, `TeacherID` FROM `Classes` WHERE `TeacherID` IS NOT NULL
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:ClassID {ClassID} ; p:Grade {Grade} .
+source		SELECT `EnrollmentID`, `StudentID`, `ClassID`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_ClassID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `EnrollmentID`, `ClassID` FROM `Enrollments` WHERE `ClassID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Materials_base
+target		ex:Materials/{MaterialID} a :Materials ; p:MaterialID {MaterialID} ; p:Month {Month} ; p:Year {Year} ; p:ResourceType {ResourceType} ; p:Quantity {Quantity} ; p:Price {Price} .
+source		SELECT `MaterialID`, `Month`, `Year`, `ResourceType`, `Quantity`, `Price` FROM `Materials`
+
+mappingId	Expenses_base
+target		ex:Expenses/{ExpenseID} a :Expenses ; p:ExpenseID {ExpenseID} ; p:MaterialID {MaterialID} ; p:Supplier {Supplier} ; p:Amount {Amount} .
+source		SELECT `ExpenseID`, `MaterialID`, `Supplier`, `Amount` FROM `Expenses`
+
+mappingId	Expenses_MaterialID_fk
+target		ex:Expenses/{ExpenseID} p:hasMaterials ex:Materials/{MaterialID} .
+source		SELECT `ExpenseID`, `MaterialID` FROM `Expenses` WHERE `MaterialID` IS NOT NULL
+
+]]

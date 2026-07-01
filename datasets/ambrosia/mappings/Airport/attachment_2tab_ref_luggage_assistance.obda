@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Available_locations_base
+target		ex:Available_locations/{id} a :Available_locations ; p:id {id} ; p:location {location} .
+source		SELECT `id`, `location` FROM `Available_locations`
+
+mappingId	Airlines_base
+target		ex:Airlines/{id} a :Airlines ; p:id {id} ; p:airlineName {airlineName} .
+source		SELECT `id`, `airlineName` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{flightID} a :Flights ; p:flightID {flightID} ; p:originLocation {originLocation} ; p:destinationLocation {destinationLocation} ; p:airlineId {airlineId} .
+source		SELECT `flightID`, `originLocation`, `destinationLocation`, `airlineId` FROM `Flights`
+
+mappingId	Flights_airlineId_fk
+target		ex:Flights/{flightID} p:hasAirlines ex:Airlines/{airlineId} .
+source		SELECT `flightID`, `airlineId` FROM `Flights` WHERE `airlineId` IS NOT NULL
+
+mappingId	Flights_destinationLocation_fk
+target		ex:Flights/{flightID} p:hasAvailable_locations_destinationLocation ex:Available_locations/{destinationLocation} .
+source		SELECT `flightID`, `destinationLocation` FROM `Flights` WHERE `destinationLocation` IS NOT NULL
+
+mappingId	Flights_originLocation_fk
+target		ex:Flights/{flightID} p:hasAvailable_locations_originLocation ex:Available_locations/{originLocation} .
+source		SELECT `flightID`, `originLocation` FROM `Flights` WHERE `originLocation` IS NOT NULL
+
+mappingId	Porters_base
+target		ex:Porters/{porterID} a :Porters ; p:porterID {porterID} ; p:serviceType {serviceType} ; p:availableLocation {availableLocation} .
+source		SELECT `porterID`, `serviceType`, `availableLocation` FROM `Porters`
+
+mappingId	Porters_availableLocation_fk
+target		ex:Porters/{porterID} p:hasAvailable_locations ex:Available_locations/{availableLocation} .
+source		SELECT `porterID`, `availableLocation` FROM `Porters` WHERE `availableLocation` IS NOT NULL
+
+mappingId	Bookings_base
+target		ex:Bookings/{bookingID} a :Bookings ; p:bookingID {bookingID} ; p:customerName {customerName} ; p:flightId {flightId} ; p:luggageTrolleyId {luggageTrolleyId} ; p:porterId {porterId} .
+source		SELECT `bookingID`, `customerName`, `flightId`, `luggageTrolleyId`, `porterId` FROM `Bookings`
+
+mappingId	Bookings_porterId_fk
+target		ex:Bookings/{bookingID} p:hasPorters ex:Porters/{porterId} .
+source		SELECT `bookingID`, `porterId` FROM `Bookings` WHERE `porterId` IS NOT NULL
+
+mappingId	Bookings_luggageTrolleyId_fk
+target		ex:Bookings/{bookingID} p:hasLuggage_trolleys ex:Luggage_trolleys/{luggageTrolleyId} .
+source		SELECT `bookingID`, `luggageTrolleyId` FROM `Bookings` WHERE `luggageTrolleyId` IS NOT NULL
+
+mappingId	Bookings_flightId_fk
+target		ex:Bookings/{bookingID} p:hasFlights ex:Flights/{flightId} .
+source		SELECT `bookingID`, `flightId` FROM `Bookings` WHERE `flightId` IS NOT NULL
+
+mappingId	Luggage_trolleys_base
+target		ex:Luggage_trolleys/{trolleyID} a :Luggage_trolleys ; p:trolleyID {trolleyID} ; p:TrolleySerialNumber {TrolleySerialNumber} ; p:availableLocation {availableLocation} .
+source		SELECT `trolleyID`, `TrolleySerialNumber`, `availableLocation` FROM `Luggage_trolleys`
+
+mappingId	Luggage_trolleys_availableLocation_fk
+target		ex:Luggage_trolleys/{trolleyID} p:hasAvailable_locations ex:Available_locations/{availableLocation} .
+source		SELECT `trolleyID`, `availableLocation` FROM `Luggage_trolleys` WHERE `availableLocation` IS NOT NULL
+
+]]

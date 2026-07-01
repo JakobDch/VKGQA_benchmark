@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_2tab_val_visual_art_professions",
+  "schema": "amb_attachment_2tab_val_visual_art_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which photographers charged 500 and which videographers charged the same price?",
+      "qtype": "unambig",
+      "sql": "SELECT Photographers.photographerName as name\nFROM Photographers\nWHERE Photographers.price = 500\nUNION\nSELECT Videographers.videographerName as name\nFROM Videographers\nWHERE Videographers.price = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?photographers a :Photographers .\n    ?photographers p:photographerName ?photographername .\n    ?photographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?photographername AS ?o0)\n  }\n  UNION\n  {\n    ?videographers a :Videographers .\n    ?videographers p:videographerName ?videographername .\n    ?videographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?videographername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show photographers and videographers who charged 500.",
+      "qtype": "ambig",
+      "sql": "SELECT Photographers.photographerName as name\nFROM Photographers\nUNION\nSELECT Videographers.videographerName as name\nFROM Videographers\nWHERE Videographers.price = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?photographers a :Photographers .\n    ?photographers p:photographerName ?photographername .\n    BIND(?photographername AS ?o0)\n  }\n  UNION\n  {\n    ?videographers a :Videographers .\n    ?videographers p:videographerName ?videographername .\n    ?videographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?videographername AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show photographers and videographers who charged 500.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?photographers a :Photographers .\n    ?photographers p:photographerName ?photographername .\n    ?photographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?photographername AS ?o0)\n  }\n  UNION\n  {\n    ?videographers a :Videographers .\n    ?videographers p:videographerName ?videographername .\n    ?videographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?videographername AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?photographers a :Photographers .\n    ?photographers p:photographerName ?photographername .\n    BIND(?photographername AS ?o0)\n  }\n  UNION\n  {\n    ?videographers a :Videographers .\n    ?videographers p:videographerName ?videographername .\n    ?videographers p:price ?price_f .\n    FILTER((STR(?price_f) = \"500\" || STR(?price_f) = \"500.0\"))\n    BIND(?videographername AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_specialist_doctors",
+  "schema": "amb_attachment_1tab_ref_specialist_doctors",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the staff from Wester Medical Centre who work as radiologists or ultrasound technicians.",
+      "qtype": "unambig",
+      "sql": "SELECT Doctors.name \nFROM Doctors JOIN Hospitals ON Doctors.hospital_id = Hospitals.id\nWHERE (Doctors.specialist_doctor = \"Radiologist\" OR Doctors.specialist_doctor = \"Ultrasound Technician\") AND Hospitals.name = \"Western Medical Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?doctors a :Doctors .\n  ?hospitals a :Hospitals .\n  ?doctors p:hasHospitals ?hospitals .\n  ?doctors p:name ?name .\n  ?doctors p:specialist_doctor ?specialist_doctor_w .\n  ?doctors p:specialist_doctor ?specialist_doctor_w2 .\n  ?hospitals p:name ?name_w .\n  FILTER((((STR(?specialist_doctor_w) = \"Radiologist\" || STR(?specialist_doctor_w2) = \"Ultrasound Technician\")) && STR(?name_w) = \"Western Medical Center\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all radiologists across all hospitals and just the ultrasound technicians who work at Western Medical Centre.",
+      "qtype": "unambig",
+      "sql": "SELECT Doctors.name \nFROM Doctors JOIN Hospitals ON Doctors.hospital_id = Hospitals.id\nWHERE Doctors.specialist_doctor = \"Radiologist\" OR Doctors.specialist_doctor = \"Ultrasound Technician\" AND Hospitals.name = \"Western Medical Center\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?doctors a :Doctors .\n  ?hospitals a :Hospitals .\n  ?doctors p:hasHospitals ?hospitals .\n  ?doctors p:name ?name .\n  ?doctors p:specialist_doctor ?specialist_doctor_w .\n  ?doctors p:specialist_doctor ?specialist_doctor_w2 .\n  ?hospitals p:name ?name_w .\n  FILTER((STR(?specialist_doctor_w) = \"Radiologist\" || (STR(?specialist_doctor_w2) = \"Ultrasound Technician\" && STR(?name_w) = \"Western Medical Center\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all radiologists and ultrasound technicians at Western Medical Centre.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?doctors a :Doctors .\n  ?hospitals a :Hospitals .\n  ?doctors p:hasHospitals ?hospitals .\n  ?doctors p:name ?name .\n  ?doctors p:specialist_doctor ?specialist_doctor_w .\n  ?doctors p:specialist_doctor ?specialist_doctor_w2 .\n  ?hospitals p:name ?name_w .\n  FILTER((((STR(?specialist_doctor_w) = \"Radiologist\" || STR(?specialist_doctor_w2) = \"Ultrasound Technician\")) && STR(?name_w) = \"Western Medical Center\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?doctors a :Doctors .\n  ?hospitals a :Hospitals .\n  ?doctors p:hasHospitals ?hospitals .\n  ?doctors p:name ?name .\n  ?doctors p:specialist_doctor ?specialist_doctor_w .\n  ?doctors p:specialist_doctor ?specialist_doctor_w2 .\n  ?hospitals p:name ?name_w .\n  FILTER((STR(?specialist_doctor_w) = \"Radiologist\" || (STR(?specialist_doctor_w2) = \"Ultrasound Technician\" && STR(?name_w) = \"Western Medical Center\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

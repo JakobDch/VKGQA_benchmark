@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Culture_base
+target		ex:Culture/{id} a :Culture ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Culture`
+
+mappingId	Geographical_Area_base
+target		ex:Geographical_Area/{id} a :Geographical_Area ; p:id {id} ; p:region {region} .
+source		SELECT `id`, `region` FROM `Geographical_Area`
+
+mappingId	Dance_base
+target		ex:Dance/{id} a :Dance ; p:id {id} ; p:dance_name {dance_name} ; p:culture_id {culture_id} ; p:geographical_area_id {geographical_area_id} .
+source		SELECT `id`, `dance_name`, `culture_id`, `geographical_area_id` FROM `Dance`
+
+mappingId	Dance_geographical_area_id_fk
+target		ex:Dance/{id} p:hasGeographical_Area ex:Geographical_Area/{geographical_area_id} .
+source		SELECT `id`, `geographical_area_id` FROM `Dance` WHERE `geographical_area_id` IS NOT NULL
+
+mappingId	Dance_culture_id_fk
+target		ex:Dance/{id} p:hasCulture ex:Culture/{culture_id} .
+source		SELECT `id`, `culture_id` FROM `Dance` WHERE `culture_id` IS NOT NULL
+
+mappingId	Music_base
+target		ex:Music/{id} a :Music ; p:id {id} ; p:music_title {music_title} ; p:genre {genre} ; p:cultural_influence {cultural_influence} .
+source		SELECT `id`, `music_title`, `genre`, `cultural_influence` FROM `Music`
+
+mappingId	Music_cultural_influence_fk
+target		ex:Music/{id} p:hasCulture ex:Culture/{cultural_influence} .
+source		SELECT `id`, `cultural_influence` FROM `Music` WHERE `cultural_influence` IS NOT NULL
+
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:movie_title {movie_title} ; p:release_year {release_year} ; p:director_id {director_id} .
+source		SELECT `id`, `movie_title`, `release_year`, `director_id` FROM `Movie`
+
+mappingId	Movie_director_id_fk
+target		ex:Movie/{id} p:hasDirector ex:Director/{director_id} .
+source		SELECT `id`, `director_id` FROM `Movie` WHERE `director_id` IS NOT NULL
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:actor_name {actor_name} ; p:birthdate {birthdate} ; p:nationality {nationality} .
+source		SELECT `id`, `actor_name`, `birthdate`, `nationality` FROM `Actor`
+
+mappingId	Director_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:director_name {director_name} ; p:birthplace {birthplace} ; p:known_for {known_for} .
+source		SELECT `id`, `director_name`, `birthplace`, `known_for` FROM `Director`
+
+]]

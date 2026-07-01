@@ -1,0 +1,97 @@
+{
+  "domain": "Job Postings",
+  "db_base": "vague_2tabs_qualifications",
+  "schema": "amb_vague_2tabs_qualifications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all of the certifications and the number of jobs available for each certification.",
+      "qtype": "unambig",
+      "sql": "select cert_name, count(*) from Certification join Job_Post on Job_Post.Certification_id = Certification.id group by cert_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?cert_name_g (COUNT(*) AS ?agg) WHERE {\n  ?certification a :Certification .\n  ?job_post a :JobPostings .\n  ?job_post p:hasCertification ?certification .\n  ?certification p:cert_name ?cert_name_g .\n}\nGROUP BY ?cert_name_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Display a list of qualifications and the number of available jobs for each",
+      "qtype": "ambig",
+      "sql": "select level_name, count(*) from Degree_Level join Job_Post on Job_Post.degree_level_id = Degree_Level.id group by level_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?level_name_g (COUNT(*) AS ?agg) WHERE {\n  ?degree_level a :Degree_Level .\n  ?job_post a :JobPostings .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?degree_level p:level_name ?level_name_g .\n}\nGROUP BY ?level_name_g",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "Display a list of qualifications and the number of available jobs for each",
+      "qtype": "ambig",
+      "sql": "select level_name, cert_name, count(*) from Degree_Level join Job_Post on Job_Post.degree_level_id = Degree_Level.id join Certification on Job_Post.Certification_id = Certification.id group by level_name, cert_name",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?level_name_g ?cert_name_g (COUNT(*) AS ?agg) WHERE {\n  ?degree_level a :Degree_Level .\n  ?job_post a :JobPostings .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?degree_level p:level_name ?level_name_g .\n  ?certification p:cert_name ?cert_name_g .\n}\nGROUP BY ?level_name_g ?cert_name_g",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "Which posted jobs require which qualifications?",
+      "qtype": "ambig",
+      "sql": "select title, level_name from Job_Post join Degree_Level on Job_Post.degree_level_id = Degree_Level.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?level_name WHERE {\n  ?job_post a :JobPostings .\n  ?degree_level a :Degree_Level .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?job_post p:title ?title .\n  ?degree_level p:level_name ?level_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Which posted jobs require which qualifications?",
+      "qtype": "ambig",
+      "sql": "select title, cert_name from Job_Post join Certification on Job_Post.Certification_id = Certification.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?cert_name WHERE {\n  ?job_post a :JobPostings .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?job_post p:title ?title .\n  ?certification p:cert_name ?cert_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "Which posted jobs require which qualifications?",
+      "qtype": "ambig",
+      "sql": "select title, level_name, cert_name from Job_Post join Degree_Level on Job_Post.degree_level_id = Degree_Level.id join Certification on Job_Post.Certification_id = Certification.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?level_name ?cert_name WHERE {\n  ?job_post a :JobPostings .\n  ?degree_level a :Degree_Level .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?job_post p:title ?title .\n  ?degree_level p:level_name ?level_name .\n  ?certification p:cert_name ?cert_name .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display a list of qualifications and the number of available jobs for each",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?cert_name_g (COUNT(*) AS ?agg) WHERE {\n  ?certification a :Certification .\n  ?job_post a :JobPostings .\n  ?job_post p:hasCertification ?certification .\n  ?certification p:cert_name ?cert_name_g .\n}\nGROUP BY ?cert_name_g }\n  full: { SELECT ?level_name_g ?cert_name_g (COUNT(*) AS ?agg) WHERE {\n  ?degree_level a :Degree_Level .\n  ?job_post a :JobPostings .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?degree_level p:level_name ?level_name_g .\n  ?certification p:cert_name ?cert_name_g .\n}\nGROUP BY ?level_name_g ?cert_name_g }\n  component_2: { SELECT ?level_name_g (COUNT(*) AS ?agg) WHERE {\n  ?degree_level a :Degree_Level .\n  ?job_post a :JobPostings .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?degree_level p:level_name ?level_name_g .\n}\nGROUP BY ?level_name_g }\n}",
+      "verified": true
+    },
+    {
+      "question": "Which posted jobs require which qualifications?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        4,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?title ?cert_name WHERE {\n  ?job_post a :JobPostings .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?job_post p:title ?title .\n  ?certification p:cert_name ?cert_name .\n} }\n  component_2: { SELECT ?title ?level_name WHERE {\n  ?job_post a :JobPostings .\n  ?degree_level a :Degree_Level .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?job_post p:title ?title .\n  ?degree_level p:level_name ?level_name .\n} }\n  full: { SELECT ?title ?level_name ?cert_name WHERE {\n  ?job_post a :JobPostings .\n  ?degree_level a :Degree_Level .\n  ?job_post p:hasDegree_Level ?degree_level .\n  ?certification a :Certification .\n  ?job_post p:hasCertification ?certification .\n  ?job_post p:title ?title .\n  ?degree_level p:level_name ?level_name .\n  ?certification p:cert_name ?cert_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

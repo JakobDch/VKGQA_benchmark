@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Executive_chef_base
+target		ex:Executive_chef/{chef_id} a :Executive_chef ; p:chef_id {chef_id} ; p:name {full_name} .
+source		SELECT `chef_id`, `full_name` FROM `Executive_chef`
+
+mappingId	Sous_chef_base
+target		ex:Sous_chef/{sous_id} a :Sous_chef ; p:sous_id {sous_id} ; p:executive_chef_id {executive_chef_id} ; p:name {full_name} .
+source		SELECT `sous_id`, `executive_chef_id`, `full_name` FROM `Sous_chef`
+
+mappingId	Sous_chef_executive_chef_id_fk
+target		ex:Sous_chef/{sous_id} p:hasExecutive_chef ex:Executive_chef/{executive_chef_id} .
+source		SELECT `sous_id`, `executive_chef_id` FROM `Sous_chef` WHERE `executive_chef_id` IS NOT NULL
+
+mappingId	Restaurant_base
+target		ex:Restaurants/{restaurant_id} a :Restaurants ; p:restaurant_id {restaurant_id} ; p:name {name} ; p:address {address} ; p:executive_chef_id {executive_chef_id} ; p:SOUS_CHEF_ID {SOUS_CHEF_ID} .
+source		SELECT `restaurant_id`, `name`, `address`, `executive_chef_id`, `SOUS_CHEF_ID` FROM `Restaurant`
+
+mappingId	Restaurant_SOUS_CHEF_ID_fk
+target		ex:Restaurants/{restaurant_id} p:hasSous_chef ex:Sous_chef/{SOUS_CHEF_ID} .
+source		SELECT `restaurant_id`, `SOUS_CHEF_ID` FROM `Restaurant` WHERE `SOUS_CHEF_ID` IS NOT NULL
+
+mappingId	Restaurant_executive_chef_id_fk
+target		ex:Restaurants/{restaurant_id} p:hasExecutive_chef ex:Executive_chef/{executive_chef_id} .
+source		SELECT `restaurant_id`, `executive_chef_id` FROM `Restaurant` WHERE `executive_chef_id` IS NOT NULL
+
+mappingId	Menu_items_base
+target		ex:MenuItems/{menu_item_id} a :MenuItems ; p:menu_item_id {menu_item_id} ; p:item_name {item_name} ; p:description {description} ; p:price {price} .
+source		SELECT `menu_item_id`, `item_name`, `description`, `price` FROM `Menu_items`
+
+mappingId	Orders_base
+target		ex:Orders/{order_id} a :Orders ; p:order_id {order_id} ; p:customer_name {customer_name} ; p:date {date} ; p:total_amount {total_amount} ; p:restaurant_id {restaurant_id} .
+source		SELECT `order_id`, `customer_name`, `date`, `total_amount`, `restaurant_id` FROM `Orders`
+
+mappingId	Orders_restaurant_id_fk
+target		ex:Orders/{order_id} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `order_id`, `restaurant_id` FROM `Orders` WHERE `restaurant_id` IS NOT NULL
+
+mappingId	Order_details_base
+target		ex:Order_details/{detail_id} a :Order_details ; p:detail_id {detail_id} ; p:quantity {quantity} ; p:menu_item_id {menu_item_id} ; p:order_id {order_id} .
+source		SELECT `detail_id`, `quantity`, `menu_item_id`, `order_id` FROM `Order_details`
+
+mappingId	Order_details_order_id_fk
+target		ex:Order_details/{detail_id} p:hasOrders ex:Orders/{order_id} .
+source		SELECT `detail_id`, `order_id` FROM `Order_details` WHERE `order_id` IS NOT NULL
+
+mappingId	Order_details_menu_item_id_fk
+target		ex:Order_details/{detail_id} p:hasMenuItems ex:MenuItems/{menu_item_id} .
+source		SELECT `detail_id`, `menu_item_id` FROM `Order_details` WHERE `menu_item_id` IS NOT NULL
+
+]]

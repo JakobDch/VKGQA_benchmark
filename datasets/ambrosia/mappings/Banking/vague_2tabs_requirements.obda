@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Eligibility_Criteria_base
+target		ex:Eligibility_Criteria/{id} a :Eligibility_Criteria ; p:id {id} ; p:criteria {criteria} ; p:score {score} .
+source		SELECT `id`, `criteria`, `score` FROM `Eligibility_Criteria`
+
+mappingId	Documentation_Requirements_base
+target		ex:Documentation_Requirements/{id} a :Documentation_Requirements ; p:id {id} ; p:doc_type {doc_type} ; p:requirement {requirement} .
+source		SELECT `id`, `doc_type`, `requirement` FROM `Documentation_Requirements`
+
+mappingId	Loans_base
+target		ex:Loans/{id} a :Loans ; p:id {id} ; p:name {name} ; p:amount {amount} ; p:term {term} ; p:eligibility_criteria_id {eligibility_criteria_id} ; p:documentation_requirement_id {documentation_requirement_id} .
+source		SELECT `id`, `name`, `amount`, `term`, `eligibility_criteria_id`, `documentation_requirement_id` FROM `Loans`
+
+mappingId	Loans_documentation_requirement_id_fk
+target		ex:Loans/{id} p:hasDocumentation_Requirements ex:Documentation_Requirements/{documentation_requirement_id} .
+source		SELECT `id`, `documentation_requirement_id` FROM `Loans` WHERE `documentation_requirement_id` IS NOT NULL
+
+mappingId	Loans_eligibility_criteria_id_fk
+target		ex:Loans/{id} p:hasEligibility_Criteria ex:Eligibility_Criteria/{eligibility_criteria_id} .
+source		SELECT `id`, `eligibility_criteria_id` FROM `Loans` WHERE `eligibility_criteria_id` IS NOT NULL
+
+mappingId	Business_Loan_Applications_base
+target		ex:Business_Loan_Applications/{id} a :Business_Loan_Applications ; p:id {id} ; p:loan_name {loan_name} ; p:application_date {application_date} ; p:annual_revenue {annual_revenue} ; p:num_employees {num_employees} ; p:loan_id {loan_id} .
+source		SELECT `id`, `loan_name`, `application_date`, `annual_revenue`, `num_employees`, `loan_id` FROM `Business_Loan_Applications`
+
+mappingId	Business_Loan_Applications_loan_id_fk
+target		ex:Business_Loan_Applications/{id} p:hasLoans ex:Loans/{loan_id} .
+source		SELECT `id`, `loan_id` FROM `Business_Loan_Applications` WHERE `loan_id` IS NOT NULL
+
+]]

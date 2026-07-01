@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_screenplays_characters",
+  "schema": "amb_scope_screenplays_characters",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the characters that every screenplay has.",
+      "qtype": "ambig",
+      "sql": "SELECT Characters.roleType  from Screenplays_Characters join Characters on Screenplays_Characters.characterID = Characters.characterID join Screenplays on Screenplays_Characters.screenplayID = Screenplays.screenplayID   GROUP BY Screenplays_Characters.characterID HAVING COUNT(DISTINCT Screenplays_Characters.screenplayID) = (SELECT COUNT(*) FROM  Screenplays)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?roletype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCharacters ?child ; p:hasScreenplays ?parent . } GROUP BY ?child }\n  ?child p:roleType ?roletype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Screenplay } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the characters that every screenplay has.",
+      "qtype": "ambig",
+      "sql": "select screenplays.title , characters.roletype from Screenplays_Characters join Characters on Screenplays_Characters.characterID = Characters.characterID join Screenplays on Screenplays_Characters.screenplayID = Screenplays.screenplayID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?roletype WHERE {\n  ?screenplays_characters a :Screenplays_Characters .\n  ?characters a :Character .\n  ?screenplays_characters p:hasCharacters ?characters .\n  ?screenplays a :Screenplay .\n  ?screenplays_characters p:hasScreenplays ?screenplays .\n  ?screenplays p:title ?title .\n  ?characters p:roleType ?roletype .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the characters that every screenplay has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?roletype WHERE {\n  ?screenplays_characters a :Screenplays_Characters .\n  ?characters a :Character .\n  ?screenplays_characters p:hasCharacters ?characters .\n  ?screenplays a :Screenplay .\n  ?screenplays_characters p:hasScreenplays ?screenplays .\n  ?screenplays p:title ?title .\n  ?characters p:roleType ?roletype .\n} }\n  collective: { SELECT ?roletype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCharacters ?child ; p:hasScreenplays ?parent . } GROUP BY ?child }\n  ?child p:roleType ?roletype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Screenplay } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

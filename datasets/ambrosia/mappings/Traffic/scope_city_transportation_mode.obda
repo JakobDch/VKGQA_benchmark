@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/traffic#
+p:	http://ambrosia.example.org/traffic/prop#
+ex:	http://ambrosia.example.org/traffic/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	City_base
+target		ex:City/{id} a :City ; p:id {id} ; p:name {name} ; p:population {population} .
+source		SELECT `id`, `name`, `population` FROM `City`
+
+mappingId	Transportation_Mode_base
+target		ex:Transportation_Mode/{id} a :Transportation_Mode ; p:id {id} ; p:type {mode} .
+source		SELECT `id`, `mode` FROM `Transportation_Mode`
+
+mappingId	Roads_base
+target		ex:Roads/{id} a :Roads ; p:id {id} ; p:road_id {road_id} ; p:length {length} .
+source		SELECT `id`, `road_id`, `city_id`, `length` FROM `Roads`
+
+mappingId	Roads_city_id_fk
+target		ex:Roads/{id} p:hasCity ex:City/{city_id} .
+source		SELECT `id`, `city_id` FROM `Roads` WHERE `city_id` IS NOT NULL
+
+mappingId	Traffic_Volume_base
+target		ex:Traffic_Volume/{id} a :Traffic_Volume ; p:id {id} ; p:volume {volume} ; p:timestamp {timestamp} .
+source		SELECT `id`, `volume`, `road_id`, `timestamp` FROM `Traffic_Volume`
+
+mappingId	Traffic_Volume_road_id_fk
+target		ex:Traffic_Volume/{id} p:hasRoads ex:Roads/{road_id} .
+source		SELECT `id`, `road_id` FROM `Traffic_Volume` WHERE `road_id` IS NOT NULL
+
+mappingId	Accidents_base
+target		ex:Accidents/{id} a :Accidents ; p:id {id} ; p:type {accident_type} ; p:severity {severity} ; p:timestamp {timestamp} .
+source		SELECT `id`, `accident_type`, `severity`, `road_id`, `timestamp` FROM `Accidents`
+
+mappingId	Accidents_road_id_fk
+target		ex:Accidents/{id} p:hasRoads ex:Roads/{road_id} .
+source		SELECT `id`, `road_id` FROM `Accidents` WHERE `road_id` IS NOT NULL
+
+mappingId	City_Transportation_Mode_base
+target		ex:City_Transportation_Mode/{city_id}/{transportation_mode_id} a :City_Transportation_Mode .
+source		SELECT `city_id`, `transportation_mode_id` FROM `City_Transportation_Mode`
+
+mappingId	City_Transportation_Mode_transportation_mode_id_fk
+target		ex:City_Transportation_Mode/{city_id}/{transportation_mode_id} p:hasTransportation_Mode ex:Transportation_Mode/{transportation_mode_id} .
+source		SELECT `city_id`, `transportation_mode_id` FROM `City_Transportation_Mode` WHERE `transportation_mode_id` IS NOT NULL
+
+mappingId	City_Transportation_Mode_city_id_fk
+target		ex:City_Transportation_Mode/{city_id}/{transportation_mode_id} p:hasCity ex:City/{city_id} .
+source		SELECT `city_id`, `transportation_mode_id` FROM `City_Transportation_Mode` WHERE `city_id` IS NOT NULL
+
+]]

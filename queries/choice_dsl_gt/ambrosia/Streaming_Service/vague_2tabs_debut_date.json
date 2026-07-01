@@ -1,0 +1,53 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "vague_2tabs_debut_date",
+  "schema": "amb_vague_2tabs_debut_date",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide the debut day and year of each podcast.",
+      "qtype": "unambig",
+      "sql": "SELECT p.Podcast_Name, d.Day, d.Month, y.year\nFROM Podcast p\nJOIN Debut_Day d ON p.Debut_Day_ID = d.ID JOIN Debut_Year y ON p.Debut_year_ID = y.ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?podcast_name ?day ?month ?year WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Date .\n  ?p p:hasDebut_Day ?d .\n  ?y a :Debut_Year .\n  ?p p:hasDebut_Year ?y .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:day ?day .\n  ?d p:month ?month .\n  ?y p:year ?year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Provide the debut year of each podcast.",
+      "qtype": "unambig",
+      "sql": "SELECT p.Podcast_Name, d.year\nFROM Podcast p\nJOIN Debut_Year d ON p.Debut_year_ID = d.ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?podcast_name ?year WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Year .\n  ?p p:hasDebut_Year ?d .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:year ?year .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "Could you provide me with the debut date of each podcast?",
+      "qtype": "ambig",
+      "sql": "SELECT p.Podcast_Name, d.Day, d.Month\nFROM Podcast p\nJOIN Debut_Day d ON p.Debut_Day_ID = d.ID;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?podcast_name ?day ?month WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Date .\n  ?p p:hasDebut_Day ?d .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:day ?day .\n  ?d p:month ?month .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Could you provide me with the debut date of each podcast?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?podcast_name ?day ?month ?year WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Date .\n  ?p p:hasDebut_Day ?d .\n  ?y a :Debut_Year .\n  ?p p:hasDebut_Year ?y .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:day ?day .\n  ?d p:month ?month .\n  ?y p:year ?year .\n} }\n  component: { SELECT ?podcast_name ?year WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Year .\n  ?p p:hasDebut_Year ?d .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:year ?year .\n} }\n  component_2: { SELECT ?podcast_name ?day ?month WHERE {\n  ?p a :Podcast .\n  ?d a :Debut_Date .\n  ?p p:hasDebut_Day ?d .\n  ?p p:podcast_name ?podcast_name .\n  ?d p:day ?day .\n  ?d p:month ?month .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

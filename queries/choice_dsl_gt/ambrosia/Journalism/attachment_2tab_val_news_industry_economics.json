@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_news_industry_economics",
+  "schema": "amb_attachment_2tab_val_news_industry_economics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the advertising and subscription types where either are listed for Good Housekeeping magazine.",
+      "qtype": "unambig",
+      "sql": "SELECT Advertising.Type\nFROM Advertising\nWHERE Advertising.Magazine = \"Good Housekeeping\"\nUNION\nSELECT Subscriptions.Type\nFROM Subscriptions\nWHERE Subscriptions.Magazine = \"Good Housekeeping\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?advertising a :Advertising .\n    ?advertising p:Type ?type .\n    ?advertising p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n  UNION\n  {\n    ?subscriptions a :Subscriptions .\n    ?subscriptions p:Type ?type .\n    ?subscriptions p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the advertising types and also show the subscriptions types but just for Good Housekeeping magazine.",
+      "qtype": "unambig",
+      "sql": "SELECT Advertising.Type\nFROM Advertising\nUNION\nSELECT Subscriptions.Type\nFROM Subscriptions\nWHERE Subscriptions.Magazine = \"Good Housekeeping\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?advertising a :Advertising .\n    ?advertising p:Type ?type .\n    BIND(?type AS ?o0)\n  }\n  UNION\n  {\n    ?subscriptions a :Subscriptions .\n    ?subscriptions p:Type ?type .\n    ?subscriptions p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all types of advertising and subscriptions for Good Housekeeping magazine.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?advertising a :Advertising .\n    ?advertising p:Type ?type .\n    ?advertising p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n  UNION\n  {\n    ?subscriptions a :Subscriptions .\n    ?subscriptions p:Type ?type .\n    ?subscriptions p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?advertising a :Advertising .\n    ?advertising p:Type ?type .\n    BIND(?type AS ?o0)\n  }\n  UNION\n  {\n    ?subscriptions a :Subscriptions .\n    ?subscriptions p:Type ?type .\n    ?subscriptions p:Magazine ?magazine_f .\n    FILTER(STR(?magazine_f) = \"Good Housekeeping\")\n    BIND(?type AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

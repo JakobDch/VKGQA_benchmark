@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_arrival_facilities",
+  "schema": "amb_attachment_2tab_val_arrival_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show a list of all arrival halls and also provide a list of baggage reclaims with a maximum capacity of 500.",
+      "qtype": "unambig",
+      "sql": "SELECT arrival_hall.Arrival_Hall as name\nFROM arrival_hall\nUNION\nSELECT baggage_reclaim.Baggage_Reclaim as name\nFROM baggage_reclaim\nWHERE baggage_reclaim.Maximum_Capacity = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?arrival_hall a :arrival_hall .\n    ?arrival_hall p:Arrival_Hall ?arrival_hall2 .\n    BIND(?arrival_hall2 AS ?o0)\n  }\n  UNION\n  {\n    ?baggage_reclaim a :baggage_reclaim .\n    ?baggage_reclaim p:Baggage_Reclaim ?baggage_reclaim2 .\n    ?baggage_reclaim p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?baggage_reclaim2 AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Which arrival halls have a maximum capacity of 500 and which baggage reclaims have the same capacity?",
+      "qtype": "unambig",
+      "sql": "SELECT arrival_hall.Arrival_Hall as name\nFROM arrival_hall\nWHERE arrival_hall.Maximum_Capacity = 500\nUNION\nSELECT baggage_reclaim.Baggage_Reclaim as name\nFROM baggage_reclaim\nWHERE baggage_reclaim.Maximum_Capacity = 500",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?arrival_hall a :arrival_hall .\n    ?arrival_hall p:Arrival_Hall ?arrival_hall2 .\n    ?arrival_hall p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?arrival_hall2 AS ?o0)\n  }\n  UNION\n  {\n    ?baggage_reclaim a :baggage_reclaim .\n    ?baggage_reclaim p:Baggage_Reclaim ?baggage_reclaim2 .\n    ?baggage_reclaim p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?baggage_reclaim2 AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List arrival halls and baggage reclaims with a maximum capacity of 500.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?arrival_hall a :arrival_hall .\n    ?arrival_hall p:Arrival_Hall ?arrival_hall2 .\n    BIND(?arrival_hall2 AS ?o0)\n  }\n  UNION\n  {\n    ?baggage_reclaim a :baggage_reclaim .\n    ?baggage_reclaim p:Baggage_Reclaim ?baggage_reclaim2 .\n    ?baggage_reclaim p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?baggage_reclaim2 AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?arrival_hall a :arrival_hall .\n    ?arrival_hall p:Arrival_Hall ?arrival_hall2 .\n    ?arrival_hall p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?arrival_hall2 AS ?o0)\n  }\n  UNION\n  {\n    ?baggage_reclaim a :baggage_reclaim .\n    ?baggage_reclaim p:Baggage_Reclaim ?baggage_reclaim2 .\n    ?baggage_reclaim p:Maximum_Capacity ?maximum_capacity_f .\n    FILTER((STR(?maximum_capacity_f) = \"500\" || STR(?maximum_capacity_f) = \"500.0\"))\n    BIND(?baggage_reclaim2 AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

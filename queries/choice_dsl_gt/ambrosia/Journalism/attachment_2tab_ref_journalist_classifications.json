@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_ref_journalist_classifications",
+  "schema": "amb_attachment_2tab_ref_journalist_classifications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display stringers and editors of \"Article 4 Title\".",
+      "qtype": "ambig",
+      "sql": "SELECT Stringers.FullName\nFROM Articles JOIN Stringers ON Articles.stringer_id = Stringers.id\nWHERE Articles.title = \"Article 4 Title\"\nUNION\nSELECT Editors.FullName\nFROM Articles JOIN Editors ON Articles.editor_id = Editors.id\nWHERE Articles.title = \"Article 4 Title\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?stringers a :Stringers .\n    ?articles p:hasStringers ?stringers .\n    ?stringers p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?editors a :Editors .\n    ?articles p:hasEditors ?editors .\n    ?editors p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display stringers and editors of \"Article 4 Title\".",
+      "qtype": "ambig",
+      "sql": "SELECT Stringers.FullName\nFROM Articles JOIN Stringers ON Articles.stringer_id = Stringers.id\nUNION\nSELECT Editors.FullName\nFROM Articles JOIN Editors ON Articles.editor_id = Editors.id\nWHERE Articles.title = \"Article 4 Title\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?stringers a :Stringers .\n    ?articles p:hasStringers ?stringers .\n    ?stringers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?editors a :Editors .\n    ?articles p:hasEditors ?editors .\n    ?editors p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display stringers and editors of \"Article 4 Title\".",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?stringers a :Stringers .\n    ?articles p:hasStringers ?stringers .\n    ?stringers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?editors a :Editors .\n    ?articles p:hasEditors ?editors .\n    ?editors p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?articles a :Articles .\n    ?stringers a :Stringers .\n    ?articles p:hasStringers ?stringers .\n    ?stringers p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?articles a :Articles .\n    ?editors a :Editors .\n    ?articles p:hasEditors ?editors .\n    ?editors p:name ?fullname .\n    ?articles p:title ?title_f .\n    FILTER(STR(?title_f) = \"Article 4 Title\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

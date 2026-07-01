@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_story",
+  "schema": "amb_vague_2cols_story",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the summaries for the C19 stories?",
+      "qtype": "unambig",
+      "sql": "SELECT Summary FROM \"Books\" WHERE PublicationYear BETWEEN 1800 AND 1899;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?summary WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What was Pride and Prejudice about?",
+      "qtype": "ambig",
+      "sql": "SELECT Summary FROM \"Books\" WHERE Title = 'Pride and Prejudice';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?summary WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What was Pride and Prejudice about?",
+      "qtype": "ambig",
+      "sql": "SELECT Themes FROM \"Books\" WHERE Title = 'Pride and Prejudice';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?themes WHERE {\n  ?books a :Book .\n  ?books p:Themes ?themes .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What was Pride and Prejudice about?",
+      "qtype": "ambig",
+      "sql": "SELECT Summary, Themes FROM \"Books\" WHERE Title = 'Pride and Prejudice';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?summary ?themes WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Themes ?themes .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the summaries and themes of the C19 stories?",
+      "qtype": "unambig",
+      "sql": "SELECT Summary, Themes FROM \"Books\" WHERE PublicationYear BETWEEN 1800 AND 1899;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?summary ?themes WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Themes ?themes .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "What are the themes of the C19 stories?",
+      "qtype": "unambig",
+      "sql": "SELECT Themes FROM \"Books\" WHERE PublicationYear BETWEEN 1800 AND 1899;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?themes WHERE {\n  ?books a :Book .\n  ?books p:Themes ?themes .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What were 19th-century books about?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?summary WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n} }\n  full: { SELECT ?summary ?themes WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Themes ?themes .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n} }\n  component_2: { SELECT ?themes WHERE {\n  ?books a :Book .\n  ?books p:Themes ?themes .\n  ?books p:PublicationYear ?publicationyear_b .\n  FILTER(?publicationyear_b >= 1800 && ?publicationyear_b <= 1899)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What was Pride and Prejudice about?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?summary WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n} }\n  full: { SELECT ?summary ?themes WHERE {\n  ?books a :Book .\n  ?books p:Summary ?summary .\n  ?books p:Themes ?themes .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n} }\n  component_2: { SELECT ?themes WHERE {\n  ?books a :Book .\n  ?books p:Themes ?themes .\n  ?books p:Title ?title_f .\n  FILTER(STR(?title_f) = \"Pride and Prejudice\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

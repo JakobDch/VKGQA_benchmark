@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_ref_hospitality_staff",
+  "schema": "amb_attachment_2tab_ref_hospitality_staff",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the chefs and also list the servers who speak English.",
+      "qtype": "unambig",
+      "sql": "SELECT Chefs.lastname\nFROM Languages JOIN Chefs ON Languages.LanguageID = Chefs.LanguageID\nUNION\nSELECT Servers.lastname\nFROM Languages JOIN Servers ON Languages.LanguageID = Servers.LanguageID\nWHERE Languages.LanguageName = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?chefs a :Chefs .\n    ?chefs p:hasLanguages ?languages .\n    ?chefs p:LastName ?lastname .\n    BIND(?lastname AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?servers a :Servers .\n    ?servers p:hasLanguages ?languages .\n    ?servers p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show the chefs and servers who speak English.",
+      "qtype": "ambig",
+      "sql": "SELECT Chefs.lastname\nFROM Languages JOIN Chefs ON Languages.LanguageID = Chefs.LanguageID\nWHERE Languages.LanguageName = \"English\"\nUNION\nSELECT Servers.lastname\nFROM Languages JOIN Servers ON Languages.LanguageID = Servers.LanguageID\nWHERE Languages.LanguageName = \"English\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?chefs a :Chefs .\n    ?chefs p:hasLanguages ?languages .\n    ?chefs p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?servers a :Servers .\n    ?servers p:hasLanguages ?languages .\n    ?servers p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the chefs and servers who speak English.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?chefs a :Chefs .\n    ?chefs p:hasLanguages ?languages .\n    ?chefs p:LastName ?lastname .\n    BIND(?lastname AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?servers a :Servers .\n    ?servers p:hasLanguages ?languages .\n    ?servers p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?languages a :Languages .\n    ?chefs a :Chefs .\n    ?chefs p:hasLanguages ?languages .\n    ?chefs p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n  UNION\n  {\n    ?languages a :Languages .\n    ?servers a :Servers .\n    ?servers p:hasLanguages ?languages .\n    ?servers p:LastName ?lastname .\n    ?languages p:LanguageName ?languagename_f .\n    FILTER(STR(?languagename_f) = \"English\")\n    BIND(?lastname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

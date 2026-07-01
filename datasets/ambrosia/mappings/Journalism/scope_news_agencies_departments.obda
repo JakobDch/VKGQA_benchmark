@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	News_Agencies_base
+target		ex:News_Agency/{id} a :News_Agency ; p:id {id} ; p:name {name} ; p:location {location} ; p:established_year {established_year} .
+source		SELECT `id`, `name`, `location`, `established_year` FROM `News_Agencies`
+
+mappingId	Departments_base
+target		ex:Departments/{department_id} a :Departments ; p:department_id {department_id} ; p:department_name {department_name} .
+source		SELECT `department_id`, `department_name` FROM `Departments`
+
+mappingId	News_Agencies_Departments_base
+target		ex:News_Agencies_Departments/{agency_id}/{department_id} a :News_Agencies_Departments ; p:agency_id {agency_id} ; p:department_id {department_id} .
+source		SELECT `agency_id`, `department_id` FROM `News_Agencies_Departments`
+
+mappingId	News_Agencies_Departments_department_id_fk
+target		ex:News_Agencies_Departments/{agency_id}/{department_id} p:hasDepartments ex:Departments/{department_id} .
+source		SELECT `agency_id`, `department_id` FROM `News_Agencies_Departments` WHERE `department_id` IS NOT NULL
+
+mappingId	News_Agencies_Departments_agency_id_fk
+target		ex:News_Agencies_Departments/{agency_id}/{department_id} p:hasNews_Agency ex:News_Agency/{agency_id} .
+source		SELECT `agency_id`, `department_id` FROM `News_Agencies_Departments` WHERE `agency_id` IS NOT NULL
+
+]]

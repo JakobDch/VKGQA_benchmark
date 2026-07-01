@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_ref_beverage_professional",
+  "schema": "amb_attachment_2tab_ref_beverage_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all sommeliers and also show the bartenders working at The Rooftop Lounge.",
+      "qtype": "unambig",
+      "sql": "SELECT Sommeliers.FullName\nFROM Restaurants JOIN Sommeliers ON Restaurants.id = Sommeliers.restaurantId\nUNION\nSELECT Bartenders.FullName\nFROM Restaurants JOIN Bartenders ON Restaurants.id = Bartenders.restaurantId\nWHERE Restaurants.name = \"The Rooftop Lounge\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?restaurants a :Restaurants .\n    ?sommeliers a :Sommeliers .\n    ?sommeliers p:hasRestaurants ?restaurants .\n    ?sommeliers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?restaurants a :Restaurants .\n    ?bartenders a :Bartenders .\n    ?bartenders p:hasRestaurants ?restaurants .\n    ?bartenders p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "Show sommeliers and bartenders working at The Rooftop Lounge.",
+      "qtype": "ambig",
+      "sql": "SELECT Sommeliers.FullName\nFROM Restaurants JOIN Sommeliers ON Restaurants.id = Sommeliers.restaurantId\nWHERE Restaurants.name = \"The Rooftop Lounge\"\nUNION\nSELECT Bartenders.FullName\nFROM Restaurants JOIN Bartenders ON Restaurants.id = Bartenders.restaurantId\nWHERE Restaurants.name = \"The Rooftop Lounge\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?restaurants a :Restaurants .\n    ?sommeliers a :Sommeliers .\n    ?sommeliers p:hasRestaurants ?restaurants .\n    ?sommeliers p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?restaurants a :Restaurants .\n    ?bartenders a :Bartenders .\n    ?bartenders p:hasRestaurants ?restaurants .\n    ?bartenders p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show sommeliers and bartenders working at The Rooftop Lounge.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?restaurants a :Restaurants .\n    ?sommeliers a :Sommeliers .\n    ?sommeliers p:hasRestaurants ?restaurants .\n    ?sommeliers p:name ?fullname .\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?restaurants a :Restaurants .\n    ?bartenders a :Bartenders .\n    ?bartenders p:hasRestaurants ?restaurants .\n    ?bartenders p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?restaurants a :Restaurants .\n    ?sommeliers a :Sommeliers .\n    ?sommeliers p:hasRestaurants ?restaurants .\n    ?sommeliers p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n  UNION\n  {\n    ?restaurants a :Restaurants .\n    ?bartenders a :Bartenders .\n    ?bartenders p:hasRestaurants ?restaurants .\n    ?bartenders p:name ?fullname .\n    ?restaurants p:name ?name_f .\n    FILTER(STR(?name_f) = \"The Rooftop Lounge\")\n    BIND(?fullname AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

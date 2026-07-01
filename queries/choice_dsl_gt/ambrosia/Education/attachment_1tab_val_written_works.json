@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_written_works",
+  "schema": "amb_attachment_1tab_val_written_works",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all essays and poetry entries written by Emily Dickinson.",
+      "qtype": "ambig",
+      "sql": "SELECT WrittenWorks.Title \nFROM WrittenWorks JOIN Authors ON WrittenWorks.AuthorID = Authors.AuthorID\nWHERE (WrittenWorks.Type = 'Essay' OR WrittenWorks.Type = 'Poetry') AND Authors.name = \"Emily Dickinson\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?writtenworks a :WrittenWorks .\n  ?authors a :Authors .\n  ?writtenworks p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?writtenworks p:Type ?type_w .\n  ?writtenworks p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Poetry\")) && STR(?name_w) = \"Emily Dickinson\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all essays and poetry entries written by Emily Dickinson.",
+      "qtype": "ambig",
+      "sql": "SELECT WrittenWorks.Title \nFROM WrittenWorks JOIN Authors ON WrittenWorks.AuthorID = Authors.AuthorID\nWHERE WrittenWorks.Type = 'Essay' OR WrittenWorks.Type = 'Poetry' AND Authors.name = \"Emily Dickinson\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?writtenworks a :WrittenWorks .\n  ?authors a :Authors .\n  ?writtenworks p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?writtenworks p:Type ?type_w .\n  ?writtenworks p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Poetry\" && STR(?name_w) = \"Emily Dickinson\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show all essays and poetry entries written by Emily Dickinson.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?writtenworks a :WrittenWorks .\n  ?authors a :Authors .\n  ?writtenworks p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?writtenworks p:Type ?type_w .\n  ?writtenworks p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Poetry\" && STR(?name_w) = \"Emily Dickinson\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?writtenworks a :WrittenWorks .\n  ?authors a :Authors .\n  ?writtenworks p:hasAuthors ?authors .\n  ?writtenworks p:Title ?title .\n  ?writtenworks p:Type ?type_w .\n  ?writtenworks p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Poetry\")) && STR(?name_w) = \"Emily Dickinson\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

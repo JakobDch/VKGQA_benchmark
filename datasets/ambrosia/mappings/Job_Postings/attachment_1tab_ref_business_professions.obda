@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Business_Profession_base
+target		ex:Business_Profession/{id} a :Business_Profession ; p:id {id} ; p:profession {profession} .
+source		SELECT `id`, `profession` FROM `Business_Profession`
+
+mappingId	Working_Arrangement_base
+target		ex:Working_Arrangement/{id} a :Working_Arrangement ; p:id {id} ; p:arrangement {arrangement} .
+source		SELECT `id`, `arrangement` FROM `Working_Arrangement`
+
+mappingId	Company_base
+target		ex:Companies/{id} a :Companies ; p:id {id} ; p:name {name} ; p:industry {industry} ; p:location {location} .
+source		SELECT `id`, `name`, `industry`, `location` FROM `Company`
+
+mappingId	Job_Posting_base
+target		ex:JobPostings/{id} a :JobPostings ; p:id {id} ; p:title {title} ; p:description {description} ; p:required_skills {required_skills} ; p:salary {salary} ; p:post_date {post_date} ; p:business_profession_id {business_profession_id} ; p:working_arrangement_id {working_arrangement_id} ; p:company_id {company_id} .
+source		SELECT `id`, `title`, `description`, `required_skills`, `salary`, `post_date`, `business_profession_id`, `working_arrangement_id`, `company_id` FROM `Job_Posting`
+
+mappingId	Job_Posting_company_id_fk
+target		ex:JobPostings/{id} p:hasCompanies ex:Companies/{company_id} .
+source		SELECT `id`, `company_id` FROM `Job_Posting` WHERE `company_id` IS NOT NULL
+
+mappingId	Job_Posting_working_arrangement_id_fk
+target		ex:JobPostings/{id} p:hasWorking_Arrangement ex:Working_Arrangement/{working_arrangement_id} .
+source		SELECT `id`, `working_arrangement_id` FROM `Job_Posting` WHERE `working_arrangement_id` IS NOT NULL
+
+mappingId	Job_Posting_business_profession_id_fk
+target		ex:JobPostings/{id} p:hasBusiness_Profession ex:Business_Profession/{business_profession_id} .
+source		SELECT `id`, `business_profession_id` FROM `Job_Posting` WHERE `business_profession_id` IS NOT NULL
+
+]]

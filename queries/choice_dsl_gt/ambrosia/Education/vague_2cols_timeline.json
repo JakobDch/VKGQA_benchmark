@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_timeline",
+  "schema": "amb_vague_2cols_timeline",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "In what month were the computers purchased?",
+      "qtype": "unambig",
+      "sql": "SELECT Materials.Month FROM Materials WHERE Materials.ResourceType =  'Computers'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?month WHERE {\n  ?materials a :Materials .\n  ?materials p:Month ?month .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the resource type and supplier for all expenses by month and year",
+      "qtype": "unambig",
+      "sql": "SELECT Expenses.Supplier, Materials.Month, Year FROM Expenses JOIN Materials ON Expenses.MaterialId = Materials.MaterialID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?supplier ?month ?year WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Month ?month .\n  ?materials p:Year ?year .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "When were the computers purchased?",
+      "qtype": "ambig",
+      "sql": "SELECT Materials.Year FROM Materials WHERE Materials.ResourceType =  'Computers'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?year WHERE {\n  ?materials a :Materials .\n  ?materials p:Year ?year .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "When were the computers purchased?",
+      "qtype": "ambig",
+      "sql": "SELECT Materials.Month, Year FROM Materials WHERE Materials.ResourceType =  'Computers'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?month ?year WHERE {\n  ?materials a :Materials .\n  ?materials p:Month ?month .\n  ?materials p:Year ?year .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the resource type and supplier for all expenses by month",
+      "qtype": "unambig",
+      "sql": "SELECT Expenses.Supplier, Materials.Month FROM Expenses JOIN Materials ON Expenses.MaterialId = Materials.MaterialID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?supplier ?month WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Month ?month .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the resource type and supplier for all expenses by year",
+      "qtype": "unambig",
+      "sql": "SELECT Expenses.Supplier, Materials.Year FROM Expenses JOIN Materials ON Expenses.MaterialId = Materials.MaterialID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?supplier ?year WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Year ?year .\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When were the computers purchased?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?month WHERE {\n  ?materials a :Materials .\n  ?materials p:Month ?month .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n} }\n  full: { SELECT ?month ?year WHERE {\n  ?materials a :Materials .\n  ?materials p:Month ?month .\n  ?materials p:Year ?year .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n} }\n  component_2: { SELECT ?year WHERE {\n  ?materials a :Materials .\n  ?materials p:Year ?year .\n  ?materials p:ResourceType ?resourcetype_f .\n  FILTER(STR(?resourcetype_f) = \"Computers\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who provided all the materials and when?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?supplier ?month ?year WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Month ?month .\n  ?materials p:Year ?year .\n} }\n  component: { SELECT ?supplier ?month WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Month ?month .\n} }\n  component_2: { SELECT ?supplier ?year WHERE {\n  ?expenses a :Expenses .\n  ?materials a :Materials .\n  ?expenses p:hasMaterials ?materials .\n  ?expenses p:Supplier ?supplier .\n  ?materials p:Year ?year .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_ref_types_of_banks",
+  "schema": "amb_attachment_1tab_ref_types_of_banks",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show both the central and commercial banks in the USA.",
+      "qtype": "unambig",
+      "sql": "SELECT Banks.name \nFROM Types_of_banks JOIN Banks ON Types_of_banks.id = Banks.type_id JOIN Countries ON Banks.country_id = Countries.id\nWHERE (Types_of_banks.bank_type = \"Central Bank\" OR Types_of_banks.bank_type = \"Commercial Bank\") AND Countries.country_name = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?types_of_banks a :Types_of_banks .\n  ?banks a :Banks .\n  ?banks p:hasTypes_of_banks ?types_of_banks .\n  ?countries a :Country .\n  ?banks p:hasCountries ?countries .\n  ?banks p:name ?name .\n  ?types_of_banks p:bank_type ?bank_type_w .\n  ?types_of_banks p:bank_type ?bank_type_w2 .\n  ?countries p:country_name ?country_name_w .\n  FILTER((((STR(?bank_type_w) = \"Central Bank\" || STR(?bank_type_w2) = \"Commercial Bank\")) && STR(?country_name_w) = \"USA\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show central banks and commercial banks in the USA.",
+      "qtype": "ambig",
+      "sql": "SELECT Banks.name \nFROM Types_of_banks JOIN Banks ON Types_of_banks.id = Banks.type_id JOIN Countries ON Banks.country_id = Countries.id\nWHERE Types_of_banks.bank_type = \"Central Bank\" OR Types_of_banks.bank_type = \"Commercial Bank\" AND Countries.country_name = \"USA\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?types_of_banks a :Types_of_banks .\n  ?banks a :Banks .\n  ?banks p:hasTypes_of_banks ?types_of_banks .\n  ?countries a :Country .\n  ?banks p:hasCountries ?countries .\n  ?banks p:name ?name .\n  ?types_of_banks p:bank_type ?bank_type_w .\n  ?types_of_banks p:bank_type ?bank_type_w2 .\n  ?countries p:country_name ?country_name_w .\n  FILTER((STR(?bank_type_w) = \"Central Bank\" || (STR(?bank_type_w2) = \"Commercial Bank\" && STR(?country_name_w) = \"USA\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show central banks and commercial banks in the USA.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?types_of_banks a :Types_of_banks .\n  ?banks a :Banks .\n  ?banks p:hasTypes_of_banks ?types_of_banks .\n  ?countries a :Country .\n  ?banks p:hasCountries ?countries .\n  ?banks p:name ?name .\n  ?types_of_banks p:bank_type ?bank_type_w .\n  ?types_of_banks p:bank_type ?bank_type_w2 .\n  ?countries p:country_name ?country_name_w .\n  FILTER((((STR(?bank_type_w) = \"Central Bank\" || STR(?bank_type_w2) = \"Commercial Bank\")) && STR(?country_name_w) = \"USA\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?types_of_banks a :Types_of_banks .\n  ?banks a :Banks .\n  ?banks p:hasTypes_of_banks ?types_of_banks .\n  ?countries a :Country .\n  ?banks p:hasCountries ?countries .\n  ?banks p:name ?name .\n  ?types_of_banks p:bank_type ?bank_type_w .\n  ?types_of_banks p:bank_type ?bank_type_w2 .\n  ?countries p:country_name ?country_name_w .\n  FILTER((STR(?bank_type_w) = \"Central Bank\" || (STR(?bank_type_w2) = \"Commercial Bank\" && STR(?country_name_w) = \"USA\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Bank_Branch_base
+target		ex:Branches/{BranchID} a :Branches ; p:BranchID {BranchID} ; p:BranchName {BranchName} ; p:BranchAddress {BranchAddress} .
+source		SELECT `BranchID`, `BranchName`, `BranchAddress` FROM `Bank_Branch`
+
+mappingId	Facilities_base
+target		ex:Facilities/{FacilityID} a :Facilities ; p:FacilityID {FacilityID} ; p:FacilityType {FacilityType} .
+source		SELECT `FacilityID`, `FacilityType` FROM `Facilities`
+
+mappingId	Bank_Branch_Facilities_base
+target		ex:Bank_Branch_Facilities/{ID} a :Bank_Branch_Facilities ; p:ID {ID} ; p:BranchID {BranchID} ; p:FacilityID {FacilityID} .
+source		SELECT `ID`, `BranchID`, `FacilityID` FROM `Bank_Branch_Facilities`
+
+mappingId	Bank_Branch_Facilities_FacilityID_fk
+target		ex:Bank_Branch_Facilities/{ID} p:hasFacilities ex:Facilities/{FacilityID} .
+source		SELECT `ID`, `FacilityID` FROM `Bank_Branch_Facilities` WHERE `FacilityID` IS NOT NULL
+
+mappingId	Bank_Branch_Facilities_BranchID_fk
+target		ex:Bank_Branch_Facilities/{ID} p:hasBranches ex:Branches/{BranchID} .
+source		SELECT `ID`, `BranchID` FROM `Bank_Branch_Facilities` WHERE `BranchID` IS NOT NULL
+
+]]

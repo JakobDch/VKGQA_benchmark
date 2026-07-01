@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hospitals_base
+target		ex:Hospitals/{HospitalID} a :Hospitals ; p:HospitalID {HospitalID} ; p:name {Name} ; p:location {Location} .
+source		SELECT `HospitalID`, `Name`, `Location` FROM `Hospitals`
+
+mappingId	MedicalRoles_base
+target		ex:MedicalRoles/{RoleID} a :MedicalRoles ; p:RoleID {RoleID} ; p:RoleName {RoleName} ; p:Salary {Salary} .
+source		SELECT `RoleID`, `RoleName`, `Salary` FROM `MedicalRoles`
+
+mappingId	Hospitals_Medical_Roles_base
+target		ex:Hospitals_Medical_Roles/{HospitalID}/{RoleID} a :Hospitals_Medical_Roles ; p:HospitalID {HospitalID} ; p:RoleID {RoleID} .
+source		SELECT `HospitalID`, `RoleID` FROM `Hospitals_Medical_Roles`
+
+mappingId	Hospitals_Medical_Roles_RoleID_fk
+target		ex:Hospitals_Medical_Roles/{HospitalID}/{RoleID} p:hasMedicalRoles ex:MedicalRoles/{RoleID} .
+source		SELECT `HospitalID`, `RoleID` FROM `Hospitals_Medical_Roles` WHERE `RoleID` IS NOT NULL
+
+mappingId	Hospitals_Medical_Roles_HospitalID_fk
+target		ex:Hospitals_Medical_Roles/{HospitalID}/{RoleID} p:hasHospitals ex:Hospitals/{HospitalID} .
+source		SELECT `HospitalID`, `RoleID` FROM `Hospitals_Medical_Roles` WHERE `HospitalID` IS NOT NULL
+
+]]

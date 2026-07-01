@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Affordable_Housing_Projects_base
+target		ex:Affordable_Housing_Projects/{project_id} a :Affordable_Housing_Projects ; p:project_id {project_id} ; p:project_name {project_name} ; p:location {location} .
+source		SELECT `project_id`, `project_name`, `location` FROM `Affordable_Housing_Projects`
+
+mappingId	Financing_Sources_base
+target		ex:Financing_Sources/{source_id} a :Financing_Sources ; p:source_id {source_id} ; p:source_value {source_value} .
+source		SELECT `source_id`, `source_value` FROM `Financing_Sources`
+
+mappingId	Affordable_Housing_Projects_Financing_Sources_base
+target		ex:Affordable_Housing_Projects_Financing_Sources/{id} a :Affordable_Housing_Projects_Financing_Sources ; p:id {id} ; p:housing_project_id {housing_project_id} ; p:financing_source_id {financing_source_id} .
+source		SELECT `id`, `housing_project_id`, `financing_source_id` FROM `Affordable_Housing_Projects_Financing_Sources`
+
+mappingId	Affordable_Housing_Projects_Financing_Sources_financing_source_id_fk
+target		ex:Affordable_Housing_Projects_Financing_Sources/{id} p:hasFinancing_Sources ex:Financing_Sources/{financing_source_id} .
+source		SELECT `id`, `financing_source_id` FROM `Affordable_Housing_Projects_Financing_Sources` WHERE `financing_source_id` IS NOT NULL
+
+mappingId	Affordable_Housing_Projects_Financing_Sources_housing_project_id_fk
+target		ex:Affordable_Housing_Projects_Financing_Sources/{id} p:hasAffordable_Housing_Projects ex:Affordable_Housing_Projects/{housing_project_id} .
+source		SELECT `id`, `housing_project_id` FROM `Affordable_Housing_Projects_Financing_Sources` WHERE `housing_project_id` IS NOT NULL
+
+]]

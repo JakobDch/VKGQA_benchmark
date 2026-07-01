@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_physicists_fields",
+  "schema": "amb_scope_physicists_fields",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each physicist, list the fields they are working in.",
+      "qtype": "unambig",
+      "sql": "select physicists.name , fields.fieldname from Physicist_Fields join Fields on Physicist_Fields.fieldId = Fields.id join Physicists on Physicist_Fields.physicistId = Physicists.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?fieldname WHERE {\n  ?physicist_fields a :Physicist_Fields .\n  ?fields a :Fields .\n  ?physicist_fields p:hasFields ?fields .\n  ?physicists a :Physicists .\n  ?physicist_fields p:hasPhysicists ?physicists .\n  ?physicists p:name ?name .\n  ?fields p:fieldName ?fieldname .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the fields that each physicist works in.",
+      "qtype": "ambig",
+      "sql": "SELECT Fields.fieldName  from Physicist_Fields join Fields on Physicist_Fields.fieldId = Fields.id join Physicists on Physicist_Fields.physicistId = Physicists.id   GROUP BY Physicist_Fields.fieldId HAVING COUNT(DISTINCT Physicist_Fields.physicistId) = (SELECT COUNT(*) FROM  Physicists)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fieldname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:fieldId ?cg . ?child a :Fields ; p:id ?cg . ?l p:physicistId ?pg . ?parent a :Physicists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:fieldName ?fieldname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Physicists } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the fields that each physicist works in.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?fieldname WHERE {\n  ?physicist_fields a :Physicist_Fields .\n  ?fields a :Fields .\n  ?physicist_fields p:hasFields ?fields .\n  ?physicists a :Physicists .\n  ?physicist_fields p:hasPhysicists ?physicists .\n  ?physicists p:name ?name .\n  ?fields p:fieldName ?fieldname .\n} }\n  collective: { SELECT ?fieldname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:fieldId ?cg . ?child a :Fields ; p:id ?cg . ?l p:physicistId ?pg . ?parent a :Physicists ; p:id ?pg . } GROUP BY ?child }\n  ?child p:fieldName ?fieldname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Physicists } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

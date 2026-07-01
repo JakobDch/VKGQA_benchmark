@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_craft_fairs_vendors",
+  "schema": "amb_scope_craft_fairs_vendors",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what type of vendors are present at every craft fair at least once?",
+      "qtype": "unambig",
+      "sql": "SELECT Vendors.type  from Craft_Fairs_Vendors join Vendors on Craft_Fairs_Vendors.vendor_type_id = Vendors.id join Craft_Fairs on Craft_Fairs_Vendors.craft_fair_id = Craft_Fairs.id   GROUP BY Craft_Fairs_Vendors.vendor_type_id HAVING COUNT(DISTINCT Craft_Fairs_Vendors.craft_fair_id) = (SELECT COUNT(*) FROM  Craft_Fairs)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVendors ?child ; p:hasCraft_Fairs ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Craft_Fairs } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "for each craft fair, what is the corresponding vendor type?",
+      "qtype": "unambig",
+      "sql": "select craft_fairs.name , vendors.type from Craft_Fairs_Vendors join Vendors on Craft_Fairs_Vendors.vendor_type_id = Vendors.id join Craft_Fairs on Craft_Fairs_Vendors.craft_fair_id = Craft_Fairs.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?craft_fairs_vendors a :Craft_Fairs_Vendors .\n  ?vendors a :Vendors .\n  ?craft_fairs_vendors p:hasVendors ?vendors .\n  ?craft_fairs a :Craft_Fairs .\n  ?craft_fairs_vendors p:hasCraft_Fairs ?craft_fairs .\n  ?craft_fairs p:name ?name .\n  ?vendors p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what are the types of vendors associated with each craft fair?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVendors ?child ; p:hasCraft_Fairs ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Craft_Fairs } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?craft_fairs_vendors a :Craft_Fairs_Vendors .\n  ?vendors a :Vendors .\n  ?craft_fairs_vendors p:hasVendors ?vendors .\n  ?craft_fairs a :Craft_Fairs .\n  ?craft_fairs_vendors p:hasCraft_Fairs ?craft_fairs .\n  ?craft_fairs p:name ?name .\n  ?vendors p:type ?type .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_health_promotion_program_activities",
+  "schema": "amb_scope_health_promotion_program_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What activities are common to all health programs?",
+      "qtype": "unambig",
+      "sql": "SELECT Activities.activity_name  from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id   GROUP BY Health_Promotion_Program_Activities.activity_id HAVING COUNT(DISTINCT Health_Promotion_Program_Activities.program_id) = (SELECT COUNT(*) FROM  Health_Promotion_Program)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activity_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the activity descriptions that are common across all of the programs",
+      "qtype": "unambig",
+      "sql": "SELECT Activities.description  from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id   GROUP BY Health_Promotion_Program_Activities.activity_id HAVING COUNT(DISTINCT Health_Promotion_Program_Activities.program_id) = (SELECT COUNT(*) FROM  Health_Promotion_Program)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For each health promotion program, give me the name and description of activities.",
+      "qtype": "unambig",
+      "sql": "select health_promotion_program.name , activities.activity_name , activities.description from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?activity_name ?description WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:activity_name ?activity_name .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 3,
+      "question": "For every health program, list the activities used.",
+      "qtype": "unambig",
+      "sql": "select health_promotion_program.name , activities.activity_name from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?activity_name WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:activity_name ?activity_name .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "For every program, list the activity descriptions",
+      "qtype": "unambig",
+      "sql": "select health_promotion_program.name , activities.description from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "What are the names and descriptions of the activities of each program?",
+      "qtype": "ambig",
+      "sql": "SELECT Activities.activity_name, Activities.description  from Health_Promotion_Program_Activities join Activities on Health_Promotion_Program_Activities.activity_id = Activities.activity_id join Health_Promotion_Program on Health_Promotion_Program_Activities.program_id = Health_Promotion_Program.program_id   GROUP BY Health_Promotion_Program_Activities.activity_id HAVING COUNT(DISTINCT Health_Promotion_Program_Activities.program_id) = (SELECT COUNT(*) FROM  Health_Promotion_Program)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?activity_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the activities each health program uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?activity_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?activity_name WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:activity_name ?activity_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What individual activity descriptions do we have for each program?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the names and descriptions of the activities of each program?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?activity_name ?description WHERE {\n  ?health_promotion_program_activities a :Health_Promotion_Program_Activities .\n  ?activities a :Activities .\n  ?health_promotion_program_activities p:hasActivities ?activities .\n  ?health_promotion_program a :Health_Promotion_Program .\n  ?health_promotion_program_activities p:hasHealth_Promotion_Program ?health_promotion_program .\n  ?health_promotion_program p:name ?name .\n  ?activities p:activity_name ?activity_name .\n  ?activities p:description ?description .\n} }\n  collective: { SELECT ?activity_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasActivities ?child ; p:hasHealth_Promotion_Program ?parent . } GROUP BY ?child }\n  ?child p:activity_name ?activity_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Health_Promotion_Program } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

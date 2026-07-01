@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_bank_training_topics",
+  "schema": "amb_scope_bank_training_topics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each bank training session, provide the corresponding value of topics.",
+      "qtype": "unambig",
+      "sql": "select bank_training.training_id , topics.value from Bank_Training_Topics join Topics on Bank_Training_Topics.topic_id = Topics.id join Bank_Training on Bank_Training_Topics.bank_training_id = Bank_Training.training_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?training_id ?value WHERE {\n  ?bank_training_topics a :Bank_Training_Topics .\n  ?topics a :Topics .\n  ?bank_training_topics p:hasTopics ?topics .\n  ?bank_training a :Bank_Training .\n  ?bank_training_topics p:hasBank_Training ?bank_training .\n  ?bank_training p:training_id ?training_id .\n  ?topics p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 1,
+      "question": "What value of topics is common across all bank training sessions?",
+      "qtype": "unambig",
+      "sql": "SELECT Topics.value  from Bank_Training_Topics join Topics on Bank_Training_Topics.topic_id = Topics.id join Bank_Training on Bank_Training_Topics.bank_training_id = Bank_Training.training_id   GROUP BY Bank_Training_Topics.topic_id HAVING COUNT(DISTINCT Bank_Training_Topics.bank_training_id) = (SELECT COUNT(*) FROM  Bank_Training)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasBank_Training ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Training } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What value of topics is associated with each bank training?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?training_id ?value WHERE {\n  ?bank_training_topics a :Bank_Training_Topics .\n  ?topics a :Topics .\n  ?bank_training_topics p:hasTopics ?topics .\n  ?bank_training a :Bank_Training .\n  ?bank_training_topics p:hasBank_Training ?bank_training .\n  ?bank_training p:training_id ?training_id .\n  ?topics p:value ?value .\n} }\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTopics ?child ; p:hasBank_Training ?parent . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Training } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

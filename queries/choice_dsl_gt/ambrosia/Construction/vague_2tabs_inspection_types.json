@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2tabs_inspection_types",
+  "schema": "amb_vague_2tabs_inspection_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Create a list of inspections dates in order of most recent first.",
+      "qtype": "ambig",
+      "sql": "SELECT date FROM Structural_Inspection ORDER BY date DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date WHERE {\n  ?structural_inspection a :Inspection_Types .\n  ?structural_inspection p:date ?date .\n  ?structural_inspection p:date ?date_o .\n}\nORDER BY DESC(?date_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Create a list of inspections dates in order of most recent first.",
+      "qtype": "ambig",
+      "sql": "SELECT date FROM Safety_Inspection ORDER BY date DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date WHERE {\n  ?safety_inspection a :Inspection_Types .\n  ?safety_inspection p:date ?date .\n  ?safety_inspection p:date ?date_o .\n}\nORDER BY DESC(?date_o)",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "Create a list of inspections dates in order of most recent first.",
+      "qtype": "ambig",
+      "sql": "SELECT Structural_Inspection.date, Safety_Inspection.date  FROM Structural_Inspection JOIN Project ON Project.StructuralInspectionId = Structural_Inspection.inspectionID JOIN Safety_Inspection ON Project.SafetyInspectionId = Safety_Inspection.inspectionID  ORDER BY Structural_Inspection.date, Safety_Inspection.date DESC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?date ?date2 WHERE {\n  ?structural_inspection a :Inspection_Types .\n  ?project a :Projects .\n  ?project p:hasStructural_Inspection ?structural_inspection .\n  ?safety_inspection a :Inspection_Types .\n  ?project p:hasSafety_Inspection ?safety_inspection .\n  ?structural_inspection p:date ?date .\n  ?safety_inspection p:date ?date2 .\n  ?structural_inspection p:date ?date_o .\n  ?safety_inspection p:date ?date_o2 .\n}\nORDER BY ASC(?date_o) DESC(?date_o2)",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me all details of the inspections carried out by the site supervisor.",
+      "qtype": "ambig",
+      "sql": "SELECT Structural_Inspection.* FROM Structural_Inspection JOIN Employee ON Structural_Inspection.inspectorEmployeeID = Employee.supervisorID WHERE Employee.role = 'Site Supervisor';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?iid ?dt ?res ?emp WHERE { ?si a :Inspection_Types ; p:inspectionID ?iid ; p:date ?dt ; p:result ?res ; p:inspectorEmployeeID ?emp . ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . FILTER(STR(?emp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT Structural_Inspection.* expanded; inspections by a Site Supervisor"
+    },
+    {
+      "qid": 4,
+      "question": "Show me all details of the inspections carried out by the site supervisor.",
+      "qtype": "ambig",
+      "sql": "SELECT Safety_Inspection.* FROM Safety_Inspection JOIN Employee ON Safety_Inspection.inspectorEmployeeID = Employee.supervisorID WHERE Employee.role = 'Site Supervisor';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?iid ?dt ?res ?emp WHERE { ?si a :Inspection_Types ; p:inspectionID ?iid ; p:date ?dt ; p:result ?res ; p:inspectorEmployeeID ?emp . ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . FILTER(STR(?emp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT Safety_Inspection.* expanded; inspections by a Site Supervisor"
+    },
+    {
+      "qid": 5,
+      "question": "Show me all details of the inspections carried out by the site supervisor.",
+      "qtype": "ambig",
+      "sql": "SELECT Structural_Inspection.*, Safety_Inspection.* FROM Structural_Inspection JOIN Employee ON Structural_Inspection.inspectorEmployeeID = Employee.supervisorID JOIN Safety_Inspection ON Safety_Inspection.inspectorEmployeeID = Employee.supervisorID  WHERE Employee.role = 'Site Supervisor';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nSELECT ?siid ?sdt ?sres ?semp ?fiid ?fdt ?fres ?femp WHERE { ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . ?si a :Inspection_Types ; p:inspectionID ?siid ; p:date ?sdt ; p:result ?sres ; p:inspectorEmployeeID ?semp . ?fi a :Inspection_Types ; p:inspectionID ?fiid ; p:date ?fdt ; p:result ?fres ; p:inspectorEmployeeID ?femp . FILTER(STR(?semp)=STR(?sup)) FILTER(STR(?femp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') }",
+      "status": "pass",
+      "note": "override OK (NL-intent GT): SELECT Structural.*, Safety.* expanded; both inspections by a Site Supervisor (c"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Create a list of inspections dates in order of most recent first.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?date WHERE {\n  ?safety_inspection a :Inspection_Types .\n  ?safety_inspection p:date ?date .\n  ?safety_inspection p:date ?date_o .\n}\nORDER BY DESC(?date_o) }\n  component_2: { SELECT ?date WHERE {\n  ?structural_inspection a :Inspection_Types .\n  ?structural_inspection p:date ?date .\n  ?structural_inspection p:date ?date_o .\n}\nORDER BY DESC(?date_o) }\n  full: { SELECT ?date ?date2 WHERE {\n  ?structural_inspection a :Inspection_Types .\n  ?project a :Projects .\n  ?project p:hasStructural_Inspection ?structural_inspection .\n  ?safety_inspection a :Inspection_Types .\n  ?project p:hasSafety_Inspection ?safety_inspection .\n  ?structural_inspection p:date ?date .\n  ?safety_inspection p:date ?date2 .\n  ?structural_inspection p:date ?date_o .\n  ?safety_inspection p:date ?date_o2 .\n}\nORDER BY ASC(?date_o) DESC(?date_o2) }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me all details of the inspections carried out by the site supervisor.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        5,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nCHOICE vague {\n  full: { SELECT ?siid ?sdt ?sres ?semp ?fiid ?fdt ?fres ?femp WHERE { ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . ?si a :Inspection_Types ; p:inspectionID ?siid ; p:date ?sdt ; p:result ?sres ; p:inspectorEmployeeID ?semp . ?fi a :Inspection_Types ; p:inspectionID ?fiid ; p:date ?fdt ; p:result ?fres ; p:inspectorEmployeeID ?femp . FILTER(STR(?semp)=STR(?sup)) FILTER(STR(?femp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') } }\n  component: { SELECT ?iid ?dt ?res ?emp WHERE { ?si a :Inspection_Types ; p:inspectionID ?iid ; p:date ?dt ; p:result ?res ; p:inspectorEmployeeID ?emp . ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . FILTER(STR(?emp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') } }\n  component_2: { SELECT ?iid ?dt ?res ?emp WHERE { ?si a :Inspection_Types ; p:inspectionID ?iid ; p:date ?dt ; p:result ?res ; p:inspectorEmployeeID ?emp . ?e a :Employees ; p:supervisorID ?sup ; p:role ?role . FILTER(STR(?emp)=STR(?sup)) FILTER(STR(?role)='Site Supervisor') } }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2tabs_passing_requirements",
+  "schema": "amb_vague_2tabs_passing_requirements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the passing requirement for Michael Brown's exam?",
+      "qtype": "ambig",
+      "sql": "SELECT PR.score FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN Minimum_Scores AS PR ON E.minScoreId = PR.id WHERE S.firstName = 'Michael' AND S.lastName = 'Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?pr p:score ?score .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the passing requirement for Michael Brown's exam?",
+      "qtype": "ambig",
+      "sql": "SELECT PR.percentage FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN percentage_requirements AS PR ON E.percentReqId = PR.id WHERE S.firstName = 'Michael' AND S.lastName = 'Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?pr .\n  ?pr p:percentage ?percentage .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the passing requirement for Michael Brown's exam?",
+      "qtype": "ambig",
+      "sql": "SELECT PR.score, P.percentage FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN Minimum_Scores AS PR ON E.minScoreId = PR.id JOIN percentage_requirements AS P ON E.percentReqId = P.id  WHERE S.firstName = 'Michael' AND S.lastName = 'Brown';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?p a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?p .\n  ?pr p:score ?score .\n  ?p p:percentage ?percentage .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What score is needed to pass for all students whose names begin with the letter J and what's that as a percentage.",
+      "qtype": "unambig",
+      "sql": "SELECT PR.score, P.percentage FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN Minimum_Scores AS PR ON E.minScoreId = PR.id JOIN percentage_requirements AS P ON E.percentReqId = P.id WHERE S.firstName LIKE 'J%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?p a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?p .\n  ?pr p:score ?score .\n  ?p p:percentage ?percentage .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "What are the required minimum scores for all students whose first name starts with a J?",
+      "qtype": "unambig",
+      "sql": "SELECT PR.score FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN Minimum_Scores AS PR ON E.minScoreId = PR.id WHERE S.firstName LIKE 'J%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?score WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?pr p:score ?score .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "What's the pass percentage for all students whose first names begin with J?",
+      "qtype": "unambig",
+      "sql": "SELECT PR.percentage FROM Students AS S JOIN Exams AS E ON S.id = E.studentId JOIN percentage_requirements AS PR ON E.percentReqId = PR.id WHERE S.firstName LIKE 'J%';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?pr .\n  ?pr p:percentage ?percentage .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the passing requirement for Michael Brown's exam?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?score ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?p a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?p .\n  ?pr p:score ?score .\n  ?p p:percentage ?percentage .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n} }\n  component: { SELECT ?score WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?pr p:score ?score .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n} }\n  component_2: { SELECT ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?pr .\n  ?pr p:percentage ?percentage .\n  ?s p:firstName ?firstname_f .\n  ?s p:lastName ?lastname_f .\n  FILTER(STR(?firstname_f) = STR(\"Michael\"))\n  FILTER(STR(?lastname_f) = STR(\"Brown\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the passing requirement for students whose first names start with the letter \"J\"?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?score ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?p a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?p .\n  ?pr p:score ?score .\n  ?p p:percentage ?percentage .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n} }\n  component: { SELECT ?score WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Passing_Requirements .\n  ?e p:hasMinimum_Scores ?pr .\n  ?pr p:score ?score .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n} }\n  component_2: { SELECT ?percentage WHERE {\n  ?s a :Students .\n  ?e a :Exams .\n  ?e p:hasStudents ?s .\n  ?pr a :Percentage_Requirements .\n  ?e p:hasPercentage_Requirements ?pr .\n  ?pr p:percentage ?percentage .\n  ?s p:firstName ?firstname_lk .\n  FILTER(REGEX(STR(?firstname_lk), \"^J.*$\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

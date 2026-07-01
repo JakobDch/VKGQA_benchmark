@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/healthcare#> .
+@prefix p: <http://ambrosia.example.org/healthcare/prop#> .
+@prefix ex: <http://ambrosia.example.org/healthcare/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_hospitals_procedures_0_Hospitals_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"Name\", \"Address\" FROM \"Hospitals\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Hospitals/{HospitalID}" ; rr:class :Hospitals ] ;
+  rr:predicateObjectMap [ rr:predicate p:HospitalID ; rr:objectMap [ rr:column "HospitalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Address ; rr:objectMap [ rr:column "Address" ] ] .
+
+<#tm_scope_hospitals_procedures_1_Procedures_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ProcedureID\", \"ProcedureName\", \"Description\" FROM \"Procedures\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Procedures/{ProcedureID}" ; rr:class :Procedures ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProcedureID ; rr:objectMap [ rr:column "ProcedureID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProcedureName ; rr:objectMap [ rr:column "ProcedureName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Description ; rr:objectMap [ rr:column "Description" ] ] .
+
+<#tm_scope_hospitals_procedures_2_Hospitals_Procedures_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"ProcedureID\" FROM \"Hospitals_Procedures\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Hospitals_Procedures/{HospitalID}/{ProcedureID}" ; rr:class :Hospitals_Procedures ] ;
+  rr:predicateObjectMap [ rr:predicate p:HospitalID ; rr:objectMap [ rr:column "HospitalID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ProcedureID ; rr:objectMap [ rr:column "ProcedureID" ] ] .
+
+<#tm_scope_hospitals_procedures_3_Hospitals_Procedures_ProcedureID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"ProcedureID\" FROM \"Hospitals_Procedures\" WHERE \"ProcedureID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Hospitals_Procedures/{HospitalID}/{ProcedureID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasProcedures ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Procedures/{ProcedureID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_hospitals_procedures_4_Hospitals_Procedures_HospitalID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"HospitalID\", \"ProcedureID\" FROM \"Hospitals_Procedures\" WHERE \"HospitalID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Hospitals_Procedures/{HospitalID}/{ProcedureID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasHospitals ; rr:objectMap [ rr:template "http://ambrosia.example.org/healthcare/id/Hospitals/{HospitalID}" ; rr:termType rr:IRI ] ] .
+

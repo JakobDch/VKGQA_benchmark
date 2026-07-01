@@ -1,0 +1,41 @@
+@prefix : <http://ambrosia.example.org/banking#> .
+@prefix p: <http://ambrosia.example.org/banking/prop#> .
+@prefix ex: <http://ambrosia.example.org/banking/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_attachment_1tab_ref_consumer_lending_0_customers_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"email\", \"phoneNumber\", \"FullName\" FROM \"customers\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{id}" ; rr:class :Customers ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:phoneNumber ; rr:objectMap [ rr:column "phoneNumber" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "FullName" ] ] .
+
+<#tm_attachment_1tab_ref_consumer_lending_1_rates_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"interestRate\" FROM \"rates\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/rates/{id}" ; rr:class :rates ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:interestRate ; rr:objectMap [ rr:column "interestRate" ] ] .
+
+<#tm_attachment_1tab_ref_consumer_lending_2_loans_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"customerId\", \"loanType\", \"amount\", \"termYears\", \"interestRateId\" FROM \"loans\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{id}" ; rr:class :Loans ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:customerId ; rr:objectMap [ rr:column "customerId" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:loanType ; rr:objectMap [ rr:column "loanType" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:amount ; rr:objectMap [ rr:column "amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:termYears ; rr:objectMap [ rr:column "termYears" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:interestRateId ; rr:objectMap [ rr:column "interestRateId" ] ] .
+
+<#tm_attachment_1tab_ref_consumer_lending_3_loans_interestRateId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"interestRateId\" FROM \"loans\" WHERE \"interestRateId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasrates ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/rates/{interestRateId}" ; rr:termType rr:IRI ] ] .
+
+<#tm_attachment_1tab_ref_consumer_lending_4_loans_customerId_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"customerId\" FROM \"loans\" WHERE \"customerId\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/banking/id/Loans/{id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCustomers ; rr:objectMap [ rr:template "http://ambrosia.example.org/banking/id/Customers/{customerId}" ; rr:termType rr:IRI ] ] .
+

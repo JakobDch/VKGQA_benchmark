@@ -1,0 +1,97 @@
+{
+  "domain": "Student",
+  "db_base": "vague_2cols_curriculum_topics",
+  "schema": "amb_vague_2cols_curriculum_topics",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the advanced topics of the course taught by Mrs. Williams and its core concepts?",
+      "qtype": "unambig",
+      "sql": "SELECT Core_Concepts, Advanced_Topics FROM Courses\nWHERE TeachersName  LIKE \"%Williams%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_concepts ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the curriculum topic of the course taught by Mrs. Williams?",
+      "qtype": "ambig",
+      "sql": "SELECT Core_Concepts FROM Courses\nWHERE TeachersName  LIKE \"%Williams%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_concepts WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the curriculum topic of the course taught by Mrs. Williams?",
+      "qtype": "ambig",
+      "sql": "SELECT Advanced_Topics FROM Courses\nWHERE TeachersName  LIKE \"%Williams%\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What are the core concepts and advanced topics of Math 101?",
+      "qtype": "unambig",
+      "sql": "SELECT Core_Concepts, Advanced_Topics FROM Courses\nWHERE CourseName=\"Math 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_concepts ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the advanced topics of Math 101?",
+      "qtype": "unambig",
+      "sql": "SELECT Advanced_Topics FROM Courses\nWHERE CourseName=\"Math 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What's the curriculum topic for Math 101?",
+      "qtype": "ambig",
+      "sql": "SELECT Core_Concepts FROM Courses\nWHERE CourseName=\"Math 101\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?core_concepts WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the curriculum topic of the course taught by Mrs. Williams?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?core_concepts ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n} }\n  component: { SELECT ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n} }\n  component_2: { SELECT ?core_concepts WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:TeachersName ?teachersname_lk .\n  FILTER(REGEX(STR(?teachersname_lk), \"^.*Williams.*$\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What's the curriculum topic for Math 101?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/student#>\nPREFIX p: <http://ambrosia.example.org/student/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?core_concepts ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n} }\n  component: { SELECT ?advanced_topics WHERE {\n  ?courses a :Courses .\n  ?courses p:Advanced_Topics ?advanced_topics .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n} }\n  component_2: { SELECT ?core_concepts WHERE {\n  ?courses a :Courses .\n  ?courses p:Core_Concepts ?core_concepts .\n  ?courses p:CourseName ?coursename_f .\n  FILTER(STR(?coursename_f) = STR(\"Math 101\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_job_postings_requirements",
+  "schema": "amb_scope_job_postings_requirements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What type of requirement is common to all job postings?",
+      "qtype": "unambig",
+      "sql": "SELECT Requirements.requirement_type  from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id   GROUP BY Job_Postings_Requirements.requirement_id HAVING COUNT(DISTINCT Job_Postings_Requirements.job_posting_id) = (SELECT COUNT(*) FROM  Job_Postings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?requirement_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:requirement_type ?requirement_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the minimum requirements and their types every job posting has.",
+      "qtype": "ambig",
+      "sql": "SELECT Requirements.requirement_type, Requirements.value  from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id   GROUP BY Job_Postings_Requirements.requirement_id HAVING COUNT(DISTINCT Job_Postings_Requirements.job_posting_id) = (SELECT COUNT(*) FROM  Job_Postings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?requirement_type ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:requirement_type ?requirement_type .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the minimum requirements and their types every job posting has.",
+      "qtype": "ambig",
+      "sql": "select job_postings.title , requirements.requirement_type , requirements.value from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?requirement_type ?value WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:requirement_type ?requirement_type .\n  ?requirements p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the requirements for each job posting.",
+      "qtype": "ambig",
+      "sql": "SELECT Requirements.value  from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id   GROUP BY Job_Postings_Requirements.requirement_id HAVING COUNT(DISTINCT Job_Postings_Requirements.job_posting_id) = (SELECT COUNT(*) FROM  Job_Postings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the requirements for each job posting.",
+      "qtype": "ambig",
+      "sql": "select job_postings.title , requirements.value from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?value WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 5,
+      "question": "For each job postings, provide the corresponding requirement type.",
+      "qtype": "unambig",
+      "sql": "select job_postings.title , requirements.requirement_type from Job_Postings_Requirements join Requirements on Job_Postings_Requirements.requirement_id = Requirements.id join Job_Postings on Job_Postings_Requirements.job_posting_id = Job_Postings.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?requirement_type WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:requirement_type ?requirement_type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of requirements do we have for each job posting?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?requirement_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:requirement_type ?requirement_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?title ?requirement_type WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:requirement_type ?requirement_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the minimum requirements and their types every job posting has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?requirement_type ?value WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:requirement_type ?requirement_type .\n  ?requirements p:value ?value .\n} }\n  collective: { SELECT ?requirement_type ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:requirement_type ?requirement_type .\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the requirements for each job posting.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?value WHERE {\n  ?job_postings_requirements a :Job_Postings_Requirements .\n  ?requirements a :Requirements .\n  ?job_postings_requirements p:hasRequirements ?requirements .\n  ?job_postings a :JobPostings .\n  ?job_postings_requirements p:hasJob_Postings ?job_postings .\n  ?job_postings p:title ?title .\n  ?requirements p:value ?value .\n} }\n  collective: { SELECT ?value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:requirement_id ?cg . ?child a :Requirements ; p:id ?cg . ?l p:job_posting_id ?pg . ?parent a :JobPostings ; p:id ?pg . } GROUP BY ?child }\n  ?child p:value ?value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :JobPostings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

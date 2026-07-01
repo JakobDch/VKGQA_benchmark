@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_online_learning_platforms_courses",
+  "schema": "amb_scope_online_learning_platforms_courses",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What course title and description are common to all online learning platforms?",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.title, Courses.description  from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID   GROUP BY Online_Learning_Platforms_Courses.courseID HAVING COUNT(DISTINCT Online_Learning_Platforms_Courses.platformID) = (SELECT COUNT(*) FROM  Online_Learning_Platforms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:title ?title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the descriptions for courses which are common to all learning platforms",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.description  from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID   GROUP BY Online_Learning_Platforms_Courses.courseID HAVING COUNT(DISTINCT Online_Learning_Platforms_Courses.platformID) = (SELECT COUNT(*) FROM  Online_Learning_Platforms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What course titles do we have for every online learning platform",
+      "qtype": "ambig",
+      "sql": "SELECT Courses.title  from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID   GROUP BY Online_Learning_Platforms_Courses.courseID HAVING COUNT(DISTINCT Online_Learning_Platforms_Courses.platformID) = (SELECT COUNT(*) FROM  Online_Learning_Platforms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:title ?title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What course titles do we have for every online learning platform",
+      "qtype": "ambig",
+      "sql": "select online_learning_platforms.name , courses.title from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 4,
+      "question": "For each learning platform, give me the description of the courses it offers",
+      "qtype": "unambig",
+      "sql": "select online_learning_platforms.name , courses.description from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    },
+    {
+      "qid": 5,
+      "question": "For each online learning platform, what is the corresponding course title and description?",
+      "qtype": "unambig",
+      "sql": "select online_learning_platforms.name , courses.title , courses.description from Online_Learning_Platforms_Courses join Courses on Online_Learning_Platforms_Courses.courseID = Courses.courseID join Online_Learning_Platforms on Online_Learning_Platforms_Courses.platformID = Online_Learning_Platforms.platformID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title ?description WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:title ?title .\n  ?courses p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=8"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the course titles and descriptions for each online learning platform.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?title ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:title ?title .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?title ?description WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:title ?title .\n  ?courses p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What course descriptions do we have for every learning platform",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What course titles do we have for every online learning platform",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?title WHERE {\n  ?online_learning_platforms_courses a :Online_Learning_Platforms_Courses .\n  ?courses a :Courses .\n  ?online_learning_platforms_courses p:hasCourses ?courses .\n  ?online_learning_platforms a :Online_Learning_Platforms .\n  ?online_learning_platforms_courses p:hasOnline_Learning_Platforms ?online_learning_platforms .\n  ?online_learning_platforms p:name ?name .\n  ?courses p:title ?title .\n} }\n  collective: { SELECT ?title WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCourses ?child ; p:hasOnline_Learning_Platforms ?parent . } GROUP BY ?child }\n  ?child p:title ?title .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Learning_Platforms } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

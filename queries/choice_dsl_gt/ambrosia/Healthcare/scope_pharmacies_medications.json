@@ -1,0 +1,141 @@
+{
+  "domain": "Healthcare",
+  "db_base": "scope_pharmacies_medications",
+  "schema": "amb_scope_pharmacies_medications",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the common type of medication for all pharmacies.",
+      "qtype": "unambig",
+      "sql": "SELECT Medications.type  from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id   GROUP BY Pharmacy_Medications.medication_id HAVING COUNT(DISTINCT Pharmacy_Medications.pharmacy_id) = (SELECT COUNT(*) FROM  Pharmacies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the medication type for each pharmacy?",
+      "qtype": "ambig",
+      "sql": "select pharmacies.name , medications.type from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "Tell me everything about the medications that every pharmacy offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Medications.type, Medications.dosage, Medications.side_effects  from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id   GROUP BY Pharmacy_Medications.medication_id HAVING COUNT(DISTINCT Pharmacy_Medications.pharmacy_id) = (SELECT COUNT(*) FROM  Pharmacies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?dosage ?side_effects WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:dosage ?dosage .\n  ?child p:side_effects ?side_effects .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Tell me everything about the medications that every pharmacy offers.",
+      "qtype": "ambig",
+      "sql": "select pharmacies.name , medications.type , medications.dosage , medications.side_effects from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?dosage ?side_effects WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:dosage ?dosage .\n  ?medications p:side_effects ?side_effects .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "What is the medication type and dosage that is the same for every pharmacy?",
+      "qtype": "unambig",
+      "sql": "SELECT Medications.type, Medications.dosage  from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id   GROUP BY Pharmacy_Medications.medication_id HAVING COUNT(DISTINCT Pharmacy_Medications.pharmacy_id) = (SELECT COUNT(*) FROM  Pharmacies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?dosage WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:dosage ?dosage .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "List the common medication types and side effects for all pharmacies.",
+      "qtype": "unambig",
+      "sql": "SELECT Medications.type, Medications.side_effects  from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id   GROUP BY Pharmacy_Medications.medication_id HAVING COUNT(DISTINCT Pharmacy_Medications.pharmacy_id) = (SELECT COUNT(*) FROM  Pharmacies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?side_effects WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:side_effects ?side_effects .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "Give the medication type and its dosage available at each pharmacy.",
+      "qtype": "ambig",
+      "sql": "select pharmacies.name , medications.type , medications.dosage from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?dosage WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:dosage ?dosage .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 7,
+      "question": "For each pharmacy, list their medication types and side effects.",
+      "qtype": "unambig",
+      "sql": "select pharmacies.name , medications.type , medications.side_effects from Pharmacy_Medications join Medications on Pharmacy_Medications.medication_id = Medications.medication_id join Pharmacies on Pharmacy_Medications.pharmacy_id = Pharmacies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?side_effects WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:side_effects ?side_effects .\n}",
+      "status": "pass",
+      "note": "n=7"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the medication type for each pharmacy?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give the medication type and its dosage available at each pharmacy.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        6
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?dosage WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:dosage ?dosage .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?dosage WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:dosage ?dosage .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the types and side effects of medications that are sold in every pharmacy.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        5,
+        7
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?side_effects WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:side_effects ?side_effects .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?side_effects WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:side_effects ?side_effects .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me everything about the medications that every pharmacy offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/healthcare#>\nPREFIX p: <http://ambrosia.example.org/healthcare/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?dosage ?side_effects WHERE {\n  ?pharmacy_medications a :Pharmacy_Medications .\n  ?medications a :Medications .\n  ?pharmacy_medications p:hasMedications ?medications .\n  ?pharmacies a :Pharmacies .\n  ?pharmacy_medications p:hasPharmacies ?pharmacies .\n  ?pharmacies p:name ?name .\n  ?medications p:type ?type .\n  ?medications p:dosage ?dosage .\n  ?medications p:side_effects ?side_effects .\n} }\n  collective: { SELECT ?type ?dosage ?side_effects WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasMedications ?child ; p:hasPharmacies ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:dosage ?dosage .\n  ?child p:side_effects ?side_effects .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Pharmacies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

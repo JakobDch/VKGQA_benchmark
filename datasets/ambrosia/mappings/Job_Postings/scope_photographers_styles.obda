@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Photographers_base
+target		ex:Photographers/{id} a :Photographers ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Photographers`
+
+mappingId	Styles_base
+target		ex:Styles/{id} a :Styles ; p:id {id} ; p:styleName {styleName} .
+source		SELECT `id`, `styleName` FROM `Styles`
+
+mappingId	Photographers_Styles_base
+target		ex:Photographers_Styles/{_amb_rowid} a :Photographers_Styles ; p:photographerId {photographerId} ; p:styleId {styleId} .
+source		SELECT `_amb_rowid`, `photographerId`, `styleId` FROM `Photographers_Styles`
+
+mappingId	Photographers_Styles_styleId_fk
+target		ex:Photographers_Styles/{_amb_rowid} p:hasStyles ex:Styles/{styleId} .
+source		SELECT `_amb_rowid`, `styleId` FROM `Photographers_Styles` WHERE `styleId` IS NOT NULL
+
+mappingId	Photographers_Styles_photographerId_fk
+target		ex:Photographers_Styles/{_amb_rowid} p:hasPhotographers ex:Photographers/{photographerId} .
+source		SELECT `_amb_rowid`, `photographerId` FROM `Photographers_Styles` WHERE `photographerId` IS NOT NULL
+
+mappingId	JobPostings_base
+target		ex:JobPostings/{jobID} a :JobPostings ; p:jobID {jobID} ; p:title {title} ; p:description {description} ; p:deadline {deadline} .
+source		SELECT `jobID`, `title`, `description`, `deadline` FROM `JobPostings`
+
+mappingId	BookedJobs_base
+target		ex:BookedJobs/{bookingID} a :BookedJobs ; p:bookingID {bookingID} ; p:photograherId {photograherId} ; p:jobId {jobId} ; p:bookDate {bookDate} ; p:paymentAmount {paymentAmount} .
+source		SELECT `bookingID`, `photograherId`, `jobId`, `bookDate`, `paymentAmount` FROM `BookedJobs`
+
+mappingId	BookedJobs_jobId_fk
+target		ex:BookedJobs/{bookingID} p:hasJobPostings ex:JobPostings/{jobId} .
+source		SELECT `bookingID`, `jobId` FROM `BookedJobs` WHERE `jobId` IS NOT NULL
+
+mappingId	BookedJobs_photograherId_fk
+target		ex:BookedJobs/{bookingID} p:hasPhotographers ex:Photographers/{photograherId} .
+source		SELECT `bookingID`, `photograherId` FROM `BookedJobs` WHERE `photograherId` IS NOT NULL
+
+]]

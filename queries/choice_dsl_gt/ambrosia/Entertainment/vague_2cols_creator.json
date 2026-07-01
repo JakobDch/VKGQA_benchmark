@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2cols_creator",
+  "schema": "amb_vague_2cols_creator",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "show me the musician with the largest performance count",
+      "qtype": "unambig",
+      "sql": "SELECT musician FROM Ballets JOIN Performances ON Performances.ballet_id = Ballets.id ORDER BY performers_count DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?musician WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:musician ?musician .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "show me the choreographer with the largest performance count",
+      "qtype": "unambig",
+      "sql": "SELECT choreographer FROM Ballets JOIN Performances ON Performances.ballet_id = Ballets.id ORDER BY performers_count DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:choreographer ?choreographer .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who created Giselle?",
+      "qtype": "ambig",
+      "sql": "SELECT musician FROM Ballets WHERE name = 'Giselle';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?musician WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who created Giselle?",
+      "qtype": "ambig",
+      "sql": "SELECT choreographer FROM Ballets WHERE name = 'Giselle';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:choreographer ?choreographer .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who created Giselle?",
+      "qtype": "ambig",
+      "sql": "SELECT musician, choreographer FROM Ballets WHERE name = 'Giselle';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?musician ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:choreographer ?choreographer .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Who created the ballet with the most performances?",
+      "qtype": "ambig",
+      "sql": "SELECT musician, choreographer FROM Ballets JOIN Performances ON Performances.ballet_id = Ballets.id ORDER BY performers_count DESC LIMIT 1;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?musician ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:choreographer ?choreographer .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who created the ballet with the most performances?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?musician WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:musician ?musician .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1 }\n  component_2: { SELECT ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:choreographer ?choreographer .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1 }\n  full: { SELECT ?musician ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?performances a :Performance .\n  ?performances p:hasBallets ?ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:choreographer ?choreographer .\n  ?performances p:performers_count ?performers_count_o .\n}\nORDER BY DESC(?performers_count_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who created Giselle?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?musician WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n} }\n  full: { SELECT ?musician ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:musician ?musician .\n  ?ballets p:choreographer ?choreographer .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n} }\n  component_2: { SELECT ?choreographer WHERE {\n  ?ballets a :Ballets .\n  ?ballets p:choreographer ?choreographer .\n  ?ballets p:name ?name_f .\n  FILTER(STR(?name_f) = \"Giselle\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

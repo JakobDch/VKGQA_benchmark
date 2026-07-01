@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Podcasters_base
+target		ex:Podcasters/{id} a :Podcasters ; p:id {id} ; p:name {name} ; p:location {location} ; p:years_experience {years_experience} .
+source		SELECT `id`, `name`, `location`, `years_experience` FROM `Podcasters`
+
+mappingId	Shows_base
+target		ex:Show/{id} a :Show ; p:id {id} ; p:title {title} ; p:genre {genre} ; p:network {network} ; p:audio_format {audio_format} ; p:host {host} .
+source		SELECT `id`, `title`, `genre`, `network`, `audio_format`, `host` FROM `Shows`
+
+mappingId	Shows_host_fk
+target		ex:Show/{id} p:hasPodcasters ex:Podcasters/{host} .
+source		SELECT `id`, `host` FROM `Shows` WHERE `host` IS NOT NULL
+
+mappingId	Episodes_base
+target		ex:Episodes/{id} a :Episodes ; p:id {id} ; p:show_id {show_id} ; p:episode_number {episode_number} ; p:release_date {release_date} ; p:duration {duration} ; p:description {description} .
+source		SELECT `id`, `show_id`, `episode_number`, `release_date`, `duration`, `description` FROM `Episodes`
+
+mappingId	Episodes_show_id_fk
+target		ex:Episodes/{id} p:hasShow ex:Show/{show_id} .
+source		SELECT `id`, `show_id` FROM `Episodes` WHERE `show_id` IS NOT NULL
+
+mappingId	Guests_base
+target		ex:Guests/{id} a :Guests ; p:id {id} ; p:name {full_name} ; p:occupation {occupation} ; p:guest_on {guest_on} ; p:appearance_episode_number {appearance_episode_number} .
+source		SELECT `id`, `full_name`, `occupation`, `guest_on`, `appearance_episode_number` FROM `Guests`
+
+mappingId	Guests_guest_on_fk
+target		ex:Guests/{id} p:hasShow ex:Show/{guest_on} .
+source		SELECT `id`, `guest_on` FROM `Guests` WHERE `guest_on` IS NOT NULL
+
+mappingId	EpisodeGuests_base
+target		ex:EpisodeGuests/{id} a :EpisodeGuests ; p:id {id} ; p:episode_id {episode_id} ; p:guest_id {guest_id} ; p:role {role} ; p:appearance_duration {appearance_duration} .
+source		SELECT `id`, `episode_id`, `guest_id`, `role`, `appearance_duration` FROM `EpisodeGuests`
+
+mappingId	EpisodeGuests_guest_id_fk
+target		ex:EpisodeGuests/{id} p:hasGuests ex:Guests/{guest_id} .
+source		SELECT `id`, `guest_id` FROM `EpisodeGuests` WHERE `guest_id` IS NOT NULL
+
+mappingId	EpisodeGuests_episode_id_fk
+target		ex:EpisodeGuests/{id} p:hasEpisodes ex:Episodes/{episode_id} .
+source		SELECT `id`, `episode_id` FROM `EpisodeGuests` WHERE `episode_id` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:reviewer_name {reviewer_name} ; p:rating {rating} ; p:comments {comments} ; p:show_id {show_id} ; p:review_date {review_date} .
+source		SELECT `id`, `reviewer_name`, `rating`, `comments`, `show_id`, `review_date` FROM `Reviews`
+
+mappingId	Reviews_show_id_fk
+target		ex:Review/{id} p:hasShow ex:Show/{show_id} .
+source		SELECT `id`, `show_id` FROM `Reviews` WHERE `show_id` IS NOT NULL
+
+]]

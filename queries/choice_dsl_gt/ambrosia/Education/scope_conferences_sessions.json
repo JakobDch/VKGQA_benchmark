@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_conferences_sessions",
+  "schema": "amb_scope_conferences_sessions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the duration of sessions for every conference.",
+      "qtype": "ambig",
+      "sql": "SELECT Sessions.duration  from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id GROUP BY Conference_Sessions.session_type_id HAVING COUNT(DISTINCT Conference_Sessions.conference_id) = (SELECT COUNT(*) FROM  Conferences)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the duration of sessions for every conference.",
+      "qtype": "ambig",
+      "sql": "select conferences.name , sessions.duration from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?duration WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "What session type and durations are there for every conference?",
+      "qtype": "ambig",
+      "sql": "SELECT Sessions.session_type, Sessions.duration  from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id   GROUP BY Conference_Sessions.session_type_id HAVING COUNT(DISTINCT Conference_Sessions.conference_id) = (SELECT COUNT(*) FROM  Conferences)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?session_type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:session_type ?session_type .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What session type and durations are there for every conference?",
+      "qtype": "ambig",
+      "sql": "select conferences.name , sessions.session_type , sessions.duration from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?session_type ?duration WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:session_type ?session_type .\n  ?sessions p:duration ?duration .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "Give me the sessions that each conference includes.",
+      "qtype": "ambig",
+      "sql": "SELECT Sessions.session_type  from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id   GROUP BY Conference_Sessions.session_type_id HAVING COUNT(DISTINCT Conference_Sessions.conference_id) = (SELECT COUNT(*) FROM  Conferences)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?session_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:session_type ?session_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Give me the sessions that each conference includes.",
+      "qtype": "ambig",
+      "sql": "select conferences.name , sessions.session_type from conferences join conference_sessions ON conference_sessions.conference_id = Conferences.conference_id join sessions ON Conference_Sessions.session_type_id = Sessions.session_type_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?session_type WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:session_type ?session_type .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the duration of sessions for every conference.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?duration WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:duration ?duration .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the sessions that each conference includes.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?session_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:session_type ?session_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?session_type WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:session_type ?session_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What session type and durations are there for every conference?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?session_type ?duration WHERE {\n  ?conferences a :Conferences .\n  ?conference_sessions a :Conference_Sessions .\n  ?conference_sessions p:hasConferences ?conferences .\n  ?sessions a :Sessions .\n  ?conference_sessions p:hasSessions ?sessions .\n  ?conferences p:name ?name .\n  ?sessions p:session_type ?session_type .\n  ?sessions p:duration ?duration .\n} }\n  collective: { SELECT ?session_type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSessions ?child ; p:hasConferences ?parent . } GROUP BY ?child }\n  ?child p:session_type ?session_type .\n  ?child p:duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Conferences } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

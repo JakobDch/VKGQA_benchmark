@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/healthcare#
+p:	http://ambrosia.example.org/healthcare/prop#
+ex:	http://ambrosia.example.org/healthcare/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Doctors_base
+target		ex:Doctors/{id} a :Doctors ; p:id {id} ; p:name {name} ; p:specialty {specialty} ; p:hospital_id {hospital_id} .
+source		SELECT `id`, `name`, `specialty`, `hospital_id` FROM `Doctors`
+
+mappingId	Doctors_hospital_id_fk
+target		ex:Doctors/{id} p:hasHospitals ex:Hospitals/{hospital_id} .
+source		SELECT `id`, `hospital_id` FROM `Doctors` WHERE `hospital_id` IS NOT NULL
+
+mappingId	Hospitals_base
+target		ex:Hospitals/{id} a :Hospitals ; p:id {id} ; p:name {name} ; p:city {city} ; p:neighborhood {neighborhood} ; p:phone_number {phone_number} .
+source		SELECT `id`, `name`, `city`, `neighborhood`, `phone_number` FROM `Hospitals`
+
+mappingId	InsurancePlans_base
+target		ex:InsurancePlans/{id} a :InsurancePlans ; p:id {id} ; p:plan_name {plan_name} ; p:premium {premium} ; p:coverage_details {coverage_details} ; p:provider_id {provider_id} .
+source		SELECT `id`, `plan_name`, `premium`, `coverage_details`, `provider_id` FROM `InsurancePlans`
+
+mappingId	Patients_base
+target		ex:Patients/{id} a :Patients ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:birthdate {birthdate} ; p:insurance_plan_id {insurance_plan_id} .
+source		SELECT `id`, `first_name`, `last_name`, `birthdate`, `insurance_plan_id` FROM `Patients`
+
+mappingId	Patients_insurance_plan_id_fk
+target		ex:Patients/{id} p:hasInsurancePlans ex:InsurancePlans/{insurance_plan_id} .
+source		SELECT `id`, `insurance_plan_id` FROM `Patients` WHERE `insurance_plan_id` IS NOT NULL
+
+mappingId	Prescriptions_base
+target		ex:Prescriptions/{id} a :Prescriptions ; p:id {id} ; p:patient_id {patient_id} ; p:doctor_id {doctor_id} ; p:medication {medication} ; p:dosage {dosage} ; p:quantity {quantity} ; p:refillable {refillable} ; p:prescription_date {prescription_date} .
+source		SELECT `id`, `patient_id`, `doctor_id`, `medication`, `dosage`, `quantity`, `refillable`, `prescription_date` FROM `Prescriptions`
+
+mappingId	Prescriptions_doctor_id_fk
+target		ex:Prescriptions/{id} p:hasDoctors ex:Doctors/{doctor_id} .
+source		SELECT `id`, `doctor_id` FROM `Prescriptions` WHERE `doctor_id` IS NOT NULL
+
+mappingId	Prescriptions_patient_id_fk
+target		ex:Prescriptions/{id} p:hasPatients ex:Patients/{patient_id} .
+source		SELECT `id`, `patient_id` FROM `Prescriptions` WHERE `patient_id` IS NOT NULL
+
+]]

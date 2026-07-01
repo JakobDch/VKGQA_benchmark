@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "attachment_1tab_ref_film_type",
+  "schema": "amb_attachment_1tab_ref_film_type",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all documentaries and also provide a list of short films with a budget of 700000.0.",
+      "qtype": "unambig",
+      "sql": "SELECT filmmaking.name \nFROM film_type JOIN film_details ON film_type.id = film_details.film_typeId JOIN budget ON film_details.budgetId = budget.id JOIN filmmaking ON filmmaking.id = film_details.filmmakingId\nWHERE film_type.type = \"Documentary\" OR film_type.type = \"Short Film\" AND budget.amount = 700000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?film_type a :film_type .\n  ?film_details a :film_details .\n  ?film_details p:hasfilm_type ?film_type .\n  ?budget a :budget .\n  ?film_details p:hasbudget ?budget .\n  ?filmmaking a :filmmaking .\n  ?film_details p:hasfilmmaking ?filmmaking .\n  ?filmmaking p:name ?name .\n  ?film_type p:type ?type_w .\n  ?film_type p:type ?type_w2 .\n  ?budget p:amount ?amount_w .\n  FILTER((STR(?type_w) = \"Documentary\" || (STR(?type_w2) = \"Short Film\" && (STR(?amount_w) = \"700000\" || STR(?amount_w) = \"700000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Which documentaries had a budget of 700000.0 and which short films had the same amount of budget?",
+      "qtype": "unambig",
+      "sql": "SELECT filmmaking.name \nFROM film_type JOIN film_details ON film_type.id = film_details.film_typeId JOIN budget ON film_details.budgetId = budget.id JOIN filmmaking ON filmmaking.id = film_details.filmmakingId\nWHERE (film_type.type = \"Documentary\" OR film_type.type = \"Short Film\") AND budget.amount = 700000.0",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?film_type a :film_type .\n  ?film_details a :film_details .\n  ?film_details p:hasfilm_type ?film_type .\n  ?budget a :budget .\n  ?film_details p:hasbudget ?budget .\n  ?filmmaking a :filmmaking .\n  ?film_details p:hasfilmmaking ?filmmaking .\n  ?filmmaking p:name ?name .\n  ?film_type p:type ?type_w .\n  ?film_type p:type ?type_w2 .\n  ?budget p:amount ?amount_w .\n  FILTER((((STR(?type_w) = \"Documentary\" || STR(?type_w2) = \"Short Film\")) && (STR(?amount_w) = \"700000\" || STR(?amount_w) = \"700000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display documentaries and short films with a budget of 700000.0.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?film_type a :film_type .\n  ?film_details a :film_details .\n  ?film_details p:hasfilm_type ?film_type .\n  ?budget a :budget .\n  ?film_details p:hasbudget ?budget .\n  ?filmmaking a :filmmaking .\n  ?film_details p:hasfilmmaking ?filmmaking .\n  ?filmmaking p:name ?name .\n  ?film_type p:type ?type_w .\n  ?film_type p:type ?type_w2 .\n  ?budget p:amount ?amount_w .\n  FILTER((STR(?type_w) = \"Documentary\" || (STR(?type_w2) = \"Short Film\" && (STR(?amount_w) = \"700000\" || STR(?amount_w) = \"700000.0\"))))\n} }\n  high: { SELECT ?name WHERE {\n  ?film_type a :film_type .\n  ?film_details a :film_details .\n  ?film_details p:hasfilm_type ?film_type .\n  ?budget a :budget .\n  ?film_details p:hasbudget ?budget .\n  ?filmmaking a :filmmaking .\n  ?film_details p:hasfilmmaking ?filmmaking .\n  ?filmmaking p:name ?name .\n  ?film_type p:type ?type_w .\n  ?film_type p:type ?type_w2 .\n  ?budget p:amount ?amount_w .\n  FILTER((((STR(?type_w) = \"Documentary\" || STR(?type_w2) = \"Short Film\")) && (STR(?amount_w) = \"700000\" || STR(?amount_w) = \"700000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

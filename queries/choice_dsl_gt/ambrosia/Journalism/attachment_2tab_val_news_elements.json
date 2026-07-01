@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_2tab_val_news_elements",
+  "schema": "amb_attachment_2tab_val_news_elements",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all headlines and also show Adam Gopnik's ledes.",
+      "qtype": "unambig",
+      "sql": "SELECT Headlines.headline as content\nFROM Headlines\nUNION\nSELECT Ledes.lede as content\nFROM Ledes\nWHERE Ledes.Author = \"Adam Gopnik\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?headlines a :Headlines .\n    ?headlines p:headline ?headline .\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?ledes a :Ledes .\n    ?ledes p:lede ?lede .\n    ?ledes p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?lede AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "Display all headlines and ledes written by Adam Gopnik.",
+      "qtype": "ambig",
+      "sql": "SELECT Headlines.headline as content \nFROM Headlines\nWHERE Headlines.Author = \"Adam Gopnik\"\nUNION\nSELECT Ledes.lede as content\nFROM Ledes\nWHERE Ledes.Author = \"Adam Gopnik\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?headlines a :Headlines .\n    ?headlines p:headline ?headline .\n    ?headlines p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?ledes a :Ledes .\n    ?ledes p:lede ?lede .\n    ?ledes p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?lede AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all headlines and ledes written by Adam Gopnik.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?headlines a :Headlines .\n    ?headlines p:headline ?headline .\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?ledes a :Ledes .\n    ?ledes p:lede ?lede .\n    ?ledes p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?lede AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?headlines a :Headlines .\n    ?headlines p:headline ?headline .\n    ?headlines p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?headline AS ?o0)\n  }\n  UNION\n  {\n    ?ledes a :Ledes .\n    ?ledes p:lede ?lede .\n    ?ledes p:Author ?author_f .\n    FILTER(STR(?author_f) = \"Adam Gopnik\")\n    BIND(?lede AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

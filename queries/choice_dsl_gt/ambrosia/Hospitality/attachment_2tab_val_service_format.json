@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_service_format",
+  "schema": "amb_attachment_2tab_val_service_format",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Display buffets and coffee shops operating from 7:30 a.m. to 4 p.m.",
+      "qtype": "ambig",
+      "sql": "SELECT Buffet.name\nFROM Buffet\nWHERE Buffet.Hours = \"7.30 a.m. - 4 p.m.\"\nUNION\nSELECT Coffee_Shop.name\nFROM Coffee_Shop\nWHERE Coffee_Shop.Hours = \"7.30 a.m. - 4 p.m.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?buffet a :Buffet .\n    ?buffet p:name ?name .\n    ?buffet p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?coffee_shop a :Coffee_Shop .\n    ?coffee_shop p:name ?name .\n    ?coffee_shop p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display buffets and coffee shops operating from 7:30 a.m. to 4 p.m.",
+      "qtype": "ambig",
+      "sql": "SELECT Buffet.name\nFROM Buffet\nUNION\nSELECT Coffee_Shop.name\nFROM Coffee_Shop\nWHERE Coffee_Shop.Hours = \"7.30 a.m. - 4 p.m.\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?buffet a :Buffet .\n    ?buffet p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?coffee_shop a :Coffee_Shop .\n    ?coffee_shop p:name ?name .\n    ?coffee_shop p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display buffets and coffee shops operating from 7:30 a.m. to 4 p.m.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?buffet a :Buffet .\n    ?buffet p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?coffee_shop a :Coffee_Shop .\n    ?coffee_shop p:name ?name .\n    ?coffee_shop p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?buffet a :Buffet .\n    ?buffet p:name ?name .\n    ?buffet p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?coffee_shop a :Coffee_Shop .\n    ?coffee_shop p:name ?name .\n    ?coffee_shop p:Hours ?hours_f .\n    FILTER(STR(?hours_f) = \"7.30 a.m. - 4 p.m.\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

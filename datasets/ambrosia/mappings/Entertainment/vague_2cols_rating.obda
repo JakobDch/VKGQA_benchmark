@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genre_base
+target		ex:Genre/{id} a :Genre ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Genre`
+
+mappingId	Director_base
+target		ex:Director/{id} a :Director ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Director`
+
+mappingId	Actor_base
+target		ex:Actor/{id} a :Actor ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} .
+source		SELECT `id`, `firstName`, `lastName` FROM `Actor`
+
+mappingId	Movie_base
+target		ex:Movie/{id} a :Movie ; p:id {id} ; p:title {title} ; p:releaseDate {releaseDate} ; p:genreId {genreId} ; p:directorId {directorId} .
+source		SELECT `id`, `title`, `releaseDate`, `genreId`, `directorId` FROM `Movie`
+
+mappingId	Movie_directorId_fk
+target		ex:Movie/{id} p:hasDirector ex:Director/{directorId} .
+source		SELECT `id`, `directorId` FROM `Movie` WHERE `directorId` IS NOT NULL
+
+mappingId	Movie_genreId_fk
+target		ex:Movie/{id} p:hasGenre ex:Genre/{genreId} .
+source		SELECT `id`, `genreId` FROM `Movie` WHERE `genreId` IS NOT NULL
+
+mappingId	Rating_base
+target		ex:Rating/{_amb_rowid} a :Rating ; p:movieId {movieId} ; p:ageRating {ageRating} ; p:criticalRating {criticalRating} ; p:tvShow {tvShow} .
+source		SELECT `_amb_rowid`, `movieId`, `ageRating`, `criticalRating`, `tvShow` FROM `Rating`
+
+mappingId	Rating_movieId_fk
+target		ex:Rating/{_amb_rowid} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `_amb_rowid`, `movieId` FROM `Rating` WHERE `movieId` IS NOT NULL
+
+mappingId	Review_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:reviewText {reviewText} ; p:rating {rating} ; p:actorId {actorId} ; p:movieId {movieId} .
+source		SELECT `id`, `reviewText`, `rating`, `actorId`, `movieId` FROM `Review`
+
+mappingId	Review_movieId_fk
+target		ex:Review/{id} p:hasMovie ex:Movie/{movieId} .
+source		SELECT `id`, `movieId` FROM `Review` WHERE `movieId` IS NOT NULL
+
+mappingId	Review_actorId_fk
+target		ex:Review/{id} p:hasActor ex:Actor/{actorId} .
+source		SELECT `id`, `actorId` FROM `Review` WHERE `actorId` IS NOT NULL
+
+]]

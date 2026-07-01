@@ -1,0 +1,108 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_routes_restrictions",
+  "schema": "amb_scope_routes_restrictions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the restriction limits every route has.",
+      "qtype": "ambig",
+      "sql": "SELECT Restrictions.value  from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType GROUP BY Routes_Restrictions.restrictionsType HAVING COUNT(DISTINCT Routes_Restrictions.routesId) = (SELECT COUNT(*) FROM  Routes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nSELECT ?val WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  ?res p:type ?rt ; p:value ?val .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the restriction limits every route has.",
+      "qtype": "ambig",
+      "sql": "select routes.routename , restrictions.value from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?routename ?value WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 2,
+      "question": "What restriction types and values are common to all routes?",
+      "qtype": "unambig",
+      "sql": "SELECT Restrictions.restrictionType, Restrictions.value  from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType GROUP BY Routes_Restrictions.restrictionsType HAVING COUNT(DISTINCT Routes_Restrictions.routesId) = (SELECT COUNT(*) FROM  Routes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nSELECT ?rt ?val WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  ?res p:type ?rt ; p:value ?val .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the restriction types corresponding to each route respectively.",
+      "qtype": "unambig",
+      "sql": "select routes.routename , restrictions.restrictiontype from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?routename ?restrictiontype WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:type ?restrictiontype .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "What are the restriction types and values for each route?",
+      "qtype": "ambig",
+      "sql": "select routes.routename , restrictions.restrictiontype , restrictions.value from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?routename ?restrictiontype ?value WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:type ?restrictiontype .\n  ?restrictions p:value ?value .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the restriction types for each route.",
+      "qtype": "ambig",
+      "sql": "SELECT Restrictions.restrictionType  from routes_restrictions join routes ON routes_restrictions.routesId = Routes.id join restrictions ON routes_restrictions.restrictionsType = Restrictions.restrictionType GROUP BY Routes_Restrictions.restrictionsType HAVING COUNT(DISTINCT Routes_Restrictions.routesId) = (SELECT COUNT(*) FROM  Routes)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nSELECT ?rt WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the restriction types and values for each route?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nCHOICE scope {\n  collective: { SELECT ?rt ?val WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  ?res p:type ?rt ; p:value ?val .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?routename ?restrictiontype ?value WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:type ?restrictiontype .\n  ?restrictions p:value ?value .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the restriction types for each route.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?routename ?restrictiontype WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:type ?restrictiontype .\n} }\n  collective: { SELECT ?rt WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the restriction limits every route has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nCHOICE scope {\n  collective: { SELECT ?val WHERE {\n  { SELECT ?rt (COUNT(DISTINCT ?r) AS ?nf) WHERE { ?l p:hasRoutes ?r ; p:restrictionsType ?rt . } GROUP BY ?rt }\n  ?res p:type ?rt ; p:value ?val .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Routes } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?routename ?value WHERE {\n  ?routes_restrictions a :Routes_Restrictions .\n  ?routes a :Routes .\n  ?routes_restrictions p:hasRoutes ?routes .\n  ?restrictions a :Restrictions .\n  ?routes_restrictions p:restrictionsType ?restrictionstype_restrictiontype .\n  ?restrictions p:type ?restrictionstype_restrictiontype .\n  ?routes p:name ?routename .\n  ?restrictions p:value ?value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

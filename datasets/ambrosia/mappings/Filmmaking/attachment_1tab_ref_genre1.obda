@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Genres_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Genres`
+
+mappingId	Directors_base
+target		ex:Directors/{id} a :Directors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} .
+source		SELECT `id`, `first_name`, `last_name` FROM `Directors`
+
+mappingId	Movies_base
+target		ex:Movies/{id} a :Movies ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:genre_id {genre_id} ; p:director_id {director_id} .
+source		SELECT `id`, `title`, `release_year`, `genre_id`, `director_id` FROM `Movies`
+
+mappingId	Movies_director_id_fk
+target		ex:Movies/{id} p:hasDirectors ex:Directors/{director_id} .
+source		SELECT `id`, `director_id` FROM `Movies` WHERE `director_id` IS NOT NULL
+
+mappingId	Movies_genre_id_fk
+target		ex:Movies/{id} p:hasGenres ex:Genres/{genre_id} .
+source		SELECT `id`, `genre_id` FROM `Movies` WHERE `genre_id` IS NOT NULL
+
+mappingId	Durations_base
+target		ex:Durations/{id} a :Durations ; p:id {id} ; p:minutes {minutes} .
+source		SELECT `id`, `minutes` FROM `Durations`
+
+mappingId	MovieDurations_base
+target		ex:MovieDurations/{movie_id}/{duration_id} a :MovieDurations ; p:movie_id {movie_id} ; p:duration_id {duration_id} .
+source		SELECT `movie_id`, `duration_id` FROM `MovieDurations`
+
+mappingId	MovieDurations_duration_id_fk
+target		ex:MovieDurations/{movie_id}/{duration_id} p:hasDurations ex:Durations/{duration_id} .
+source		SELECT `movie_id`, `duration_id` FROM `MovieDurations` WHERE `duration_id` IS NOT NULL
+
+mappingId	MovieDurations_movie_id_fk
+target		ex:MovieDurations/{movie_id}/{duration_id} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `movie_id`, `duration_id` FROM `MovieDurations` WHERE `movie_id` IS NOT NULL
+
+]]

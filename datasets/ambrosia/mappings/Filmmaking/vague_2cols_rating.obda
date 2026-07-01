@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Film_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:title {title} ; p:release_year {release_year} ; p:director {director} ; p:genre {genre} .
+source		SELECT `id`, `title`, `release_year`, `director`, `genre` FROM `Film`
+
+mappingId	Actor_base
+target		ex:Actors/{id} a :Actors ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birthdate`, `nationality` FROM `Actor`
+
+mappingId	Role_base
+target		ex:Role/{id} a :Role ; p:id {id} ; p:actor_id {actor_id} ; p:role_name {role_name} ; p:film_id {film_id} .
+source		SELECT `id`, `actor_id`, `role_name`, `film_id` FROM `Role`
+
+mappingId	Role_film_id_fk
+target		ex:Role/{id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `id`, `film_id` FROM `Role` WHERE `film_id` IS NOT NULL
+
+mappingId	Role_actor_id_fk
+target		ex:Role/{id} p:hasActors ex:Actors/{actor_id} .
+source		SELECT `id`, `actor_id` FROM `Role` WHERE `actor_id` IS NOT NULL
+
+mappingId	Cinematographer_base
+target		ex:Cinematographers/{id} a :Cinematographers ; p:id {id} ; p:name {name} ; p:birthdate {birthdate} ; p:nationality {nationality} .
+source		SELECT `id`, `name`, `birthdate`, `nationality` FROM `Cinematographer`
+
+mappingId	Camera_base
+target		ex:Camera/{id} a :Camera ; p:id {id} ; p:camera_type {camera_type} ; p:resolution {resolution} .
+source		SELECT `id`, `camera_type`, `resolution` FROM `Camera`
+
+mappingId	ShotList_base
+target		ex:ShotList/{id} a :ShotList ; p:id {id} ; p:cinematographer_id {cinematographer_id} ; p:shot_description {shot_description} ; p:camera_id {camera_id} .
+source		SELECT `id`, `cinematographer_id`, `shot_description`, `camera_id` FROM `ShotList`
+
+mappingId	ShotList_camera_id_fk
+target		ex:ShotList/{id} p:hasCamera ex:Camera/{camera_id} .
+source		SELECT `id`, `camera_id` FROM `ShotList` WHERE `camera_id` IS NOT NULL
+
+mappingId	ShotList_cinematographer_id_fk
+target		ex:ShotList/{id} p:hasCinematographers ex:Cinematographers/{cinematographer_id} .
+source		SELECT `id`, `cinematographer_id` FROM `ShotList` WHERE `cinematographer_id` IS NOT NULL
+
+mappingId	FilmReviews_base
+target		ex:FilmReviews/{id} a :FilmReviews ; p:id {id} ; p:critic_rating {critic_rating} ; p:audience_rating {audience_rating} ; p:film_id {film_id} .
+source		SELECT `id`, `critic_rating`, `audience_rating`, `film_id` FROM `FilmReviews`
+
+mappingId	FilmReviews_film_id_fk
+target		ex:FilmReviews/{id} p:hasFilms ex:Films/{film_id} .
+source		SELECT `id`, `film_id` FROM `FilmReviews` WHERE `film_id` IS NOT NULL
+
+]]

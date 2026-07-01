@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_sales_positions_goals",
+  "schema": "amb_scope_sales_positions_goals",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each sales position, list the goals they have.",
+      "qtype": "unambig",
+      "sql": "select sales_positions.position_name , goals.goal_type from Sales_Positions_Goals join Goals on Sales_Positions_Goals.goal_id = Goals.id join Sales_Positions on Sales_Positions_Goals.sales_position_id = Sales_Positions.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?position_name ?goal_type WHERE {\n  ?sales_positions_goals a :Sales_Positions_Goals .\n  ?goals a :Goals .\n  ?sales_positions_goals p:hasGoals ?goals .\n  ?sales_positions a :Sales_Positions .\n  ?sales_positions_goals p:hasSales_Positions ?sales_positions .\n  ?sales_positions p:position_name ?position_name .\n  ?goals p:goal_type ?goal_type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "What are the goals all sales positions have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Goals.goal_type  from Sales_Positions_Goals join Goals on Sales_Positions_Goals.goal_id = Goals.id join Sales_Positions on Sales_Positions_Goals.sales_position_id = Sales_Positions.id   GROUP BY Sales_Positions_Goals.goal_id HAVING COUNT(DISTINCT Sales_Positions_Goals.sales_position_id) = (SELECT COUNT(*) FROM  Sales_Positions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?goal_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:goal_id ?cg . ?child a :Goals ; p:id ?cg . ?l p:sales_position_id ?pg . ?parent a :Sales_Positions ; p:id ?pg . } GROUP BY ?child }\n  ?child p:goal_type ?goal_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Positions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the goals every sales position has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?position_name ?goal_type WHERE {\n  ?sales_positions_goals a :Sales_Positions_Goals .\n  ?goals a :Goals .\n  ?sales_positions_goals p:hasGoals ?goals .\n  ?sales_positions a :Sales_Positions .\n  ?sales_positions_goals p:hasSales_Positions ?sales_positions .\n  ?sales_positions p:position_name ?position_name .\n  ?goals p:goal_type ?goal_type .\n} }\n  collective: { SELECT ?goal_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:goal_id ?cg . ?child a :Goals ; p:id ?cg . ?l p:sales_position_id ?pg . ?parent a :Sales_Positions ; p:id ?pg . } GROUP BY ?child }\n  ?child p:goal_type ?goal_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Sales_Positions } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

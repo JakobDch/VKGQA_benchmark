@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_ref_book_genre",
+  "schema": "amb_attachment_1tab_ref_book_genre",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List science fiction books and romance books published in 2018.",
+      "qtype": "ambig",
+      "sql": "SELECT Books.Title \nFROM Books JOIN BookPublishingHistory ON Books.ISBN = BookPublishingHistory.ISBN\nWHERE (Books.Genre = 'Science Fiction' OR Books.Genre = 'Romance') AND BookPublishingHistory.YearOfPublication = 2018",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Book .\n  ?bookpublishinghistory a :BookPublishingHistory .\n  ?bookpublishinghistory p:hasBooks ?books .\n  ?books p:Title ?title .\n  ?books p:Genre ?genre_w .\n  ?books p:Genre ?genre_w2 .\n  ?bookpublishinghistory p:YearOfPublication ?yearofpublication_w .\n  FILTER((((STR(?genre_w) = \"Science Fiction\" || STR(?genre_w2) = \"Romance\")) && (STR(?yearofpublication_w) = \"2018\" || STR(?yearofpublication_w) = \"2018.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List science fiction books and romance books published in 2018.",
+      "qtype": "ambig",
+      "sql": "SELECT Books.Title \nFROM Books JOIN BookPublishingHistory ON Books.ISBN = BookPublishingHistory.ISBN\nWHERE Books.Genre = 'Science Fiction' OR Books.Genre = 'Romance' AND BookPublishingHistory.YearOfPublication = 2018",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Book .\n  ?bookpublishinghistory a :BookPublishingHistory .\n  ?bookpublishinghistory p:hasBooks ?books .\n  ?books p:Title ?title .\n  ?books p:Genre ?genre_w .\n  ?books p:Genre ?genre_w2 .\n  ?bookpublishinghistory p:YearOfPublication ?yearofpublication_w .\n  FILTER((STR(?genre_w) = \"Science Fiction\" || (STR(?genre_w2) = \"Romance\" && (STR(?yearofpublication_w) = \"2018\" || STR(?yearofpublication_w) = \"2018.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List science fiction books and romance books published in 2018.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?books a :Book .\n  ?bookpublishinghistory a :BookPublishingHistory .\n  ?bookpublishinghistory p:hasBooks ?books .\n  ?books p:Title ?title .\n  ?books p:Genre ?genre_w .\n  ?books p:Genre ?genre_w2 .\n  ?bookpublishinghistory p:YearOfPublication ?yearofpublication_w .\n  FILTER((((STR(?genre_w) = \"Science Fiction\" || STR(?genre_w2) = \"Romance\")) && (STR(?yearofpublication_w) = \"2018\" || STR(?yearofpublication_w) = \"2018.0\")))\n} }\n  low: { SELECT ?title WHERE {\n  ?books a :Book .\n  ?bookpublishinghistory a :BookPublishingHistory .\n  ?bookpublishinghistory p:hasBooks ?books .\n  ?books p:Title ?title .\n  ?books p:Genre ?genre_w .\n  ?books p:Genre ?genre_w2 .\n  ?bookpublishinghistory p:YearOfPublication ?yearofpublication_w .\n  FILTER((STR(?genre_w) = \"Science Fiction\" || (STR(?genre_w2) = \"Romance\" && (STR(?yearofpublication_w) = \"2018\" || STR(?yearofpublication_w) = \"2018.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

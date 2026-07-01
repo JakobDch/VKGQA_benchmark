@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Terminals_base
+target		ex:Terminals/{ID} a :Terminals ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Terminals`
+
+mappingId	Jet_Bridges_base
+target		ex:Jet_Bridges/{ID} a :Jet_Bridges ; p:ID {ID} ; p:BridgeName {BridgeName} ; p:TerminalID {TerminalID} .
+source		SELECT `ID`, `BridgeName`, `TerminalID` FROM `Jet_Bridges`
+
+mappingId	Jet_Bridges_TerminalID_fk
+target		ex:Jet_Bridges/{ID} p:hasTerminals ex:Terminals/{TerminalID} .
+source		SELECT `ID`, `TerminalID` FROM `Jet_Bridges` WHERE `TerminalID` IS NOT NULL
+
+mappingId	Staircars_base
+target		ex:Staircars/{ID} a :Staircars ; p:ID {ID} ; p:CarName {CarName} ; p:TerminalID {TerminalID} .
+source		SELECT `ID`, `CarName`, `TerminalID` FROM `Staircars`
+
+mappingId	Staircars_TerminalID_fk
+target		ex:Staircars/{ID} p:hasTerminals ex:Terminals/{TerminalID} .
+source		SELECT `ID`, `TerminalID` FROM `Staircars` WHERE `TerminalID` IS NOT NULL
+
+mappingId	Airlines_base
+target		ex:Airlines/{AirlineID} a :Airlines ; p:AirlineID {AirlineID} ; p:CompanyName {CompanyName} ; p:HomeTerminalID {HomeTerminalID} .
+source		SELECT `AirlineID`, `CompanyName`, `HomeTerminalID` FROM `Airlines`
+
+mappingId	Airlines_HomeTerminalID_fk
+target		ex:Airlines/{AirlineID} p:hasTerminals ex:Terminals/{HomeTerminalID} .
+source		SELECT `AirlineID`, `HomeTerminalID` FROM `Airlines` WHERE `HomeTerminalID` IS NOT NULL
+
+]]

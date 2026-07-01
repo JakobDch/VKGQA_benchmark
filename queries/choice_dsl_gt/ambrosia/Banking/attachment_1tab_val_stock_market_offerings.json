@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_1tab_val_stock_market_offerings",
+  "schema": "amb_attachment_1tab_val_stock_market_offerings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the interest rates of all the IPOs, and combine them with all the secondary offering interest rates where 50M capital has been raised.",
+      "qtype": "unambig",
+      "sql": "SELECT Loans.InterestRate \nFROM Loans\nWHERE Loans.StockMarketOfferings = \"IPO\" OR Loans.StockMarketOfferings = \"Secondary Offering\" AND Loans.RaisedCapitalAmount = \"50000000\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?interestrate WHERE {\n  ?loans a :Loans .\n  ?loans p:InterestRate ?interestrate .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w2 .\n  ?loans p:RaisedCapitalAmount ?raisedcapitalamount_w .\n  FILTER((STR(?stockmarketofferings_w) = \"IPO\" || (STR(?stockmarketofferings_w2) = \"Secondary Offering\" && (STR(?raisedcapitalamount_w) = \"50000000\" || STR(?raisedcapitalamount_w) = \"50000000.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all the IPO rates and secondary offering rates with 50M of raised capital.",
+      "qtype": "ambig",
+      "sql": "SELECT Loans.InterestRate \nFROM Loans\nWHERE (Loans.StockMarketOfferings = \"IPO\" OR Loans.StockMarketOfferings = \"Secondary Offering\") AND Loans.RaisedCapitalAmount = \"50000000\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?interestrate WHERE {\n  ?loans a :Loans .\n  ?loans p:InterestRate ?interestrate .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w2 .\n  ?loans p:RaisedCapitalAmount ?raisedcapitalamount_w .\n  FILTER((((STR(?stockmarketofferings_w) = \"IPO\" || STR(?stockmarketofferings_w2) = \"Secondary Offering\")) && (STR(?raisedcapitalamount_w) = \"50000000\" || STR(?raisedcapitalamount_w) = \"50000000.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all the IPO rates and secondary offering rates with 50M of raised capital.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?interestrate WHERE {\n  ?loans a :Loans .\n  ?loans p:InterestRate ?interestrate .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w2 .\n  ?loans p:RaisedCapitalAmount ?raisedcapitalamount_w .\n  FILTER((STR(?stockmarketofferings_w) = \"IPO\" || (STR(?stockmarketofferings_w2) = \"Secondary Offering\" && (STR(?raisedcapitalamount_w) = \"50000000\" || STR(?raisedcapitalamount_w) = \"50000000.0\"))))\n} }\n  high: { SELECT ?interestrate WHERE {\n  ?loans a :Loans .\n  ?loans p:InterestRate ?interestrate .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w .\n  ?loans p:StockMarketOfferings ?stockmarketofferings_w2 .\n  ?loans p:RaisedCapitalAmount ?raisedcapitalamount_w .\n  FILTER((((STR(?stockmarketofferings_w) = \"IPO\" || STR(?stockmarketofferings_w2) = \"Secondary Offering\")) && (STR(?raisedcapitalamount_w) = \"50000000\" || STR(?raisedcapitalamount_w) = \"50000000.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

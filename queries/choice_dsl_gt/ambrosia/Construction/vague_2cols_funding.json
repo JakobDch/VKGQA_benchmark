@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_funding",
+  "schema": "amb_vague_2cols_funding",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "From what private donors did Contractor B get the project funding and how much was it? Also, show the project.",
+      "qtype": "unambig",
+      "sql": "SELECT Funding.privateDonors, Funding.fundsAmount\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nJOIN Contractors on Payments.contractorID = Contractors.contractorID\nWHERE Contractors.companyName = \"Contractor B\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?privatedonors ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:privateDonors ?privatedonors .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 1,
+      "question": "List the government agency and private donor who submitted a payment on February 5th 2022.",
+      "qtype": "unambig",
+      "sql": "SELECT Funding.governmentAgency, Funding.privateDonors\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nWHERE Payments.paymentDate = \"2022-02-05\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?governmentagency ?privatedonors WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:privateDonors ?privatedonors .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "From which government agency did Contractor B fund the project and how much was it? Also, show the project.",
+      "qtype": "unambig",
+      "sql": "SELECT Funding.governmentAgency, Funding.fundsAmount\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nJOIN Contractors on Payments.contractorID = Contractors.contractorID\nWHERE Contractors.companyName = \"Contractor B\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?governmentagency ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n}",
+      "status": "pass",
+      "note": "n=4"
+    },
+    {
+      "qid": 3,
+      "question": "Which government agency made a payment on February 5th 2022.",
+      "qtype": "unambig",
+      "sql": "SELECT Funding.governmentAgency\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nWHERE Payments.paymentDate = \"2022-02-05\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?governmentagency WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:governmentAgency ?governmentagency .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who paid the funding on 2022-02-05?",
+      "qtype": "ambig",
+      "sql": "SELECT Funding.privateDonors\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nWHERE Payments.paymentDate = \"2022-02-05\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?privatedonors WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:privateDonors ?privatedonors .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "From what private donors and government agencies did Contractor B get the project funding and how much was it? Also, show the project.",
+      "qtype": "unambig",
+      "sql": "SELECT Funding.governmentAgency,Funding.privateDonors, Funding.fundsAmount\nFROM Funding\nJOIN Payments on Funding.projectID = Payments.projectID\nJOIN Contractors on Payments.contractorID = Contractors.contractorID\nWHERE Contractors.companyName = \"Contractor B\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?governmentagency ?privatedonors ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:privateDonors ?privatedonors .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "For what project and how much funding did Contractor B get and from where?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?privatedonors ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:privateDonors ?privatedonors .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n} }\n  component_2: { SELECT ?governmentagency ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n} }\n  full: { SELECT ?governmentagency ?privatedonors ?fundsamount WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?contractors a :Contractors .\n  ?payments p:hasContractors ?contractors .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:privateDonors ?privatedonors .\n  ?funding p:fundsAmount ?fundsamount .\n  ?contractors p:name ?companyname_f .\n  FILTER(?companyname_f = \"Contractor B\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who paid the funding on 2022-02-05?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?governmentagency ?privatedonors WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:governmentAgency ?governmentagency .\n  ?funding p:privateDonors ?privatedonors .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n} }\n  component: { SELECT ?governmentagency WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:governmentAgency ?governmentagency .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n} }\n  component_2: { SELECT ?privatedonors WHERE {\n  ?funding a :Funding .\n  ?payments a :Payments .\n  ?funding p:hasProjects ?shared_projects .\n  ?payments p:hasProjects ?shared_projects .\n  ?funding p:privateDonors ?privatedonors .\n  ?payments p:paymentDate ?paymentdate_f .\n  FILTER(?paymentdate_f = \"2022-02-05\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

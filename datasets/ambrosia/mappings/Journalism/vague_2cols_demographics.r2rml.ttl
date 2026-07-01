@@ -1,0 +1,82 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2cols_demographics_0_Authors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AuthorID\", \"FirstName\", \"LastName\", \"BirthDate\" FROM \"Authors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Authors/{AuthorID}" ; rr:class :Authors ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FirstName ; rr:objectMap [ rr:column "FirstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:LastName ; rr:objectMap [ rr:column "LastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:BirthDate ; rr:objectMap [ rr:column "BirthDate" ] ] .
+
+<#tm_vague_2cols_demographics_1_Articles_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ArticleID\", \"Title\", \"PublicationDate\", \"WordCount\", \"AuthorID\" FROM \"Articles\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ; rr:class :Articles ] ;
+  rr:predicateObjectMap [ rr:predicate p:ArticleID ; rr:objectMap [ rr:column "ArticleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Title ; rr:objectMap [ rr:column "Title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublicationDate ; rr:objectMap [ rr:column "PublicationDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:WordCount ; rr:objectMap [ rr:column "WordCount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:AuthorID ; rr:objectMap [ rr:column "AuthorID" ] ] .
+
+<#tm_vague_2cols_demographics_2_Articles_AuthorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ArticleID\", \"AuthorID\" FROM \"Articles\" WHERE \"AuthorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasAuthors ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Authors/{AuthorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_demographics_3_NewsOutlets_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"OutletID\", \"Name\", \"Location\", \"FoundedYear\" FROM \"NewsOutlets\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/NewsOutlets/{OutletID}" ; rr:class :NewsOutlets ] ;
+  rr:predicateObjectMap [ rr:predicate p:OutletID ; rr:objectMap [ rr:column "OutletID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:FoundedYear ; rr:objectMap [ rr:column "FoundedYear" ] ] .
+
+<#tm_vague_2cols_demographics_4_Publishes_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishID\", \"ArticleID\", \"OutletID\" FROM \"Publishes\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publishes/{PublishID}" ; rr:class :Publishes ] ;
+  rr:predicateObjectMap [ rr:predicate p:PublishID ; rr:objectMap [ rr:column "PublishID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:ArticleID ; rr:objectMap [ rr:column "ArticleID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:OutletID ; rr:objectMap [ rr:column "OutletID" ] ] .
+
+<#tm_vague_2cols_demographics_5_Publishes_OutletID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishID\", \"OutletID\" FROM \"Publishes\" WHERE \"OutletID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publishes/{PublishID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasNewsOutlets ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/NewsOutlets/{OutletID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_demographics_6_Publishes_ArticleID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PublishID\", \"ArticleID\" FROM \"Publishes\" WHERE \"ArticleID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Publishes/{PublishID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasArticles ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{ArticleID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_demographics_7_Audience_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DemoID\", \"Age_Group\", \"Income_Level\", \"Article\" FROM \"Audience\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Audience/{DemoID}" ; rr:class :Audience ] ;
+  rr:predicateObjectMap [ rr:predicate p:DemoID ; rr:objectMap [ rr:column "DemoID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Age_Group ; rr:objectMap [ rr:column "Age_Group" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Income_Level ; rr:objectMap [ rr:column "Income_Level" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Article ; rr:objectMap [ rr:column "Article" ] ] .
+
+<#tm_vague_2cols_demographics_8_Audience_Article_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"DemoID\", \"Article\" FROM \"Audience\" WHERE \"Article\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Audience/{DemoID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasArticles ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Articles/{Article}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2cols_demographics_9_Advertisements_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AdvID\", \"Description\", \"Budget\", \"StartDate\", \"EndDate\", \"OutletID\" FROM \"Advertisements\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Advertisements/{AdvID}" ; rr:class :Advertisements ] ;
+  rr:predicateObjectMap [ rr:predicate p:AdvID ; rr:objectMap [ rr:column "AdvID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Description ; rr:objectMap [ rr:column "Description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:Budget ; rr:objectMap [ rr:column "Budget" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:StartDate ; rr:objectMap [ rr:column "StartDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:EndDate ; rr:objectMap [ rr:column "EndDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:OutletID ; rr:objectMap [ rr:column "OutletID" ] ] .
+
+<#tm_vague_2cols_demographics_10_Advertisements_OutletID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"AdvID\", \"OutletID\" FROM \"Advertisements\" WHERE \"OutletID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Advertisements/{AdvID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasNewsOutlets ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/NewsOutlets/{OutletID}" ; rr:termType rr:IRI ] ] .
+

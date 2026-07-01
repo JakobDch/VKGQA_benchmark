@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_banks_services",
+  "schema": "amb_scope_banks_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the services every bank offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Services.serviceName  from Banks_Services join Services on Banks_Services.serviceId = Services.id join Banks on Banks_Services.bankId = Banks.id   GROUP BY Banks_Services.serviceId HAVING COUNT(DISTINCT Banks_Services.bankId) = (SELECT COUNT(*) FROM  Banks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasBanks ?parent . } GROUP BY ?child }\n  ?child p:serviceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Banks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the services every bank offers.",
+      "qtype": "ambig",
+      "sql": "select banks.name , services.servicename from Banks_Services join Services on Banks_Services.serviceId = Services.id join Banks on Banks_Services.bankId = Banks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?servicename WHERE {\n  ?banks_services a :Banks_Services .\n  ?services a :Services .\n  ?banks_services p:hasServices ?services .\n  ?banks a :Banks .\n  ?banks_services p:hasBanks ?banks .\n  ?banks p:name ?name .\n  ?services p:serviceName ?servicename .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the services every bank offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?servicename WHERE {\n  ?banks_services a :Banks_Services .\n  ?services a :Services .\n  ?banks_services p:hasServices ?services .\n  ?banks a :Banks .\n  ?banks_services p:hasBanks ?banks .\n  ?banks p:name ?name .\n  ?services p:serviceName ?servicename .\n} }\n  collective: { SELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasBanks ?parent . } GROUP BY ?child }\n  ?child p:serviceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Banks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

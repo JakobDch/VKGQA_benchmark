@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Users_base
+target		ex:Users/{id} a :Users ; p:id {id} ; p:username {username} ; p:email {email} .
+source		SELECT `id`, `username`, `email` FROM `Users`
+
+mappingId	Genres_base
+target		ex:Genres/{genre_id} a :Genres ; p:genre_id {genre_id} ; p:name {name} .
+source		SELECT `genre_id`, `name` FROM `Genres`
+
+mappingId	Movies_base
+target		ex:Movies/{movie_id} a :Movies ; p:movie_id {movie_id} ; p:title {title} ; p:release_year {release_year} ; p:genre_id {genre_id} .
+source		SELECT `movie_id`, `title`, `release_year`, `genre_id` FROM `Movies`
+
+mappingId	Movies_genre_id_fk
+target		ex:Movies/{movie_id} p:hasGenres ex:Genres/{genre_id} .
+source		SELECT `movie_id`, `genre_id` FROM `Movies` WHERE `genre_id` IS NOT NULL
+
+mappingId	Subscriptions_base
+target		ex:Subscriptions/{subscription_id} a :Subscriptions ; p:subscription_id {subscription_id} ; p:user_id {user_id} ; p:start_date {start_date} ; p:end_date {end_date} ; p:status {status} .
+source		SELECT `subscription_id`, `user_id`, `start_date`, `end_date`, `status` FROM `Subscriptions`
+
+mappingId	Subscriptions_user_id_fk
+target		ex:Subscriptions/{subscription_id} p:hasUsers ex:Users/{user_id} .
+source		SELECT `subscription_id`, `user_id` FROM `Subscriptions` WHERE `user_id` IS NOT NULL
+
+mappingId	Streamings_base
+target		ex:Streamings/{streaming_id} a :Streamings ; p:streaming_id {streaming_id} ; p:movie_id {movie_id} ; p:user_id {user_id} ; p:stream_start_time {stream_start_time} ; p:stream_end_time {stream_end_time} .
+source		SELECT `streaming_id`, `movie_id`, `user_id`, `stream_start_time`, `stream_end_time` FROM `Streamings`
+
+mappingId	Streamings_user_id_fk
+target		ex:Streamings/{streaming_id} p:hasUsers ex:Users/{user_id} .
+source		SELECT `streaming_id`, `user_id` FROM `Streamings` WHERE `user_id` IS NOT NULL
+
+mappingId	Streamings_movie_id_fk
+target		ex:Streamings/{streaming_id} p:hasMovies ex:Movies/{movie_id} .
+source		SELECT `streaming_id`, `movie_id` FROM `Streamings` WHERE `movie_id` IS NOT NULL
+
+mappingId	Streamings_Payments_base
+target		ex:Streamings_Payments/{_amb_rowid} a :Streamings_Payments ; p:streaming_id {streaming_id} ; p:payment_id {payment_id} .
+source		SELECT `_amb_rowid`, `streaming_id`, `payment_id` FROM `Streamings_Payments`
+
+mappingId	Streamings_Payments_payment_id_fk
+target		ex:Streamings_Payments/{_amb_rowid} p:hasPayments ex:Payments/{payment_id} .
+source		SELECT `_amb_rowid`, `payment_id` FROM `Streamings_Payments` WHERE `payment_id` IS NOT NULL
+
+mappingId	Streamings_Payments_streaming_id_fk
+target		ex:Streamings_Payments/{_amb_rowid} p:hasStreamings ex:Streamings/{streaming_id} .
+source		SELECT `_amb_rowid`, `streaming_id` FROM `Streamings_Payments` WHERE `streaming_id` IS NOT NULL
+
+mappingId	Payments_base
+target		ex:Payments/{payment_id} a :Payments ; p:payment_id {payment_id} ; p:payment_type {payment_type} .
+source		SELECT `payment_id`, `payment_type` FROM `Payments`
+
+]]

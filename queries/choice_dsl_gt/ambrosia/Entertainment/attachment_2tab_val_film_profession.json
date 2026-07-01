@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_film_profession",
+  "schema": "amb_attachment_2tab_val_film_profession",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all directors and also list producers who won an Oscar.",
+      "qtype": "unambig",
+      "sql": "SELECT Director.name\nFROM Director\nUNION\nSELECT Producer.name\nFROM Producer\nWHERE Producer.Award = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?director a :Director .\n    ?director p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?producer a :Producer .\n    ?producer p:name ?name .\n    ?producer p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Provide all directors and producers who won an Oscar.",
+      "qtype": "ambig",
+      "sql": "SELECT Director.name\nFROM Director\nWHERE Director.Award = \"Oscar\"\nUNION\nSELECT Producer.name\nFROM Producer\nWHERE Producer.Award = \"Oscar\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?director a :Director .\n    ?director p:name ?name .\n    ?director p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?producer a :Producer .\n    ?producer p:name ?name .\n    ?producer p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Provide all directors and producers who won an Oscar.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?director a :Director .\n    ?director p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?producer a :Producer .\n    ?producer p:name ?name .\n    ?producer p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?director a :Director .\n    ?director p:name ?name .\n    ?director p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?producer a :Producer .\n    ?producer p:name ?name .\n    ?producer p:Award ?award_f .\n    FILTER(STR(?award_f) = \"Oscar\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

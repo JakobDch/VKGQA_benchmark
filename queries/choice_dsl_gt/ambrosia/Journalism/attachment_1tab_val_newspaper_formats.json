@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "attachment_1tab_val_newspaper_formats",
+  "schema": "amb_attachment_1tab_val_newspaper_formats",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me all broadsheets and tabloids where the distributor email is distribution@sainsburys.com.",
+      "qtype": "ambig",
+      "sql": "SELECT Newspapers.Name \nFROM Newspapers JOIN Distributors ON Newspapers.Distributor = Distributors.Name\nWHERE (Newspapers.Format = 'Broadsheet' OR Newspapers.Format = 'Tabloid') AND Distributors.emailaddress = \"distribution@sainburys.com\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?newspapers a :Newspapers .\n  ?distributors a :Distributors .\n  ?newspapers p:Distributor ?distributor_l .\n  ?distributors p:name ?name_r .\n  ?newspapers p:name ?name .\n  ?newspapers p:Format ?format_w .\n  ?newspapers p:Format ?format_w2 .\n  ?distributors p:email ?emailaddress_w .\n  FILTER(STR(?distributor_l) = STR(?name_r))\n  FILTER((((STR(?format_w) = \"Broadsheet\" || STR(?format_w2) = \"Tabloid\")) && STR(?emailaddress_w) = \"distribution@sainburys.com\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Give me all broadsheets and tabloids where the distributor email is distribution@sainsburys.com.",
+      "qtype": "ambig",
+      "sql": "SELECT Newspapers.Name \nFROM Newspapers JOIN Distributors ON Newspapers.Distributor = Distributors.Name\nWHERE Newspapers.Format = 'Broadsheet' OR Newspapers.Format = 'Tabloid' AND Distributors.emailaddress = \"distribution@sainburys.com\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?newspapers a :Newspapers .\n  ?distributors a :Distributors .\n  ?newspapers p:Distributor ?distributor_l .\n  ?distributors p:name ?name_r .\n  ?newspapers p:name ?name .\n  ?newspapers p:Format ?format_w .\n  ?newspapers p:Format ?format_w2 .\n  ?distributors p:email ?emailaddress_w .\n  FILTER(STR(?distributor_l) = STR(?name_r))\n  FILTER((STR(?format_w) = \"Broadsheet\" || (STR(?format_w2) = \"Tabloid\" && STR(?emailaddress_w) = \"distribution@sainburys.com\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all broadsheets and tabloids where the distributor email is distribution@sainsburys.com.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?name WHERE {\n  ?newspapers a :Newspapers .\n  ?distributors a :Distributors .\n  ?newspapers p:Distributor ?distributor_l .\n  ?distributors p:name ?name_r .\n  ?newspapers p:name ?name .\n  ?newspapers p:Format ?format_w .\n  ?newspapers p:Format ?format_w2 .\n  ?distributors p:email ?emailaddress_w .\n  FILTER(STR(?distributor_l) = STR(?name_r))\n  FILTER((STR(?format_w) = \"Broadsheet\" || (STR(?format_w2) = \"Tabloid\" && STR(?emailaddress_w) = \"distribution@sainburys.com\")))\n} }\n  high: { SELECT ?name WHERE {\n  ?newspapers a :Newspapers .\n  ?distributors a :Distributors .\n  ?newspapers p:Distributor ?distributor_l .\n  ?distributors p:name ?name_r .\n  ?newspapers p:name ?name .\n  ?newspapers p:Format ?format_w .\n  ?newspapers p:Format ?format_w2 .\n  ?distributors p:email ?emailaddress_w .\n  FILTER(STR(?distributor_l) = STR(?name_r))\n  FILTER((((STR(?format_w) = \"Broadsheet\" || STR(?format_w2) = \"Tabloid\")) && STR(?emailaddress_w) = \"distribution@sainburys.com\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

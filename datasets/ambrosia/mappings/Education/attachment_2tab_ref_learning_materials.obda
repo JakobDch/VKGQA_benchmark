@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Difficulty_Level_base
+target		ex:Difficulty_Level/{ID} a :Difficulty_Level ; p:ID {ID} ; p:Level {Level} .
+source		SELECT `ID`, `Level` FROM `Difficulty_Level`
+
+mappingId	Subjects_base
+target		ex:Subjects/{ID} a :Subjects ; p:ID {ID} ; p:name {Name} ; p:Description {Description} ; p:DifficultyID {DifficultyID} .
+source		SELECT `ID`, `Name`, `Description`, `DifficultyID` FROM `Subjects`
+
+mappingId	Subjects_DifficultyID_fk
+target		ex:Subjects/{ID} p:hasDifficulty_Level ex:Difficulty_Level/{DifficultyID} .
+source		SELECT `ID`, `DifficultyID` FROM `Subjects` WHERE `DifficultyID` IS NOT NULL
+
+mappingId	Textbooks_base
+target		ex:Textbooks/{ID} a :Textbooks ; p:ID {ID} ; p:Title {Title} ; p:Author {Author} ; p:ISBN {ISBN} ; p:SubjectID {SubjectID} .
+source		SELECT `ID`, `Title`, `Author`, `ISBN`, `SubjectID` FROM `Textbooks`
+
+mappingId	Textbooks_SubjectID_fk
+target		ex:Textbooks/{ID} p:hasSubjects ex:Subjects/{SubjectID} .
+source		SELECT `ID`, `SubjectID` FROM `Textbooks` WHERE `SubjectID` IS NOT NULL
+
+mappingId	Online_Courses_base
+target		ex:Online_Courses/{ID} a :Online_Courses ; p:ID {ID} ; p:CourseName {CourseName} ; p:Instructor {Instructor} ; p:Platform {Platform} ; p:URL {URL} ; p:SubjectID {SubjectID} .
+source		SELECT `ID`, `CourseName`, `Instructor`, `Platform`, `URL`, `SubjectID` FROM `Online_Courses`
+
+mappingId	Online_Courses_SubjectID_fk
+target		ex:Online_Courses/{ID} p:hasSubjects ex:Subjects/{SubjectID} .
+source		SELECT `ID`, `SubjectID` FROM `Online_Courses` WHERE `SubjectID` IS NOT NULL
+
+mappingId	EnrolledStudents_base
+target		ex:EnrolledStudents/{StudentID} a :EnrolledStudents ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `Age`, `Email`, `PhoneNumber` FROM `EnrolledStudents`
+
+]]

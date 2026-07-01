@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Subjects_base
+target		ex:Subjects/{id} a :Subjects ; p:id {id} ; p:subjectName {subjectName} .
+source		SELECT `id`, `subjectName` FROM `Subjects`
+
+mappingId	Teachers_base
+target		ex:Teachers/{teacherId} a :Teachers ; p:teacherId {teacherId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `teacherId`, `firstName`, `lastName`, `email` FROM `Teachers`
+
+mappingId	Classes_base
+target		ex:Classes/{classId} a :Classes ; p:classId {classId} ; p:className {className} ; p:startDate {startDate} ; p:endDate {endDate} ; p:teacherId {teacherId} .
+source		SELECT `classId`, `className`, `startDate`, `endDate`, `teacherId` FROM `Classes`
+
+mappingId	Classes_teacherId_fk
+target		ex:Classes/{classId} p:hasTeachers ex:Teachers/{teacherId} .
+source		SELECT `classId`, `teacherId` FROM `Classes` WHERE `teacherId` IS NOT NULL
+
+mappingId	Students_base
+target		ex:Students/{studentId} a :Students ; p:studentId {studentId} ; p:firstName {firstName} ; p:lastName {lastName} ; p:enrollmentYear {enrollmentYear} ; p:classId {classId} .
+source		SELECT `studentId`, `firstName`, `lastName`, `enrollmentYear`, `classId` FROM `Students`
+
+mappingId	Students_classId_fk
+target		ex:Students/{studentId} p:hasClasses ex:Classes/{classId} .
+source		SELECT `studentId`, `classId` FROM `Students` WHERE `classId` IS NOT NULL
+
+mappingId	Learning_Materials_base
+target		ex:Learning_Materials/{materialId} a :Learning_Materials ; p:materialId {materialId} ; p:typeOfMaterial {typeOfMaterial} ; p:title {title} ; p:description {description} ; p:difficultyLevel {difficultyLevel} .
+source		SELECT `materialId`, `typeOfMaterial`, `title`, `description`, `difficultyLevel` FROM `Learning_Materials`
+
+mappingId	Learning_Materials_difficultyLevel_fk
+target		ex:Learning_Materials/{materialId} p:hasDifficulty_Level ex:Difficulty_Level/{difficultyLevel} .
+source		SELECT `materialId`, `difficultyLevel` FROM `Learning_Materials` WHERE `difficultyLevel` IS NOT NULL
+
+mappingId	Difficulty_levels_base
+target		ex:Difficulty_Level/{difficultyLevel} a :Difficulty_Level ; p:difficultyLevel {difficultyLevel} ; p:levelDescription {levelDescription} .
+source		SELECT `difficultyLevel`, `levelDescription` FROM `Difficulty_levels`
+
+]]

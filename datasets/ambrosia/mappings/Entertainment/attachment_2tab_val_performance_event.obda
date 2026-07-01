@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Dance_Recitals_base
+target		ex:Dance_Recital/{RecitalID} a :Dance_Recital ; p:RecitalID {RecitalID} ; p:name {Name} ; p:Date {Date} ; p:Time {Time} ; p:Audition_Room {Audition_Room} .
+source		SELECT `RecitalID`, `Name`, `Date`, `Time`, `Audition_Room` FROM `Dance_Recitals`
+
+mappingId	Talent_Shows_base
+target		ex:Talent_Show/{ShowID} a :Talent_Show ; p:ShowID {ShowID} ; p:name {Name} ; p:Theme {Theme} ; p:location {Location} ; p:Audition_Room {Audition_Room} .
+source		SELECT `ShowID`, `Name`, `Theme`, `Location`, `Audition_Room` FROM `Talent_Shows`
+
+mappingId	Performers_base
+target		ex:Performers/{PerformerID} a :Performers ; p:PerformerID {PerformerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Age {Age} ; p:Role {Role} .
+source		SELECT `PerformerID`, `FirstName`, `LastName`, `Age`, `Role` FROM `Performers`
+
+mappingId	Participation_base
+target		ex:Participation/{ParticipantID} a :Participation ; p:ParticipantID {ParticipantID} ; p:PerformerID {PerformerID} ; p:Dance_RecitalID {Dance_RecitalID} ; p:Talent_ShowID {Talent_ShowID} .
+source		SELECT `ParticipantID`, `PerformerID`, `Dance_RecitalID`, `Talent_ShowID` FROM `Participation`
+
+mappingId	Participation_Talent_ShowID_fk
+target		ex:Participation/{ParticipantID} p:hasTalent_Show ex:Talent_Show/{Talent_ShowID} .
+source		SELECT `ParticipantID`, `Talent_ShowID` FROM `Participation` WHERE `Talent_ShowID` IS NOT NULL
+
+mappingId	Participation_Dance_RecitalID_fk
+target		ex:Participation/{ParticipantID} p:hasDance_Recital ex:Dance_Recital/{Dance_RecitalID} .
+source		SELECT `ParticipantID`, `Dance_RecitalID` FROM `Participation` WHERE `Dance_RecitalID` IS NOT NULL
+
+mappingId	Participation_PerformerID_fk
+target		ex:Participation/{ParticipantID} p:hasPerformers ex:Performers/{PerformerID} .
+source		SELECT `ParticipantID`, `PerformerID` FROM `Participation` WHERE `PerformerID` IS NOT NULL
+
+]]

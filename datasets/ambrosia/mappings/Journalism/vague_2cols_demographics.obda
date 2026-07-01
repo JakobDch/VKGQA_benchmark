@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{AuthorID} a :Authors ; p:AuthorID {AuthorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} .
+source		SELECT `AuthorID`, `FirstName`, `LastName`, `BirthDate` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:PublicationDate {PublicationDate} ; p:WordCount {WordCount} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `PublicationDate`, `WordCount`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	NewsOutlets_base
+target		ex:NewsOutlets/{OutletID} a :NewsOutlets ; p:OutletID {OutletID} ; p:name {Name} ; p:location {Location} ; p:FoundedYear {FoundedYear} .
+source		SELECT `OutletID`, `Name`, `Location`, `FoundedYear` FROM `NewsOutlets`
+
+mappingId	Publishes_base
+target		ex:Publishes/{PublishID} a :Publishes ; p:PublishID {PublishID} ; p:ArticleID {ArticleID} ; p:OutletID {OutletID} .
+source		SELECT `PublishID`, `ArticleID`, `OutletID` FROM `Publishes`
+
+mappingId	Publishes_OutletID_fk
+target		ex:Publishes/{PublishID} p:hasNewsOutlets ex:NewsOutlets/{OutletID} .
+source		SELECT `PublishID`, `OutletID` FROM `Publishes` WHERE `OutletID` IS NOT NULL
+
+mappingId	Publishes_ArticleID_fk
+target		ex:Publishes/{PublishID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `PublishID`, `ArticleID` FROM `Publishes` WHERE `ArticleID` IS NOT NULL
+
+mappingId	Audience_base
+target		ex:Audience/{DemoID} a :Audience ; p:DemoID {DemoID} ; p:Age_Group {Age_Group} ; p:Income_Level {Income_Level} ; p:Article {Article} .
+source		SELECT `DemoID`, `Age_Group`, `Income_Level`, `Article` FROM `Audience`
+
+mappingId	Audience_Article_fk
+target		ex:Audience/{DemoID} p:hasArticles ex:Articles/{Article} .
+source		SELECT `DemoID`, `Article` FROM `Audience` WHERE `Article` IS NOT NULL
+
+mappingId	Advertisements_base
+target		ex:Advertisements/{AdvID} a :Advertisements ; p:AdvID {AdvID} ; p:Description {Description} ; p:Budget {Budget} ; p:StartDate {StartDate} ; p:EndDate {EndDate} ; p:OutletID {OutletID} .
+source		SELECT `AdvID`, `Description`, `Budget`, `StartDate`, `EndDate`, `OutletID` FROM `Advertisements`
+
+mappingId	Advertisements_OutletID_fk
+target		ex:Advertisements/{AdvID} p:hasNewsOutlets ex:NewsOutlets/{OutletID} .
+source		SELECT `AdvID`, `OutletID` FROM `Advertisements` WHERE `OutletID` IS NOT NULL
+
+]]

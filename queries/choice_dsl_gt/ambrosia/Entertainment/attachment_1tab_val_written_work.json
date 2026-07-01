@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_1tab_val_written_work",
+  "schema": "amb_attachment_1tab_val_written_work",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all of the essays regardless of author, also show the letters written by Dr. Emily Thompson.",
+      "qtype": "unambig",
+      "sql": "SELECT Written_Works.Title \nFROM Written_Works JOIN Authors ON Written_Works.AuthorID = Authors.id\nWHERE Written_Works.Type = 'Essay' OR Written_Works.Type = 'Letter' AND Authors.name = \"Dr. Emily Thompson\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?written_works a :WrittenWorks .\n  ?authors a :Author .\n  ?written_works p:hasAuthors ?authors .\n  ?written_works p:Title ?title .\n  ?written_works p:Type ?type_w .\n  ?written_works p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Letter\" && STR(?name_w) = \"Dr. Emily Thompson\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show all of Dr. Emily Thompson's written works classed as either an essay or a letter.",
+      "qtype": "unambig",
+      "sql": "SELECT Written_Works.Title \nFROM Written_Works JOIN Authors ON Written_Works.AuthorID = Authors.id\nWHERE (Written_Works.Type = 'Essay' OR Written_Works.Type = 'Letter') AND Authors.name = \"Dr. Emily Thompson\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?written_works a :WrittenWorks .\n  ?authors a :Author .\n  ?written_works p:hasAuthors ?authors .\n  ?written_works p:Title ?title .\n  ?written_works p:Type ?type_w .\n  ?written_works p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Letter\")) && STR(?name_w) = \"Dr. Emily Thompson\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all essays and letters written by Dr. Emily Thompson",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?written_works a :WrittenWorks .\n  ?authors a :Author .\n  ?written_works p:hasAuthors ?authors .\n  ?written_works p:Title ?title .\n  ?written_works p:Type ?type_w .\n  ?written_works p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((STR(?type_w) = \"Essay\" || (STR(?type_w2) = \"Letter\" && STR(?name_w) = \"Dr. Emily Thompson\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?written_works a :WrittenWorks .\n  ?authors a :Author .\n  ?written_works p:hasAuthors ?authors .\n  ?written_works p:Title ?title .\n  ?written_works p:Type ?type_w .\n  ?written_works p:Type ?type_w2 .\n  ?authors p:name ?name_w .\n  FILTER((((STR(?type_w) = \"Essay\" || STR(?type_w2) = \"Letter\")) && STR(?name_w) = \"Dr. Emily Thompson\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

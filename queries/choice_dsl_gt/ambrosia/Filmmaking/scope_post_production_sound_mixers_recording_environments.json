@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_post_production_sound_mixers_recording_environments",
+  "schema": "amb_scope_post_production_sound_mixers_recording_environments",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What environment is common to all sound mixers?",
+      "qtype": "unambig",
+      "sql": "SELECT Recording_Environments.environment_name  from Sound_Mixer_Environment_History join Recording_Environments on Sound_Mixer_Environment_History.environment_id = Recording_Environments.id join Post_Production_Sound_Mixers on Sound_Mixer_Environment_History.sound_mixer_id = Post_Production_Sound_Mixers.id   GROUP BY Sound_Mixer_Environment_History.environment_id HAVING COUNT(DISTINCT Sound_Mixer_Environment_History.sound_mixer_id) = (SELECT COUNT(*) FROM  Post_Production_Sound_Mixers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?environment_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRecording_Environments ?child ; p:hasPost_Production_Sound_Mixers ?parent . } GROUP BY ?child }\n  ?child p:environment_name ?environment_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Post_Production_Sound_Mixers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each sound mixer, list the environments they record in.",
+      "qtype": "unambig",
+      "sql": "select post_production_sound_mixers.name , recording_environments.environment_name from Sound_Mixer_Environment_History join Recording_Environments on Sound_Mixer_Environment_History.environment_id = Recording_Environments.id join Post_Production_Sound_Mixers on Sound_Mixer_Environment_History.sound_mixer_id = Post_Production_Sound_Mixers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?environment_name WHERE {\n  ?sound_mixer_environment_history a :Sound_Mixer_Environment_History .\n  ?recording_environments a :Recording_Environments .\n  ?sound_mixer_environment_history p:hasRecording_Environments ?recording_environments .\n  ?post_production_sound_mixers a :Post_Production_Sound_Mixers .\n  ?sound_mixer_environment_history p:hasPost_Production_Sound_Mixers ?post_production_sound_mixers .\n  ?post_production_sound_mixers p:name ?name .\n  ?recording_environments p:environment_name ?environment_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the environment every sound mixer records in.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?environment_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRecording_Environments ?child ; p:hasPost_Production_Sound_Mixers ?parent . } GROUP BY ?child }\n  ?child p:environment_name ?environment_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Post_Production_Sound_Mixers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?environment_name WHERE {\n  ?sound_mixer_environment_history a :Sound_Mixer_Environment_History .\n  ?recording_environments a :Recording_Environments .\n  ?sound_mixer_environment_history p:hasRecording_Environments ?recording_environments .\n  ?post_production_sound_mixers a :Post_Production_Sound_Mixers .\n  ?sound_mixer_environment_history p:hasPost_Production_Sound_Mixers ?post_production_sound_mixers .\n  ?post_production_sound_mixers p:name ?name .\n  ?recording_environments p:environment_name ?environment_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

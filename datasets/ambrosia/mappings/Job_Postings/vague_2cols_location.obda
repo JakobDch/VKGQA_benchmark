@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Office_base
+target		ex:Office/{ID} a :Office ; p:ID {ID} ; p:Office_Address {Office_Address} ; p:City {City} .
+source		SELECT `ID`, `Office_Address`, `City` FROM `Office`
+
+mappingId	Department_base
+target		ex:Departments/{ID} a :Departments ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `Department`
+
+mappingId	Internship_Position_base
+target		ex:Internship_Position/{ID} a :Internship_Position ; p:ID {ID} ; p:Position_Title {Position_Title} ; p:Description {Description} ; p:Duration {Duration} .
+source		SELECT `ID`, `Position_Title`, `Description`, `Duration` FROM `Internship_Position`
+
+mappingId	Employee_base
+target		ex:Employees/{ID} a :Employees ; p:ID {ID} ; p:First_Name {First_Name} ; p:Last_Name {Last_Name} ; p:email {Email} ; p:Phone_Number {Phone_Number} ; p:Hire_Date {Hire_Date} .
+source		SELECT `ID`, `First_Name`, `Last_Name`, `Email`, `Phone_Number`, `Hire_Date` FROM `Employee`
+
+mappingId	Job_Posting_base
+target		ex:JobPostings/{ID} a :JobPostings ; p:ID {ID} ; p:Title {Title} ; p:Description {Description} ; p:Required_Skills {Required_Skills} ; p:Salary {Salary} ; p:Application_Deadline {Application_Deadline} ; p:Office_ID {Office_ID} ; p:Departments_ID {Departments_ID} ; p:Internships_ID {Internships_ID} .
+source		SELECT `ID`, `Title`, `Description`, `Required_Skills`, `Salary`, `Application_Deadline`, `Office_ID`, `Departments_ID`, `Internships_ID` FROM `Job_Posting`
+
+mappingId	Job_Posting_Internships_ID_fk
+target		ex:JobPostings/{ID} p:hasInternship_Position ex:Internship_Position/{Internships_ID} .
+source		SELECT `ID`, `Internships_ID` FROM `Job_Posting` WHERE `Internships_ID` IS NOT NULL
+
+mappingId	Job_Posting_Departments_ID_fk
+target		ex:JobPostings/{ID} p:hasDepartments ex:Departments/{Departments_ID} .
+source		SELECT `ID`, `Departments_ID` FROM `Job_Posting` WHERE `Departments_ID` IS NOT NULL
+
+mappingId	Job_Posting_Office_ID_fk
+target		ex:JobPostings/{ID} p:hasOffice ex:Office/{Office_ID} .
+source		SELECT `ID`, `Office_ID` FROM `Job_Posting` WHERE `Office_ID` IS NOT NULL
+
+mappingId	Applicant_base
+target		ex:Applicants/{ID} a :Applicants ; p:ID {ID} ; p:name {Full_name} ; p:email {Email} ; p:Phone_number {Phone_number} ; p:Resume_url {Resume_url} ; p:Date_applied {Date_applied} ; p:Job_posting_id {Job_posting_id} .
+source		SELECT `ID`, `Full_name`, `Email`, `Phone_number`, `Resume_url`, `Date_applied`, `Job_posting_id` FROM `Applicant`
+
+mappingId	Applicant_Job_posting_id_fk
+target		ex:Applicants/{ID} p:hasJobPostings ex:JobPostings/{Job_posting_id} .
+source		SELECT `ID`, `Job_posting_id` FROM `Applicant` WHERE `Job_posting_id` IS NOT NULL
+
+]]

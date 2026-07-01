@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	airlines_base
+target		ex:Airlines/{airline_id} a :Airlines ; p:airline_id {airline_id} ; p:name {name} ; p:code {code} .
+source		SELECT `airline_id`, `name`, `code` FROM `airlines`
+
+mappingId	flights_base
+target		ex:Flights/{flight_id} a :Flights ; p:flight_id {flight_id} ; p:departure_time {departure_time} ; p:arrival_time {arrival_time} ; p:distance {distance} ; p:origin_airport_code {origin_airport_code} ; p:destination_airport_code {destination_airport_code} ; p:airline_id {airline_id} .
+source		SELECT `flight_id`, `departure_time`, `arrival_time`, `distance`, `origin_airport_code`, `destination_airport_code`, `airline_id` FROM `flights`
+
+mappingId	flights_airline_id_fk
+target		ex:Flights/{flight_id} p:hasAirlines ex:Airlines/{airline_id} .
+source		SELECT `flight_id`, `airline_id` FROM `flights` WHERE `airline_id` IS NOT NULL
+
+mappingId	terminals_base
+target		ex:Terminals/{terminal_number} a :Terminals ; p:terminal_number {terminal_number} ; p:capacity {capacity} ; p:location {location} .
+source		SELECT `terminal_number`, `capacity`, `location` FROM `terminals`
+
+mappingId	boarding_areas_base
+target		ex:Boarding_Areas/{boarding_area_id} a :Boarding_Areas ; p:boarding_area_id {boarding_area_id} ; p:terminal_number {terminal_number} ; p:gate {gate} .
+source		SELECT `boarding_area_id`, `terminal_number`, `gate` FROM `boarding_areas`
+
+mappingId	boarding_areas_terminal_number_fk
+target		ex:Boarding_Areas/{boarding_area_id} p:hasTerminals ex:Terminals/{terminal_number} .
+source		SELECT `boarding_area_id`, `terminal_number` FROM `boarding_areas` WHERE `terminal_number` IS NOT NULL
+
+mappingId	flights_boarding_areas_base
+target		ex:flights_boarding_areas/{flight_id}/{boarding_area_id} a :flights_boarding_areas ; p:flight_id {flight_id} ; p:boarding_area_id {boarding_area_id} .
+source		SELECT `flight_id`, `boarding_area_id` FROM `flights_boarding_areas`
+
+mappingId	flights_boarding_areas_boarding_area_id_fk
+target		ex:flights_boarding_areas/{flight_id}/{boarding_area_id} p:hasBoarding_Areas ex:Boarding_Areas/{boarding_area_id} .
+source		SELECT `flight_id`, `boarding_area_id` FROM `flights_boarding_areas` WHERE `boarding_area_id` IS NOT NULL
+
+mappingId	flights_boarding_areas_flight_id_fk
+target		ex:flights_boarding_areas/{flight_id}/{boarding_area_id} p:hasFlights ex:Flights/{flight_id} .
+source		SELECT `flight_id`, `boarding_area_id` FROM `flights_boarding_areas` WHERE `flight_id` IS NOT NULL
+
+]]

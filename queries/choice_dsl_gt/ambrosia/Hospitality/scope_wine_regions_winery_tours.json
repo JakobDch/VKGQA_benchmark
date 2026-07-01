@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_wine_regions_winery_tours",
+  "schema": "amb_scope_wine_regions_winery_tours",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each wine region, show the tours they offer.",
+      "qtype": "unambig",
+      "sql": "select wine_regions.name , winery_tours.type from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Type ?type .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 1,
+      "question": "What is the duration of tours that are common to all wine regions?",
+      "qtype": "unambig",
+      "sql": "SELECT Winery_Tours.Duration  from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID   GROUP BY Wine_Regions_Winery_Tours.TourType HAVING COUNT(DISTINCT Wine_Regions_Winery_Tours.WineRegionID) = (SELECT COUNT(*) FROM  Wine_Regions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 2,
+      "question": "What types and duration of winery tours are common for all wine regions?",
+      "qtype": "unambig",
+      "sql": "SELECT Winery_Tours.Type, Winery_Tours.Duration  from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID   GROUP BY Wine_Regions_Winery_Tours.TourType HAVING COUNT(DISTINCT Wine_Regions_Winery_Tours.WineRegionID) = (SELECT COUNT(*) FROM  Wine_Regions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "Tell me the duration of tours each wine region offers.",
+      "qtype": "ambig",
+      "sql": "select wine_regions.name , winery_tours.duration from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?duration WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Duration ?duration .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 4,
+      "question": "For every wine region, show me the corresponding type and duration of winery tours.",
+      "qtype": "unambig",
+      "sql": "select wine_regions.name , winery_tours.type , winery_tours.duration from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?duration WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Type ?type .\n  ?winery_tours p:Duration ?duration .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 5,
+      "question": "What tours are common to all wine regions?",
+      "qtype": "unambig",
+      "sql": "SELECT Winery_Tours.Type  from Wine_Regions_Winery_Tours join Winery_Tours on Wine_Regions_Winery_Tours.TourType = Winery_Tours.Type join Wine_Regions on Wine_Regions_Winery_Tours.WineRegionID = Wine_Regions.RegionID   GROUP BY Wine_Regions_Winery_Tours.TourType HAVING COUNT(DISTINCT Wine_Regions_Winery_Tours.WineRegionID) = (SELECT COUNT(*) FROM  Wine_Regions)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the tours that each wine region offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Type ?type .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Tell me the duration of tours each wine region offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?duration WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Duration ?duration .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What type and duration of winery tours are available for each wine region?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?duration WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:TourType ?cg . ?child a :Winery_Tours ; p:Type ?cg . ?l p:WineRegionID ?pg . ?parent a :Wine_Regions ; p:RegionID ?pg . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Duration ?duration .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Wine_Regions } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?duration WHERE {\n  ?wine_regions_winery_tours a :Wine_Regions_Winery_Tours .\n  ?winery_tours a :Winery_Tours .\n  ?wine_regions_winery_tours p:TourType ?tourtype_l .\n  ?winery_tours p:Type ?type_r .\n  ?wine_regions a :Wine_Regions .\n  ?wine_regions_winery_tours p:hasWine_Regions ?wine_regions .\n  ?wine_regions p:name ?name .\n  ?winery_tours p:Type ?type .\n  ?winery_tours p:Duration ?duration .\n  FILTER(STR(?tourtype_l) = STR(?type_r))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

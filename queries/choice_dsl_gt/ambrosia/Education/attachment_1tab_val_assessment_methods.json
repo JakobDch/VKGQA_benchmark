@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_assessment_methods",
+  "schema": "amb_attachment_1tab_val_assessment_methods",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the passing marks on exams assessed by Professor Smith and on quizzes assessed by the same professor?",
+      "qtype": "unambig",
+      "sql": "SELECT Assessments.PassingMark \nFROM Assessments \nWHERE (Assessments.AssessmentMethod = 'Exam' OR Assessments.AssessmentMethod = 'Quiz') AND Assessments.Assessor = 'Professor Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?passingmark WHERE {\n  ?assessments a :Assessments .\n  ?assessments p:PassingMark ?passingmark .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w2 .\n  ?assessments p:Assessor ?assessor_w .\n  FILTER((((STR(?assessmentmethod_w) = \"Exam\" || STR(?assessmentmethod_w2) = \"Quiz\")) && STR(?assessor_w) = \"Professor Smith\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What are the passing marks of exams and quiz assessed by Professor Smith?",
+      "qtype": "ambig",
+      "sql": "SELECT Assessments.PassingMark \nFROM Assessments \nWHERE Assessments.AssessmentMethod = 'Exam' OR Assessments.AssessmentMethod = 'Quiz' AND Assessments.Assessor = 'Professor Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?passingmark WHERE {\n  ?assessments a :Assessments .\n  ?assessments p:PassingMark ?passingmark .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w2 .\n  ?assessments p:Assessor ?assessor_w .\n  FILTER((STR(?assessmentmethod_w) = \"Exam\" || (STR(?assessmentmethod_w2) = \"Quiz\" && STR(?assessor_w) = \"Professor Smith\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the passing marks of exams and quiz assessed by Professor Smith?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?passingmark WHERE {\n  ?assessments a :Assessments .\n  ?assessments p:PassingMark ?passingmark .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w2 .\n  ?assessments p:Assessor ?assessor_w .\n  FILTER((((STR(?assessmentmethod_w) = \"Exam\" || STR(?assessmentmethod_w2) = \"Quiz\")) && STR(?assessor_w) = \"Professor Smith\"))\n} }\n  low: { SELECT ?passingmark WHERE {\n  ?assessments a :Assessments .\n  ?assessments p:PassingMark ?passingmark .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w .\n  ?assessments p:AssessmentMethod ?assessmentmethod_w2 .\n  ?assessments p:Assessor ?assessor_w .\n  FILTER((STR(?assessmentmethod_w) = \"Exam\" || (STR(?assessmentmethod_w2) = \"Quiz\" && STR(?assessor_w) = \"Professor Smith\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

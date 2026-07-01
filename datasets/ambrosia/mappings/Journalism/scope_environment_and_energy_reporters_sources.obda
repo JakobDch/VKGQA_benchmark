@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Environment_And_Energy_Reporters_base
+target		ex:Environment_And_Energy_Reporters/{id} a :Environment_And_Energy_Reporters ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Environment_And_Energy_Reporters`
+
+mappingId	Sources_base
+target		ex:Sources/{source_id} a :Sources ; p:source_id {source_id} ; p:source_name {source_name} ; p:description {description} .
+source		SELECT `source_id`, `source_name`, `description` FROM `Sources`
+
+mappingId	Environment_And_Energy_Reporters_Sources_base
+target		ex:Environment_And_Energy_Reporters_Sources/{_amb_rowid} a :Environment_And_Energy_Reporters_Sources ; p:reporter_id {reporter_id} ; p:source_id {source_id} .
+source		SELECT `_amb_rowid`, `reporter_id`, `source_id` FROM `Environment_And_Energy_Reporters_Sources`
+
+mappingId	Environment_And_Energy_Reporters_Sources_source_id_fk
+target		ex:Environment_And_Energy_Reporters_Sources/{_amb_rowid} p:hasSources ex:Sources/{source_id} .
+source		SELECT `_amb_rowid`, `source_id` FROM `Environment_And_Energy_Reporters_Sources` WHERE `source_id` IS NOT NULL
+
+mappingId	Environment_And_Energy_Reporters_Sources_reporter_id_fk
+target		ex:Environment_And_Energy_Reporters_Sources/{_amb_rowid} p:hasEnvironment_And_Energy_Reporters ex:Environment_And_Energy_Reporters/{reporter_id} .
+source		SELECT `_amb_rowid`, `reporter_id` FROM `Environment_And_Energy_Reporters_Sources` WHERE `reporter_id` IS NOT NULL
+
+]]

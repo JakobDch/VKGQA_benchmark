@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_marketing_campaigns_approaches",
+  "schema": "amb_scope_marketing_campaigns_approaches",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every marketing campaign, list the approach used.",
+      "qtype": "unambig",
+      "sql": "select marketing_campaigns.campaign_name , approaches.approach_value from Marketing_Campaigns_Approaches join Approaches on Marketing_Campaigns_Approaches.approach_id = Approaches.id join Marketing_Campaigns on Marketing_Campaigns_Approaches.marketing_campaign_id = Marketing_Campaigns.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?campaign_name ?approach_value WHERE {\n  ?marketing_campaigns_approaches a :Marketing_Campaigns_Approaches .\n  ?approaches a :Approaches .\n  ?marketing_campaigns_approaches p:hasApproaches ?approaches .\n  ?marketing_campaigns a :Marketing_Campaigns .\n  ?marketing_campaigns_approaches p:hasMarketing_Campaigns ?marketing_campaigns .\n  ?marketing_campaigns p:campaign_name ?campaign_name .\n  ?approaches p:approach_value ?approach_value .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What approach do all marketing campaigns have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Approaches.approach_value  from Marketing_Campaigns_Approaches join Approaches on Marketing_Campaigns_Approaches.approach_id = Approaches.id join Marketing_Campaigns on Marketing_Campaigns_Approaches.marketing_campaign_id = Marketing_Campaigns.id   GROUP BY Marketing_Campaigns_Approaches.approach_id HAVING COUNT(DISTINCT Marketing_Campaigns_Approaches.marketing_campaign_id) = (SELECT COUNT(*) FROM  Marketing_Campaigns)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?approach_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasApproaches ?child ; p:hasMarketing_Campaigns ?parent . } GROUP BY ?child }\n  ?child p:approach_value ?approach_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Marketing_Campaigns } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the approach each marketing campaign uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?campaign_name ?approach_value WHERE {\n  ?marketing_campaigns_approaches a :Marketing_Campaigns_Approaches .\n  ?approaches a :Approaches .\n  ?marketing_campaigns_approaches p:hasApproaches ?approaches .\n  ?marketing_campaigns a :Marketing_Campaigns .\n  ?marketing_campaigns_approaches p:hasMarketing_Campaigns ?marketing_campaigns .\n  ?marketing_campaigns p:campaign_name ?campaign_name .\n  ?approaches p:approach_value ?approach_value .\n} }\n  collective: { SELECT ?approach_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasApproaches ?child ; p:hasMarketing_Campaigns ?parent . } GROUP BY ?child }\n  ?child p:approach_value ?approach_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Marketing_Campaigns } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

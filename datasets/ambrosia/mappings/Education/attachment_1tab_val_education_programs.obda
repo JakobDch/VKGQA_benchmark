@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{StudentID} a :Students ; p:StudentID {StudentID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:BirthDate {BirthDate} ; p:email {Email} .
+source		SELECT `StudentID`, `FirstName`, `LastName`, `BirthDate`, `Email` FROM `Students`
+
+mappingId	Educators_base
+target		ex:Educators/{EducatorID} a :Educators ; p:EducatorID {EducatorID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Subject {Subject} .
+source		SELECT `EducatorID`, `FirstName`, `LastName`, `Subject` FROM `Educators`
+
+mappingId	Classes_base
+target		ex:Classes/{ClassID} a :Classes ; p:ClassID {ClassID} ; p:ClassName {ClassName} ; p:StartTime {StartTime} ; p:EndTime {EndTime} ; p:RoomNumber {RoomNumber} .
+source		SELECT `ClassID`, `ClassName`, `StartTime`, `EndTime`, `RoomNumber` FROM `Classes`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{EnrollmentID} a :Enrollments ; p:EnrollmentID {EnrollmentID} ; p:StudentID {StudentID} ; p:ClassID {ClassID} ; p:Semester {Semester} ; p:Grade {Grade} .
+source		SELECT `EnrollmentID`, `StudentID`, `ClassID`, `Semester`, `Grade` FROM `Enrollments`
+
+mappingId	Enrollments_ClassID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `EnrollmentID`, `ClassID` FROM `Enrollments` WHERE `ClassID` IS NOT NULL
+
+mappingId	Enrollments_StudentID_fk
+target		ex:Enrollments/{EnrollmentID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `EnrollmentID`, `StudentID` FROM `Enrollments` WHERE `StudentID` IS NOT NULL
+
+mappingId	Course_Offerings_base
+target		ex:Course_Offerings/{OfferingID} a :Course_Offerings ; p:OfferingID {OfferingID} ; p:ClassID {ClassID} ; p:ProgramID {ProgramID} ; p:InstructorID {InstructorID} .
+source		SELECT `OfferingID`, `ClassID`, `ProgramID`, `InstructorID` FROM `Course_Offerings`
+
+mappingId	Course_Offerings_InstructorID_fk
+target		ex:Course_Offerings/{OfferingID} p:hasEducators ex:Educators/{InstructorID} .
+source		SELECT `OfferingID`, `InstructorID` FROM `Course_Offerings` WHERE `InstructorID` IS NOT NULL
+
+mappingId	Course_Offerings_ProgramID_fk
+target		ex:Course_Offerings/{OfferingID} p:hasEducation_Programs ex:Education_Programs/{ProgramID} .
+source		SELECT `OfferingID`, `ProgramID` FROM `Course_Offerings` WHERE `ProgramID` IS NOT NULL
+
+mappingId	Course_Offerings_ClassID_fk
+target		ex:Course_Offerings/{OfferingID} p:hasClasses ex:Classes/{ClassID} .
+source		SELECT `OfferingID`, `ClassID` FROM `Course_Offerings` WHERE `ClassID` IS NOT NULL
+
+mappingId	Education_Programs_base
+target		ex:Education_Programs/{ProgramID} a :Education_Programs ; p:ProgramID {ProgramID} ; p:name {name} ; p:Type {Type} ; p:Description {Description} ; p:Credits {Credits} .
+source		SELECT `ProgramID`, `name`, `Type`, `Description`, `Credits` FROM `Education_Programs`
+
+]]

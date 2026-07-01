@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_business_professions",
+  "schema": "amb_attachment_1tab_ref_business_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the sales manager job posts and also show the marketing specialist job posts that allow hybrid working.",
+      "qtype": "unambig",
+      "sql": "SELECT Job_Posting.title \nFROM Business_Profession JOIN Job_Posting ON Business_Profession.id = Job_Posting.business_profession_id JOIN Working_Arrangement ON Job_Posting.working_arrangement_id = Working_Arrangement.id\nWHERE Business_Profession.profession = \"Sales Manager\" OR Business_Profession.profession = \"Marketing Specialist\" AND Working_Arrangement.arrangement = \"Hybrid\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?business_profession a :Business_Profession .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasBusiness_Profession ?business_profession .\n  ?working_arrangement a :Working_Arrangement .\n  ?job_posting p:hasWorking_Arrangement ?working_arrangement .\n  ?job_posting p:title ?title .\n  ?business_profession p:profession ?profession_w .\n  ?business_profession p:profession ?profession_w2 .\n  ?working_arrangement p:arrangement ?arrangement_w .\n  FILTER((STR(?profession_w) = \"Sales Manager\" || (STR(?profession_w2) = \"Marketing Specialist\" && STR(?arrangement_w) = \"Hybrid\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show the job postings that offer hybrid work for both the sales manager and marketing specialist positions.",
+      "qtype": "unambig",
+      "sql": "SELECT Job_Posting.title \nFROM Business_Profession JOIN Job_Posting ON Business_Profession.id = Job_Posting.business_profession_id JOIN Working_Arrangement ON Job_Posting.working_arrangement_id = Working_Arrangement.id\nWHERE (Business_Profession.profession = \"Sales Manager\" OR Business_Profession.profession = \"Marketing Specialist\") AND Working_Arrangement.arrangement = \"Hybrid\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?business_profession a :Business_Profession .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasBusiness_Profession ?business_profession .\n  ?working_arrangement a :Working_Arrangement .\n  ?job_posting p:hasWorking_Arrangement ?working_arrangement .\n  ?job_posting p:title ?title .\n  ?business_profession p:profession ?profession_w .\n  ?business_profession p:profession ?profession_w2 .\n  ?working_arrangement p:arrangement ?arrangement_w .\n  FILTER((((STR(?profession_w) = \"Sales Manager\" || STR(?profession_w2) = \"Marketing Specialist\")) && STR(?arrangement_w) = \"Hybrid\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What jobs are available for sales managers and marketing specialists who have hybrid working arrangements?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?title WHERE {\n  ?business_profession a :Business_Profession .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasBusiness_Profession ?business_profession .\n  ?working_arrangement a :Working_Arrangement .\n  ?job_posting p:hasWorking_Arrangement ?working_arrangement .\n  ?job_posting p:title ?title .\n  ?business_profession p:profession ?profession_w .\n  ?business_profession p:profession ?profession_w2 .\n  ?working_arrangement p:arrangement ?arrangement_w .\n  FILTER((STR(?profession_w) = \"Sales Manager\" || (STR(?profession_w2) = \"Marketing Specialist\" && STR(?arrangement_w) = \"Hybrid\")))\n} }\n  high: { SELECT ?title WHERE {\n  ?business_profession a :Business_Profession .\n  ?job_posting a :JobPostings .\n  ?job_posting p:hasBusiness_Profession ?business_profession .\n  ?working_arrangement a :Working_Arrangement .\n  ?job_posting p:hasWorking_Arrangement ?working_arrangement .\n  ?job_posting p:title ?title .\n  ?business_profession p:profession ?profession_w .\n  ?business_profession p:profession ?profession_w2 .\n  ?working_arrangement p:arrangement ?arrangement_w .\n  FILTER((((STR(?profession_w) = \"Sales Manager\" || STR(?profession_w2) = \"Marketing Specialist\")) && STR(?arrangement_w) = \"Hybrid\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

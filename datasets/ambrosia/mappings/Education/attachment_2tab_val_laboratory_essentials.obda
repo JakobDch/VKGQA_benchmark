@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{studentID} a :Students ; p:studentID {studentID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `studentID`, `firstName`, `lastName`, `email` FROM `Students`
+
+mappingId	Instructors_base
+target		ex:Instructors/{instructorID} a :Instructors ; p:instructorID {instructorID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {email} .
+source		SELECT `instructorID`, `firstName`, `lastName`, `email` FROM `Instructors`
+
+mappingId	Classes_base
+target		ex:Classes/{classID} a :Classes ; p:classID {classID} ; p:className {className} ; p:instructorID {instructorID} .
+source		SELECT `classID`, `className`, `instructorID` FROM `Classes`
+
+mappingId	Classes_instructorID_fk
+target		ex:Classes/{classID} p:hasInstructors ex:Instructors/{instructorID} .
+source		SELECT `classID`, `instructorID` FROM `Classes` WHERE `instructorID` IS NOT NULL
+
+mappingId	StudentsEnrolledInClasses_base
+target		ex:StudentsEnrolledInClasses/{enrollmentID} a :StudentsEnrolledInClasses ; p:enrollmentID {enrollmentID} ; p:studentID {studentID} ; p:classID {classID} .
+source		SELECT `enrollmentID`, `studentID`, `classID` FROM `StudentsEnrolledInClasses`
+
+mappingId	StudentsEnrolledInClasses_classID_fk
+target		ex:StudentsEnrolledInClasses/{enrollmentID} p:hasClasses ex:Classes/{classID} .
+source		SELECT `enrollmentID`, `classID` FROM `StudentsEnrolledInClasses` WHERE `classID` IS NOT NULL
+
+mappingId	StudentsEnrolledInClasses_studentID_fk
+target		ex:StudentsEnrolledInClasses/{enrollmentID} p:hasStudents ex:Students/{studentID} .
+source		SELECT `enrollmentID`, `studentID` FROM `StudentsEnrolledInClasses` WHERE `studentID` IS NOT NULL
+
+mappingId	Labs_base
+target		ex:Labs/{labID} a :Labs ; p:labID {labID} ; p:labName {labName} ; p:buildingNumber {buildingNumber} ; p:roomNumber {roomNumber} .
+source		SELECT `labID`, `labName`, `buildingNumber`, `roomNumber` FROM `Labs`
+
+mappingId	Lab_Equipments_base
+target		ex:Lab_Equipments/{equipmentID} a :Lab_Equipments ; p:equipmentID {equipmentID} ; p:labID {labID} ; p:equipName {equipName} ; p:dateOfPurchase {dateOfPurchase} ; p:cost {cost} .
+source		SELECT `equipmentID`, `labID`, `equipName`, `dateOfPurchase`, `cost` FROM `Lab_Equipments`
+
+mappingId	Lab_Equipments_labID_fk
+target		ex:Lab_Equipments/{equipmentID} p:hasLabs ex:Labs/{labID} .
+source		SELECT `equipmentID`, `labID` FROM `Lab_Equipments` WHERE `labID` IS NOT NULL
+
+mappingId	Safety_Gears_base
+target		ex:Safety_Gears/{safetyGearID} a :Safety_Gears ; p:safetyGearID {safetyGearID} ; p:labID {labID} ; p:gearName {gearName} ; p:dateOfPurchase {dateOfPurchase} ; p:cost {cost} .
+source		SELECT `safetyGearID`, `labID`, `gearName`, `dateOfPurchase`, `cost` FROM `Safety_Gears`
+
+mappingId	Safety_Gears_labID_fk
+target		ex:Safety_Gears/{safetyGearID} p:hasLabs ex:Labs/{labID} .
+source		SELECT `safetyGearID`, `labID` FROM `Safety_Gears` WHERE `labID` IS NOT NULL
+
+]]

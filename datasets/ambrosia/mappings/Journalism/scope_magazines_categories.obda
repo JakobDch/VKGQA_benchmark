@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Categories_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:categoryName {categoryName} .
+source		SELECT `id`, `categoryName` FROM `Categories`
+
+mappingId	Magazines_base
+target		ex:Magazines/{magazineId} a :Magazines ; p:magazineId {magazineId} ; p:magazineTitle {magazineTitle} ; p:publicationYear {publicationYear} ; p:websiteUrl {websiteUrl} .
+source		SELECT `magazineId`, `magazineTitle`, `publicationYear`, `websiteUrl` FROM `Magazines`
+
+mappingId	Magazines_Categories_base
+target		ex:Magazines_Categories/{magazineId}/{categoryId} a :Magazines_Categories ; p:magazineId {magazineId} ; p:categoryId {categoryId} .
+source		SELECT `magazineId`, `categoryId` FROM `Magazines_Categories`
+
+mappingId	Magazines_Categories_categoryId_fk
+target		ex:Magazines_Categories/{magazineId}/{categoryId} p:hasCategory ex:Category/{categoryId} .
+source		SELECT `magazineId`, `categoryId` FROM `Magazines_Categories` WHERE `categoryId` IS NOT NULL
+
+mappingId	Magazines_Categories_magazineId_fk
+target		ex:Magazines_Categories/{magazineId}/{categoryId} p:hasMagazines ex:Magazines/{magazineId} .
+source		SELECT `magazineId`, `categoryId` FROM `Magazines_Categories` WHERE `magazineId` IS NOT NULL
+
+]]

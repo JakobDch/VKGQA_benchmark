@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	MediaFranchises_base
+target		ex:MediaFranchises/{ID} a :MediaFranchises ; p:ID {ID} ; p:name {Name} ; p:Business_Strategy {Business_Strategy} ; p:Audience {Audience} ; p:OtherColumn1 {OtherColumn1} ; p:OtherColumn2 {OtherColumn2} .
+source		SELECT `ID`, `Name`, `Business_Strategy`, `Audience`, `OtherColumn1`, `OtherColumn2` FROM `MediaFranchises`
+
+mappingId	CrossPlatformExpansions_base
+target		ex:CrossPlatformExpansions/{ID} a :CrossPlatformExpansions ; p:ID {ID} ; p:name {Name} ; p:Business_Strategy {Business_Strategy} ; p:Audience {Audience} ; p:Platform {Platform} ; p:Year {Year} .
+source		SELECT `ID`, `Name`, `Business_Strategy`, `Audience`, `Platform`, `Year` FROM `CrossPlatformExpansions`
+
+mappingId	Articles_base
+target		ex:Articles/{ID} a :Articles ; p:ID {ID} ; p:Title {Title} ; p:Content {Content} ; p:PublicationDate {PublicationDate} ; p:AuthorID {AuthorID} .
+source		SELECT `ID`, `Title`, `Content`, `PublicationDate`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ID} p:hasAuthors ex:Authors/{AuthorID} .
+source		SELECT `ID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{ID} a :Authors ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:Role {Role} ; p:AffiliatedMediaFranchiseID {AffiliatedMediaFranchiseID} .
+source		SELECT `ID`, `FirstName`, `LastName`, `Role`, `AffiliatedMediaFranchiseID` FROM `Authors`
+
+mappingId	Authors_AffiliatedMediaFranchiseID_fk
+target		ex:Authors/{ID} p:hasMediaFranchises ex:MediaFranchises/{AffiliatedMediaFranchiseID} .
+source		SELECT `ID`, `AffiliatedMediaFranchiseID` FROM `Authors` WHERE `AffiliatedMediaFranchiseID` IS NOT NULL
+
+mappingId	Readers_base
+target		ex:Readers/{ID} a :Readers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:AgeGroup {AgeGroup} ; p:PreferredGenre {PreferredGenre} ; p:FavouriteMediaFranchiseID {FavouriteMediaFranchiseID} .
+source		SELECT `ID`, `FirstName`, `LastName`, `AgeGroup`, `PreferredGenre`, `FavouriteMediaFranchiseID` FROM `Readers`
+
+mappingId	Readers_FavouriteMediaFranchiseID_fk
+target		ex:Readers/{ID} p:hasMediaFranchises ex:MediaFranchises/{FavouriteMediaFranchiseID} .
+source		SELECT `ID`, `FavouriteMediaFranchiseID` FROM `Readers` WHERE `FavouriteMediaFranchiseID` IS NOT NULL
+
+]]

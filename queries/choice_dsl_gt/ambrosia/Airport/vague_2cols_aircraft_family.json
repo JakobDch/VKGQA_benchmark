@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_aircraft_family",
+  "schema": "amb_vague_2cols_aircraft_family",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show the list of flights, their plane manufacturers, source and destination airports with their departure date and times and order the list by date and time.",
+      "qtype": "unambig",
+      "sql": "SELECT\nFlights.flight_number,\nPlanes.manufacturer_name,\nSource.name, \nDest.name,\nFlights.departure_date,\nFlights.scheduled_departure_time\nFROM Flights\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Airports AS Source ON Source.id = Routes.source_airport_id\nJOIN Airports AS Dest ON Dest.id = Routes.destination_airport_id\nORDER BY Flights.departure_date ASC, Flights.scheduled_departure_time ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?manufacturer_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "List the flights with the corresponding airlines, aircraft families and pilots assigned to the flights.",
+      "qtype": "ambig",
+      "sql": "SELECT \nFlights.flight_number,\nAirlines.airline_name,\nPlanes.manufacturer_name,\nPilots.full_name\nFROM Flights\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN AssignsPilotToFlight APTF ON APTF.flight_id = Flights.id\nJOIN Pilots ON Pilots.id = APTF.pilot_id\nJOIN Airlines ON Airlines.id = Routes.airline_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?airline_name ?manufacturer_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?pilots p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 2,
+      "question": "List the flights with the corresponding airlines, aircraft families and pilots assigned to the flights.",
+      "qtype": "ambig",
+      "sql": "SELECT \nFlights.flight_number,\nAirlines.airline_name,\nPlanes.model_name,\nPilots.full_name\nFROM Flights\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN AssignsPilotToFlight APTF ON APTF.flight_id = Flights.id\nJOIN Pilots ON Pilots.id = APTF.pilot_id\nJOIN Airlines ON Airlines.id = Routes.airline_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?airline_name ?model_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:model_name ?model_name .\n  ?pilots p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 3,
+      "question": "List the flights with the corresponding airlines, aircraft families and pilots assigned to the flights.",
+      "qtype": "ambig",
+      "sql": "SELECT \nFlights.flight_number,\nAirlines.airline_name,\nPlanes.manufacturer_name, model_name,\nPilots.full_name\nFROM Flights\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN AssignsPilotToFlight APTF ON APTF.flight_id = Flights.id\nJOIN Pilots ON Pilots.id = APTF.pilot_id\nJOIN Airlines ON Airlines.id = Routes.airline_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?airline_name ?manufacturer_name ?model_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?planes p:model_name ?model_name .\n  ?pilots p:name ?full_name .\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 4,
+      "question": "Show the list of flights, their aircraft families, source and destination airports with their departure date and times and order the list by date and time.",
+      "qtype": "ambig",
+      "sql": "SELECT\nFlights.flight_number,\nPlanes.model_name,\nSource.name, \nDest.name,\nFlights.departure_date,\nFlights.scheduled_departure_time\nFROM Flights\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Airports AS Source ON Source.id = Routes.source_airport_id\nJOIN Airports AS Dest ON Dest.id = Routes.destination_airport_id\nORDER BY Flights.departure_date ASC, Flights.scheduled_departure_time ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?model_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:model_name ?model_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o)",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 5,
+      "question": "Show the list of flights, their aircraft families, source and destination airports with their departure date and times and order the list by date and time.",
+      "qtype": "ambig",
+      "sql": "SELECT\nFlights.flight_number,\nPlanes.manufacturer_name, model_name,\nSource.name, \nDest.name,\nFlights.departure_date,\nFlights.scheduled_departure_time\nFROM Flights\nJOIN Planes ON Planes.id = Flights.plane_id\nJOIN Routes ON Routes.id = Flights.route_id\nJOIN Airports AS Source ON Source.id = Routes.source_airport_id\nJOIN Airports AS Dest ON Dest.id = Routes.destination_airport_id\nORDER BY Flights.departure_date ASC, Flights.scheduled_departure_time ASC",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?flight_number ?manufacturer_name ?model_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?planes p:model_name ?model_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o)",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show the list of flights, their aircraft families, source and destination airports with their departure date and times and order the list by date and time.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?flight_number ?manufacturer_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o) }\n  full: { SELECT ?flight_number ?manufacturer_name ?model_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?planes p:model_name ?model_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o) }\n  component_2: { SELECT ?flight_number ?model_name ?name ?name2 ?departure_date ?scheduled_departure_time WHERE {\n  ?flights a :Flights .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?source a :Airports .\n  ?routes p:hasAirports_source_airport_id ?source .\n  ?dest a :Airports .\n  ?routes p:hasAirports_destination_airport_id ?dest .\n  ?flights p:flight_number ?flight_number .\n  ?planes p:model_name ?model_name .\n  ?source p:name ?name .\n  ?dest p:name ?name2 .\n  ?flights p:departure_date ?departure_date .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time .\n  ?flights p:departure_date ?departure_date_o .\n  ?flights p:scheduled_departure_time ?scheduled_departure_time_o .\n}\nORDER BY ASC(?departure_date_o) ASC(?scheduled_departure_time_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the flights with the corresponding airlines, aircraft families and pilots assigned to the flights.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?flight_number ?airline_name ?manufacturer_name ?model_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?planes p:model_name ?model_name .\n  ?pilots p:name ?full_name .\n} }\n  component: { SELECT ?flight_number ?airline_name ?model_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:model_name ?model_name .\n  ?pilots p:name ?full_name .\n} }\n  component_2: { SELECT ?flight_number ?airline_name ?manufacturer_name ?full_name WHERE {\n  ?flights a :Flights .\n  ?routes a :Routes .\n  ?flights p:hasRoutes ?routes .\n  ?planes a :Planes .\n  ?flights p:hasPlanes ?planes .\n  ?aptf a :AssignsPilotToFlight .\n  ?aptf p:hasFlights ?flights .\n  ?pilots a :Pilots .\n  ?aptf p:hasPilots ?pilots .\n  ?airlines a :Airlines .\n  ?routes p:hasAirlines ?airlines .\n  ?flights p:flight_number ?flight_number .\n  ?airlines p:airline_name ?airline_name .\n  ?planes p:manufacturer_name ?manufacturer_name .\n  ?pilots p:name ?full_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

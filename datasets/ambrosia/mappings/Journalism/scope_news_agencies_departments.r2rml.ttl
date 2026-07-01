@@ -1,0 +1,37 @@
+@prefix : <http://ambrosia.example.org/journalism#> .
+@prefix p: <http://ambrosia.example.org/journalism/prop#> .
+@prefix ex: <http://ambrosia.example.org/journalism/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_news_agencies_departments_0_News_Agencies_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"id\", \"name\", \"location\", \"established_year\" FROM \"News_Agencies\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/News_Agency/{id}" ; rr:class :News_Agency ] ;
+  rr:predicateObjectMap [ rr:predicate p:id ; rr:objectMap [ rr:column "id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "location" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:established_year ; rr:objectMap [ rr:column "established_year" ] ] .
+
+<#tm_scope_news_agencies_departments_1_Departments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"department_id\", \"department_name\" FROM \"Departments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/Departments/{department_id}" ; rr:class :Departments ] ;
+  rr:predicateObjectMap [ rr:predicate p:department_id ; rr:objectMap [ rr:column "department_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:department_name ; rr:objectMap [ rr:column "department_name" ] ] .
+
+<#tm_scope_news_agencies_departments_2_News_Agencies_Departments_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"agency_id\", \"department_id\" FROM \"News_Agencies_Departments\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/News_Agencies_Departments/{agency_id}/{department_id}" ; rr:class :News_Agencies_Departments ] ;
+  rr:predicateObjectMap [ rr:predicate p:agency_id ; rr:objectMap [ rr:column "agency_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:department_id ; rr:objectMap [ rr:column "department_id" ] ] .
+
+<#tm_scope_news_agencies_departments_3_News_Agencies_Departments_department_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"agency_id\", \"department_id\" FROM \"News_Agencies_Departments\" WHERE \"department_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/News_Agencies_Departments/{agency_id}/{department_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasDepartments ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/Departments/{department_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_news_agencies_departments_4_News_Agencies_Departments_agency_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"agency_id\", \"department_id\" FROM \"News_Agencies_Departments\" WHERE \"agency_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/journalism/id/News_Agencies_Departments/{agency_id}/{department_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasNews_Agency ; rr:objectMap [ rr:template "http://ambrosia.example.org/journalism/id/News_Agency/{agency_id}" ; rr:termType rr:IRI ] ] .
+

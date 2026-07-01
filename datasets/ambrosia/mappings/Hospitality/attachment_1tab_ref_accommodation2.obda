@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Accomodations_base
+target		ex:Accommodations/{id} a :Accommodations ; p:id {id} ; p:name {name} ; p:type {type} .
+source		SELECT `id`, `name`, `type` FROM `Accomodations`
+
+mappingId	Prices_base
+target		ex:Prices/{_amb_rowid} a :Prices ; p:accommodationId {accommodationId} ; p:price_per_night {price_per_night} .
+source		SELECT `_amb_rowid`, `accommodationId`, `price_per_night` FROM `Prices`
+
+mappingId	Prices_accommodationId_fk
+target		ex:Prices/{_amb_rowid} p:hasAccommodations ex:Accommodations/{accommodationId} .
+source		SELECT `_amb_rowid`, `accommodationId` FROM `Prices` WHERE `accommodationId` IS NOT NULL
+
+mappingId	Guests_base
+target		ex:Guests/{id} a :Guests ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:email {emailAddress} .
+source		SELECT `id`, `firstName`, `lastName`, `emailAddress` FROM `Guests`
+
+mappingId	Reservations_base
+target		ex:Reservations/{reservationId} a :Reservations ; p:reservationId {reservationId} ; p:guestId {guestId} ; p:accommodationId {accommodationId} ; p:checkInDate {checkInDate} ; p:checkOutDate {checkOutDate} ; p:totalCost {totalCost} .
+source		SELECT `reservationId`, `guestId`, `accommodationId`, `checkInDate`, `checkOutDate`, `totalCost` FROM `Reservations`
+
+mappingId	Reservations_accommodationId_fk
+target		ex:Reservations/{reservationId} p:hasAccommodations ex:Accommodations/{accommodationId} .
+source		SELECT `reservationId`, `accommodationId` FROM `Reservations` WHERE `accommodationId` IS NOT NULL
+
+mappingId	Reservations_guestId_fk
+target		ex:Reservations/{reservationId} p:hasGuests ex:Guests/{guestId} .
+source		SELECT `reservationId`, `guestId` FROM `Reservations` WHERE `guestId` IS NOT NULL
+
+]]

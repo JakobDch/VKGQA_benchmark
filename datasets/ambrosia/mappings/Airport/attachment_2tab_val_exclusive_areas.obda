@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Airlines_base
+target		ex:Airlines/{AirlineID} a :Airlines ; p:AirlineID {AirlineID} ; p:name {Name} ; p:Headquarters {Headquarters} .
+source		SELECT `AirlineID`, `Name`, `Headquarters` FROM `Airlines`
+
+mappingId	Flights_base
+target		ex:Flights/{FlightID} a :Flights ; p:FlightID {FlightID} ; p:OriginAirport {OriginAirport} ; p:DestinationAirport {DestinationAirport} ; p:DepartureTime {DepartureTime} ; p:ArrivalTime {ArrivalTime} ; p:AircraftType {AircraftType} ; p:OperatedBy {OperatedBy} .
+source		SELECT `FlightID`, `OriginAirport`, `DestinationAirport`, `DepartureTime`, `ArrivalTime`, `AircraftType`, `OperatedBy` FROM `Flights`
+
+mappingId	Flights_OperatedBy_fk
+target		ex:Flights/{FlightID} p:hasAirlines ex:Airlines/{OperatedBy} .
+source		SELECT `FlightID`, `OperatedBy` FROM `Flights` WHERE `OperatedBy` IS NOT NULL
+
+mappingId	Passengers_base
+target		ex:Passengers/{PassengerID} a :Passengers ; p:PassengerID {PassengerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:DateOfBirth {DateOfBirth} ; p:Nationality {Nationality} .
+source		SELECT `PassengerID`, `FirstName`, `LastName`, `DateOfBirth`, `Nationality` FROM `Passengers`
+
+mappingId	Bookings_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:FlightID {FlightID} ; p:PassengerID {PassengerID} ; p:ClassOfService {ClassOfService} ; p:BookedDate {BookedDate} .
+source		SELECT `BookingID`, `FlightID`, `PassengerID`, `ClassOfService`, `BookedDate` FROM `Bookings`
+
+mappingId	Bookings_PassengerID_fk
+target		ex:Bookings/{BookingID} p:hasPassengers ex:Passengers/{PassengerID} .
+source		SELECT `BookingID`, `PassengerID` FROM `Bookings` WHERE `PassengerID` IS NOT NULL
+
+mappingId	Bookings_FlightID_fk
+target		ex:Bookings/{BookingID} p:hasFlights ex:Flights/{FlightID} .
+source		SELECT `BookingID`, `FlightID` FROM `Bookings` WHERE `FlightID` IS NOT NULL
+
+mappingId	Frequent_Flyer_Lounges_base
+target		ex:Frequent_Flyer_Lounges/{LoungeID} a :Frequent_Flyer_Lounges ; p:LoungeID {LoungeID} ; p:name {Name} ; p:location {Location} ; p:Amenities {Amenities} ; p:Capacity {Capacity} .
+source		SELECT `LoungeID`, `Name`, `Location`, `Amenities`, `Capacity` FROM `Frequent_Flyer_Lounges`
+
+mappingId	VIP_Lounges_base
+target		ex:VIPLounges/{LoungeID} a :VIPLounges ; p:LoungeID {LoungeID} ; p:name {Name} ; p:location {Location} ; p:Amenities {Amenities} ; p:AccessLevel {AccessLevel} .
+source		SELECT `LoungeID`, `Name`, `Location`, `Amenities`, `AccessLevel` FROM `VIP_Lounges`
+
+]]

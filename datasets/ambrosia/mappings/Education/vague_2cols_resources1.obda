@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:GradeLevel {GradeLevel} .
+source		SELECT `ID`, `FirstName`, `LastName`, `GradeLevel` FROM `Students`
+
+mappingId	Teachers_base
+target		ex:Teachers/{ID} a :Teachers ; p:ID {ID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:SubjectTaught {SubjectTaught} .
+source		SELECT `ID`, `FirstName`, `LastName`, `SubjectTaught` FROM `Teachers`
+
+mappingId	Classrooms_base
+target		ex:Classrooms/{ID} a :Classrooms ; p:ID {ID} ; p:RoomNumber {RoomNumber} ; p:Building {Building} ; p:Capacity {Capacity} .
+source		SELECT `ID`, `RoomNumber`, `Building`, `Capacity` FROM `Classrooms`
+
+mappingId	Textbooks_Supplies_Projects_base
+target		ex:Textbooks_Supplies_Projects/{ID} a :Textbooks_Supplies_Projects ; p:ID {ID} ; p:TextbookTitle {TextbookTitle} ; p:SupplyItem {SupplyItem} ; p:ProjectDescription {ProjectDescription} .
+source		SELECT `ID`, `TextbookTitle`, `SupplyItem`, `ProjectDescription` FROM `Textbooks_Supplies_Projects`
+
+mappingId	Assignments_base
+target		ex:Assignments/{ID} a :Assignments ; p:ID {ID} ; p:Title {Title} ; p:Description {Description} ; p:DueDate {DueDate} ; p:MaxPoints {MaxPoints} .
+source		SELECT `ID`, `Title`, `Description`, `DueDate`, `MaxPoints` FROM `Assignments`
+
+mappingId	Grades_base
+target		ex:Grades/{ID} a :Grades ; p:ID {ID} ; p:StudentID {StudentID} ; p:AssignmentID {AssignmentID} ; p:Score {Score} ; p:Feedback {Feedback} .
+source		SELECT `ID`, `StudentID`, `AssignmentID`, `Score`, `Feedback` FROM `Grades`
+
+mappingId	Grades_AssignmentID_fk
+target		ex:Grades/{ID} p:hasAssignments ex:Assignments/{AssignmentID} .
+source		SELECT `ID`, `AssignmentID` FROM `Grades` WHERE `AssignmentID` IS NOT NULL
+
+mappingId	Grades_StudentID_fk
+target		ex:Grades/{ID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `ID`, `StudentID` FROM `Grades` WHERE `StudentID` IS NOT NULL
+
+]]

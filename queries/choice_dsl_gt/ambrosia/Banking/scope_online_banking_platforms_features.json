@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_online_banking_platforms_features",
+  "schema": "amb_scope_online_banking_platforms_features",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are features all banking platforms have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Features.feature_value  from Online_Banking_Platforms_Features join Features on Online_Banking_Platforms_Features.feature_id = Features.feature_id join Online_Banking_Platforms on Online_Banking_Platforms_Features.platform_id = Online_Banking_Platforms.id   GROUP BY Online_Banking_Platforms_Features.feature_id HAVING COUNT(DISTINCT Online_Banking_Platforms_Features.platform_id) = (SELECT COUNT(*) FROM  Online_Banking_Platforms)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?feature_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasOnline_Banking_Platforms ?parent . } GROUP BY ?child }\n  ?child p:feature_value ?feature_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Banking_Platforms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each banking platform, list features they have.",
+      "qtype": "unambig",
+      "sql": "select online_banking_platforms.name , features.feature_value from Online_Banking_Platforms_Features join Features on Online_Banking_Platforms_Features.feature_id = Features.feature_id join Online_Banking_Platforms on Online_Banking_Platforms_Features.platform_id = Online_Banking_Platforms.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?feature_value WHERE {\n  ?online_banking_platforms_features a :Online_Banking_Platforms_Features .\n  ?features a :Features .\n  ?online_banking_platforms_features p:hasFeatures ?features .\n  ?online_banking_platforms a :Online_Banking_Platforms .\n  ?online_banking_platforms_features p:hasOnline_Banking_Platforms ?online_banking_platforms .\n  ?online_banking_platforms p:name ?name .\n  ?features p:feature_value ?feature_value .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me features every banking platform has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?feature_value WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFeatures ?child ; p:hasOnline_Banking_Platforms ?parent . } GROUP BY ?child }\n  ?child p:feature_value ?feature_value .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Online_Banking_Platforms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?feature_value WHERE {\n  ?online_banking_platforms_features a :Online_Banking_Platforms_Features .\n  ?features a :Features .\n  ?online_banking_platforms_features p:hasFeatures ?features .\n  ?online_banking_platforms a :Online_Banking_Platforms .\n  ?online_banking_platforms_features p:hasOnline_Banking_Platforms ?online_banking_platforms .\n  ?online_banking_platforms p:name ?name .\n  ?features p:feature_value ?feature_value .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

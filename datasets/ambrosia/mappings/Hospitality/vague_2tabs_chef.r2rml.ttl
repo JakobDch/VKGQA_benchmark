@@ -1,0 +1,84 @@
+@prefix : <http://ambrosia.example.org/hospitality#> .
+@prefix p: <http://ambrosia.example.org/hospitality/prop#> .
+@prefix ex: <http://ambrosia.example.org/hospitality/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_vague_2tabs_chef_0_Executive_chef_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"chef_id\", \"full_name\" FROM \"Executive_chef\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Executive_chef/{chef_id}" ; rr:class :Executive_chef ] ;
+  rr:predicateObjectMap [ rr:predicate p:chef_id ; rr:objectMap [ rr:column "chef_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "full_name" ] ] .
+
+<#tm_vague_2tabs_chef_1_Sous_chef_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"sous_id\", \"executive_chef_id\", \"full_name\" FROM \"Sous_chef\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Sous_chef/{sous_id}" ; rr:class :Sous_chef ] ;
+  rr:predicateObjectMap [ rr:predicate p:sous_id ; rr:objectMap [ rr:column "sous_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:executive_chef_id ; rr:objectMap [ rr:column "executive_chef_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "full_name" ] ] .
+
+<#tm_vague_2tabs_chef_2_Sous_chef_executive_chef_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"sous_id\", \"executive_chef_id\" FROM \"Sous_chef\" WHERE \"executive_chef_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Sous_chef/{sous_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasExecutive_chef ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Executive_chef/{executive_chef_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_chef_3_Restaurant_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"restaurant_id\", \"name\", \"address\", \"executive_chef_id\", \"SOUS_CHEF_ID\" FROM \"Restaurant\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Restaurants/{restaurant_id}" ; rr:class :Restaurants ] ;
+  rr:predicateObjectMap [ rr:predicate p:restaurant_id ; rr:objectMap [ rr:column "restaurant_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:address ; rr:objectMap [ rr:column "address" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:executive_chef_id ; rr:objectMap [ rr:column "executive_chef_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:SOUS_CHEF_ID ; rr:objectMap [ rr:column "SOUS_CHEF_ID" ] ] .
+
+<#tm_vague_2tabs_chef_4_Restaurant_SOUS_CHEF_ID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"restaurant_id\", \"SOUS_CHEF_ID\" FROM \"Restaurant\" WHERE \"SOUS_CHEF_ID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Restaurants/{restaurant_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasSous_chef ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Sous_chef/{SOUS_CHEF_ID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_chef_5_Restaurant_executive_chef_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"restaurant_id\", \"executive_chef_id\" FROM \"Restaurant\" WHERE \"executive_chef_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Restaurants/{restaurant_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasExecutive_chef ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Executive_chef/{executive_chef_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_chef_6_Menu_items_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"menu_item_id\", \"item_name\", \"description\", \"price\" FROM \"Menu_items\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/MenuItems/{menu_item_id}" ; rr:class :MenuItems ] ;
+  rr:predicateObjectMap [ rr:predicate p:menu_item_id ; rr:objectMap [ rr:column "menu_item_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:item_name ; rr:objectMap [ rr:column "item_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:price ; rr:objectMap [ rr:column "price" ] ] .
+
+<#tm_vague_2tabs_chef_7_Orders_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"order_id\", \"customer_name\", \"date\", \"total_amount\", \"restaurant_id\" FROM \"Orders\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{order_id}" ; rr:class :Orders ] ;
+  rr:predicateObjectMap [ rr:predicate p:order_id ; rr:objectMap [ rr:column "order_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:customer_name ; rr:objectMap [ rr:column "customer_name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:date ; rr:objectMap [ rr:column "date" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:total_amount ; rr:objectMap [ rr:column "total_amount" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:restaurant_id ; rr:objectMap [ rr:column "restaurant_id" ] ] .
+
+<#tm_vague_2tabs_chef_8_Orders_restaurant_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"order_id\", \"restaurant_id\" FROM \"Orders\" WHERE \"restaurant_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{order_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasRestaurants ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Restaurants/{restaurant_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_chef_9_Order_details_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"detail_id\", \"quantity\", \"menu_item_id\", \"order_id\" FROM \"Order_details\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Order_details/{detail_id}" ; rr:class :Order_details ] ;
+  rr:predicateObjectMap [ rr:predicate p:detail_id ; rr:objectMap [ rr:column "detail_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:quantity ; rr:objectMap [ rr:column "quantity" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:menu_item_id ; rr:objectMap [ rr:column "menu_item_id" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:order_id ; rr:objectMap [ rr:column "order_id" ] ] .
+
+<#tm_vague_2tabs_chef_10_Order_details_order_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"detail_id\", \"order_id\" FROM \"Order_details\" WHERE \"order_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Order_details/{detail_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasOrders ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Orders/{order_id}" ; rr:termType rr:IRI ] ] .
+
+<#tm_vague_2tabs_chef_11_Order_details_menu_item_id_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"detail_id\", \"menu_item_id\" FROM \"Order_details\" WHERE \"menu_item_id\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/hospitality/id/Order_details/{detail_id}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasMenuItems ; rr:objectMap [ rr:template "http://ambrosia.example.org/hospitality/id/MenuItems/{menu_item_id}" ; rr:termType rr:IRI ] ] .
+

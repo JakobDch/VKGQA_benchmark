@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_summer_camps_themes",
+  "schema": "amb_scope_summer_camps_themes",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "what themes are available for each summer camp?",
+      "qtype": "ambig",
+      "sql": "SELECT Themes.themeName  from Summer_Camp_Themes join Themes on Summer_Camp_Themes.themeId = Themes.id join Summer_Camps on Summer_Camp_Themes.summerCampId = Summer_Camps.id   GROUP BY Summer_Camp_Themes.themeId HAVING COUNT(DISTINCT Summer_Camp_Themes.summerCampId) = (SELECT COUNT(*) FROM  Summer_Camps)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?themename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasThemes ?child ; p:hasSummer_Camps ?parent . } GROUP BY ?child }\n  ?child p:themeName ?themename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Summer_Camps } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "what themes are available for each summer camp?",
+      "qtype": "ambig",
+      "sql": "select summer_camps.campname , themes.themename from Summer_Camp_Themes join Themes on Summer_Camp_Themes.themeId = Themes.id join Summer_Camps on Summer_Camp_Themes.summerCampId = Summer_Camps.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?campname ?themename WHERE {\n  ?summer_camp_themes a :Summer_Camp_Themes .\n  ?themes a :Themes .\n  ?summer_camp_themes p:hasThemes ?themes .\n  ?summer_camps a :Summer_Camps .\n  ?summer_camp_themes p:hasSummer_Camps ?summer_camps .\n  ?summer_camps p:campName ?campname .\n  ?themes p:themeName ?themename .\n}",
+      "status": "pass",
+      "note": "n=11"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "what themes are available for each summer camp?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?themename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasThemes ?child ; p:hasSummer_Camps ?parent . } GROUP BY ?child }\n  ?child p:themeName ?themename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Summer_Camps } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?campname ?themename WHERE {\n  ?summer_camp_themes a :Summer_Camp_Themes .\n  ?themes a :Themes .\n  ?summer_camp_themes p:hasThemes ?themes .\n  ?summer_camps a :Summer_Camps .\n  ?summer_camp_themes p:hasSummer_Camps ?summer_camps .\n  ?summer_camps p:campName ?campname .\n  ?themes p:themeName ?themename .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} .
+source		SELECT `id`, `firstName`, `lastName`, `dateOfBirth` FROM `Students`
+
+mappingId	Classes_base
+target		ex:Classes/{classID} a :Classes ; p:classID {classID} ; p:className {className} ; p:teacherName {teacherName} .
+source		SELECT `classID`, `className`, `teacherName` FROM `Classes`
+
+mappingId	Enrollments_base
+target		ex:Enrollments/{enrollmentId} a :Enrollments ; p:enrollmentId {enrollmentId} ; p:studentId {studentId} ; p:classId {classId} .
+source		SELECT `enrollmentId`, `studentId`, `classId` FROM `Enrollments`
+
+mappingId	Enrollments_classId_fk
+target		ex:Enrollments/{enrollmentId} p:hasClasses ex:Classes/{classId} .
+source		SELECT `enrollmentId`, `classId` FROM `Enrollments` WHERE `classId` IS NOT NULL
+
+mappingId	Enrollments_studentId_fk
+target		ex:Enrollments/{enrollmentId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `enrollmentId`, `studentId` FROM `Enrollments` WHERE `studentId` IS NOT NULL
+
+mappingId	MilestoneRecords_base
+target		ex:MilestoneRecords/{recordId} a :MilestoneRecords ; p:recordId {recordId} ; p:studentId {studentId} ; p:physicalMilestones {physicalMilestones} ; p:cognitiveMilestones {cognitiveMilestones} ; p:childAge {childAge} ; p:otherDetails {otherDetails} .
+source		SELECT `recordId`, `studentId`, `physicalMilestones`, `cognitiveMilestones`, `childAge`, `otherDetails` FROM `MilestoneRecords`
+
+mappingId	MilestoneRecords_studentId_fk
+target		ex:MilestoneRecords/{recordId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `recordId`, `studentId` FROM `MilestoneRecords` WHERE `studentId` IS NOT NULL
+
+mappingId	Attendance_base
+target		ex:Attendance/{attendanceId} a :Attendance ; p:attendanceId {attendanceId} ; p:studentId {studentId} ; p:classId {classId} ; p:dateAttended {dateAttended} ; p:isPresent {isPresent} .
+source		SELECT `attendanceId`, `studentId`, `classId`, `dateAttended`, `isPresent` FROM `Attendance`
+
+mappingId	Attendance_classId_fk
+target		ex:Attendance/{attendanceId} p:hasClasses ex:Classes/{classId} .
+source		SELECT `attendanceId`, `classId` FROM `Attendance` WHERE `classId` IS NOT NULL
+
+mappingId	Attendance_studentId_fk
+target		ex:Attendance/{attendanceId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `attendanceId`, `studentId` FROM `Attendance` WHERE `studentId` IS NOT NULL
+
+mappingId	DisciplineLogs_base
+target		ex:DisciplineLogs/{logId} a :DisciplineLogs ; p:logId {logId} ; p:studentId {studentId} ; p:incidentDate {incidentDate} ; p:reasonForDiscipline {reasonForDiscipline} ; p:disciplinaryAction {disciplinaryAction} ; p:resolutionDate {resolutionDate} .
+source		SELECT `logId`, `studentId`, `incidentDate`, `reasonForDiscipline`, `disciplinaryAction`, `resolutionDate` FROM `DisciplineLogs`
+
+mappingId	DisciplineLogs_studentId_fk
+target		ex:DisciplineLogs/{logId} p:hasStudents ex:Students/{studentId} .
+source		SELECT `logId`, `studentId` FROM `DisciplineLogs` WHERE `studentId` IS NOT NULL
+
+]]

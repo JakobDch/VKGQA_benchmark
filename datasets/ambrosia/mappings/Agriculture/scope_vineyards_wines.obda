@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/agriculture#
+p:	http://ambrosia.example.org/agriculture/prop#
+ex:	http://ambrosia.example.org/agriculture/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	VineyardTypes_base
+target		ex:VineyardTypes/{id} a :VineyardTypes ; p:id {id} ; p:name {typeName} .
+source		SELECT `id`, `typeName` FROM `VineyardTypes`
+
+mappingId	Countries_base
+target		ex:Country/{countryId} a :Country ; p:countryId {countryId} ; p:name {countryName} .
+source		SELECT `countryId`, `countryName` FROM `Countries`
+
+mappingId	Regions_base
+target		ex:Region/{regionId} a :Region ; p:regionId {regionId} ; p:name {regionName} ; p:countryId {countryId} .
+source		SELECT `regionId`, `regionName`, `countryId` FROM `Regions`
+
+mappingId	Regions_countryId_fk
+target		ex:Region/{regionId} p:hasCountry ex:Country/{countryId} .
+source		SELECT `regionId`, `countryId` FROM `Regions` WHERE `countryId` IS NOT NULL
+
+mappingId	Vineyards_base
+target		ex:Vineyards/{vineyardId} a :Vineyards ; p:vineyardId {vineyardId} ; p:name {name} ; p:areaSize {areaSize} ; p:typeId {typeId} ; p:regionId {regionId} .
+source		SELECT `vineyardId`, `name`, `areaSize`, `typeId`, `regionId` FROM `Vineyards`
+
+mappingId	Vineyards_regionId_fk
+target		ex:Vineyards/{vineyardId} p:hasRegion ex:Region/{regionId} .
+source		SELECT `vineyardId`, `regionId` FROM `Vineyards` WHERE `regionId` IS NOT NULL
+
+mappingId	Vineyards_typeId_fk
+target		ex:Vineyards/{vineyardId} p:hasVineyardTypes ex:VineyardTypes/{typeId} .
+source		SELECT `vineyardId`, `typeId` FROM `Vineyards` WHERE `typeId` IS NOT NULL
+
+mappingId	Wines_base
+target		ex:Wines/{wineId} a :Wines ; p:wineId {wineId} ; p:name {name} ; p:variety {variety} .
+source		SELECT `wineId`, `name`, `variety` FROM `Wines`
+
+mappingId	Vineyards_Wines_base
+target		ex:Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced} a :Vineyards_Wines ; p:vineyardId {vineyardId} ; p:wineId {wineId} ; p:yearProduced {yearProduced} .
+source		SELECT `vineyardId`, `wineId`, `yearProduced` FROM `Vineyards_Wines`
+
+mappingId	Vineyards_Wines_wineId_fk
+target		ex:Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced} p:hasWines ex:Wines/{wineId} .
+source		SELECT `vineyardId`, `wineId`, `yearProduced` FROM `Vineyards_Wines` WHERE `wineId` IS NOT NULL
+
+mappingId	Vineyards_Wines_vineyardId_fk
+target		ex:Vineyards_Wines/{vineyardId}/{wineId}/{yearProduced} p:hasVineyards ex:Vineyards/{vineyardId} .
+source		SELECT `vineyardId`, `wineId`, `yearProduced` FROM `Vineyards_Wines` WHERE `vineyardId` IS NOT NULL
+
+]]

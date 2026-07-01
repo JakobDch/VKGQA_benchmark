@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_luggage",
+  "schema": "amb_attachment_1tab_val_luggage",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me all passengers with cabin baggage and passengers with checked baggage which cost $25.",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.FullName\nFROM Luggage JOIN Passengers ON Passengers.PassengerID = Luggage.PassengerID\nWHERE (Luggage.Description = \"Cabin Baggage\" OR Luggage.Description = \"Checked Baggage\") AND Luggage.Fees = \"$25\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?luggage a :Luggage .\n  ?passengers a :Passengers .\n  ?luggage p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?luggage p:Description ?description_w .\n  ?luggage p:Description ?description_w2 .\n  ?luggage p:Fees ?fees_w .\n  FILTER((((STR(?description_w) = \"Cabin Baggage\" || STR(?description_w2) = \"Checked Baggage\")) && STR(?fees_w) = \"$25\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all passengers with cabin baggage and passengers with checked baggage which cost $25.",
+      "qtype": "ambig",
+      "sql": "SELECT Passengers.FullName\nFROM Luggage JOIN Passengers ON Passengers.PassengerID = Luggage.PassengerID\nWHERE Luggage.Description = \"Cabin Baggage\" OR Luggage.Description = \"Checked Baggage\" AND Luggage.Fees = \"$25\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?luggage a :Luggage .\n  ?passengers a :Passengers .\n  ?luggage p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?luggage p:Description ?description_w .\n  ?luggage p:Description ?description_w2 .\n  ?luggage p:Fees ?fees_w .\n  FILTER((STR(?description_w) = \"Cabin Baggage\" || (STR(?description_w2) = \"Checked Baggage\" && STR(?fees_w) = \"$25\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all passengers with cabin baggage and passengers with checked baggage which cost $25.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?fullname WHERE {\n  ?luggage a :Luggage .\n  ?passengers a :Passengers .\n  ?luggage p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?luggage p:Description ?description_w .\n  ?luggage p:Description ?description_w2 .\n  ?luggage p:Fees ?fees_w .\n  FILTER((STR(?description_w) = \"Cabin Baggage\" || (STR(?description_w2) = \"Checked Baggage\" && STR(?fees_w) = \"$25\")))\n} }\n  high: { SELECT ?fullname WHERE {\n  ?luggage a :Luggage .\n  ?passengers a :Passengers .\n  ?luggage p:hasPassengers ?passengers .\n  ?passengers p:name ?fullname .\n  ?luggage p:Description ?description_w .\n  ?luggage p:Description ?description_w2 .\n  ?luggage p:Fees ?fees_w .\n  FILTER((((STR(?description_w) = \"Cabin Baggage\" || STR(?description_w2) = \"Checked Baggage\")) && STR(?fees_w) = \"$25\"))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

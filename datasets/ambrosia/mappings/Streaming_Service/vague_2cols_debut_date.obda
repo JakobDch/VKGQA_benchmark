@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Podcast_base
+target		ex:Podcast/{id} a :Podcast ; p:id {id} ; p:Debut_Day {Debut_Day} ; p:Debut_Year {Debut_Year} ; p:Title {Title} ; p:Hosts {Hosts} ; p:Duration {Duration} .
+source		SELECT `id`, `Debut_Day`, `Debut_Year`, `Title`, `Hosts`, `Duration` FROM `Podcast`
+
+mappingId	Episode_base
+target		ex:Episode/{id} a :Episode ; p:id {id} ; p:Podcast_id {Podcast_id} ; p:Episode_Number {Episode_Number} ; p:Release_Date {Release_Date} ; p:Length {Length} .
+source		SELECT `id`, `Podcast_id`, `Episode_Number`, `Release_Date`, `Length` FROM `Episode`
+
+mappingId	Episode_Podcast_id_fk
+target		ex:Episode/{id} p:hasPodcast ex:Podcast/{Podcast_id} .
+source		SELECT `id`, `Podcast_id` FROM `Episode` WHERE `Podcast_id` IS NOT NULL
+
+mappingId	Category_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Category`
+
+mappingId	Podcast_Category_base
+target		ex:Podcast_Category/{Podcast_id}/{Category_id} a :Podcast_Category ; p:Podcast_id {Podcast_id} ; p:Category_id {Category_id} .
+source		SELECT `Podcast_id`, `Category_id` FROM `Podcast_Category`
+
+mappingId	Podcast_Category_Category_id_fk
+target		ex:Podcast_Category/{Podcast_id}/{Category_id} p:hasCategory ex:Category/{Category_id} .
+source		SELECT `Podcast_id`, `Category_id` FROM `Podcast_Category` WHERE `Category_id` IS NOT NULL
+
+mappingId	Podcast_Category_Podcast_id_fk
+target		ex:Podcast_Category/{Podcast_id}/{Category_id} p:hasPodcast ex:Podcast/{Podcast_id} .
+source		SELECT `Podcast_id`, `Category_id` FROM `Podcast_Category` WHERE `Podcast_id` IS NOT NULL
+
+mappingId	Subscriber_base
+target		ex:Subscribers/{id} a :Subscribers ; p:id {id} ; p:email {Email} ; p:Password {Password} ; p:Joined_Date {Joined_Date} .
+source		SELECT `id`, `Email`, `Password`, `Joined_Date` FROM `Subscriber`
+
+mappingId	Subscription_base
+target		ex:Subscription/{Subscriber_id}/{Podcast_id} a :Subscription ; p:Subscriber_id {Subscriber_id} ; p:Podcast_id {Podcast_id} ; p:Start_Date {Start_Date} ; p:End_Date {End_Date} .
+source		SELECT `Subscriber_id`, `Podcast_id`, `Start_Date`, `End_Date` FROM `Subscription`
+
+mappingId	Subscription_Podcast_id_fk
+target		ex:Subscription/{Subscriber_id}/{Podcast_id} p:hasPodcast ex:Podcast/{Podcast_id} .
+source		SELECT `Subscriber_id`, `Podcast_id` FROM `Subscription` WHERE `Podcast_id` IS NOT NULL
+
+mappingId	Subscription_Subscriber_id_fk
+target		ex:Subscription/{Subscriber_id}/{Podcast_id} p:hasSubscribers ex:Subscribers/{Subscriber_id} .
+source		SELECT `Subscriber_id`, `Podcast_id` FROM `Subscription` WHERE `Subscriber_id` IS NOT NULL
+
+]]

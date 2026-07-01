@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_2tab_val_academic_writing",
+  "schema": "amb_attachment_2tab_val_academic_writing",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What dissertations were supervised by Dr. Jane Smith and what thesis proposals did she also supervise?",
+      "qtype": "unambig",
+      "sql": "SELECT Dissertations.title\nFROM Dissertations\nWHERE Dissertations.Academic_Supervisor = \"Dr. Jane Smith\"\nUNION\nSELECT Thesis_Proposals.title\nFROM Thesis_Proposals\nWHERE Thesis_Proposals.Academic_Supervisor = \"Dr. Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?dissertations a :Dissertations .\n    ?dissertations p:Title ?title .\n    ?dissertations p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?thesis_proposals a :Thesis_Proposals .\n    ?thesis_proposals p:Title ?title .\n    ?thesis_proposals p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all dissertations and also list thesis proposals supervised by Dr. Jane Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Dissertations.title\nFROM Dissertations\nUNION\nSELECT Thesis_Proposals.title\nFROM Thesis_Proposals\nWHERE Thesis_Proposals.Academic_Supervisor = \"Dr. Jane Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?dissertations a :Dissertations .\n    ?dissertations p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?thesis_proposals a :Thesis_Proposals .\n    ?thesis_proposals p:Title ?title .\n    ?thesis_proposals p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me dissertations and thesis proposals supervised by Dr. Jane Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?dissertations a :Dissertations .\n    ?dissertations p:Title ?title .\n    ?dissertations p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?thesis_proposals a :Thesis_Proposals .\n    ?thesis_proposals p:Title ?title .\n    ?thesis_proposals p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?dissertations a :Dissertations .\n    ?dissertations p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?thesis_proposals a :Thesis_Proposals .\n    ?thesis_proposals p:Title ?title .\n    ?thesis_proposals p:Academic_Supervisor ?academic_supervisor_f .\n    FILTER(STR(?academic_supervisor_f) = \"Dr. Jane Smith\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

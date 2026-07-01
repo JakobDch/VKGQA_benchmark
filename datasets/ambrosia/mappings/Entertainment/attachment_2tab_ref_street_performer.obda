@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Locations_base
+target		ex:Location/{id} a :Location ; p:id {id} ; p:LocationName {LocationName} .
+source		SELECT `id`, `LocationName` FROM `Locations`
+
+mappingId	Shows_base
+target		ex:Show/{id} a :Show ; p:id {id} ; p:ShowTitle {ShowTitle} ; p:StartTime {StartTime} ; p:EndTime {EndTime} ; p:LocationID {LocationID} ; p:MagicianID {MagicianID} ; p:MimeID {MimeID} .
+source		SELECT `id`, `ShowTitle`, `StartTime`, `EndTime`, `LocationID`, `MagicianID`, `MimeID` FROM `Shows`
+
+mappingId	Shows_MimeID_fk
+target		ex:Show/{id} p:hasMimes ex:Mimes/{MimeID} .
+source		SELECT `id`, `MimeID` FROM `Shows` WHERE `MimeID` IS NOT NULL
+
+mappingId	Shows_MagicianID_fk
+target		ex:Show/{id} p:hasMagicians ex:Magicians/{MagicianID} .
+source		SELECT `id`, `MagicianID` FROM `Shows` WHERE `MagicianID` IS NOT NULL
+
+mappingId	Shows_LocationID_fk
+target		ex:Show/{id} p:hasLocation ex:Location/{LocationID} .
+source		SELECT `id`, `LocationID` FROM `Shows` WHERE `LocationID` IS NOT NULL
+
+mappingId	Tickets_base
+target		ex:Tickets/{id} a :Tickets ; p:id {id} ; p:PurchaserName {PurchaserName} ; p:ShowID {ShowID} ; p:SeatNumber {SeatNumber} ; p:Price {Price} .
+source		SELECT `id`, `PurchaserName`, `ShowID`, `SeatNumber`, `Price` FROM `Tickets`
+
+mappingId	Tickets_ShowID_fk
+target		ex:Tickets/{id} p:hasShow ex:Show/{ShowID} .
+source		SELECT `id`, `ShowID` FROM `Tickets` WHERE `ShowID` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Review/{id} a :Review ; p:id {id} ; p:ReviewerName {ReviewerName} ; p:Rating {Rating} ; p:Comment {Comment} ; p:ShowID {ShowID} .
+source		SELECT `id`, `ReviewerName`, `Rating`, `Comment`, `ShowID` FROM `Reviews`
+
+mappingId	Reviews_ShowID_fk
+target		ex:Review/{id} p:hasShow ex:Show/{ShowID} .
+source		SELECT `id`, `ShowID` FROM `Reviews` WHERE `ShowID` IS NOT NULL
+
+mappingId	Magicians_base
+target		ex:Magicians/{id} a :Magicians ; p:id {id} ; p:name {Name} ; p:Age {Age} ; p:Street_Location {Street_Location} .
+source		SELECT `id`, `Name`, `Age`, `Street_Location` FROM `Magicians`
+
+mappingId	Magicians_Street_Location_fk
+target		ex:Magicians/{id} p:hasLocation ex:Location/{Street_Location} .
+source		SELECT `id`, `Street_Location` FROM `Magicians` WHERE `Street_Location` IS NOT NULL
+
+mappingId	Mimes_base
+target		ex:Mimes/{id} a :Mimes ; p:id {id} ; p:name {Name} ; p:Age {Age} ; p:Street_Location {Street_Location} .
+source		SELECT `id`, `Name`, `Age`, `Street_Location` FROM `Mimes`
+
+mappingId	Mimes_Street_Location_fk
+target		ex:Mimes/{id} p:hasLocation ex:Location/{Street_Location} .
+source		SELECT `id`, `Street_Location` FROM `Mimes` WHERE `Street_Location` IS NOT NULL
+
+]]

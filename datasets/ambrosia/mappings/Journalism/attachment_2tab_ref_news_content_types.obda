@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{author_id} a :Authors ; p:author_id {author_id} ; p:name {name} ; p:email {email} .
+source		SELECT `author_id`, `name`, `email` FROM `Authors`
+
+mappingId	Volumes_base
+target		ex:Volumes/{volume_id} a :Volumes ; p:volume_id {volume_id} ; p:number {number} ; p:publication_date {publication_date} .
+source		SELECT `volume_id`, `number`, `publication_date` FROM `Volumes`
+
+mappingId	Opinion_Pieces_base
+target		ex:Opinion_Pieces/{opinion_piece_id} a :Opinion_Pieces ; p:opinion_piece_id {opinion_piece_id} ; p:title {title} ; p:content {content} ; p:volume_id {volume_id} .
+source		SELECT `opinion_piece_id`, `title`, `content`, `volume_id` FROM `Opinion_Pieces`
+
+mappingId	Opinion_Pieces_volume_id_fk
+target		ex:Opinion_Pieces/{opinion_piece_id} p:hasVolumes ex:Volumes/{volume_id} .
+source		SELECT `opinion_piece_id`, `volume_id` FROM `Opinion_Pieces` WHERE `volume_id` IS NOT NULL
+
+mappingId	Feature_Articles_base
+target		ex:Feature_Articles/{feature_article_id} a :Feature_Articles ; p:feature_article_id {feature_article_id} ; p:title {title} ; p:content {content} ; p:volume_id {volume_id} .
+source		SELECT `feature_article_id`, `title`, `content`, `volume_id` FROM `Feature_Articles`
+
+mappingId	Feature_Articles_volume_id_fk
+target		ex:Feature_Articles/{feature_article_id} p:hasVolumes ex:Volumes/{volume_id} .
+source		SELECT `feature_article_id`, `volume_id` FROM `Feature_Articles` WHERE `volume_id` IS NOT NULL
+
+mappingId	Publications_base
+target		ex:Publications/{publication_id} a :Publications ; p:publication_id {publication_id} ; p:name {name} ; p:address {address} .
+source		SELECT `publication_id`, `name`, `address` FROM `Publications`
+
+]]

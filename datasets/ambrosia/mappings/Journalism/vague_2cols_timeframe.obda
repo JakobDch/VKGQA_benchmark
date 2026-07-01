@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Reporters_base
+target		ex:Reporters/{ReporterID} a :Reporters ; p:ReporterID {ReporterID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `ReporterID`, `FirstName`, `LastName`, `Email` FROM `Reporters`
+
+mappingId	Articles_base
+target		ex:Articles/{ArticleID} a :Articles ; p:ArticleID {ArticleID} ; p:Title {Title} ; p:Content {Content} ; p:PublishDate {PublishDate} ; p:AuthorID {AuthorID} .
+source		SELECT `ArticleID`, `Title`, `Content`, `PublishDate`, `AuthorID` FROM `Articles`
+
+mappingId	Articles_AuthorID_fk
+target		ex:Articles/{ArticleID} p:hasReporters ex:Reporters/{AuthorID} .
+source		SELECT `ArticleID`, `AuthorID` FROM `Articles` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Sources_base
+target		ex:Sources/{SourceID} a :Sources ; p:SourceID {SourceID} ; p:name {Name} ; p:ContactInfo {ContactInfo} .
+source		SELECT `SourceID`, `Name`, `ContactInfo` FROM `Sources`
+
+mappingId	ArticleSources_base
+target		ex:Article_Source/{ArticleSourceID} a :Article_Source ; p:ArticleSourceID {ArticleSourceID} ; p:ArticleID {ArticleID} ; p:SourceID {SourceID} ; p:Quote {Quote} .
+source		SELECT `ArticleSourceID`, `ArticleID`, `SourceID`, `Quote` FROM `ArticleSources`
+
+mappingId	ArticleSources_SourceID_fk
+target		ex:Article_Source/{ArticleSourceID} p:hasSources ex:Sources/{SourceID} .
+source		SELECT `ArticleSourceID`, `SourceID` FROM `ArticleSources` WHERE `SourceID` IS NOT NULL
+
+mappingId	ArticleSources_ArticleID_fk
+target		ex:Article_Source/{ArticleSourceID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `ArticleSourceID`, `ArticleID` FROM `ArticleSources` WHERE `ArticleID` IS NOT NULL
+
+mappingId	PressConferences_base
+target		ex:Press_Conferences/{ConferenceID} a :Press_Conferences ; p:ConferenceID {ConferenceID} ; p:Date {Date} ; p:Time {Time} ; p:location {Location} ; p:Subject {Subject} .
+source		SELECT `ConferenceID`, `Date`, `Time`, `Location`, `Subject` FROM `PressConferences`
+
+mappingId	ReportersAttending_base
+target		ex:ReportersAttending/{ReporterAttendeeID} a :ReportersAttending ; p:ReporterAttendeeID {ReporterAttendeeID} ; p:ReporterID {ReporterID} ; p:ConferenceID {ConferenceID} .
+source		SELECT `ReporterAttendeeID`, `ReporterID`, `ConferenceID` FROM `ReportersAttending`
+
+mappingId	ReportersAttending_ConferenceID_fk
+target		ex:ReportersAttending/{ReporterAttendeeID} p:hasPress_Conferences ex:Press_Conferences/{ConferenceID} .
+source		SELECT `ReporterAttendeeID`, `ConferenceID` FROM `ReportersAttending` WHERE `ConferenceID` IS NOT NULL
+
+mappingId	ReportersAttending_ReporterID_fk
+target		ex:ReportersAttending/{ReporterAttendeeID} p:hasReporters ex:Reporters/{ReporterID} .
+source		SELECT `ReporterAttendeeID`, `ReporterID` FROM `ReportersAttending` WHERE `ReporterID` IS NOT NULL
+
+]]

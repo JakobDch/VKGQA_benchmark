@@ -1,0 +1,141 @@
+{
+  "domain": "Banking",
+  "db_base": "scope_bank_statements_transactions",
+  "schema": "amb_scope_bank_statements_transactions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the common transaction types and their dates we have in all bank statements.",
+      "qtype": "unambig",
+      "sql": "SELECT Transactions.TransactionType, Transactions.Date  from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID   GROUP BY Bank_Statements_Transactions.TransactionID HAVING COUNT(DISTINCT Bank_Statements_Transactions.StatementID) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?transactiontype ?date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionType ?transactiontype .\n  ?child p:Date ?date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For every bank statement, show me the types of transactions along with the dates of them",
+      "qtype": "unambig",
+      "sql": "select bank_statements.accountnumber , transactions.transactiontype , transactions.date from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?transactiontype ?date WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionType ?transactiontype .\n  ?transactions p:Date ?date .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 2,
+      "question": "What information is there on transactions that are the same in all bank statements?",
+      "qtype": "unambig",
+      "sql": "SELECT Transactions.TransactionID, Transactions.Amount, Transactions.Date  from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID   GROUP BY Bank_Statements_Transactions.TransactionID HAVING COUNT(DISTINCT Bank_Statements_Transactions.StatementID) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?transactionid ?amount ?date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  ?child p:Amount ?amount .\n  ?child p:Date ?date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For all bank statements list every transaction ID.",
+      "qtype": "unambig",
+      "sql": "select bank_statements.accountnumber , transactions.transactionid from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?transactionid WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 4,
+      "question": "What is the transaction name, id and account number that is in common for all bank statements?",
+      "qtype": "unambig",
+      "sql": "SELECT Transactions.TransactionID, Transactions.AccountNumber, Transactions.TransactionType  from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID   GROUP BY Bank_Statements_Transactions.TransactionID HAVING COUNT(DISTINCT Bank_Statements_Transactions.StatementID) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?transactionid ?accountnumber ?transactiontype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  ?child p:AccountNumber ?accountnumber .\n  ?child p:TransactionType ?transactiontype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "For each bank statement, list information on transactions shown.",
+      "qtype": "unambig",
+      "sql": "select bank_statements.accountnumber , transactions.transactionid , transactions.amount , transactions.date from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?transactionid ?amount ?date WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n  ?transactions p:Amount ?amount .\n  ?transactions p:Date ?date .\n}",
+      "status": "pass",
+      "note": "n=14"
+    },
+    {
+      "qid": 6,
+      "question": "List the transaction IDs in common across all bank statements.",
+      "qtype": "unambig",
+      "sql": "SELECT Transactions.TransactionID  from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID   GROUP BY Bank_Statements_Transactions.TransactionID HAVING COUNT(DISTINCT Bank_Statements_Transactions.StatementID) = (SELECT COUNT(*) FROM  Bank_Statements)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?transactionid WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "What is the transaction type, id and account number for each bank statement?",
+      "qtype": "ambig",
+      "sql": "select bank_statements.accountnumber , transactions.transactionid , transactions.accountnumber , transactions.transactiontype from Bank_Statements_Transactions join Transactions on Bank_Statements_Transactions.TransactionID = Transactions.TransactionID join Bank_Statements on Bank_Statements_Transactions.StatementID = Bank_Statements.StatementID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?accountnumber ?transactionid ?accountnumber2 ?transactiontype WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n  ?transactions p:AccountNumber ?accountnumber2 .\n  ?transactions p:TransactionType ?transactiontype .\n}",
+      "status": "pass",
+      "note": "n=14"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the transaction types and dates we have for each bank statement",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?transactiontype ?date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionType ?transactiontype .\n  ?child p:Date ?date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?accountnumber ?transactiontype ?date WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionType ?transactiontype .\n  ?transactions p:Date ?date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me information on transactions every bank statement shows.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?transactionid ?amount ?date WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  ?child p:Amount ?amount .\n  ?child p:Date ?date .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?accountnumber ?transactionid ?amount ?date WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n  ?transactions p:Amount ?amount .\n  ?transactions p:Date ?date .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the transaction IDs for every bank statement.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        6
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?accountnumber ?transactionid WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n} }\n  collective: { SELECT ?transactionid WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the transaction type, id and account number for each bank statement?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        7
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?transactionid ?accountnumber ?transactiontype WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasTransactions ?child ; p:hasBank_Statements ?parent . } GROUP BY ?child }\n  ?child p:TransactionID ?transactionid .\n  ?child p:AccountNumber ?accountnumber .\n  ?child p:TransactionType ?transactiontype .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Bank_Statements } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?accountnumber ?transactionid ?accountnumber2 ?transactiontype WHERE {\n  ?bank_statements_transactions a :Bank_Statements_Transactions .\n  ?transactions a :Transactions .\n  ?bank_statements_transactions p:hasTransactions ?transactions .\n  ?bank_statements a :Bank_Statements .\n  ?bank_statements_transactions p:hasBank_Statements ?bank_statements .\n  ?bank_statements p:AccountNumber ?accountnumber .\n  ?transactions p:TransactionID ?transactionid .\n  ?transactions p:AccountNumber ?accountnumber2 .\n  ?transactions p:TransactionType ?transactiontype .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

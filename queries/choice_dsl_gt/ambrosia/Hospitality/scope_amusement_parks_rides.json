@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_amusement_parks_rides",
+  "schema": "amb_scope_amusement_parks_rides",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each amusement park, show the rides that they have.",
+      "qtype": "unambig",
+      "sql": "select amusement_parks.name , rides.ride_name from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?ride_name WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_name ?ride_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Which rides do all amusement parks have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Rides.ride_name  from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id   GROUP BY Amusement_Parks_Rides.rides_id HAVING COUNT(DISTINCT Amusement_Parks_Rides.amusement_park_id) = (SELECT COUNT(*) FROM  Amusement_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ride_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_name ?ride_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the names and types of the rides that every amusement park has.",
+      "qtype": "ambig",
+      "sql": "SELECT Rides.ride_name, Rides.ride_type  from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id   GROUP BY Amusement_Parks_Rides.rides_id HAVING COUNT(DISTINCT Amusement_Parks_Rides.amusement_park_id) = (SELECT COUNT(*) FROM  Amusement_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ride_name ?ride_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_name ?ride_name .\n  ?child p:ride_type ?ride_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Give me the names and types of the rides that every amusement park has.",
+      "qtype": "ambig",
+      "sql": "select amusement_parks.name , rides.ride_name , rides.ride_type from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?ride_name ?ride_type WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_name ?ride_name .\n  ?rides p:ride_type ?ride_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "What ride type is equally present at all amusement parks?",
+      "qtype": "unambig",
+      "sql": "SELECT Rides.ride_type  from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id   GROUP BY Amusement_Parks_Rides.rides_id HAVING COUNT(DISTINCT Amusement_Parks_Rides.amusement_park_id) = (SELECT COUNT(*) FROM  Amusement_Parks)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ride_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_type ?ride_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What ride types are there at every amusement park?",
+      "qtype": "ambig",
+      "sql": "select amusement_parks.name , rides.ride_type from Amusement_Parks_Rides join Rides on Amusement_Parks_Rides.rides_id = Rides.id join Amusement_Parks on Amusement_Parks_Rides.amusement_park_id = Amusement_Parks.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?ride_type WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_type ?ride_type .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the rides that each amusement park has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?ride_name WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_name ?ride_name .\n} }\n  collective: { SELECT ?ride_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_name ?ride_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What ride types are there at every amusement park?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?ride_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_type ?ride_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?ride_type WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_type ?ride_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the names and types of the rides that every amusement park has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?ride_name ?ride_type WHERE {\n  ?amusement_parks_rides a :Amusement_Parks_Rides .\n  ?rides a :Rides .\n  ?amusement_parks_rides p:hasRides ?rides .\n  ?amusement_parks a :Amusement_Parks .\n  ?amusement_parks_rides p:hasAmusement_Parks ?amusement_parks .\n  ?amusement_parks p:name ?name .\n  ?rides p:ride_name ?ride_name .\n  ?rides p:ride_type ?ride_type .\n} }\n  collective: { SELECT ?ride_name ?ride_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasRides ?child ; p:hasAmusement_Parks ?parent . } GROUP BY ?child }\n  ?child p:ride_name ?ride_name .\n  ?child p:ride_type ?ride_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Amusement_Parks } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

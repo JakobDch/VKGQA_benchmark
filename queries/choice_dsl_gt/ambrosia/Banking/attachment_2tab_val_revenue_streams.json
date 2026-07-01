@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_val_revenue_streams",
+  "schema": "amb_attachment_2tab_val_revenue_streams",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the credit card fees and the credit card monthly interest rates?",
+      "qtype": "unambig",
+      "sql": "SELECT CardFees.fee as amount\nFROM CardFees JOIN Products ON CardFees.ProductID = Products.ProductID\nWHERE Products.type = \"Credit Card\"\nUNION\nSELECT MonthlyInterestRates.Rate as amount\nFROM MonthlyInterestRates JOIN Products ON MonthlyInterestRates.ProductID = Products.ProductID\nWHERE Products.type = \"Credit Card\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cardfees a :CardFees .\n    ?products a :Products .\n    ?cardfees p:hasProducts ?products .\n    ?cardfees p:Fee ?fee .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?fee AS ?o0)\n  }\n  UNION\n  {\n    ?monthlyinterestrates a :MonthlyInterestRates .\n    ?products a :Products .\n    ?monthlyinterestrates p:hasProducts ?products .\n    ?monthlyinterestrates p:Rate ?rate .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?rate AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Display all card fees and monthly interest rates for credit cards.",
+      "qtype": "ambig",
+      "sql": "SELECT CardFees.fee as amount\nFROM CardFees JOIN Products ON CardFees.ProductID = Products.ProductID\nUNION\nSELECT MonthlyInterestRates.Rate as amount\nFROM MonthlyInterestRates JOIN Products ON MonthlyInterestRates.ProductID = Products.ProductID\nWHERE Products.type = \"Credit Card\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?cardfees a :CardFees .\n    ?products a :Products .\n    ?cardfees p:hasProducts ?products .\n    ?cardfees p:Fee ?fee .\n    BIND(?fee AS ?o0)\n  }\n  UNION\n  {\n    ?monthlyinterestrates a :MonthlyInterestRates .\n    ?products a :Products .\n    ?monthlyinterestrates p:hasProducts ?products .\n    ?monthlyinterestrates p:Rate ?rate .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?rate AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display all card fees and monthly interest rates for credit cards.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cardfees a :CardFees .\n    ?products a :Products .\n    ?cardfees p:hasProducts ?products .\n    ?cardfees p:Fee ?fee .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?fee AS ?o0)\n  }\n  UNION\n  {\n    ?monthlyinterestrates a :MonthlyInterestRates .\n    ?products a :Products .\n    ?monthlyinterestrates p:hasProducts ?products .\n    ?monthlyinterestrates p:Rate ?rate .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?rate AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?cardfees a :CardFees .\n    ?products a :Products .\n    ?cardfees p:hasProducts ?products .\n    ?cardfees p:Fee ?fee .\n    BIND(?fee AS ?o0)\n  }\n  UNION\n  {\n    ?monthlyinterestrates a :MonthlyInterestRates .\n    ?products a :Products .\n    ?monthlyinterestrates p:hasProducts ?products .\n    ?monthlyinterestrates p:Rate ?rate .\n    ?products p:Type ?type_f .\n    FILTER(STR(?type_f) = \"Credit Card\")\n    BIND(?rate AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

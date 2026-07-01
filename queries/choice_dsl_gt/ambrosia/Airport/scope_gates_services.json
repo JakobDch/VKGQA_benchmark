@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_gates_services",
+  "schema": "amb_scope_gates_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the service that each gate offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Services.serviceName  from Gates_Services join Services on Gates_Services.serviceId = Services.id join Gates on Gates_Services.gateId = Gates.id   GROUP BY Gates_Services.serviceId HAVING COUNT(DISTINCT Gates_Services.gateId) = (SELECT COUNT(*) FROM  Gates)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasGates ?parent . } GROUP BY ?child }\n  ?child p:serviceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the service that each gate offers.",
+      "qtype": "ambig",
+      "sql": "select gates.gatenumber , services.servicename from Gates_Services join Services on Gates_Services.serviceId = Services.id join Gates on Gates_Services.gateId = Gates.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?gatenumber ?servicename WHERE {\n  ?gates_services a :Gates_Services .\n  ?services a :Services .\n  ?gates_services p:hasServices ?services .\n  ?gates a :Gates .\n  ?gates_services p:hasGates ?gates .\n  ?gates p:gateNumber ?gatenumber .\n  ?services p:serviceName ?servicename .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the service that each gate offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?gatenumber ?servicename WHERE {\n  ?gates_services a :Gates_Services .\n  ?services a :Services .\n  ?gates_services p:hasServices ?services .\n  ?gates a :Gates .\n  ?gates_services p:hasGates ?gates .\n  ?gates p:gateNumber ?gatenumber .\n  ?services p:serviceName ?servicename .\n} }\n  collective: { SELECT ?servicename WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasGates ?parent . } GROUP BY ?child }\n  ?child p:serviceName ?servicename .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Gates } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Film_Festivals_base
+target		ex:Film_Festivals/{id} a :Film_Festivals ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Film_Festivals`
+
+mappingId	Categories_base
+target		ex:Categories/{id} a :Categories ; p:id {id} ; p:categoryName {categoryName} .
+source		SELECT `id`, `categoryName` FROM `Categories`
+
+mappingId	Films_base
+target		ex:Films/{id} a :Films ; p:id {id} ; p:title {title} ; p:director {director} ; p:yearReleased {yearReleased} .
+source		SELECT `id`, `title`, `director`, `yearReleased` FROM `Films`
+
+mappingId	Film_Festival_Entries_base
+target		ex:Film_Festival_Entries/{_amb_rowid} a :Film_Festival_Entries ; p:festivalId {festivalId} ; p:filmId {filmId} ; p:entryDate {entryDate} .
+source		SELECT `_amb_rowid`, `festivalId`, `filmId`, `entryDate` FROM `Film_Festival_Entries`
+
+mappingId	Film_Festival_Entries_filmId_fk
+target		ex:Film_Festival_Entries/{_amb_rowid} p:hasFilms ex:Films/{filmId} .
+source		SELECT `_amb_rowid`, `filmId` FROM `Film_Festival_Entries` WHERE `filmId` IS NOT NULL
+
+mappingId	Film_Festival_Entries_festivalId_fk
+target		ex:Film_Festival_Entries/{_amb_rowid} p:hasFilm_Festivals ex:Film_Festivals/{festivalId} .
+source		SELECT `_amb_rowid`, `festivalId` FROM `Film_Festival_Entries` WHERE `festivalId` IS NOT NULL
+
+mappingId	Film_Festival_Winners_base
+target		ex:Film_Festival_Winners/{_amb_rowid} a :Film_Festival_Winners ; p:festivalId {festivalId} ; p:awardType {awardType} ; p:winningFilmId {winningFilmId} ; p:winYear {winYear} .
+source		SELECT `_amb_rowid`, `festivalId`, `awardType`, `winningFilmId`, `winYear` FROM `Film_Festival_Winners`
+
+mappingId	Film_Festival_Winners_winningFilmId_fk
+target		ex:Film_Festival_Winners/{_amb_rowid} p:hasFilms ex:Films/{winningFilmId} .
+source		SELECT `_amb_rowid`, `winningFilmId` FROM `Film_Festival_Winners` WHERE `winningFilmId` IS NOT NULL
+
+mappingId	Film_Festival_Winners_festivalId_fk
+target		ex:Film_Festival_Winners/{_amb_rowid} p:hasFilm_Festivals ex:Film_Festivals/{festivalId} .
+source		SELECT `_amb_rowid`, `festivalId` FROM `Film_Festival_Winners` WHERE `festivalId` IS NOT NULL
+
+mappingId	Film_Festival_Categories_base
+target		ex:Film_Festival_Categories/{_amb_rowid} a :Film_Festival_Categories ; p:festivalId {festivalId} ; p:categoryId {categoryId} .
+source		SELECT `_amb_rowid`, `festivalId`, `categoryId` FROM `Film_Festival_Categories`
+
+mappingId	Film_Festival_Categories_categoryId_fk
+target		ex:Film_Festival_Categories/{_amb_rowid} p:hasCategories ex:Categories/{categoryId} .
+source		SELECT `_amb_rowid`, `categoryId` FROM `Film_Festival_Categories` WHERE `categoryId` IS NOT NULL
+
+mappingId	Film_Festival_Categories_festivalId_fk
+target		ex:Film_Festival_Categories/{_amb_rowid} p:hasFilm_Festivals ex:Film_Festivals/{festivalId} .
+source		SELECT `_amb_rowid`, `festivalId` FROM `Film_Festival_Categories` WHERE `festivalId` IS NOT NULL
+
+]]

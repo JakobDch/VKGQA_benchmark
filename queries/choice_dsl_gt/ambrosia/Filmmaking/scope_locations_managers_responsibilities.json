@@ -1,0 +1,42 @@
+{
+  "domain": "Filmmaking",
+  "db_base": "scope_locations_managers_responsibilities",
+  "schema": "amb_scope_locations_managers_responsibilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the managers and their responsibilities.",
+      "qtype": "unambig",
+      "sql": "select locations_managers.name , responsibilities.description from Locations_Managers_Responsibilities join Responsibilities on Locations_Managers_Responsibilities.responsibility_id = Responsibilities.id join Locations_Managers on Locations_Managers_Responsibilities.locations_manager_id = Locations_Managers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?locations_managers_responsibilities a :Locations_Managers_Responsibilities .\n  ?responsibilities a :Responsibilities .\n  ?locations_managers_responsibilities p:hasResponsibilities ?responsibilities .\n  ?locations_managers a :Locations_Managers .\n  ?locations_managers_responsibilities p:hasLocations_Managers ?locations_managers .\n  ?locations_managers p:name ?name .\n  ?responsibilities p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "What responsibilities are applicable to all managers at the same time?",
+      "qtype": "unambig",
+      "sql": "SELECT Responsibilities.description  from Locations_Managers_Responsibilities join Responsibilities on Locations_Managers_Responsibilities.responsibility_id = Responsibilities.id join Locations_Managers on Locations_Managers_Responsibilities.locations_manager_id = Locations_Managers.id   GROUP BY Locations_Managers_Responsibilities.responsibility_id HAVING COUNT(DISTINCT Locations_Managers_Responsibilities.locations_manager_id) = (SELECT COUNT(*) FROM  Locations_Managers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResponsibilities ?child ; p:hasLocations_Managers ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Locations_Managers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which responsibilities does each location manager have?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/filmmaking#>\nPREFIX p: <http://ambrosia.example.org/filmmaking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?locations_managers_responsibilities a :Locations_Managers_Responsibilities .\n  ?responsibilities a :Responsibilities .\n  ?locations_managers_responsibilities p:hasResponsibilities ?responsibilities .\n  ?locations_managers a :Locations_Managers .\n  ?locations_managers_responsibilities p:hasLocations_Managers ?locations_managers .\n  ?locations_managers p:name ?name .\n  ?responsibilities p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasResponsibilities ?child ; p:hasLocations_Managers ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Locations_Managers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

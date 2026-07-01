@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Directors_base
+target		ex:Directors/{DirectorID} a :Directors ; p:DirectorID {DirectorID} ; p:name {Name} ; p:BirthDate {BirthDate} .
+source		SELECT `DirectorID`, `Name`, `BirthDate` FROM `Directors`
+
+mappingId	Films_base
+target		ex:Films/{FilmID} a :Films ; p:FilmID {FilmID} ; p:Title {Title} ; p:ReleaseYear {ReleaseYear} .
+source		SELECT `FilmID`, `Title`, `ReleaseYear` FROM `Films`
+
+mappingId	DirectorFilms_base
+target		ex:DirectorFilms/{DirectorFilmID} a :DirectorFilms ; p:DirectorFilmID {DirectorFilmID} ; p:DirectorID {DirectorID} ; p:FilmID {FilmID} .
+source		SELECT `DirectorFilmID`, `DirectorID`, `FilmID` FROM `DirectorFilms`
+
+mappingId	DirectorFilms_FilmID_fk
+target		ex:DirectorFilms/{DirectorFilmID} p:hasFilms ex:Films/{FilmID} .
+source		SELECT `DirectorFilmID`, `FilmID` FROM `DirectorFilms` WHERE `FilmID` IS NOT NULL
+
+mappingId	DirectorFilms_DirectorID_fk
+target		ex:DirectorFilms/{DirectorFilmID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `DirectorFilmID`, `DirectorID` FROM `DirectorFilms` WHERE `DirectorID` IS NOT NULL
+
+mappingId	Additional_Roles_base
+target		ex:Additional_Roles/{AdditionalRoleID} a :Additional_Roles ; p:AdditionalRoleID {AdditionalRoleID} ; p:Role {Role} ; p:Fee {Fee} .
+source		SELECT `AdditionalRoleID`, `Role`, `Fee` FROM `Additional_Roles`
+
+mappingId	Directors_Roles_base
+target		ex:Directors_Roles/{DirectorRoleID} a :Directors_Roles ; p:DirectorRoleID {DirectorRoleID} ; p:DirectorID {DirectorID} ; p:AdditionalRoleID {AdditionalRoleID} .
+source		SELECT `DirectorRoleID`, `DirectorID`, `AdditionalRoleID` FROM `Directors_Roles`
+
+mappingId	Directors_Roles_AdditionalRoleID_fk
+target		ex:Directors_Roles/{DirectorRoleID} p:hasAdditional_Roles ex:Additional_Roles/{AdditionalRoleID} .
+source		SELECT `DirectorRoleID`, `AdditionalRoleID` FROM `Directors_Roles` WHERE `AdditionalRoleID` IS NOT NULL
+
+mappingId	Directors_Roles_DirectorID_fk
+target		ex:Directors_Roles/{DirectorRoleID} p:hasDirectors ex:Directors/{DirectorID} .
+source		SELECT `DirectorRoleID`, `DirectorID` FROM `Directors_Roles` WHERE `DirectorID` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_beverage_professional",
+  "schema": "amb_attachment_1tab_val_beverage_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all sommeliers with the first name of Alex and all bartenders with first name of Alex",
+      "qtype": "unambig",
+      "sql": "SELECT Professionals.FullName\nFROM Professionals\nWHERE (Professionals.Position = \"Sommelier\" OR Professionals.Position = \"Bartender\") AND Professionals.FullName LIKE \"Alex %\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?professionals a :Professionals .\n  ?professionals p:name ?fullname .\n  ?professionals p:Position ?position_w .\n  ?professionals p:Position ?position_w2 .\n  ?professionals p:name ?fullname_w .\n  FILTER((((STR(?position_w) = \"Sommelier\" || STR(?position_w2) = \"Bartender\")) && REGEX(STR(?fullname_w), \"^Alex\\\\ .*$\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show me all sommeliers and bartenders called Alex",
+      "qtype": "ambig",
+      "sql": "SELECT Professionals.FullName\nFROM Professionals\nWHERE Professionals.Position = \"Sommelier\" OR Professionals.Position = \"Bartender\" AND Professionals.FullName LIKE \"Alex %\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname WHERE {\n  ?professionals a :Professionals .\n  ?professionals p:name ?fullname .\n  ?professionals p:Position ?position_w .\n  ?professionals p:Position ?position_w2 .\n  ?professionals p:name ?fullname_w .\n  FILTER((STR(?position_w) = \"Sommelier\" || (STR(?position_w2) = \"Bartender\" && REGEX(STR(?fullname_w), \"^Alex\\\\ .*$\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me all sommeliers and bartenders called Alex",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?fullname WHERE {\n  ?professionals a :Professionals .\n  ?professionals p:name ?fullname .\n  ?professionals p:Position ?position_w .\n  ?professionals p:Position ?position_w2 .\n  ?professionals p:name ?fullname_w .\n  FILTER((((STR(?position_w) = \"Sommelier\" || STR(?position_w2) = \"Bartender\")) && REGEX(STR(?fullname_w), \"^Alex\\\\ .*$\")))\n} }\n  low: { SELECT ?fullname WHERE {\n  ?professionals a :Professionals .\n  ?professionals p:name ?fullname .\n  ?professionals p:Position ?position_w .\n  ?professionals p:Position ?position_w2 .\n  ?professionals p:name ?fullname_w .\n  FILTER((STR(?position_w) = \"Sommelier\" || (STR(?position_w2) = \"Bartender\" && REGEX(STR(?fullname_w), \"^Alex\\\\ .*$\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

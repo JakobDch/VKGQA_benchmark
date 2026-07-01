@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_2tab_val_cleaning_professional",
+  "schema": "amb_attachment_2tab_val_cleaning_professional",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List all housekeepers and also display laundry service attendants working at The Grand Hotel.",
+      "qtype": "unambig",
+      "sql": "SELECT Housekeeping.housekeeper as name\nFROM Housekeeping\nUNION\nSELECT LaundryService.laundry_attendant as name\nFROM LaundryService\nWHERE LaundryService.hotel = \"The Grand Hotel\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?housekeeping a :Housekeeping .\n    ?housekeeping p:housekeeper ?housekeeper .\n    BIND(?housekeeper AS ?o0)\n  }\n  UNION\n  {\n    ?laundryservice a :LaundryService .\n    ?laundryservice p:laundry_attendant ?laundry_attendant .\n    ?laundryservice p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?laundry_attendant AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What housekeepers and laundry service attendants are employed at the Grand Hotel?",
+      "qtype": "unambig",
+      "sql": "SELECT Housekeeping.housekeeper as name\nFROM Housekeeping\nWHERE Housekeeping.hotel = \"The Grand Hotel\"\nUNION\nSELECT LaundryService.laundry_attendant as name\nFROM LaundryService\nWHERE LaundryService.hotel = \"The Grand Hotel\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?housekeeping a :Housekeeping .\n    ?housekeeping p:housekeeper ?housekeeper .\n    ?housekeeping p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?housekeeper AS ?o0)\n  }\n  UNION\n  {\n    ?laundryservice a :LaundryService .\n    ?laundryservice p:laundry_attendant ?laundry_attendant .\n    ?laundryservice p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?laundry_attendant AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Display housekeepers and laundry service attendants working at the Grand Hotel.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?housekeeping a :Housekeeping .\n    ?housekeeping p:housekeeper ?housekeeper .\n    BIND(?housekeeper AS ?o0)\n  }\n  UNION\n  {\n    ?laundryservice a :LaundryService .\n    ?laundryservice p:laundry_attendant ?laundry_attendant .\n    ?laundryservice p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?laundry_attendant AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?housekeeping a :Housekeeping .\n    ?housekeeping p:housekeeper ?housekeeper .\n    ?housekeeping p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?housekeeper AS ?o0)\n  }\n  UNION\n  {\n    ?laundryservice a :LaundryService .\n    ?laundryservice p:laundry_attendant ?laundry_attendant .\n    ?laundryservice p:hotel ?hotel_f .\n    FILTER(STR(?hotel_f) = \"The Grand Hotel\")\n    BIND(?laundry_attendant AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "attachment_1tab_ref_helping_professions",
+  "schema": "amb_attachment_1tab_ref_helping_professions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show social workers and counselors from the West Side.",
+      "qtype": "ambig",
+      "sql": "SELECT JobPosting.title \nFROM HelpingProfession JOIN JobPosting ON HelpingProfession.ProfessionID = JobPosting.ProfessionID JOIN GeoArea ON JobPosting.AreaID = GeoArea.AreaID\nWHERE (HelpingProfession.ProfessionName = \"Social Worker\" OR HelpingProfession.ProfessionName = \"Counselor\") AND GeoArea.LocationText = \"West Side\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?helpingprofession a :HelpingProfession .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHelpingProfession ?helpingprofession .\n  ?geoarea a :GeoArea .\n  ?jobposting p:hasGeoArea ?geoarea .\n  ?jobposting p:Title ?title .\n  ?helpingprofession p:ProfessionName ?professionname_w .\n  ?helpingprofession p:ProfessionName ?professionname_w2 .\n  ?geoarea p:LocationText ?locationtext_w .\n  FILTER((((STR(?professionname_w) = \"Social Worker\" || STR(?professionname_w2) = \"Counselor\")) && STR(?locationtext_w) = \"West Side\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show social workers and counselors from the West Side.",
+      "qtype": "ambig",
+      "sql": "SELECT JobPosting.title \nFROM HelpingProfession JOIN JobPosting ON HelpingProfession.ProfessionID = JobPosting.ProfessionID JOIN GeoArea ON JobPosting.AreaID = GeoArea.AreaID\nWHERE HelpingProfession.ProfessionName = \"Social Worker\" OR HelpingProfession.ProfessionName = \"Counselor\" AND GeoArea.LocationText = \"West Side\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?helpingprofession a :HelpingProfession .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHelpingProfession ?helpingprofession .\n  ?geoarea a :GeoArea .\n  ?jobposting p:hasGeoArea ?geoarea .\n  ?jobposting p:Title ?title .\n  ?helpingprofession p:ProfessionName ?professionname_w .\n  ?helpingprofession p:ProfessionName ?professionname_w2 .\n  ?geoarea p:LocationText ?locationtext_w .\n  FILTER((STR(?professionname_w) = \"Social Worker\" || (STR(?professionname_w2) = \"Counselor\" && STR(?locationtext_w) = \"West Side\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show social workers and counselors from the West Side.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?helpingprofession a :HelpingProfession .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHelpingProfession ?helpingprofession .\n  ?geoarea a :GeoArea .\n  ?jobposting p:hasGeoArea ?geoarea .\n  ?jobposting p:Title ?title .\n  ?helpingprofession p:ProfessionName ?professionname_w .\n  ?helpingprofession p:ProfessionName ?professionname_w2 .\n  ?geoarea p:LocationText ?locationtext_w .\n  FILTER((((STR(?professionname_w) = \"Social Worker\" || STR(?professionname_w2) = \"Counselor\")) && STR(?locationtext_w) = \"West Side\"))\n} }\n  low: { SELECT ?title WHERE {\n  ?helpingprofession a :HelpingProfession .\n  ?jobposting a :JobPostings .\n  ?jobposting p:hasHelpingProfession ?helpingprofession .\n  ?geoarea a :GeoArea .\n  ?jobposting p:hasGeoArea ?geoarea .\n  ?jobposting p:Title ?title .\n  ?helpingprofession p:ProfessionName ?professionname_w .\n  ?helpingprofession p:ProfessionName ?professionname_w2 .\n  ?geoarea p:LocationText ?locationtext_w .\n  FILTER((STR(?professionname_w) = \"Social Worker\" || (STR(?professionname_w2) = \"Counselor\" && STR(?locationtext_w) = \"West Side\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

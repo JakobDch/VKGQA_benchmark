@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_1tab_val_arrival_facilities",
+  "schema": "amb_attachment_1tab_val_arrival_facilities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the opening hours of arrival halls with 500-people capacity and opening hours of baggage reclaim facilities with same capacity?",
+      "qtype": "unambig",
+      "sql": "SELECT TerminalFacility.OpeningHours \nFROM TerminalFacility\nWHERE (TerminalFacility.Arrival_Facilities = \"Arrival Hall\" OR TerminalFacility.Arrival_Facilities = \"Baggage Reclaim\") AND TerminalFacility.Maximum_Capacity = \"500 passengers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?openinghours WHERE {\n  ?terminalfacility a :TerminalFacility .\n  ?terminalfacility p:OpeningHours ?openinghours .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w2 .\n  ?terminalfacility p:Maximum_Capacity ?maximum_capacity_w .\n  FILTER((((STR(?arrival_facilities_w) = \"Arrival Hall\" || STR(?arrival_facilities_w2) = \"Baggage Reclaim\")) && STR(?maximum_capacity_w) = \"500 passengers\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List opening hours of all arrival hall facilities and also list opening hours of baggage reclaim facilities with capacity of 500 people.",
+      "qtype": "unambig",
+      "sql": "SELECT TerminalFacility.OpeningHours \nFROM TerminalFacility\nWHERE TerminalFacility.Arrival_Facilities = \"Arrival Hall\" OR TerminalFacility.Arrival_Facilities = \"Baggage Reclaim\" AND TerminalFacility.Maximum_Capacity = \"500 passengers\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?openinghours WHERE {\n  ?terminalfacility a :TerminalFacility .\n  ?terminalfacility p:OpeningHours ?openinghours .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w2 .\n  ?terminalfacility p:Maximum_Capacity ?maximum_capacity_w .\n  FILTER((STR(?arrival_facilities_w) = \"Arrival Hall\" || (STR(?arrival_facilities_w2) = \"Baggage Reclaim\" && STR(?maximum_capacity_w) = \"500 passengers\")))\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When can the arrival halls and baggage claim areas with a capacity of 500 people be used?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?openinghours WHERE {\n  ?terminalfacility a :TerminalFacility .\n  ?terminalfacility p:OpeningHours ?openinghours .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w2 .\n  ?terminalfacility p:Maximum_Capacity ?maximum_capacity_w .\n  FILTER((((STR(?arrival_facilities_w) = \"Arrival Hall\" || STR(?arrival_facilities_w2) = \"Baggage Reclaim\")) && STR(?maximum_capacity_w) = \"500 passengers\"))\n} }\n  low: { SELECT ?openinghours WHERE {\n  ?terminalfacility a :TerminalFacility .\n  ?terminalfacility p:OpeningHours ?openinghours .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w .\n  ?terminalfacility p:Arrival_Facilities ?arrival_facilities_w2 .\n  ?terminalfacility p:Maximum_Capacity ?maximum_capacity_w .\n  FILTER((STR(?arrival_facilities_w) = \"Arrival Hall\" || (STR(?arrival_facilities_w2) = \"Baggage Reclaim\" && STR(?maximum_capacity_w) = \"500 passengers\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

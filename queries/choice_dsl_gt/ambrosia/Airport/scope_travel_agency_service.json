@@ -1,0 +1,108 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_travel_agency_service",
+  "schema": "amb_scope_travel_agency_service",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the travel agencies and the corresponding service prices.",
+      "qtype": "unambig",
+      "sql": "select travel_agency.name , service.price from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?price WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Price ?price .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the service prices for each travel agency.",
+      "qtype": "ambig",
+      "sql": "SELECT Service.Price  from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID   GROUP BY Travel_Agency_Service.ServiceID HAVING COUNT(DISTINCT Travel_Agency_Service.AgencyID) = (SELECT COUNT(*) FROM  Travel_Agency)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Show me the services that every travel agent has.",
+      "qtype": "ambig",
+      "sql": "SELECT Service.Description  from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID   GROUP BY Travel_Agency_Service.ServiceID HAVING COUNT(DISTINCT Travel_Agency_Service.AgencyID) = (SELECT COUNT(*) FROM  Travel_Agency)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Show me the services that every travel agent has.",
+      "qtype": "ambig",
+      "sql": "select travel_agency.name , service.description from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=10"
+    },
+    {
+      "qid": 4,
+      "question": "List the description and price for services available at each travel agency.",
+      "qtype": "ambig",
+      "sql": "SELECT Service.Description, Service.Price  from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID   GROUP BY Travel_Agency_Service.ServiceID HAVING COUNT(DISTINCT Travel_Agency_Service.AgencyID) = (SELECT COUNT(*) FROM  Travel_Agency)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  ?child p:Price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "List the description and price for services available at each travel agency.",
+      "qtype": "ambig",
+      "sql": "select travel_agency.name , service.description , service.price from Travel_Agency_Service join Service on Travel_Agency_Service.ServiceID = Service.ServiceID join Travel_Agency on Travel_Agency_Service.AgencyID = Travel_Agency.AgencyID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description ?price WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Description ?description .\n  ?service p:Price ?price .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the service prices for each travel agency.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?price WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Price ?price .\n} }\n  collective: { SELECT ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the description and price for services available at each travel agency.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description ?price WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  ?child p:Price ?price .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description ?price WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Description ?description .\n  ?service p:Price ?price .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the services that every travel agent has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?travel_agency_service a :Travel_Agency_Service .\n  ?service a :Service .\n  ?travel_agency_service p:hasService ?service .\n  ?travel_agency a :Travel_Agency .\n  ?travel_agency_service p:hasTravel_Agency ?travel_agency .\n  ?travel_agency p:name ?name .\n  ?service p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasService ?child ; p:hasTravel_Agency ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Travel_Agency } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

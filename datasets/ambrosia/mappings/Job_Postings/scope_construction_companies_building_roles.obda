@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Construction_Companies_base
+target		ex:Construction_Companies/{id} a :Construction_Companies ; p:id {id} ; p:company_name {company_name} ; p:address {address} .
+source		SELECT `id`, `company_name`, `address` FROM `Construction_Companies`
+
+mappingId	Building_Roles_base
+target		ex:Building_Roles/{role_id} a :Building_Roles ; p:role_id {role_id} ; p:role_value {role_value} .
+source		SELECT `role_id`, `role_value` FROM `Building_Roles`
+
+mappingId	Construction_Companies_Building_Roles_base
+target		ex:Construction_Companies_Building_Roles/{construction_company_id}/{building_role_id} a :Construction_Companies_Building_Roles ; p:construction_company_id {construction_company_id} ; p:building_role_id {building_role_id} .
+source		SELECT `construction_company_id`, `building_role_id` FROM `Construction_Companies_Building_Roles`
+
+mappingId	Construction_Companies_Building_Roles_building_role_id_fk
+target		ex:Construction_Companies_Building_Roles/{construction_company_id}/{building_role_id} p:hasBuilding_Roles ex:Building_Roles/{building_role_id} .
+source		SELECT `construction_company_id`, `building_role_id` FROM `Construction_Companies_Building_Roles` WHERE `building_role_id` IS NOT NULL
+
+mappingId	Construction_Companies_Building_Roles_construction_company_id_fk
+target		ex:Construction_Companies_Building_Roles/{construction_company_id}/{building_role_id} p:hasConstruction_Companies ex:Construction_Companies/{construction_company_id} .
+source		SELECT `construction_company_id`, `building_role_id` FROM `Construction_Companies_Building_Roles` WHERE `construction_company_id` IS NOT NULL
+
+]]

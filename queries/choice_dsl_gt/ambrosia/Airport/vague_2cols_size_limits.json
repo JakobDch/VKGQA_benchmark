@@ -1,0 +1,97 @@
+{
+  "domain": "Airport",
+  "db_base": "vague_2cols_size_limits",
+  "schema": "amb_vague_2cols_size_limits",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which airline uses the plane PlaneModel3 and what are the linear dimensions of that plane?",
+      "qtype": "unambig",
+      "sql": "select A.name, P.linear_dimensions from Airlines A inner join Planes P on P.airline_id = A.id where P.model = 'PlaneModel3'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?linear_dimensions WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What is the weight restriction for the plane departing the runway with length 5000 at 11:00 on the 4th January?",
+      "qtype": "unambig",
+      "sql": "select P.weight_restriction from Planes P inner join Flights F on P.model = F.plane_model inner join Runways R on R.id = F.runway_id where R.length = 5000 and F.departure_time = '2022-01-04 11:00:00'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?weight_restriction WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:weight_restriction ?weight_restriction .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which airline uses the plane PlaneModel3 and what are the weight restrictions of that plane?",
+      "qtype": "unambig",
+      "sql": "select A.name, P.weight_restriction from Airlines A inner join Planes P on P.airline_id = A.id where P.model = 'PlaneModel3'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?weight_restriction WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:weight_restriction ?weight_restriction .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which airline uses the plane PlaneModel3 and what are the linear dimensions and weight restrictions of that plane?",
+      "qtype": "unambig",
+      "sql": "select A.name, P.linear_dimensions, weight_restriction from Airlines A inner join Planes P on P.airline_id = A.id where P.model = 'PlaneModel3'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?linear_dimensions ?weight_restriction WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:weight_restriction ?weight_restriction .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "What are the linear dimensions for the plane departing the runway with length 5000 at 11:00 on the 4th January?",
+      "qtype": "unambig",
+      "sql": "select P.linear_dimensions from Planes P inner join Flights F on P.model = F.plane_model inner join Runways R on R.id = F.runway_id where R.length = 5000 and F.departure_time = '2022-01-04 11:00:00'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?linear_dimensions WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What is the size limit for the plane departing from the runway with length 5000 at 11:00 on the 4th of January?",
+      "qtype": "ambig",
+      "sql": "select P.linear_dimensions, weight_restriction from Planes P inner join Flights F on P.model = F.plane_model inner join Runways R on R.id = F.runway_id where R.length = 5000 and F.departure_time = '2022-01-04 11:00:00'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?linear_dimensions ?weight_restriction WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:weight_restriction ?weight_restriction .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Which airline uses the plane PlaneModel3 and what are the corresponding size limits?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?linear_dimensions WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n} }\n  component_2: { SELECT ?name ?weight_restriction WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:weight_restriction ?weight_restriction .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n} }\n  full: { SELECT ?name ?linear_dimensions ?weight_restriction WHERE {\n  ?a a :Airlines .\n  ?p a :Planes .\n  ?p p:hasAirlines ?a .\n  ?a p:name ?name .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:weight_restriction ?weight_restriction .\n  ?p p:model ?model_f .\n  FILTER(STR(?model_f) = \"PlaneModel3\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What is the size limit for the plane departing from the runway with length 5000 at 11:00 on the 4th of January?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?weight_restriction WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:weight_restriction ?weight_restriction .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n} }\n  component_2: { SELECT ?linear_dimensions WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n} }\n  full: { SELECT ?linear_dimensions ?weight_restriction WHERE {\n  ?p a :Planes .\n  ?f a :Flights .\n  ?p p:model ?model_l .\n  ?f p:plane_model ?plane_model_r .\n  ?r a :Runways .\n  ?f p:hasRunways ?r .\n  ?p p:linear_dimensions ?linear_dimensions .\n  ?p p:weight_restriction ?weight_restriction .\n  ?r p:length ?length_f .\n  ?f p:departure_time ?departure_time_f .\n  FILTER(STR(?model_l) = STR(?plane_model_r))\n  FILTER((STR(?length_f) = \"5000\" || STR(?length_f) = \"5000.0\"))\n  FILTER(STR(?departure_time_f) = \"2022-01-04 11:00:00\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

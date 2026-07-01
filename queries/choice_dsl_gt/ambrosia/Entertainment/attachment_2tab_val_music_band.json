@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_val_music_band",
+  "schema": "amb_attachment_2tab_val_music_band",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Provide a list of all jazz bands and also provide a list of rock bands founded in 1970.",
+      "qtype": "unambig",
+      "sql": "SELECT Jazz_Bands.band\nFROM Jazz_Bands\nUNION\nSELECT Rock_Bands.band\nFROM Rock_Bands\nWHERE Rock_Bands.Founding_Year = 1970",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?jazz_bands a :Jazz_Bands .\n    ?jazz_bands p:Band ?band .\n    BIND(?band AS ?o0)\n  }\n  UNION\n  {\n    ?rock_bands a :Rock_Bands .\n    ?rock_bands p:Band ?band .\n    ?rock_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Show jazz bands and rock bands founded in 1970.",
+      "qtype": "ambig",
+      "sql": "SELECT Jazz_Bands.band\nFROM Jazz_Bands\nWHERE Jazz_Bands.Founding_Year = 1970\nUNION\nSELECT Rock_Bands.band\nFROM Rock_Bands\nWHERE Rock_Bands.Founding_Year = 1970",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?jazz_bands a :Jazz_Bands .\n    ?jazz_bands p:Band ?band .\n    ?jazz_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n  UNION\n  {\n    ?rock_bands a :Rock_Bands .\n    ?rock_bands p:Band ?band .\n    ?rock_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show jazz bands and rock bands founded in 1970.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?jazz_bands a :Jazz_Bands .\n    ?jazz_bands p:Band ?band .\n    BIND(?band AS ?o0)\n  }\n  UNION\n  {\n    ?rock_bands a :Rock_Bands .\n    ?rock_bands p:Band ?band .\n    ?rock_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n} }\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?jazz_bands a :Jazz_Bands .\n    ?jazz_bands p:Band ?band .\n    ?jazz_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n  UNION\n  {\n    ?rock_bands a :Rock_Bands .\n    ?rock_bands p:Band ?band .\n    ?rock_bands p:Founding_Year ?founding_year_f .\n    FILTER((STR(?founding_year_f) = \"1970\" || STR(?founding_year_f) = \"1970.0\"))\n    BIND(?band AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

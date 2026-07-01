@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2tabs_location",
+  "schema": "amb_vague_2tabs_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the most populous city and its associated campus?",
+      "qtype": "unambig",
+      "sql": "select L.Name, C.campus_name from City L inner join Campus C on C.city_id = L.id order by L.population LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?campus_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?l p:name ?name .\n  ?c p:campus_name ?campus_name .\n  ?l p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Which state and city was the campus where Alice Johnson was teaching on the 1st of June 2021 located?",
+      "qtype": "unambig",
+      "sql": "select L.name, S.full_name from City L inner join Campus C on C.city_id = L.id inner join teachesAt TA on TA.campusId = C.id join State S on C.state_id = S.id  inner join Teacher T on T.id = TA.teacherid where TA.startDate < '2021-06-01' and ta.endDate > '2021-06-01' and T.email= 'alice.johnson@example.com'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?full_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?s a :State .\n  ?c p:hasState ?s .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?name .\n  ?s p:name ?full_name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "What is the most populous location and its associated campus?",
+      "qtype": "ambig",
+      "sql": "select L.full_name from State L inner join Campus C on C.state_id = L.id inner join City ct on C.city_id = ct.id order by ct.population LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?l a :State .\n  ?c a :Campus .\n  ?c p:hasState ?l .\n  ?ct a :City .\n  ?c p:hasCity ?ct .\n  ?l p:name ?full_name .\n  ?ct p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "What is the most populous location and its associated campus?",
+      "qtype": "ambig",
+      "sql": "select S.full_name, L.Name, C.campus_name from City L inner join Campus C on C.city_id = L.id  join State S on C.state_id = S.id  order by L.population LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name ?name ?campus_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?s a :State .\n  ?c p:hasState ?s .\n  ?s p:name ?full_name .\n  ?l p:name ?name .\n  ?c p:campus_name ?campus_name .\n  ?l p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Which state was the campus where Alice Johnson was teaching on the 1st of June 2021 located?",
+      "qtype": "unambig",
+      "sql": "select L.full_name from State L inner join Campus C on C.state_id = L.id inner join teachesAt TA on TA.campusId = C.id inner join Teacher T on T.id = TA.teacherid where TA.startDate < '2021-06-01' and ta.endDate > '2021-06-01' and T.email= 'alice.johnson@example.com'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?full_name WHERE {\n  ?l a :State .\n  ?c a :Campus .\n  ?c p:hasState ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?full_name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which city was the campus where Alice Johnson was teaching on the 1st of June 2021 located?",
+      "qtype": "unambig",
+      "sql": "select L.name from City L inner join Campus C on C.city_id = L.id inner join teachesAt TA on TA.campusId = C.id inner join Teacher T on T.id = TA.teacherid where TA.startDate < '2021-06-01' and ta.endDate > '2021-06-01' and T.email= 'alice.johnson@example.com'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What is the most populous location and its associated campus?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        3,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?campus_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?l p:name ?name .\n  ?c p:campus_name ?campus_name .\n  ?l p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n  full: { SELECT ?full_name ?name ?campus_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?s a :State .\n  ?c p:hasState ?s .\n  ?s p:name ?full_name .\n  ?l p:name ?name .\n  ?c p:campus_name ?campus_name .\n  ?l p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n  component_2: { SELECT ?full_name WHERE {\n  ?l a :State .\n  ?c a :Campus .\n  ?c p:hasState ?l .\n  ?ct a :City .\n  ?c p:hasCity ?ct .\n  ?l p:name ?full_name .\n  ?ct p:population ?population_o .\n}\nORDER BY ASC(?population_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Retrieve the location of the campus where Alice Johnson was teaching on the 1st of June 2021",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "full",
+        "component",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  full: { SELECT ?name ?full_name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?s a :State .\n  ?c p:hasState ?s .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?name .\n  ?s p:name ?full_name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n} }\n  component: { SELECT ?full_name WHERE {\n  ?l a :State .\n  ?c a :Campus .\n  ?c p:hasState ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?full_name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?l a :City .\n  ?c a :Campus .\n  ?c p:hasCity ?l .\n  ?ta a :teachesAt .\n  ?ta p:hasCampus ?c .\n  ?t a :Teachers .\n  ?ta p:hasTeacher ?t .\n  ?l p:name ?name .\n  ?ta p:startDate ?startdate_f .\n  ?ta p:endDate ?enddate_f .\n  ?t p:email ?email_f .\n  FILTER(STR(?startdate_f) < \"2021-06-01\")\n  FILTER(STR(?enddate_f) > \"2021-06-01\")\n  FILTER(STR(?email_f) = \"alice.johnson@example.com\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

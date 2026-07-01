@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Communities_base
+target		ex:Communities/{id} a :Communities ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Communities`
+
+mappingId	Features_base
+target		ex:Features/{id} a :Features ; p:id {id} ; p:feature_name {feature_name} .
+source		SELECT `id`, `feature_name` FROM `Features`
+
+mappingId	Communities_Features_base
+target		ex:Communities_Features/{_amb_rowid} a :Communities_Features ; p:community_id {community_id} ; p:feature_id {feature_id} .
+source		SELECT `_amb_rowid`, `community_id`, `feature_id` FROM `Communities_Features`
+
+mappingId	Communities_Features_feature_id_fk
+target		ex:Communities_Features/{_amb_rowid} p:hasFeatures ex:Features/{feature_id} .
+source		SELECT `_amb_rowid`, `feature_id` FROM `Communities_Features` WHERE `feature_id` IS NOT NULL
+
+mappingId	Communities_Features_community_id_fk
+target		ex:Communities_Features/{_amb_rowid} p:hasCommunities ex:Communities/{community_id} .
+source		SELECT `_amb_rowid`, `community_id` FROM `Communities_Features` WHERE `community_id` IS NOT NULL
+
+]]

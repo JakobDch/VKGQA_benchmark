@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	NarrativeForms_base
+target		ex:NarrativeForms/{id} a :NarrativeForms ; p:id {id} ; p:Narrative_Form {Narrative_Form} .
+source		SELECT `id`, `Narrative_Form` FROM `NarrativeForms`
+
+mappingId	Epochs_base
+target		ex:Epoch/{id} a :Epoch ; p:id {id} ; p:Epoch {Epoch} .
+source		SELECT `id`, `Epoch` FROM `Epochs`
+
+mappingId	Authors_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:name {Name} ; p:Birthdate {Birthdate} ; p:Deathdate {Deathdate} .
+source		SELECT `id`, `Name`, `Birthdate`, `Deathdate` FROM `Authors`
+
+mappingId	Narratives_base
+target		ex:Narratives/{id} a :Narratives ; p:id {id} ; p:narrative_form_id {narrative_form_id} ; p:epoch_id {epoch_id} ; p:title {title} ; p:publication_year {publication_year} ; p:author_id {author_id} .
+source		SELECT `id`, `narrative_form_id`, `epoch_id`, `title`, `publication_year`, `author_id` FROM `Narratives`
+
+mappingId	Narratives_epoch_id_fk
+target		ex:Narratives/{id} p:hasEpoch ex:Epoch/{epoch_id} .
+source		SELECT `id`, `epoch_id` FROM `Narratives` WHERE `epoch_id` IS NOT NULL
+
+mappingId	Narratives_narrative_form_id_fk
+target		ex:Narratives/{id} p:hasNarrativeForms ex:NarrativeForms/{narrative_form_id} .
+source		SELECT `id`, `narrative_form_id` FROM `Narratives` WHERE `narrative_form_id` IS NOT NULL
+
+mappingId	Narratives_author_id_fk
+target		ex:Narratives/{id} p:hasAuthor ex:Author/{author_id} .
+source		SELECT `id`, `author_id` FROM `Narratives` WHERE `author_id` IS NOT NULL
+
+]]

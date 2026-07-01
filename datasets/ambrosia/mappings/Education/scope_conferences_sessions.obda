@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Conferences_base
+target		ex:Conferences/{conference_id} a :Conferences ; p:conference_id {conference_id} ; p:name {name} ; p:date {date} .
+source		SELECT `conference_id`, `name`, `date` FROM `Conferences`
+
+mappingId	Speakers_base
+target		ex:Speakers/{speaker_id} a :Speakers ; p:speaker_id {speaker_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:title {title} .
+source		SELECT `speaker_id`, `first_name`, `last_name`, `title` FROM `Speakers`
+
+mappingId	Conference_Speakers_base
+target		ex:Conference_Speakers/{conference_speaker_id} a :Conference_Speakers ; p:conference_speaker_id {conference_speaker_id} ; p:conference_id {conference_id} ; p:speaker_id {speaker_id} .
+source		SELECT `conference_speaker_id`, `conference_id`, `speaker_id` FROM `Conference_Speakers`
+
+mappingId	Conference_Speakers_speaker_id_fk
+target		ex:Conference_Speakers/{conference_speaker_id} p:hasSpeakers ex:Speakers/{speaker_id} .
+source		SELECT `conference_speaker_id`, `speaker_id` FROM `Conference_Speakers` WHERE `speaker_id` IS NOT NULL
+
+mappingId	Conference_Speakers_conference_id_fk
+target		ex:Conference_Speakers/{conference_speaker_id} p:hasConferences ex:Conferences/{conference_id} .
+source		SELECT `conference_speaker_id`, `conference_id` FROM `Conference_Speakers` WHERE `conference_id` IS NOT NULL
+
+mappingId	Conference_Sessions_base
+target		ex:Conference_Sessions/{conference_session_id} a :Conference_Sessions ; p:conference_session_id {conference_session_id} ; p:conference_id {conference_id} ; p:session_type_id {session_type_id} .
+source		SELECT `conference_session_id`, `conference_id`, `session_type_id` FROM `Conference_Sessions`
+
+mappingId	Conference_Sessions_session_type_id_fk
+target		ex:Conference_Sessions/{conference_session_id} p:hasSessions ex:Sessions/{session_type_id} .
+source		SELECT `conference_session_id`, `session_type_id` FROM `Conference_Sessions` WHERE `session_type_id` IS NOT NULL
+
+mappingId	Conference_Sessions_conference_id_fk
+target		ex:Conference_Sessions/{conference_session_id} p:hasConferences ex:Conferences/{conference_id} .
+source		SELECT `conference_session_id`, `conference_id` FROM `Conference_Sessions` WHERE `conference_id` IS NOT NULL
+
+mappingId	Sessions_base
+target		ex:Sessions/{session_type_id} a :Sessions ; p:session_type_id {session_type_id} ; p:session_type {session_type} ; p:duration {duration} .
+source		SELECT `session_type_id`, `session_type`, `duration` FROM `Sessions`
+
+]]

@@ -1,0 +1,108 @@
+@prefix : <http://ambrosia.example.org/education#> .
+@prefix p: <http://ambrosia.example.org/education/prop#> .
+@prefix ex: <http://ambrosia.example.org/education/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_online_learning_platforms_courses_0_Users_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"userID\", \"username\", \"password\" FROM \"Users\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Users/{userID}" ; rr:class :Users ] ;
+  rr:predicateObjectMap [ rr:predicate p:userID ; rr:objectMap [ rr:column "userID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:username ; rr:objectMap [ rr:column "username" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:password ; rr:objectMap [ rr:column "password" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_1_Online_Learning_Platforms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"platformID\", \"name\", \"website\" FROM \"Online_Learning_Platforms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Online_Learning_Platforms/{platformID}" ; rr:class :Online_Learning_Platforms ] ;
+  rr:predicateObjectMap [ rr:predicate p:platformID ; rr:objectMap [ rr:column "platformID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:website ; rr:objectMap [ rr:column "website" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_2_Courses_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"courseID\", \"title\", \"description\" FROM \"Courses\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{courseID}" ; rr:class :Courses ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseID ; rr:objectMap [ rr:column "courseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:title ; rr:objectMap [ rr:column "title" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:description ; rr:objectMap [ rr:column "description" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_3_Enrolled_Students_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"studentID\", \"courseID\", \"enrollmentDate\" FROM \"Enrolled_Students\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrolled_Students/{_amb_rowid}" ; rr:class :Enrolled_Students ] ;
+  rr:predicateObjectMap [ rr:predicate p:studentID ; rr:objectMap [ rr:column "studentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseID ; rr:objectMap [ rr:column "courseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:enrollmentDate ; rr:objectMap [ rr:column "enrollmentDate" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_4_Enrolled_Students_courseID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"courseID\" FROM \"Enrolled_Students\" WHERE \"courseID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrolled_Students/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{courseID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_5_Enrolled_Students_studentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"studentID\" FROM \"Enrolled_Students\" WHERE \"studentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Enrolled_Students/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasUsers ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Users/{studentID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_6_Ratings_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ratingID\", \"studentID\", \"courseID\", \"stars\", \"reviewText\", \"submissionDate\" FROM \"Ratings\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Ratings/{ratingID}" ; rr:class :Ratings ] ;
+  rr:predicateObjectMap [ rr:predicate p:ratingID ; rr:objectMap [ rr:column "ratingID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:studentID ; rr:objectMap [ rr:column "studentID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseID ; rr:objectMap [ rr:column "courseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:stars ; rr:objectMap [ rr:column "stars" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:reviewText ; rr:objectMap [ rr:column "reviewText" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:submissionDate ; rr:objectMap [ rr:column "submissionDate" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_7_Ratings_courseID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ratingID\", \"courseID\" FROM \"Ratings\" WHERE \"courseID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Ratings/{ratingID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{courseID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_8_Ratings_studentID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"ratingID\", \"studentID\" FROM \"Ratings\" WHERE \"studentID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Ratings/{ratingID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasUsers ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Users/{studentID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_9_Instructors_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"instructorID\", \"firstName\", \"lastName\", \"email\" FROM \"Instructors\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Instructors/{instructorID}" ; rr:class :Instructors ] ;
+  rr:predicateObjectMap [ rr:predicate p:instructorID ; rr:objectMap [ rr:column "instructorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:firstName ; rr:objectMap [ rr:column "firstName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:lastName ; rr:objectMap [ rr:column "lastName" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:email ; rr:objectMap [ rr:column "email" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_10_Course_Instructor_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"courseID\", \"instructorID\", \"startDate\", \"endDate\" FROM \"Course_Instructor\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Course_Instructor/{_amb_rowid}" ; rr:class :Course_Instructor ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseID ; rr:objectMap [ rr:column "courseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:instructorID ; rr:objectMap [ rr:column "instructorID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:startDate ; rr:objectMap [ rr:column "startDate" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:endDate ; rr:objectMap [ rr:column "endDate" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_11_Course_Instructor_instructorID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"instructorID\" FROM \"Course_Instructor\" WHERE \"instructorID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Course_Instructor/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasInstructors ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Instructors/{instructorID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_12_Course_Instructor_courseID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"courseID\" FROM \"Course_Instructor\" WHERE \"courseID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Course_Instructor/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{courseID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_13_Online_Learning_Platforms_Courses_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"platformID\", \"courseID\", \"availabilityStatus\" FROM \"Online_Learning_Platforms_Courses\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Online_Learning_Platforms_Courses/{_amb_rowid}" ; rr:class :Online_Learning_Platforms_Courses ] ;
+  rr:predicateObjectMap [ rr:predicate p:platformID ; rr:objectMap [ rr:column "platformID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:courseID ; rr:objectMap [ rr:column "courseID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:availabilityStatus ; rr:objectMap [ rr:column "availabilityStatus" ] ] .
+
+<#tm_scope_online_learning_platforms_courses_14_Online_Learning_Platforms_Courses_courseID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"courseID\" FROM \"Online_Learning_Platforms_Courses\" WHERE \"courseID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Online_Learning_Platforms_Courses/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasCourses ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Courses/{courseID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_online_learning_platforms_courses_15_Online_Learning_Platforms_Courses_platformID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"_amb_rowid\", \"platformID\" FROM \"Online_Learning_Platforms_Courses\" WHERE \"platformID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/education/id/Online_Learning_Platforms_Courses/{_amb_rowid}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasOnline_Learning_Platforms ; rr:objectMap [ rr:template "http://ambrosia.example.org/education/id/Online_Learning_Platforms/{platformID}" ; rr:termType rr:IRI ] ] .
+

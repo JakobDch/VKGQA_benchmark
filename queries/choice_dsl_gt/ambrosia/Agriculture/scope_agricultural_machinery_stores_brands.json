@@ -1,0 +1,42 @@
+{
+  "domain": "Agriculture",
+  "db_base": "scope_agricultural_machinery_stores_brands",
+  "schema": "amb_scope_agricultural_machinery_stores_brands",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What brands of agricultural machinery are available in each machinery store",
+      "qtype": "ambig",
+      "sql": "SELECT Brands.brand_name  from Stores_Brands join Brands on Stores_Brands.brand_id = Brands.id join Agricultural_Machinery_Stores on Stores_Brands.store_id = Agricultural_Machinery_Stores.store_id   GROUP BY Stores_Brands.brand_id HAVING COUNT(DISTINCT Stores_Brands.store_id) = (SELECT COUNT(*) FROM  Agricultural_Machinery_Stores)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?brand_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBrands ?child ; p:hasAgricultural_Machinery_Stores ?parent . } GROUP BY ?child }\n  ?child p:name ?brand_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agricultural_Machinery_Stores } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What brands of agricultural machinery are available in each machinery store",
+      "qtype": "ambig",
+      "sql": "select agricultural_machinery_stores.store_name , brands.brand_name from Stores_Brands join Brands on Stores_Brands.brand_id = Brands.id join Agricultural_Machinery_Stores on Stores_Brands.store_id = Agricultural_Machinery_Stores.store_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?store_name ?brand_name WHERE {\n  ?stores_brands a :Stores_Brands .\n  ?brands a :Brands .\n  ?stores_brands p:hasBrands ?brands .\n  ?agricultural_machinery_stores a :Agricultural_Machinery_Stores .\n  ?stores_brands p:hasAgricultural_Machinery_Stores ?agricultural_machinery_stores .\n  ?agricultural_machinery_stores p:name ?store_name .\n  ?brands p:name ?brand_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What brands of agricultural machinery are available in each machinery store",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/agriculture#>\nPREFIX p: <http://ambrosia.example.org/agriculture/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?brand_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBrands ?child ; p:hasAgricultural_Machinery_Stores ?parent . } GROUP BY ?child }\n  ?child p:name ?brand_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Agricultural_Machinery_Stores } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?store_name ?brand_name WHERE {\n  ?stores_brands a :Stores_Brands .\n  ?brands a :Brands .\n  ?stores_brands p:hasBrands ?brands .\n  ?agricultural_machinery_stores a :Agricultural_Machinery_Stores .\n  ?stores_brands p:hasAgricultural_Machinery_Stores ?agricultural_machinery_stores .\n  ?agricultural_machinery_stores p:name ?store_name .\n  ?brands p:name ?brand_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

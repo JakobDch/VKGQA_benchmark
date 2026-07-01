@@ -1,0 +1,57 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	FilmProjects_base
+target		ex:Film_Projects/{projectID} a :Film_Projects ; p:projectID {projectID} ; p:title {title} ; p:releaseDate {releaseDate} .
+source		SELECT `projectID`, `title`, `releaseDate` FROM `FilmProjects`
+
+mappingId	Directors_base
+target		ex:Directors/{directorID} a :Directors ; p:directorID {directorID} ; p:name {name} ; p:birthdate {birthdate} .
+source		SELECT `directorID`, `name`, `birthdate` FROM `Directors`
+
+mappingId	Cinematographers_base
+target		ex:Cinematographers/{cinematographerID} a :Cinematographers ; p:cinematographerID {cinematographerID} ; p:name {name} ; p:experience {experience} .
+source		SELECT `cinematographerID`, `name`, `experience` FROM `Cinematographers`
+
+mappingId	Actors_base
+target		ex:Actors/{actorID} a :Actors ; p:actorID {actorID} ; p:name {name} ; p:age {age} .
+source		SELECT `actorID`, `name`, `age` FROM `Actors`
+
+mappingId	Roles_base
+target		ex:Roles/{roleID} a :Roles ; p:roleID {roleID} ; p:filmProjectID {filmProjectID} ; p:actorID {actorID} .
+source		SELECT `roleID`, `filmProjectID`, `actorID` FROM `Roles`
+
+mappingId	Roles_actorID_fk
+target		ex:Roles/{roleID} p:hasActors ex:Actors/{actorID} .
+source		SELECT `roleID`, `actorID` FROM `Roles` WHERE `actorID` IS NOT NULL
+
+mappingId	Roles_filmProjectID_fk
+target		ex:Roles/{roleID} p:hasFilm_Projects ex:Film_Projects/{filmProjectID} .
+source		SELECT `roleID`, `filmProjectID` FROM `Roles` WHERE `filmProjectID` IS NOT NULL
+
+mappingId	Lighting_Technicians_base
+target		ex:Lighting_Technicians/{technicianID} a :Lighting_Technicians ; p:technicianID {technicianID} ; p:name {name} ; p:yearsExperience {yearsExperience} .
+source		SELECT `technicianID`, `name`, `yearsExperience` FROM `Lighting_Technicians`
+
+mappingId	Fixtures_base
+target		ex:Fixtures/{fixtureType} a :Fixtures ; p:fixtureType {fixtureType} ; p:description {description} .
+source		SELECT `fixtureType`, `description` FROM `Fixtures`
+
+mappingId	Lighting_Technicians_Fixtures_base
+target		ex:Lighting_Technicians_Fixtures/{_amb_rowid} a :Lighting_Technicians_Fixtures ; p:technicianID {technicianID} ; p:fixtureType {fixtureType} .
+source		SELECT `_amb_rowid`, `technicianID`, `fixtureType` FROM `Lighting_Technicians_Fixtures`
+
+mappingId	Lighting_Technicians_Fixtures_fixtureType_fk
+target		ex:Lighting_Technicians_Fixtures/{_amb_rowid} p:hasFixtures ex:Fixtures/{fixtureType} .
+source		SELECT `_amb_rowid`, `fixtureType` FROM `Lighting_Technicians_Fixtures` WHERE `fixtureType` IS NOT NULL
+
+mappingId	Lighting_Technicians_Fixtures_technicianID_fk
+target		ex:Lighting_Technicians_Fixtures/{_amb_rowid} p:hasLighting_Technicians ex:Lighting_Technicians/{technicianID} .
+source		SELECT `_amb_rowid`, `technicianID` FROM `Lighting_Technicians_Fixtures` WHERE `technicianID` IS NOT NULL
+
+]]

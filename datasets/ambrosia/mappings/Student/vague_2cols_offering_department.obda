@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/student#
+p:	http://ambrosia.example.org/student/prop#
+ex:	http://ambrosia.example.org/student/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Students_base
+target		ex:Students/{id} a :Students ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} ; p:college {college} ; p:university {university} .
+source		SELECT `id`, `first_name`, `last_name`, `email`, `phone_number`, `college`, `university` FROM `Students`
+
+mappingId	Colleges_base
+target		ex:Colleges/{id} a :Colleges ; p:id {id} ; p:name {name} ; p:location {location} .
+source		SELECT `id`, `name`, `location` FROM `Colleges`
+
+mappingId	Universities_base
+target		ex:Universities/{id} a :Universities ; p:id {id} ; p:name {name} ; p:city {city} ; p:state {state} ; p:country {country} .
+source		SELECT `id`, `name`, `city`, `state`, `country` FROM `Universities`
+
+mappingId	CourseEnrollments_base
+target		ex:Enrollments/{_amb_rowid} a :Enrollments ; p:student_id {student_id} ; p:course_id {course_id} ; p:semester {semester} ; p:year {year} ; p:grade {grade} .
+source		SELECT `_amb_rowid`, `student_id`, `course_id`, `semester`, `year`, `grade` FROM `CourseEnrollments`
+
+mappingId	CourseEnrollments_course_id_fk
+target		ex:Enrollments/{_amb_rowid} p:hasCourses ex:Courses/{course_id} .
+source		SELECT `_amb_rowid`, `course_id` FROM `CourseEnrollments` WHERE `course_id` IS NOT NULL
+
+mappingId	CourseEnrollments_student_id_fk
+target		ex:Enrollments/{_amb_rowid} p:hasStudents ex:Students/{student_id} .
+source		SELECT `_amb_rowid`, `student_id` FROM `CourseEnrollments` WHERE `student_id` IS NOT NULL
+
+mappingId	Courses_base
+target		ex:Courses/{id} a :Courses ; p:id {id} ; p:title {title} ; p:description {description} ; p:credits {credits} .
+source		SELECT `id`, `title`, `description`, `credits` FROM `Courses`
+
+mappingId	Professors_base
+target		ex:Instructors/{id} a :Instructors ; p:id {id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:department {department} ; p:office_location {office_location} .
+source		SELECT `id`, `first_name`, `last_name`, `department`, `office_location` FROM `Professors`
+
+]]

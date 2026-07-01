@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streaming_services_video_players",
+  "schema": "amb_scope_streaming_services_video_players",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the video player versions that are supported by each streaming service.",
+      "qtype": "ambig",
+      "sql": "SELECT Video_Players.version  from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Video_Players.video_player_id HAVING COUNT(DISTINCT Streaming_Services_Video_Players.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the video player versions that are supported by each streaming service.",
+      "qtype": "ambig",
+      "sql": "select streaming_services.service_name , video_players.version from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?version WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 2,
+      "question": "What are video players all streaming services have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Video_Players.player_type  from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Video_Players.video_player_id HAVING COUNT(DISTINCT Streaming_Services_Video_Players.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?player_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:player_type ?player_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For each streaming service, list video players used.",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , video_players.player_type from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?player_type WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:player_type ?player_type .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 4,
+      "question": "For every streaming service, list the corresponding player types and versions.",
+      "qtype": "unambig",
+      "sql": "select streaming_services.service_name , video_players.player_type , video_players.version from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name ?player_type ?version WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:player_type ?player_type .\n  ?video_players p:version ?version .\n}",
+      "status": "pass",
+      "note": "n=7"
+    },
+    {
+      "qid": 5,
+      "question": "Provide me with the player type and version that is common for all streaming services.",
+      "qtype": "unambig",
+      "sql": "SELECT Video_Players.player_type, Video_Players.version  from Streaming_Services_Video_Players join Video_Players on Streaming_Services_Video_Players.video_player_id = Video_Players.id join Streaming_Services on Streaming_Services_Video_Players.streaming_service_id = Streaming_Services.id   GROUP BY Streaming_Services_Video_Players.video_player_id HAVING COUNT(DISTINCT Streaming_Services_Video_Players.streaming_service_id) = (SELECT COUNT(*) FROM  Streaming_Services)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?player_type ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:player_type ?player_type .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me video players every streaming service uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?player_type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:player_type ?player_type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?player_type WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:player_type ?player_type .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "what player types and versions are associated with each streaming service?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?service_name ?player_type ?version WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:player_type ?player_type .\n  ?video_players p:version ?version .\n} }\n  collective: { SELECT ?player_type ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:player_type ?player_type .\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the video player versions that are supported by each streaming service.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?version WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasVideo_Players ?child ; p:hasStreaming_Services ?parent . } GROUP BY ?child }\n  ?child p:version ?version .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streaming_Services } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?service_name ?version WHERE {\n  ?streaming_services_video_players a :Streaming_Services_Video_Players .\n  ?video_players a :Video_Players .\n  ?streaming_services_video_players p:hasVideo_Players ?video_players .\n  ?streaming_services a :Streaming_Services .\n  ?streaming_services_video_players p:hasStreaming_Services ?streaming_services .\n  ?streaming_services p:service_name ?service_name .\n  ?video_players p:version ?version .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

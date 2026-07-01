@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "scope_high_schools_clubs",
+  "schema": "amb_scope_high_schools_clubs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Give me the clubs that every high school has.",
+      "qtype": "ambig",
+      "sql": "SELECT Clubs.club_name  from High_Schools_Clubs join Clubs on High_Schools_Clubs.club_id = Clubs.id join High_Schools on High_Schools_Clubs.high_school_id = High_Schools.id   GROUP BY High_Schools_Clubs.club_id HAVING COUNT(DISTINCT High_Schools_Clubs.high_school_id) = (SELECT COUNT(*) FROM  High_Schools)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?club_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClubs ?child ; p:hasHigh_Schools ?parent . } GROUP BY ?child }\n  ?child p:club_name ?club_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :High_Schools } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the clubs that every high school has.",
+      "qtype": "ambig",
+      "sql": "select high_schools.name , clubs.club_name from High_Schools_Clubs join Clubs on High_Schools_Clubs.club_id = Clubs.id join High_Schools on High_Schools_Clubs.high_school_id = High_Schools.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?club_name WHERE {\n  ?high_schools_clubs a :High_Schools_Clubs .\n  ?clubs a :Clubs .\n  ?high_schools_clubs p:hasClubs ?clubs .\n  ?high_schools a :High_Schools .\n  ?high_schools_clubs p:hasHigh_Schools ?high_schools .\n  ?high_schools p:name ?name .\n  ?clubs p:club_name ?club_name .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me the clubs that every high school has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?club_name WHERE {\n  ?high_schools_clubs a :High_Schools_Clubs .\n  ?clubs a :Clubs .\n  ?high_schools_clubs p:hasClubs ?clubs .\n  ?high_schools a :High_Schools .\n  ?high_schools_clubs p:hasHigh_Schools ?high_schools .\n  ?high_schools p:name ?name .\n  ?clubs p:club_name ?club_name .\n} }\n  collective: { SELECT ?club_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasClubs ?child ; p:hasHigh_Schools ?parent . } GROUP BY ?child }\n  ?child p:club_name ?club_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :High_Schools } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

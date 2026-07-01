@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	CleaningProfessionals_base
+target		ex:CleaningProfessionals/{id} a :CleaningProfessionals ; p:id {id} ; p:name {name} ; p:type {type} ; p:hotel_id {hotel_id} .
+source		SELECT `id`, `name`, `type`, `hotel_id` FROM `CleaningProfessionals`
+
+mappingId	CleaningProfessionals_hotel_id_fk
+target		ex:CleaningProfessionals/{id} p:hasHotels ex:Hotels/{hotel_id} .
+source		SELECT `id`, `hotel_id` FROM `CleaningProfessionals` WHERE `hotel_id` IS NOT NULL
+
+mappingId	Hotels_base
+target		ex:Hotels/{id} a :Hotels ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Hotels`
+
+mappingId	Rooms_base
+target		ex:Rooms/{id} a :Rooms ; p:id {id} ; p:room_number {room_number} ; p:hotel_id {hotel_id} .
+source		SELECT `id`, `room_number`, `hotel_id` FROM `Rooms`
+
+mappingId	Rooms_hotel_id_fk
+target		ex:Rooms/{id} p:hasHotels ex:Hotels/{hotel_id} .
+source		SELECT `id`, `hotel_id` FROM `Rooms` WHERE `hotel_id` IS NOT NULL
+
+mappingId	Reservations_base
+target		ex:Reservations/{id} a :Reservations ; p:id {id} ; p:checkin {checkin} ; p:checkout {checkout} ; p:room_id {room_id} ; p:customer_name {customer_name} .
+source		SELECT `id`, `checkin`, `checkout`, `room_id`, `customer_name` FROM `Reservations`
+
+mappingId	Reservations_room_id_fk
+target		ex:Reservations/{id} p:hasRooms ex:Rooms/{room_id} .
+source		SELECT `id`, `room_id` FROM `Reservations` WHERE `room_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:name {full_name} ; p:email {email} ; p:phone {phone} .
+source		SELECT `id`, `full_name`, `email`, `phone` FROM `Customers`
+
+]]

@@ -1,0 +1,108 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_authorities_programs",
+  "schema": "amb_scope_authorities_programs",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What programs do all authorities have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.program_name  from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id   GROUP BY Authorities_Programs.program_id HAVING COUNT(DISTINCT Authorities_Programs.authority_id) = (SELECT COUNT(*) FROM  Authorities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:program_name ?program_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Provide me with the program description that is common for all authorities.",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.description  from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id   GROUP BY Authorities_Programs.program_id HAVING COUNT(DISTINCT Authorities_Programs.authority_id) = (SELECT COUNT(*) FROM  Authorities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For every authority, list the programs they have.",
+      "qtype": "unambig",
+      "sql": "select authorities.name , programs.program_name from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?program_name WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:program_name ?program_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 3,
+      "question": "Please display the name and description of programs that are consistent across all authorities",
+      "qtype": "unambig",
+      "sql": "SELECT Programs.program_name, Programs.description  from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id   GROUP BY Authorities_Programs.program_id HAVING COUNT(DISTINCT Authorities_Programs.authority_id) = (SELECT COUNT(*) FROM  Authorities)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?program_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:program_name ?program_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "which program descriptions are associated with each authority?",
+      "qtype": "ambig",
+      "sql": "select authorities.name , programs.description from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Could you provide the name and description of programs associated with each authority?",
+      "qtype": "ambig",
+      "sql": "select authorities.name , programs.program_name , programs.description from Authorities_Programs join Programs on Authorities_Programs.program_id = Programs.program_id join Authorities on Authorities_Programs.authority_id = Authorities.authority_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?program_name ?description WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:program_name ?program_name .\n  ?programs p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the programs each authority has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?program_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:program_name ?program_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?program_name WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:program_name ?program_name .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which program descriptions are associated with each authority?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?description WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:description ?description .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Could you provide the name and description of programs associated with each authority?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?program_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasPrograms ?child ; p:hasAuthorities ?parent . } GROUP BY ?child }\n  ?child p:program_name ?program_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Authorities } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?program_name ?description WHERE {\n  ?authorities_programs a :Authorities_Programs .\n  ?programs a :Programs .\n  ?authorities_programs p:hasPrograms ?programs .\n  ?authorities a :Authorities .\n  ?authorities_programs p:hasAuthorities ?authorities .\n  ?authorities p:name ?name .\n  ?programs p:program_name ?program_name .\n  ?programs p:description ?description .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

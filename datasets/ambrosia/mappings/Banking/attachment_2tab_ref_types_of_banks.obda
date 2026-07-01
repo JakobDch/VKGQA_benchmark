@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Country_base
+target		ex:Country/{id} a :Country ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Country`
+
+mappingId	Central_Bank_base
+target		ex:Central_Bank/{id} a :Central_Bank ; p:id {id} ; p:central_bank_name {central_bank_name} ; p:country_id {country_id} .
+source		SELECT `id`, `central_bank_name`, `country_id` FROM `Central_Bank`
+
+mappingId	Central_Bank_country_id_fk
+target		ex:Central_Bank/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Central_Bank` WHERE `country_id` IS NOT NULL
+
+mappingId	Commercial_Bank_base
+target		ex:Commercial_Bank/{id} a :Commercial_Bank ; p:id {id} ; p:commercial_bank_name {commercial_bank_name} ; p:country_id {country_id} .
+source		SELECT `id`, `commercial_bank_name`, `country_id` FROM `Commercial_Bank`
+
+mappingId	Commercial_Bank_country_id_fk
+target		ex:Commercial_Bank/{id} p:hasCountry ex:Country/{country_id} .
+source		SELECT `id`, `country_id` FROM `Commercial_Bank` WHERE `country_id` IS NOT NULL
+
+mappingId	Account_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:account_number {account_number} ; p:balance {balance} ; p:commercial_bank_id {commercial_bank_id} .
+source		SELECT `id`, `account_number`, `balance`, `commercial_bank_id` FROM `Account`
+
+mappingId	Account_commercial_bank_id_fk
+target		ex:Accounts/{id} p:hasCommercial_Bank ex:Commercial_Bank/{commercial_bank_id} .
+source		SELECT `id`, `commercial_bank_id` FROM `Account` WHERE `commercial_bank_id` IS NOT NULL
+
+mappingId	Account_commercial_bank_id_fk
+target		ex:Accounts/{id} p:hasCommercial_Bank ex:Commercial_Bank/{commercial_bank_id} .
+source		SELECT `id`, `commercial_bank_id` FROM `Account` WHERE `commercial_bank_id` IS NOT NULL
+
+]]

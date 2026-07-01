@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/jobpostings#
+p:	http://ambrosia.example.org/jobpostings/prop#
+ex:	http://ambrosia.example.org/jobpostings/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Education_base
+target		ex:Education/{id} a :Education ; p:id {id} ; p:degree_name {degree_name} .
+source		SELECT `id`, `degree_name` FROM `Education`
+
+mappingId	Specialization_base
+target		ex:Specialization/{id} a :Specialization ; p:id {id} ; p:speciality_name {speciality_name} .
+source		SELECT `id`, `speciality_name` FROM `Specialization`
+
+mappingId	Orthodontists_base
+target		ex:Orthodontists/{id} a :Orthodontists ; p:id {id} ; p:name {name} ; p:education_id {education_id} ; p:specialty_id {specialty_id} .
+source		SELECT `id`, `name`, `education_id`, `specialty_id` FROM `Orthodontists`
+
+mappingId	Orthodontists_specialty_id_fk
+target		ex:Orthodontists/{id} p:hasSpecialization ex:Specialization/{specialty_id} .
+source		SELECT `id`, `specialty_id` FROM `Orthodontists` WHERE `specialty_id` IS NOT NULL
+
+mappingId	Orthodontists_education_id_fk
+target		ex:Orthodontists/{id} p:hasEducation ex:Education/{education_id} .
+source		SELECT `id`, `education_id` FROM `Orthodontists` WHERE `education_id` IS NOT NULL
+
+mappingId	Periodontists_base
+target		ex:Orthodontists/{id} a :Orthodontists ; p:id {id} ; p:name {name} ; p:education_id {education_id} ; p:specialty_id {specialty_id} .
+source		SELECT `id`, `name`, `education_id`, `specialty_id` FROM `Periodontists`
+
+mappingId	Periodontists_specialty_id_fk
+target		ex:Orthodontists/{id} p:hasSpecialization ex:Specialization/{specialty_id} .
+source		SELECT `id`, `specialty_id` FROM `Periodontists` WHERE `specialty_id` IS NOT NULL
+
+mappingId	Periodontists_education_id_fk
+target		ex:Orthodontists/{id} p:hasEducation ex:Education/{education_id} .
+source		SELECT `id`, `education_id` FROM `Periodontists` WHERE `education_id` IS NOT NULL
+
+]]

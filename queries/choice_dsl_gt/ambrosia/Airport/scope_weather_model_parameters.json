@@ -1,0 +1,108 @@
+{
+  "domain": "Airport",
+  "db_base": "scope_weather_model_parameters",
+  "schema": "amb_scope_weather_model_parameters",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "List the parameter units for every weather model.",
+      "qtype": "ambig",
+      "sql": "SELECT Parameters.unit  from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID   GROUP BY Weather_Model_Parameters.parameterId HAVING COUNT(DISTINCT Weather_Model_Parameters.weatherModelId) = (SELECT COUNT(*) FROM  Weather_Model)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?unit WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:parameterId ?cg . ?child a :Parameters ; p:parameterID ?cg . ?l p:weatherModelId ?pg . ?parent a :Weather_Model ; p:modelID ?pg . } GROUP BY ?child }\n  ?child p:unit ?unit .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "List the parameter units for every weather model.",
+      "qtype": "ambig",
+      "sql": "select weather_model.modelname , parameters.unit from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?modelname ?unit WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:unit ?unit .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What metric and unit is used by every single weather model?",
+      "qtype": "unambig",
+      "sql": "SELECT Parameters.parameterName, Parameters.unit  from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID   GROUP BY Weather_Model_Parameters.parameterId HAVING COUNT(DISTINCT Weather_Model_Parameters.weatherModelId) = (SELECT COUNT(*) FROM  Weather_Model)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?parametername ?unit WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:parameterId ?cg . ?child a :Parameters ; p:parameterID ?cg . ?l p:weatherModelId ?pg . ?parent a :Weather_Model ; p:modelID ?pg . } GROUP BY ?child }\n  ?child p:parameterName ?parametername .\n  ?child p:unit ?unit .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For every weather model, list the parameters that are used.",
+      "qtype": "unambig",
+      "sql": "select weather_model.modelname , parameters.parametername from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?modelname ?parametername WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:parameterName ?parametername .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "For every weather model what metrics and units are there?",
+      "qtype": "unambig",
+      "sql": "select weather_model.modelname , parameters.parametername , parameters.unit from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?modelname ?parametername ?unit WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:parameterName ?parametername .\n  ?parameters p:unit ?unit .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the parameters each weather model uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Parameters.parameterName  from Weather_Model_Parameters join Parameters on Weather_Model_Parameters.parameterId = Parameters.parameterID join Weather_Model on Weather_Model_Parameters.weatherModelId = Weather_Model.modelID   GROUP BY Weather_Model_Parameters.parameterId HAVING COUNT(DISTINCT Weather_Model_Parameters.weatherModelId) = (SELECT COUNT(*) FROM  Weather_Model)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?parametername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasParameters ?child ; p:hasWeather_Model ?parent . } GROUP BY ?child }\n  ?child p:parameterName ?parametername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List the parameter units for every weather model.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?modelname ?unit WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:unit ?unit .\n} }\n  collective: { SELECT ?unit WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:parameterId ?cg . ?child a :Parameters ; p:parameterID ?cg . ?l p:weatherModelId ?pg . ?parent a :Weather_Model ; p:modelID ?pg . } GROUP BY ?child }\n  ?child p:unit ?unit .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What metric and unit is there for every weather model?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?parametername ?unit WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:parameterId ?cg . ?child a :Parameters ; p:parameterID ?cg . ?l p:weatherModelId ?pg . ?parent a :Weather_Model ; p:modelID ?pg . } GROUP BY ?child }\n  ?child p:parameterName ?parametername .\n  ?child p:unit ?unit .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?modelname ?parametername ?unit WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:parameterName ?parametername .\n  ?parameters p:unit ?unit .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the parameters each weather model uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?modelname ?parametername WHERE {\n  ?weather_model_parameters a :Weather_Model_Parameters .\n  ?parameters a :Parameters .\n  ?weather_model_parameters p:hasParameters ?parameters .\n  ?weather_model a :Weather_Model .\n  ?weather_model_parameters p:hasWeather_Model ?weather_model .\n  ?weather_model p:modelName ?modelname .\n  ?parameters p:parameterName ?parametername .\n} }\n  collective: { SELECT ?parametername WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasParameters ?child ; p:hasWeather_Model ?parent . } GROUP BY ?child }\n  ?child p:parameterName ?parametername .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Weather_Model } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

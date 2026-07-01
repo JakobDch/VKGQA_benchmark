@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:name {name} ; p:email {email} ; p:phoneNumber {phoneNumber} ; p:Vacation_Option {Vacation_Option} ; p:Activities {Activities} .
+source		SELECT `id`, `name`, `email`, `phoneNumber`, `Vacation_Option`, `Activities` FROM `Customers`
+
+mappingId	Rooms_base
+target		ex:Rooms/{id} a :Rooms ; p:id {id} ; p:type {type} ; p:capacity {capacity} ; p:price {price} .
+source		SELECT `id`, `type`, `capacity`, `price` FROM `Rooms`
+
+mappingId	Bookings_base
+target		ex:Bookings/{id} a :Bookings ; p:id {id} ; p:checkInDate {checkInDate} ; p:checkOutDate {checkOutDate} ; p:totalPrice {totalPrice} ; p:roomId {roomId} .
+source		SELECT `id`, `checkInDate`, `checkOutDate`, `totalPrice`, `roomId` FROM `Bookings`
+
+mappingId	Bookings_roomId_fk
+target		ex:Bookings/{id} p:hasRooms ex:Rooms/{roomId} .
+source		SELECT `id`, `roomId` FROM `Bookings` WHERE `roomId` IS NOT NULL
+
+mappingId	Customer_Bookings_base
+target		ex:Customer_Bookings/{id} a :Customer_Bookings ; p:id {id} ; p:customerId {customerId} ; p:bookingId {bookingId} .
+source		SELECT `id`, `customerId`, `bookingId` FROM `Customer_Bookings`
+
+mappingId	Customer_Bookings_bookingId_fk
+target		ex:Customer_Bookings/{id} p:hasBookings ex:Bookings/{bookingId} .
+source		SELECT `id`, `bookingId` FROM `Customer_Bookings` WHERE `bookingId` IS NOT NULL
+
+mappingId	Customer_Bookings_customerId_fk
+target		ex:Customer_Bookings/{id} p:hasCustomers ex:Customers/{customerId} .
+source		SELECT `id`, `customerId` FROM `Customer_Bookings` WHERE `customerId` IS NOT NULL
+
+]]

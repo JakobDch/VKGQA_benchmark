@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Managing_Editor_base
+target		ex:Managing_Editor/{id} a :Managing_Editor ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Managing_Editor`
+
+mappingId	Copy_Editor_base
+target		ex:Copy_Editor/{id} a :Copy_Editor ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Copy_Editor`
+
+mappingId	Final_Draft_base
+target		ex:Final_Draft/{id} a :Final_Draft ; p:id {id} ; p:managing_editor_id {managing_editor_id} ; p:copy_editor_id {copy_editor_id} .
+source		SELECT `id`, `managing_editor_id`, `copy_editor_id` FROM `Final_Draft`
+
+mappingId	Final_Draft_copy_editor_id_fk
+target		ex:Final_Draft/{id} p:hasCopy_Editor ex:Copy_Editor/{copy_editor_id} .
+source		SELECT `id`, `copy_editor_id` FROM `Final_Draft` WHERE `copy_editor_id` IS NOT NULL
+
+mappingId	Final_Draft_managing_editor_id_fk
+target		ex:Final_Draft/{id} p:hasManaging_Editor ex:Managing_Editor/{managing_editor_id} .
+source		SELECT `id`, `managing_editor_id` FROM `Final_Draft` WHERE `managing_editor_id` IS NOT NULL
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:author_id {author_id} ; p:reporter_id {reporter_id} ; p:final_draft_id {final_draft_id} .
+source		SELECT `id`, `title`, `content`, `author_id`, `reporter_id`, `final_draft_id` FROM `Articles`
+
+mappingId	Articles_final_draft_id_fk
+target		ex:Articles/{id} p:hasFinal_Draft ex:Final_Draft/{final_draft_id} .
+source		SELECT `id`, `final_draft_id` FROM `Articles` WHERE `final_draft_id` IS NOT NULL
+
+mappingId	Articles_reporter_id_fk
+target		ex:Articles/{id} p:hasReporters ex:Reporters/{reporter_id} .
+source		SELECT `id`, `reporter_id` FROM `Articles` WHERE `reporter_id` IS NOT NULL
+
+mappingId	Articles_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Articles` WHERE `author_id` IS NOT NULL
+
+mappingId	Authors_base
+target		ex:Authors/{author_id} a :Authors ; p:author_id {author_id} ; p:name {fullname} .
+source		SELECT `author_id`, `fullname` FROM `Authors`
+
+mappingId	Reporters_base
+target		ex:Reporters/{reporter_id} a :Reporters ; p:reporter_id {reporter_id} ; p:name {fullname} .
+source		SELECT `reporter_id`, `fullname` FROM `Reporters`
+
+]]

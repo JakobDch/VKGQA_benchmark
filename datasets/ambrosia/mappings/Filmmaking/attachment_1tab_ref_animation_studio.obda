@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/filmmaking#
+p:	http://ambrosia.example.org/filmmaking/prop#
+ex:	http://ambrosia.example.org/filmmaking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	AnimationStudios_base
+target		ex:AnimationStudios/{id} a :AnimationStudios ; p:id {id} ; p:studioName {studioName} .
+source		SELECT `id`, `studioName` FROM `AnimationStudios`
+
+mappingId	MovieDetails_base
+target		ex:MovieDetails/{id} a :MovieDetails ; p:id {id} ; p:movieTitle {movieTitle} ; p:releaseDate {releaseDate} ; p:animationStudioId {animationStudioId} .
+source		SELECT `id`, `movieTitle`, `releaseDate`, `animationStudioId` FROM `MovieDetails`
+
+mappingId	MovieDetails_animationStudioId_fk
+target		ex:MovieDetails/{id} p:hasAnimationStudios ex:AnimationStudios/{animationStudioId} .
+source		SELECT `id`, `animationStudioId` FROM `MovieDetails` WHERE `animationStudioId` IS NOT NULL
+
+mappingId	Awards_base
+target		ex:Awards/{id} a :Awards ; p:id {id} ; p:awardName {awardName} .
+source		SELECT `id`, `awardName` FROM `Awards`
+
+mappingId	MovieAwards_base
+target		ex:MovieAwards/{id} a :MovieAwards ; p:id {id} ; p:movieId {movieId} ; p:awardId {awardId} .
+source		SELECT `id`, `movieId`, `awardId` FROM `MovieAwards`
+
+mappingId	MovieAwards_awardId_fk
+target		ex:MovieAwards/{id} p:hasAwards ex:Awards/{awardId} .
+source		SELECT `id`, `awardId` FROM `MovieAwards` WHERE `awardId` IS NOT NULL
+
+mappingId	MovieAwards_movieId_fk
+target		ex:MovieAwards/{id} p:hasMovieDetails ex:MovieDetails/{movieId} .
+source		SELECT `id`, `movieId` FROM `MovieAwards` WHERE `movieId` IS NOT NULL
+
+mappingId	Genres_base
+target		ex:Genres/{id} a :Genres ; p:id {id} ; p:genreName {genreName} .
+source		SELECT `id`, `genreName` FROM `Genres`
+
+mappingId	MoviesGenre_base
+target		ex:MoviesGenre/{id} a :MoviesGenre ; p:id {id} ; p:movieId {movieId} ; p:genreId {genreId} .
+source		SELECT `id`, `movieId`, `genreId` FROM `MoviesGenre`
+
+mappingId	MoviesGenre_genreId_fk
+target		ex:MoviesGenre/{id} p:hasGenres ex:Genres/{genreId} .
+source		SELECT `id`, `genreId` FROM `MoviesGenre` WHERE `genreId` IS NOT NULL
+
+mappingId	MoviesGenre_movieId_fk
+target		ex:MoviesGenre/{id} p:hasMovieDetails ex:MovieDetails/{movieId} .
+source		SELECT `id`, `movieId` FROM `MoviesGenre` WHERE `movieId` IS NOT NULL
+
+]]

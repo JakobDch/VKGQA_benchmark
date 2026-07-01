@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Zoo_base
+target		ex:Zoo/{zooID} a :Zoo ; p:zooID {zooID} ; p:zooName {zooName} ; p:location {location} .
+source		SELECT `zooID`, `zooName`, `location` FROM `Zoo`
+
+mappingId	Animals_base
+target		ex:Animals/{animalID} a :Animals ; p:animalID {animalID} ; p:animalName {animalName} .
+source		SELECT `animalID`, `animalName` FROM `Animals`
+
+mappingId	Zoo_Animals_base
+target		ex:Zoo_Animals/{_amb_rowid} a :Zoo_Animals ; p:zooID {zooID} ; p:animalID {animalID} .
+source		SELECT `_amb_rowid`, `zooID`, `animalID` FROM `Zoo_Animals`
+
+mappingId	Zoo_Animals_animalID_fk
+target		ex:Zoo_Animals/{_amb_rowid} p:hasAnimals ex:Animals/{animalID} .
+source		SELECT `_amb_rowid`, `animalID` FROM `Zoo_Animals` WHERE `animalID` IS NOT NULL
+
+mappingId	Zoo_Animals_zooID_fk
+target		ex:Zoo_Animals/{_amb_rowid} p:hasZoo ex:Zoo/{zooID} .
+source		SELECT `_amb_rowid`, `zooID` FROM `Zoo_Animals` WHERE `zooID` IS NOT NULL
+
+]]

@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Authors`
+
+mappingId	Articles_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:Title {Title} ; p:Content {Content} ; p:PublicationDate {PublicationDate} ; p:AuthorId {AuthorId} ; p:WritingStyleId {WritingStyleId} .
+source		SELECT `id`, `Title`, `Content`, `PublicationDate`, `AuthorId`, `WritingStyleId` FROM `Articles`
+
+mappingId	Articles_WritingStyleId_fk
+target		ex:Articles/{id} p:hasWritingStyles ex:WritingStyles/{WritingStyleId} .
+source		SELECT `id`, `WritingStyleId` FROM `Articles` WHERE `WritingStyleId` IS NOT NULL
+
+mappingId	Articles_AuthorId_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{AuthorId} .
+source		SELECT `id`, `AuthorId` FROM `Articles` WHERE `AuthorId` IS NOT NULL
+
+mappingId	PublishingHouses_base
+target		ex:PublishingHouses/{id} a :PublishingHouses ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `PublishingHouses`
+
+mappingId	ArticlePublications_base
+target		ex:ArticlePublications/{id} a :ArticlePublications ; p:id {id} ; p:ArticleId {ArticleId} ; p:PublisherId {PublisherId} ; p:PublishDate {PublishDate} .
+source		SELECT `id`, `ArticleId`, `PublisherId`, `PublishDate` FROM `ArticlePublications`
+
+mappingId	ArticlePublications_PublisherId_fk
+target		ex:ArticlePublications/{id} p:hasPublishingHouses ex:PublishingHouses/{PublisherId} .
+source		SELECT `id`, `PublisherId` FROM `ArticlePublications` WHERE `PublisherId` IS NOT NULL
+
+mappingId	ArticlePublications_ArticleId_fk
+target		ex:ArticlePublications/{id} p:hasArticles ex:Articles/{ArticleId} .
+source		SELECT `id`, `ArticleId` FROM `ArticlePublications` WHERE `ArticleId` IS NOT NULL
+
+mappingId	ReadingStats_base
+target		ex:ReadingStats/{id} a :ReadingStats ; p:id {id} ; p:ArticleId {ArticleId} ; p:ReadCount {ReadCount} .
+source		SELECT `id`, `ArticleId`, `ReadCount` FROM `ReadingStats`
+
+mappingId	ReadingStats_ArticleId_fk
+target		ex:ReadingStats/{id} p:hasArticles ex:Articles/{ArticleId} .
+source		SELECT `id`, `ArticleId` FROM `ReadingStats` WHERE `ArticleId` IS NOT NULL
+
+mappingId	WritingStyles_base
+target		ex:WritingStyles/{id} a :WritingStyles ; p:id {id} ; p:StyleName {StyleName} .
+source		SELECT `id`, `StyleName` FROM `WritingStyles`
+
+]]

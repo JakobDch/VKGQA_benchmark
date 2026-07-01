@@ -1,0 +1,42 @@
+{
+  "domain": "Airport",
+  "db_base": "attachment_2tab_val_development_projects",
+  "schema": "amb_attachment_2tab_val_development_projects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which expansions increased capacity to 1500 passengers per day and which renovations made the same capacity per day?",
+      "qtype": "unambig",
+      "sql": "SELECT Expansions.Airport_Expansion as Modernization\nFROM Expansions\nWHERE Expansions.Increased_Capacity = \"1500 Passengers per day\"\nUNION\nSELECT Renovations.Renovation as Modernization\nFROM Renovations\nWHERE Renovations.Increased_Capacity = \"1500 Passengers per day\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?expansions a :Expansions .\n    ?expansions p:Airport_Expansion ?airport_expansion .\n    ?expansions p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?airport_expansion AS ?o0)\n  }\n  UNION\n  {\n    ?renovations a :Renovations .\n    ?renovations p:Renovation ?renovation .\n    ?renovations p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?renovation AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all expansions and also provide a list of renovations that increased capacity to 1500 passengers per day.",
+      "qtype": "unambig",
+      "sql": "SELECT Expansions.Airport_Expansion as Modernization\nFROM Expansions\nUNION\nSELECT Renovations.Renovation as Modernization\nFROM Renovations\nWHERE Renovations.Increased_Capacity = \"1500 Passengers per day\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?expansions a :Expansions .\n    ?expansions p:Airport_Expansion ?airport_expansion .\n    BIND(?airport_expansion AS ?o0)\n  }\n  UNION\n  {\n    ?renovations a :Renovations .\n    ?renovations p:Renovation ?renovation .\n    ?renovations p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?renovation AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show expansions and renovations that increased capacity to 1500 passengers per day.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/airport#>\nPREFIX p: <http://ambrosia.example.org/airport/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?expansions a :Expansions .\n    ?expansions p:Airport_Expansion ?airport_expansion .\n    ?expansions p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?airport_expansion AS ?o0)\n  }\n  UNION\n  {\n    ?renovations a :Renovations .\n    ?renovations p:Renovation ?renovation .\n    ?renovations p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?renovation AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?expansions a :Expansions .\n    ?expansions p:Airport_Expansion ?airport_expansion .\n    BIND(?airport_expansion AS ?o0)\n  }\n  UNION\n  {\n    ?renovations a :Renovations .\n    ?renovations p:Renovation ?renovation .\n    ?renovations p:Increased_Capacity ?increased_capacity_f .\n    FILTER(STR(?increased_capacity_f) = \"1500 Passengers per day\")\n    BIND(?renovation AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

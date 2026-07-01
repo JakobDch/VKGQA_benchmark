@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/streamingservice#
+p:	http://ambrosia.example.org/streamingservice/prop#
+ex:	http://ambrosia.example.org/streamingservice/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Revenue_Streams_base
+target		ex:Revenue_Streams/{id} a :Revenue_Streams ; p:id {id} ; p:name {name} ; p:description {description} .
+source		SELECT `id`, `name`, `description` FROM `Revenue_Streams`
+
+mappingId	Streaming_Services_base
+target		ex:Streaming_Services/{id} a :Streaming_Services ; p:id {id} ; p:name {name} ; p:launch_date {launch_date} .
+source		SELECT `id`, `name`, `launch_date` FROM `Streaming_Services`
+
+mappingId	Streaming_Service_Revenue_base
+target		ex:Streaming_Service_Revenue/{service_id}/{stream_id} a :Streaming_Service_Revenue ; p:service_id {service_id} ; p:stream_id {stream_id} .
+source		SELECT `service_id`, `stream_id` FROM `Streaming_Service_Revenue`
+
+mappingId	Streaming_Service_Revenue_stream_id_fk
+target		ex:Streaming_Service_Revenue/{service_id}/{stream_id} p:hasRevenue_Streams ex:Revenue_Streams/{stream_id} .
+source		SELECT `service_id`, `stream_id` FROM `Streaming_Service_Revenue` WHERE `stream_id` IS NOT NULL
+
+mappingId	Streaming_Service_Revenue_service_id_fk
+target		ex:Streaming_Service_Revenue/{service_id}/{stream_id} p:hasStreaming_Services ex:Streaming_Services/{service_id} .
+source		SELECT `service_id`, `stream_id` FROM `Streaming_Service_Revenue` WHERE `service_id` IS NOT NULL
+
+]]

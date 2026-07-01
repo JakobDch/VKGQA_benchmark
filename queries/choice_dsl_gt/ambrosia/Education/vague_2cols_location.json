@@ -1,0 +1,97 @@
+{
+  "domain": "Education",
+  "db_base": "vague_2cols_location",
+  "schema": "amb_vague_2cols_location",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the majors and campuses of students with the last name Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Major, Campus from Students where FullName LIKE '% Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?major ?campus WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:Campus ?campus .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What are the majors, cities and campuses of students with the last name of Smith?",
+      "qtype": "unambig",
+      "sql": "SELECT Major, City, Campus from Students where FullName LIKE '% Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?major ?city ?campus WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:City ?city .\n  ?students p:Campus ?campus .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "List the students who have a major in mathematics and the city where they are located",
+      "qtype": "unambig",
+      "sql": "SELECT FullName, City from Students WHERE Major = 'Mathematics'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?city WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:City ?city .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "List the students who have a major in mathematics and the city and campus where they are located",
+      "qtype": "unambig",
+      "sql": "SELECT FullName, City, Campus from Students WHERE Major = 'Mathematics'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?city ?campus WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:City ?city .\n  ?students p:Campus ?campus .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the name and location of the students with a major in mathematics",
+      "qtype": "ambig",
+      "sql": "SELECT FullName, Campus from Students WHERE Major = 'Mathematics'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?fullname ?campus WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Campus ?campus .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the majors and cities of students with the last name of Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Major, City from Students where FullName LIKE '% Smith'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?major ?city WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:City ?city .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the majors and cities of students with the last name Smith.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?major ?campus WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:Campus ?campus .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n} }\n  full: { SELECT ?major ?city ?campus WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:City ?city .\n  ?students p:Campus ?campus .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n} }\n  component_2: { SELECT ?major ?city WHERE {\n  ?students a :Students .\n  ?students p:Major ?major .\n  ?students p:City ?city .\n  ?students p:name ?fullname_lk .\n  FILTER(REGEX(STR(?fullname_lk), \"^.*\\\\ Smith$\"))\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the name and location of the students with a major in mathematics",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?fullname ?city WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:City ?city .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n} }\n  full: { SELECT ?fullname ?city ?campus WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:City ?city .\n  ?students p:Campus ?campus .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n} }\n  component_2: { SELECT ?fullname ?campus WHERE {\n  ?students a :Students .\n  ?students p:name ?fullname .\n  ?students p:Campus ?campus .\n  ?students p:Major ?major_f .\n  FILTER(STR(?major_f) = \"Mathematics\")\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "domain": "Construction",
+  "db_base": "vague_2cols_findings",
+  "schema": "amb_vague_2cols_findings",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the oldest artifact uncovered.",
+      "qtype": "unambig",
+      "sql": "SELECT Artifacts_Uncovered FROM Artifacts ORDER BY EstimatedAge DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artifacts_uncovered WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the oldest ancient remains.",
+      "qtype": "unambig",
+      "sql": "SELECT Ancient_Remains FROM Artifacts ORDER BY EstimatedAge DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ancient_remains WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "show me archaeological sites and artefacts uncovered for the the top 2 artefacts ordered by estimated age in ascending order",
+      "qtype": "unambig",
+      "sql": "SELECT Artifacts_Uncovered, Archaeological_Site FROM Artifacts ORDER BY EstimatedAge ASC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artifacts_uncovered ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 3,
+      "question": "show me archaeological sites, artefacts uncovered and ancient remains for the the top 2 artefacts ordered by estimated age in ascending order",
+      "qtype": "unambig",
+      "sql": "SELECT Artifacts_Uncovered, Ancient_Remains, Archaeological_Site FROM Artifacts ORDER BY EstimatedAge ASC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artifacts_uncovered ?ancient_remains ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Show me the oldest artifact findings.",
+      "qtype": "ambig",
+      "sql": "SELECT Artifacts_Uncovered, Ancient_Remains FROM Artifacts ORDER BY EstimatedAge DESC LIMIT 1",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?artifacts_uncovered ?ancient_remains WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "show me archaeological sites and ancient remains for the the top 2 artefacts ordered by estimated age in ascending order",
+      "qtype": "unambig",
+      "sql": "SELECT Ancient_Remains, Archaeological_Site FROM Artifacts ORDER BY EstimatedAge ASC LIMIT 2",
+      "sparql": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?ancient_remains ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the oldest artifact findings.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?artifacts_uncovered WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1 }\n  component_2: { SELECT ?ancient_remains WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1 }\n  full: { SELECT ?artifacts_uncovered ?ancient_remains WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY DESC(?estimatedage_o)\nLIMIT 1 }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the findings and sites of the two youngest artifacts.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/construction#>\nPREFIX p: <http://ambrosia.example.org/construction/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?artifacts_uncovered ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2 }\n  full: { SELECT ?artifacts_uncovered ?ancient_remains ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Artifacts_Uncovered ?artifacts_uncovered .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2 }\n  component_2: { SELECT ?ancient_remains ?archaeological_site WHERE {\n  ?artifacts a :Artifacts .\n  ?artifacts p:Ancient_Remains ?ancient_remains .\n  ?artifacts p:Archaeological_Site ?archaeological_site .\n  ?artifacts p:EstimatedAge ?estimatedage_o .\n}\nORDER BY ASC(?estimatedage_o)\nLIMIT 2 }\n}",
+      "verified": true
+    }
+  ]
+}

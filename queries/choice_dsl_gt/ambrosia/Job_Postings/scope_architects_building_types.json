@@ -1,0 +1,42 @@
+{
+  "domain": "Job Postings",
+  "db_base": "scope_architects_building_types",
+  "schema": "amb_scope_architects_building_types",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What type of building types are associated with each architect?",
+      "qtype": "ambig",
+      "sql": "SELECT Building_Types.type  from Architects_Building_Types join Building_Types on Architects_Building_Types.building_type_id = Building_Types.id join Architects on Architects_Building_Types.architect_id = Architects.id   GROUP BY Architects_Building_Types.building_type_id HAVING COUNT(DISTINCT Architects_Building_Types.architect_id) = (SELECT COUNT(*) FROM  Architects)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:building_type_id ?cg . ?child a :Building_Types ; p:id ?cg . ?l p:architect_id ?pg . ?parent a :Architects ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Architects } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "What type of building types are associated with each architect?",
+      "qtype": "ambig",
+      "sql": "select architects.name , building_types.type from Architects_Building_Types join Building_Types on Architects_Building_Types.building_type_id = Building_Types.id join Architects on Architects_Building_Types.architect_id = Architects.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?architects_building_types a :Architects_Building_Types .\n  ?building_types a :Building_Types .\n  ?architects_building_types p:hasBuilding_Types ?building_types .\n  ?architects a :Architects .\n  ?architects_building_types p:hasArchitects ?architects .\n  ?architects p:name ?name .\n  ?building_types p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What type of building types are associated with each architect?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/jobpostings#>\nPREFIX p: <http://ambrosia.example.org/jobpostings/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?architects_building_types a :Architects_Building_Types .\n  ?building_types a :Building_Types .\n  ?architects_building_types p:hasBuilding_Types ?building_types .\n  ?architects a :Architects .\n  ?architects_building_types p:hasArchitects ?architects .\n  ?architects p:name ?name .\n  ?building_types p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:building_type_id ?cg . ?child a :Building_Types ; p:id ?cg . ?l p:architect_id ?pg . ?parent a :Architects ; p:id ?pg . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Architects } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

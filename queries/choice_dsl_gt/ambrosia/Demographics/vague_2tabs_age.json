@@ -1,0 +1,97 @@
+{
+  "domain": "Demographics",
+  "db_base": "vague_2tabs_age",
+  "schema": "amb_vague_2tabs_age",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What is the median age of different generations in different countries in order from most populated to least populated",
+      "qtype": "unambig",
+      "sql": "SELECT group_name, age, name\nFROM Population_Group JOIN Median_Age ON Population_Group.median_age = Median_Age.id JOIN Country ON Country.id = Median_Age.country\nGROUP BY group_name\nORDER BY population DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?group_name ?age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?country a :Countries .\n  ?median_age p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?median_age p:age ?age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 1,
+      "question": "What is the median age of different generations in different countries in order from most populated to least populated and the corresponding age range?",
+      "qtype": "unambig",
+      "sql": "SELECT group_name, age, start_age, end_age, name\nFROM Population_Group JOIN Median_Age ON Population_Group.median_age = Median_Age.id JOIN Age_Range ON Population_Group.Age_Range_id = Age_Range.id JOIN Country ON Country.id = Age_Range.country\nGROUP BY group_name\nORDER BY population DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?group_name ?age ?start_age ?end_age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?median_age p:age ?age .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 2,
+      "question": "show me the median age of the population in different countries.",
+      "qtype": "unambig",
+      "sql": "SELECT name, age\nFROM Median_Age JOIN Country ON Country.id = Median_Age.country\nGROUP BY country.name;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?age WHERE {\n  ?median_age a :Median_Age .\n  ?country a :Countries .\n  ?median_age p:hasCountry ?country .\n  ?country p:name ?name .\n  ?median_age p:age ?age .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 3,
+      "question": "What is the age range of different generations in different countries in order from most populated to least populated",
+      "qtype": "unambig",
+      "sql": "SELECT group_name, start_age, end_age, name\nFROM Population_Group JOIN Age_Range ON Population_Group.Age_Range_id = Age_Range.id JOIN Country ON Country.id = Age_Range.country\nGROUP BY group_name\nORDER BY population DESC;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?group_name ?start_age ?end_age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o)",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 4,
+      "question": "show me the age range of the population in different countries.",
+      "qtype": "unambig",
+      "sql": "SELECT name, start_age, end_age\nFROM Age_Range JOIN Country ON Country.id = Age_Range.country\nGROUP BY country;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?start_age ?end_age WHERE {\n  ?age_range a :Age_Range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?country p:name ?name .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n}",
+      "status": "pass",
+      "note": "n=5"
+    },
+    {
+      "qid": 5,
+      "question": "show me the median age and age range of the population in different countries.",
+      "qtype": "unambig",
+      "sql": "SELECT name, age, start_age, end_age\nFROM Population_Group JOIN Median_Age ON Population_Group.median_age = Median_Age.id JOIN Age_Range ON Population_Group.Age_Range_id = Age_Range.id JOIN Country ON Country.id = Age_Range.country\nGROUP BY name;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?age ?start_age ?end_age WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?country p:name ?name .\n  ?median_age p:age ?age .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the ages of different generations in different countries in order from most populated to least populated",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?group_name ?age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?country a :Countries .\n  ?median_age p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?median_age p:age ?age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o) }\n  full: { SELECT ?group_name ?age ?start_age ?end_age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?median_age p:age ?age .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o) }\n  component_2: { SELECT ?group_name ?start_age ?end_age ?name WHERE {\n  ?population_group a :Population_Group .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?population_group p:group_name ?group_name .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n  ?country p:name ?name .\n  ?population_group p:population ?population_o .\n}\nORDER BY DESC(?population_o) }\n}",
+      "verified": true
+    },
+    {
+      "question": "show me the age of the population in different countries.",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        4,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/demographics#>\nPREFIX p: <http://ambrosia.example.org/demographics/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?age WHERE {\n  ?median_age a :Median_Age .\n  ?country a :Countries .\n  ?median_age p:hasCountry ?country .\n  ?country p:name ?name .\n  ?median_age p:age ?age .\n} }\n  component_2: { SELECT ?name ?start_age ?end_age WHERE {\n  ?age_range a :Age_Range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?country p:name ?name .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n} }\n  full: { SELECT ?name ?age ?start_age ?end_age WHERE {\n  ?population_group a :Population_Group .\n  ?median_age a :Median_Age .\n  ?population_group p:hasMedian_Age ?median_age .\n  ?age_range a :Age_Range .\n  ?population_group p:hasAge_Range ?age_range .\n  ?country a :Countries .\n  ?age_range p:hasCountry ?country .\n  ?country p:name ?name .\n  ?median_age p:age ?age .\n  ?age_range p:start_age ?start_age .\n  ?age_range p:end_age ?end_age .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

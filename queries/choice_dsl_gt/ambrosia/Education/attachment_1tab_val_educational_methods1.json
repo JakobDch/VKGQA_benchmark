@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_educational_methods1",
+  "schema": "amb_attachment_1tab_val_educational_methods1",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all the Mathematics curriculum courses delivered by either online learning or in classroom teaching methods.",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.Name \nFROM Courses\nWHERE (Courses.EducationalMethod = \"Online Learning\" OR Courses.EducationalMethod = \"Classroom Teaching\") AND Courses.CurriculumContent = \"Mathematics\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?courses a :Courses .\n  ?courses p:name ?name .\n  ?courses p:EducationalMethod ?educationalmethod_w .\n  ?courses p:EducationalMethod ?educationalmethod_w2 .\n  ?courses p:CurriculumContent ?curriculumcontent_w .\n  FILTER((((STR(?educationalmethod_w) = \"Online Learning\" || STR(?educationalmethod_w2) = \"Classroom Teaching\")) && STR(?curriculumcontent_w) = \"Mathematics\"))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show all the online learning courses, also show the Mathematics courses delivered by classroom teaching.",
+      "qtype": "unambig",
+      "sql": "SELECT Courses.Name \nFROM Courses\nWHERE Courses.EducationalMethod = \"Online Learning\" OR Courses.EducationalMethod = \"Classroom Teaching\" AND Courses.CurriculumContent = \"Mathematics\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?courses a :Courses .\n  ?courses p:name ?name .\n  ?courses p:EducationalMethod ?educationalmethod_w .\n  ?courses p:EducationalMethod ?educationalmethod_w2 .\n  ?courses p:CurriculumContent ?curriculumcontent_w .\n  FILTER((STR(?educationalmethod_w) = \"Online Learning\" || (STR(?educationalmethod_w2) = \"Classroom Teaching\" && STR(?curriculumcontent_w) = \"Mathematics\")))\n}",
+      "status": "pass",
+      "note": "n=4"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Give me all online learning courses and classroom teaching courses for Mathematics.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?courses a :Courses .\n  ?courses p:name ?name .\n  ?courses p:EducationalMethod ?educationalmethod_w .\n  ?courses p:EducationalMethod ?educationalmethod_w2 .\n  ?courses p:CurriculumContent ?curriculumcontent_w .\n  FILTER((((STR(?educationalmethod_w) = \"Online Learning\" || STR(?educationalmethod_w2) = \"Classroom Teaching\")) && STR(?curriculumcontent_w) = \"Mathematics\"))\n} }\n  low: { SELECT ?name WHERE {\n  ?courses a :Courses .\n  ?courses p:name ?name .\n  ?courses p:EducationalMethod ?educationalmethod_w .\n  ?courses p:EducationalMethod ?educationalmethod_w2 .\n  ?courses p:CurriculumContent ?curriculumcontent_w .\n  FILTER((STR(?educationalmethod_w) = \"Online Learning\" || (STR(?educationalmethod_w2) = \"Classroom Teaching\" && STR(?curriculumcontent_w) = \"Mathematics\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

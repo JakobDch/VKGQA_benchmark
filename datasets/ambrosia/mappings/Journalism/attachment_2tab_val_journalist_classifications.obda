@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Stringers_base
+target		ex:Stringers/{ID} a :Stringers ; p:ID {ID} ; p:name {Name} ; p:email {Email} ; p:Phone_Number {Phone_Number} ; p:Payment {Payment} .
+source		SELECT `ID`, `Name`, `Email`, `Phone_Number`, `Payment` FROM `Stringers`
+
+mappingId	Editors_base
+target		ex:Editors/{ID} a :Editors ; p:ID {ID} ; p:name {Name} ; p:email {Email} ; p:Phone_Number {Phone_Number} ; p:Payment {Payment} .
+source		SELECT `ID`, `Name`, `Email`, `Phone_Number`, `Payment` FROM `Editors`
+
+mappingId	Articles_base
+target		ex:Articles/{ID} a :Articles ; p:ID {ID} ; p:Title {Title} ; p:Content {Content} ; p:EditorID {EditorID} ; p:PublishDate {PublishDate} .
+source		SELECT `ID`, `Title`, `Content`, `EditorID`, `PublishDate` FROM `Articles`
+
+mappingId	Articles_EditorID_fk
+target		ex:Articles/{ID} p:hasEditors ex:Editors/{EditorID} .
+source		SELECT `ID`, `EditorID` FROM `Articles` WHERE `EditorID` IS NOT NULL
+
+mappingId	Readerships_base
+target		ex:Readerships/{ID} a :Readerships ; p:ID {ID} ; p:ArticleID {ArticleID} ; p:SubscriptionType {SubscriptionType} ; p:StartDate {StartDate} ; p:EndDate {EndDate} .
+source		SELECT `ID`, `ArticleID`, `SubscriptionType`, `StartDate`, `EndDate` FROM `Readerships`
+
+mappingId	Readerships_ArticleID_fk
+target		ex:Readerships/{ID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `ID`, `ArticleID` FROM `Readerships` WHERE `ArticleID` IS NOT NULL
+
+mappingId	Advertisements_base
+target		ex:Advertisements/{ID} a :Advertisements ; p:ID {ID} ; p:ArticleID {ArticleID} ; p:AdTitle {AdTitle} ; p:AdDescription {AdDescription} ; p:AdImage {AdImage} ; p:DisplayOrder {DisplayOrder} .
+source		SELECT `ID`, `ArticleID`, `AdTitle`, `AdDescription`, `AdImage`, `DisplayOrder` FROM `Advertisements`
+
+mappingId	Advertisements_ArticleID_fk
+target		ex:Advertisements/{ID} p:hasArticles ex:Articles/{ArticleID} .
+source		SELECT `ID`, `ArticleID` FROM `Advertisements` WHERE `ArticleID` IS NOT NULL
+
+]]

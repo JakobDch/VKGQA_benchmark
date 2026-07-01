@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Hostels_base
+target		ex:Hostels/{id} a :Hostels ; p:id {id} ; p:name {name} ; p:address {address} .
+source		SELECT `id`, `name`, `address` FROM `Hostels`
+
+mappingId	Dormitories_base
+target		ex:Dormitories/{dormitory_id} a :Dormitories ; p:dormitory_id {dormitory_id} ; p:type {type} ; p:capacity {capacity} .
+source		SELECT `dormitory_id`, `type`, `capacity` FROM `Dormitories`
+
+mappingId	Hostels_Dormitories_base
+target		ex:Hostels_Dormitories/{hostel_dormitory_id} a :Hostels_Dormitories ; p:hostel_dormitory_id {hostel_dormitory_id} ; p:hostel_id {hostel_id} ; p:dormitory_id {dormitory_id} .
+source		SELECT `hostel_dormitory_id`, `hostel_id`, `dormitory_id` FROM `Hostels_Dormitories`
+
+mappingId	Hostels_Dormitories_dormitory_id_fk
+target		ex:Hostels_Dormitories/{hostel_dormitory_id} p:hasDormitories ex:Dormitories/{dormitory_id} .
+source		SELECT `hostel_dormitory_id`, `dormitory_id` FROM `Hostels_Dormitories` WHERE `dormitory_id` IS NOT NULL
+
+mappingId	Hostels_Dormitories_hostel_id_fk
+target		ex:Hostels_Dormitories/{hostel_dormitory_id} p:hasHostels ex:Hostels/{hostel_id} .
+source		SELECT `hostel_dormitory_id`, `hostel_id` FROM `Hostels_Dormitories` WHERE `hostel_id` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_val_educational_activities",
+  "schema": "amb_attachment_1tab_val_educational_activities",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are the subjects of all field trips and what are the subjects of interactive webinars with 50 students?",
+      "qtype": "unambig",
+      "sql": "SELECT Classes.Subject \nFROM Enrollments JOIN Classes ON Classes.ClassID = Enrollments.ClassID\nWHERE Enrollments.Educational_Activity = \"Field Trip\" OR Enrollments.Educational_Activity = \"Interactive Webinar\" AND Enrollments.Number_of_students = 50",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?subject WHERE {\n  ?enrollments a :Enrollments .\n  ?classes a :Classes .\n  ?enrollments p:hasClasses ?classes .\n  ?classes p:Subject ?subject .\n  ?enrollments p:Educational_Activity ?educational_activity_w .\n  ?enrollments p:Educational_Activity ?educational_activity_w2 .\n  ?enrollments p:Number_of_students ?number_of_students_w .\n  FILTER((STR(?educational_activity_w) = \"Field Trip\" || (STR(?educational_activity_w2) = \"Interactive Webinar\" && (STR(?number_of_students_w) = \"50\" || STR(?number_of_students_w) = \"50.0\"))))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "What are the subjects of field trips and interactive webinars with 50 students?",
+      "qtype": "ambig",
+      "sql": "SELECT Classes.Subject \nFROM Enrollments JOIN Classes ON Classes.ClassID = Enrollments.ClassID\nWHERE (Enrollments.Educational_Activity = \"Field Trip\" OR Enrollments.Educational_Activity = \"Interactive Webinar\") AND Enrollments.Number_of_students = 50",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?subject WHERE {\n  ?enrollments a :Enrollments .\n  ?classes a :Classes .\n  ?enrollments p:hasClasses ?classes .\n  ?classes p:Subject ?subject .\n  ?enrollments p:Educational_Activity ?educational_activity_w .\n  ?enrollments p:Educational_Activity ?educational_activity_w2 .\n  ?enrollments p:Number_of_students ?number_of_students_w .\n  FILTER((((STR(?educational_activity_w) = \"Field Trip\" || STR(?educational_activity_w2) = \"Interactive Webinar\")) && (STR(?number_of_students_w) = \"50\" || STR(?number_of_students_w) = \"50.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What are the subjects of field trips and interactive webinars with 50 students?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "low",
+        "high"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  low: { SELECT ?subject WHERE {\n  ?enrollments a :Enrollments .\n  ?classes a :Classes .\n  ?enrollments p:hasClasses ?classes .\n  ?classes p:Subject ?subject .\n  ?enrollments p:Educational_Activity ?educational_activity_w .\n  ?enrollments p:Educational_Activity ?educational_activity_w2 .\n  ?enrollments p:Number_of_students ?number_of_students_w .\n  FILTER((STR(?educational_activity_w) = \"Field Trip\" || (STR(?educational_activity_w2) = \"Interactive Webinar\" && (STR(?number_of_students_w) = \"50\" || STR(?number_of_students_w) = \"50.0\"))))\n} }\n  high: { SELECT ?subject WHERE {\n  ?enrollments a :Enrollments .\n  ?classes a :Classes .\n  ?enrollments p:hasClasses ?classes .\n  ?classes p:Subject ?subject .\n  ?enrollments p:Educational_Activity ?educational_activity_w .\n  ?enrollments p:Educational_Activity ?educational_activity_w2 .\n  ?enrollments p:Number_of_students ?number_of_students_w .\n  FILTER((((STR(?educational_activity_w) = \"Field Trip\" || STR(?educational_activity_w2) = \"Interactive Webinar\")) && (STR(?number_of_students_w) = \"50\" || STR(?number_of_students_w) = \"50.0\")))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

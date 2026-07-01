@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_music",
+  "schema": "amb_attachment_2tab_ref_music",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What are names of blues songs sung by Bessie Smith and folk songs sung by her too?",
+      "qtype": "unambig",
+      "sql": "SELECT Blues_Song.song_name\nFROM Singer JOIN Blues_Song ON Singer.id = Blues_Song.Singer_id\nWHERE Singer.Name = \"Bessie Smith\"\nUNION\nSELECT Folk_Song.song_name\nFROM Singer JOIN Folk_Song ON Singer.id = Folk_Song.Singer_id\nWHERE Singer.Name = \"Bessie Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?singer a :Singer .\n    ?blues_song a :Blues_Song .\n    ?blues_song p:hasSinger ?singer .\n    ?blues_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n  UNION\n  {\n    ?singer a :Singer .\n    ?folk_song a :Folk_Song .\n    ?folk_song p:hasSinger ?singer .\n    ?folk_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List names of blues songs and also list names of folk songs sung by Bessie Smith.",
+      "qtype": "unambig",
+      "sql": "SELECT Blues_Song.song_name\nFROM Singer JOIN Blues_Song ON Singer.id = Blues_Song.Singer_id\nUNION\nSELECT Folk_Song.song_name\nFROM Singer JOIN Folk_Song ON Singer.id = Folk_Song.Singer_id\nWHERE Singer.Name = \"Bessie Smith\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?singer a :Singer .\n    ?blues_song a :Blues_Song .\n    ?blues_song p:hasSinger ?singer .\n    ?blues_song p:Song_Name ?song_name .\n    BIND(?song_name AS ?o0)\n  }\n  UNION\n  {\n    ?singer a :Singer .\n    ?folk_song a :Folk_Song .\n    ?folk_song p:hasSinger ?singer .\n    ?folk_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List names of blues songs and folk songs that are sung by Bessie Smith.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?singer a :Singer .\n    ?blues_song a :Blues_Song .\n    ?blues_song p:hasSinger ?singer .\n    ?blues_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n  UNION\n  {\n    ?singer a :Singer .\n    ?folk_song a :Folk_Song .\n    ?folk_song p:hasSinger ?singer .\n    ?folk_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?singer a :Singer .\n    ?blues_song a :Blues_Song .\n    ?blues_song p:hasSinger ?singer .\n    ?blues_song p:Song_Name ?song_name .\n    BIND(?song_name AS ?o0)\n  }\n  UNION\n  {\n    ?singer a :Singer .\n    ?folk_song a :Folk_Song .\n    ?folk_song p:hasSinger ?singer .\n    ?folk_song p:Song_Name ?song_name .\n    ?singer p:name ?name_f .\n    FILTER(STR(?name_f) = \"Bessie Smith\")\n    BIND(?song_name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

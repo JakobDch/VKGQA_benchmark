@@ -1,0 +1,42 @@
+{
+  "domain": "Banking",
+  "db_base": "attachment_2tab_ref_financial_swaps",
+  "schema": "amb_attachment_2tab_ref_financial_swaps",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "When do currency and interest rate swaps offered by Royal Bank expire?",
+      "qtype": "unambig",
+      "sql": "SELECT Currency_Swaps.maturity_date\nFROM Banks JOIN Currency_Swaps ON Banks.name = Currency_Swaps.bank_name\nWHERE Banks.name = \"Royal Bank\"\nUNION\nSELECT Interest_Rate_Swaps.end_date\nFROM Banks JOIN Interest_Rate_Swaps ON Banks.name = Interest_Rate_Swaps.bank_name\nWHERE Banks.name = \"Royal Bank\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?banks a :Banks .\n    ?currency_swaps a :Currency_Swaps .\n    ?banks p:name ?name_l .\n    ?currency_swaps p:bank_name ?bank_name_r .\n    ?currency_swaps p:maturity_date ?maturity_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?maturity_date AS ?o0)\n  }\n  UNION\n  {\n    ?banks a :Banks .\n    ?interest_rate_swaps a :Interest_Rate_Swaps .\n    ?banks p:name ?name_l .\n    ?interest_rate_swaps p:bank_name ?bank_name_r .\n    ?interest_rate_swaps p:end_date ?end_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?end_date AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "When do the currency swaps and interest rate swaps offered by Royal Bank expire?",
+      "qtype": "ambig",
+      "sql": "SELECT Currency_Swaps.maturity_date\nFROM Banks JOIN Currency_Swaps ON Banks.name = Currency_Swaps.bank_name\nUNION\nSELECT Interest_Rate_Swaps.end_date\nFROM Banks JOIN Interest_Rate_Swaps ON Banks.name = Interest_Rate_Swaps.bank_name\nWHERE Banks.name = \"Royal Bank\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?banks a :Banks .\n    ?currency_swaps a :Currency_Swaps .\n    ?banks p:name ?name_l .\n    ?currency_swaps p:bank_name ?bank_name_r .\n    ?currency_swaps p:maturity_date ?maturity_date .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    BIND(?maturity_date AS ?o0)\n  }\n  UNION\n  {\n    ?banks a :Banks .\n    ?interest_rate_swaps a :Interest_Rate_Swaps .\n    ?banks p:name ?name_l .\n    ?interest_rate_swaps p:bank_name ?bank_name_r .\n    ?interest_rate_swaps p:end_date ?end_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?end_date AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "When do the currency swaps and interest rate swaps offered by Royal Bank expire?",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/banking#>\nPREFIX p: <http://ambrosia.example.org/banking/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?banks a :Banks .\n    ?currency_swaps a :Currency_Swaps .\n    ?banks p:name ?name_l .\n    ?currency_swaps p:bank_name ?bank_name_r .\n    ?currency_swaps p:maturity_date ?maturity_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?maturity_date AS ?o0)\n  }\n  UNION\n  {\n    ?banks a :Banks .\n    ?interest_rate_swaps a :Interest_Rate_Swaps .\n    ?banks p:name ?name_l .\n    ?interest_rate_swaps p:bank_name ?bank_name_r .\n    ?interest_rate_swaps p:end_date ?end_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?end_date AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?banks a :Banks .\n    ?currency_swaps a :Currency_Swaps .\n    ?banks p:name ?name_l .\n    ?currency_swaps p:bank_name ?bank_name_r .\n    ?currency_swaps p:maturity_date ?maturity_date .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    BIND(?maturity_date AS ?o0)\n  }\n  UNION\n  {\n    ?banks a :Banks .\n    ?interest_rate_swaps a :Interest_Rate_Swaps .\n    ?banks p:name ?name_l .\n    ?interest_rate_swaps p:bank_name ?bank_name_r .\n    ?interest_rate_swaps p:end_date ?end_date .\n    ?banks p:name ?name_f .\n    FILTER(STR(?name_l) = STR(?bank_name_r))\n    FILTER(STR(?name_f) = \"Royal Bank\")\n    BIND(?end_date AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

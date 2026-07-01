@@ -1,0 +1,174 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_preservation_societies_projects",
+  "schema": "amb_scope_preservation_societies_projects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For each preservation society, show me the project types, descriptions and costs.",
+      "qtype": "unambig",
+      "sql": "select preservation_societies.name , projects.type , projects.description , projects.cost from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?description ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n  ?projects p:Description ?description .\n  ?projects p:Cost ?cost .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 1,
+      "question": "provide me with the project type and cost that is common for all preservation societies.",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.Type, Projects.Cost  from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID   GROUP BY Preservation_Societies_Projects.Projects_ID HAVING COUNT(DISTINCT Preservation_Societies_Projects.Societies_ID) = (SELECT COUNT(*) FROM  Preservation_Societies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For every preservation society, show the descriptions of the projects that they have.",
+      "qtype": "unambig",
+      "sql": "select preservation_societies.name , projects.description from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Description ?description .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 3,
+      "question": "Tell me the type, cost and description of projects that each preservation society has.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.Type, Projects.Description, Projects.Cost  from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID   GROUP BY Preservation_Societies_Projects.Projects_ID HAVING COUNT(DISTINCT Preservation_Societies_Projects.Societies_ID) = (SELECT COUNT(*) FROM  Preservation_Societies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?description ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "For every preservation society, what are the corresponding types of projects?",
+      "qtype": "unambig",
+      "sql": "select preservation_societies.name , projects.type from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 5,
+      "question": "What are the descriptions of the projects that all preservation societies have in common?",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.Description  from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID   GROUP BY Preservation_Societies_Projects.Projects_ID HAVING COUNT(DISTINCT Preservation_Societies_Projects.Societies_ID) = (SELECT COUNT(*) FROM  Preservation_Societies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 6,
+      "question": "Show me the cost of projects every society has.",
+      "qtype": "ambig",
+      "sql": "SELECT Projects.Cost  from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID   GROUP BY Preservation_Societies_Projects.Projects_ID HAVING COUNT(DISTINCT Preservation_Societies_Projects.Societies_ID) = (SELECT COUNT(*) FROM  Preservation_Societies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 7,
+      "question": "Show me the cost of projects every society has.",
+      "qtype": "ambig",
+      "sql": "select preservation_societies.name , projects.cost from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Cost ?cost .\n}",
+      "status": "pass",
+      "note": "n=12"
+    },
+    {
+      "qid": 8,
+      "question": "What type of projects is common for all preservation societies?",
+      "qtype": "unambig",
+      "sql": "SELECT Projects.Type  from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID   GROUP BY Preservation_Societies_Projects.Projects_ID HAVING COUNT(DISTINCT Preservation_Societies_Projects.Societies_ID) = (SELECT COUNT(*) FROM  Preservation_Societies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 9,
+      "question": "For each preservation society, list the corresponding project types and costs.",
+      "qtype": "unambig",
+      "sql": "select preservation_societies.name , projects.type , projects.cost from Preservation_Societies_Projects join Projects on Preservation_Societies_Projects.Projects_ID = Projects.ID join Preservation_Societies on Preservation_Societies_Projects.Societies_ID = Preservation_Societies.ID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?type ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n  ?projects p:Cost ?cost .\n}",
+      "status": "pass",
+      "note": "n=12"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me the type, cost and description of projects that each preservation society has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type ?description ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n  ?projects p:Description ?description .\n  ?projects p:Cost ?cost .\n} }\n  collective: { SELECT ?type ?description ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Description ?description .\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "which project types and costs are associated with each preservation society?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        9
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?type ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?type ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n  ?projects p:Cost ?cost .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the descriptions of the projects that every preservation society has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Provide the types of projects associated with each preservation society.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        8
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?type WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me the cost of projects every society has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        6,
+        7
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?cost WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasProjects ?child ; p:hasPreservation_Societies ?parent . } GROUP BY ?child }\n  ?child p:Cost ?cost .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Preservation_Societies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?cost WHERE {\n  ?preservation_societies_projects a :Preservation_Societies_Projects .\n  ?projects a :Projects .\n  ?preservation_societies_projects p:hasProjects ?projects .\n  ?preservation_societies a :Preservation_Societies .\n  ?preservation_societies_projects p:hasPreservation_Societies ?preservation_societies .\n  ?preservation_societies p:name ?name .\n  ?projects p:Cost ?cost .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

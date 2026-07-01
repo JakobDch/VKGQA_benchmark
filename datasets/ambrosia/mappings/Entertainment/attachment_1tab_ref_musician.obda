@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Musicians_base
+target		ex:Musician/{id} a :Musician ; p:id {id} ; p:name {name} ; p:musician_type {musician_type} .
+source		SELECT `id`, `name`, `musician_type` FROM `Musicians`
+
+mappingId	Instruments_base
+target		ex:Instrument/{id} a :Instrument ; p:id {id} ; p:instrument_name {instrument_name} .
+source		SELECT `id`, `instrument_name` FROM `Instruments`
+
+mappingId	Songs_base
+target		ex:Song/{id} a :Song ; p:id {id} ; p:song_title {song_title} ; p:release_date {release_date} .
+source		SELECT `id`, `song_title`, `release_date` FROM `Songs`
+
+mappingId	Albums_base
+target		ex:Album/{id} a :Album ; p:id {id} ; p:album_title {album_title} ; p:release_year {release_year} ; p:artist_id {artist_id} .
+source		SELECT `id`, `album_title`, `release_year`, `artist_id` FROM `Albums`
+
+mappingId	Albums_artist_id_fk
+target		ex:Album/{id} p:hasMusician ex:Musician/{artist_id} .
+source		SELECT `id`, `artist_id` FROM `Albums` WHERE `artist_id` IS NOT NULL
+
+mappingId	SongAlbum_base
+target		ex:SongAlbum/{id} a :SongAlbum ; p:id {id} ; p:song_id {song_id} ; p:album_id {album_id} .
+source		SELECT `id`, `song_id`, `album_id` FROM `SongAlbum`
+
+mappingId	SongAlbum_song_id_fk
+target		ex:SongAlbum/{id} p:hasSong ex:Song/{song_id} .
+source		SELECT `id`, `song_id` FROM `SongAlbum` WHERE `song_id` IS NOT NULL
+
+mappingId	SongAlbum_album_id_fk
+target		ex:SongAlbum/{id} p:hasAlbum ex:Album/{album_id} .
+source		SELECT `id`, `album_id` FROM `SongAlbum` WHERE `album_id` IS NOT NULL
+
+mappingId	MusicianInstrument_base
+target		ex:MusicianInstrument/{id} a :MusicianInstrument ; p:id {id} ; p:musician_id {musician_id} ; p:instrument_id {instrument_id} .
+source		SELECT `id`, `musician_id`, `instrument_id` FROM `MusicianInstrument`
+
+mappingId	MusicianInstrument_instrument_id_fk
+target		ex:MusicianInstrument/{id} p:hasInstrument ex:Instrument/{instrument_id} .
+source		SELECT `id`, `instrument_id` FROM `MusicianInstrument` WHERE `instrument_id` IS NOT NULL
+
+mappingId	MusicianInstrument_musician_id_fk
+target		ex:MusicianInstrument/{id} p:hasMusician ex:Musician/{musician_id} .
+source		SELECT `id`, `musician_id` FROM `MusicianInstrument` WHERE `musician_id` IS NOT NULL
+
+]]

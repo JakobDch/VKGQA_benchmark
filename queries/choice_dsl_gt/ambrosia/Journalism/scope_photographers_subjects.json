@@ -1,0 +1,42 @@
+{
+  "domain": "Journalism",
+  "db_base": "scope_photographers_subjects",
+  "schema": "amb_scope_photographers_subjects",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What subjects are common to all photographers?",
+      "qtype": "unambig",
+      "sql": "SELECT Subjects.subject_name  from Photographers_Subjects join Subjects on Photographers_Subjects.subject_id = Subjects.id join Photographers on Photographers_Subjects.photographer_id = Photographers.id   GROUP BY Photographers_Subjects.subject_id HAVING COUNT(DISTINCT Photographers_Subjects.photographer_id) = (SELECT COUNT(*) FROM  Photographers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?subject_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSubjects ?child ; p:hasPhotographers ?parent . } GROUP BY ?child }\n  ?child p:subject_name ?subject_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photographers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "For each photographer, list the subjects they are studying.",
+      "qtype": "unambig",
+      "sql": "select photographers.name , subjects.subject_name from Photographers_Subjects join Subjects on Photographers_Subjects.subject_id = Subjects.id join Photographers on Photographers_Subjects.photographer_id = Photographers.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?subject_name WHERE {\n  ?photographers_subjects a :Photographers_Subjects .\n  ?subjects a :Subjects .\n  ?photographers_subjects p:hasSubjects ?subjects .\n  ?photographers a :Photographers .\n  ?photographers_subjects p:hasPhotographers ?photographers .\n  ?photographers p:name ?name .\n  ?subjects p:subject_name ?subject_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the subjects every photographer studies.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?subject_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasSubjects ?child ; p:hasPhotographers ?parent . } GROUP BY ?child }\n  ?child p:subject_name ?subject_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Photographers } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?subject_name WHERE {\n  ?photographers_subjects a :Photographers_Subjects .\n  ?subjects a :Subjects .\n  ?photographers_subjects p:hasSubjects ?subjects .\n  ?photographers a :Photographers .\n  ?photographers_subjects p:hasPhotographers ?photographers .\n  ?photographers p:name ?name .\n  ?subjects p:subject_name ?subject_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

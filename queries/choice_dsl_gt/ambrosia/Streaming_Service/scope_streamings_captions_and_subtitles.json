@@ -1,0 +1,108 @@
+{
+  "domain": "Streaming Service",
+  "db_base": "scope_streamings_captions_and_subtitles",
+  "schema": "amb_scope_streamings_captions_and_subtitles",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every stream, list the caption and subtitles types they use.",
+      "qtype": "unambig",
+      "sql": "select streamings.title , captions_and_subtitles.type from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:type ?type .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 1,
+      "question": "Give me the caption and subtitle languages and types for every streaming.",
+      "qtype": "ambig",
+      "sql": "SELECT Captions_and_subtitles.type, Captions_and_subtitles.language  from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id   GROUP BY Streamings_captions_and_subtitles.captions_and_subtitles_id HAVING COUNT(DISTINCT Streamings_captions_and_subtitles.streamings_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type ?language WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:language ?language .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Give me the caption and subtitle languages and types for every streaming.",
+      "qtype": "ambig",
+      "sql": "select streamings.title , captions_and_subtitles.type , captions_and_subtitles.language from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?type ?language WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:type ?type .\n  ?captions_and_subtitles p:language ?language .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "Show me caption and subtitle languages each stream has.",
+      "qtype": "ambig",
+      "sql": "SELECT Captions_and_subtitles.language  from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id   GROUP BY Streamings_captions_and_subtitles.captions_and_subtitles_id HAVING COUNT(DISTINCT Streamings_captions_and_subtitles.streamings_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?language WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:language ?language .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Show me caption and subtitle languages each stream has.",
+      "qtype": "ambig",
+      "sql": "select streamings.title , captions_and_subtitles.language from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title ?language WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:language ?language .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 5,
+      "question": "Tell me what captions and subtitles types each stream uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Captions_and_subtitles.type  from Streamings_captions_and_subtitles join Captions_and_subtitles on Streamings_captions_and_subtitles.captions_and_subtitles_id = Captions_and_subtitles.caption_id join Streamings on Streamings_captions_and_subtitles.streamings_id = Streamings.streaming_id   GROUP BY Streamings_captions_and_subtitles.captions_and_subtitles_id HAVING COUNT(DISTINCT Streamings_captions_and_subtitles.streamings_id) = (SELECT COUNT(*) FROM  Streamings)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me what captions and subtitles types each stream uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:type ?type .\n} }\n  collective: { SELECT ?type WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Give me the caption and subtitle languages and types for every streaming.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        1
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?type ?language WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:type ?type .\n  ?captions_and_subtitles p:language ?language .\n} }\n  collective: { SELECT ?type ?language WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:type ?type .\n  ?child p:language ?language .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me caption and subtitle languages each stream has.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        4,
+        3
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/streamingservice#>\nPREFIX p: <http://ambrosia.example.org/streamingservice/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?title ?language WHERE {\n  ?streamings_captions_and_subtitles a :Streamings_captions_and_subtitles .\n  ?captions_and_subtitles a :Captions_and_subtitles .\n  ?streamings_captions_and_subtitles p:hasCaptions_and_subtitles ?captions_and_subtitles .\n  ?streamings a :Streamings .\n  ?streamings_captions_and_subtitles p:hasStreamings ?streamings .\n  ?streamings p:title ?title .\n  ?captions_and_subtitles p:language ?language .\n} }\n  collective: { SELECT ?language WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasCaptions_and_subtitles ?child ; p:hasStreamings ?parent . } GROUP BY ?child }\n  ?child p:language ?language .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Streamings } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

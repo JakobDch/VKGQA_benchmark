@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/journalism#
+p:	http://ambrosia.example.org/journalism/prop#
+ex:	http://ambrosia.example.org/journalism/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Author_base
+target		ex:Authors/{id} a :Authors ; p:id {id} ; p:name {name} ; p:email {email} .
+source		SELECT `id`, `name`, `email` FROM `Author`
+
+mappingId	Category_base
+target		ex:Category/{id} a :Category ; p:id {id} ; p:name {name} .
+source		SELECT `id`, `name` FROM `Category`
+
+mappingId	Article_base
+target		ex:Articles/{id} a :Articles ; p:id {id} ; p:title {title} ; p:content {content} ; p:author_id {author_id} ; p:category_id {category_id} .
+source		SELECT `id`, `title`, `content`, `author_id`, `category_id` FROM `Article`
+
+mappingId	Article_category_id_fk
+target		ex:Articles/{id} p:hasCategory ex:Category/{category_id} .
+source		SELECT `id`, `category_id` FROM `Article` WHERE `category_id` IS NOT NULL
+
+mappingId	Article_author_id_fk
+target		ex:Articles/{id} p:hasAuthors ex:Authors/{author_id} .
+source		SELECT `id`, `author_id` FROM `Article` WHERE `author_id` IS NOT NULL
+
+mappingId	Content_Management_System_base
+target		ex:ContentManagementSystems/{id} a :ContentManagementSystems ; p:id {id} ; p:system_name {system_name} ; p:description {description} .
+source		SELECT `id`, `system_name`, `description` FROM `Content_Management_System`
+
+mappingId	Web_Framework_base
+target		ex:Web_Framework/{id} a :Web_Framework ; p:id {id} ; p:framework_name {framework_name} ; p:description {description} .
+source		SELECT `id`, `framework_name`, `description` FROM `Web_Framework`
+
+mappingId	Online_News_Platform_base
+target		ex:Online_News_Platform/{id} a :Online_News_Platform ; p:id {id} ; p:platform_name {platform_name} ; p:url {url} ; p:cms_id {cms_id} ; p:web_framework_id {web_framework_id} .
+source		SELECT `id`, `platform_name`, `url`, `cms_id`, `web_framework_id` FROM `Online_News_Platform`
+
+mappingId	Online_News_Platform_web_framework_id_fk
+target		ex:Online_News_Platform/{id} p:hasWeb_Framework ex:Web_Framework/{web_framework_id} .
+source		SELECT `id`, `web_framework_id` FROM `Online_News_Platform` WHERE `web_framework_id` IS NOT NULL
+
+mappingId	Online_News_Platform_cms_id_fk
+target		ex:Online_News_Platform/{id} p:hasContentManagementSystems ex:ContentManagementSystems/{cms_id} .
+source		SELECT `id`, `cms_id` FROM `Online_News_Platform` WHERE `cms_id` IS NOT NULL
+
+]]

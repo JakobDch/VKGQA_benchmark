@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Banks_base
+target		ex:Banks/{id} a :Banks ; p:id {id} ; p:name {name} ; p:headquarter {headquarter} .
+source		SELECT `id`, `name`, `headquarter` FROM `Banks`
+
+mappingId	Services_base
+target		ex:Services/{id} a :Services ; p:id {id} ; p:serviceName {serviceName} .
+source		SELECT `id`, `serviceName` FROM `Services`
+
+mappingId	Customers_base
+target		ex:Customers/{id} a :Customers ; p:id {id} ; p:firstName {firstName} ; p:lastName {lastName} ; p:dateOfBirth {dateOfBirth} .
+source		SELECT `id`, `firstName`, `lastName`, `dateOfBirth` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{id} a :Accounts ; p:id {id} ; p:accountNumber {accountNumber} ; p:balance {balance} ; p:customerId {customerId} .
+source		SELECT `id`, `accountNumber`, `balance`, `customerId` FROM `Accounts`
+
+mappingId	Accounts_customerId_fk
+target		ex:Accounts/{id} p:hasCustomers ex:Customers/{customerId} .
+source		SELECT `id`, `customerId` FROM `Accounts` WHERE `customerId` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{id} a :Transactions ; p:id {id} ; p:transactionDate {transactionDate} ; p:amount {amount} ; p:description {description} ; p:accountId {accountId} .
+source		SELECT `id`, `transactionDate`, `amount`, `description`, `accountId` FROM `Transactions`
+
+mappingId	Transactions_accountId_fk
+target		ex:Transactions/{id} p:hasAccounts ex:Accounts/{accountId} .
+source		SELECT `id`, `accountId` FROM `Transactions` WHERE `accountId` IS NOT NULL
+
+mappingId	Banks_Services_base
+target		ex:Banks_Services/{bankId}/{serviceId} a :Banks_Services ; p:bankId {bankId} ; p:serviceId {serviceId} .
+source		SELECT `bankId`, `serviceId` FROM `Banks_Services`
+
+mappingId	Banks_Services_serviceId_fk
+target		ex:Banks_Services/{bankId}/{serviceId} p:hasServices ex:Services/{serviceId} .
+source		SELECT `bankId`, `serviceId` FROM `Banks_Services` WHERE `serviceId` IS NOT NULL
+
+mappingId	Banks_Services_bankId_fk
+target		ex:Banks_Services/{bankId}/{serviceId} p:hasBanks ex:Banks/{bankId} .
+source		SELECT `bankId`, `serviceId` FROM `Banks_Services` WHERE `bankId` IS NOT NULL
+
+]]

@@ -1,0 +1,42 @@
+{
+  "domain": "Traffic",
+  "db_base": "scope_traffic_management_centers_functions",
+  "schema": "amb_scope_traffic_management_centers_functions",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the functions each traffic management center uses.",
+      "qtype": "ambig",
+      "sql": "SELECT Functions.functionName  from Traffic_Management_Centers_Functions join Functions on Traffic_Management_Centers_Functions.Function_id = Functions.id join Traffic_Management_Centers on Traffic_Management_Centers_Functions.TMC_id = Traffic_Management_Centers.centerID   GROUP BY Traffic_Management_Centers_Functions.Function_id HAVING COUNT(DISTINCT Traffic_Management_Centers_Functions.TMC_id) = (SELECT COUNT(*) FROM  Traffic_Management_Centers)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?functionname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFunction ?child ; p:hasTraffic_Management_Centers ?parent . } GROUP BY ?child }\n  ?child p:name ?functionname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Management_Centers } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Show me the functions each traffic management center uses.",
+      "qtype": "ambig",
+      "sql": "select traffic_management_centers.name , functions.functionname from Traffic_Management_Centers_Functions join Functions on Traffic_Management_Centers_Functions.Function_id = Functions.id join Traffic_Management_Centers on Traffic_Management_Centers_Functions.TMC_id = Traffic_Management_Centers.centerID",
+      "sparql": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?functionname WHERE {\n  ?traffic_management_centers_functions a :Traffic_Management_Centers_Functions .\n  ?functions a :Function .\n  ?traffic_management_centers_functions p:hasFunction ?functions .\n  ?traffic_management_centers a :Traffic_Management_Centers .\n  ?traffic_management_centers_functions p:hasTraffic_Management_Centers ?traffic_management_centers .\n  ?traffic_management_centers p:name ?name .\n  ?functions p:name ?functionname .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the functions each traffic management center uses.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        0
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/traffic#>\nPREFIX p: <http://ambrosia.example.org/traffic/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?functionname WHERE {\n  ?traffic_management_centers_functions a :Traffic_Management_Centers_Functions .\n  ?functions a :Function .\n  ?traffic_management_centers_functions p:hasFunction ?functions .\n  ?traffic_management_centers a :Traffic_Management_Centers .\n  ?traffic_management_centers_functions p:hasTraffic_Management_Centers ?traffic_management_centers .\n  ?traffic_management_centers p:name ?name .\n  ?functions p:name ?functionname .\n} }\n  collective: { SELECT ?functionname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasFunction ?child ; p:hasTraffic_Management_Centers ?parent . } GROUP BY ?child }\n  ?child p:name ?functionname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Traffic_Management_Centers } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

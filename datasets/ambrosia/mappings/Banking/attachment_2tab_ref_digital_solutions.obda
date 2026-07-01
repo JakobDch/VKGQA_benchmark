@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/banking#
+p:	http://ambrosia.example.org/banking/prop#
+ex:	http://ambrosia.example.org/banking/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	SignInOptions_base
+target		ex:SignInOptions/{ID} a :SignInOptions ; p:ID {ID} ; p:OptionName {OptionName} .
+source		SELECT `ID`, `OptionName` FROM `SignInOptions`
+
+mappingId	MobileBankingApps_base
+target		ex:MobileBankingApps/{AppID} a :MobileBankingApps ; p:AppID {AppID} ; p:name {Name} ; p:Description {Description} ; p:PlatformType {PlatformType} .
+source		SELECT `AppID`, `Name`, `Description`, `PlatformType` FROM `MobileBankingApps`
+
+mappingId	MobileBankingApps_PlatformType_fk
+target		ex:MobileBankingApps/{AppID} p:hasSignInOptions ex:SignInOptions/{PlatformType} .
+source		SELECT `AppID`, `PlatformType` FROM `MobileBankingApps` WHERE `PlatformType` IS NOT NULL
+
+mappingId	InternetBankingPlatforms_base
+target		ex:InternetBankingPlatforms/{PlatformID} a :InternetBankingPlatforms ; p:PlatformID {PlatformID} ; p:name {Name} ; p:Description {Description} ; p:AdditionalFeatures {AdditionalFeatures} .
+source		SELECT `PlatformID`, `Name`, `Description`, `AdditionalFeatures` FROM `InternetBankingPlatforms`
+
+mappingId	InternetBankingPlatforms_AdditionalFeatures_fk
+target		ex:InternetBankingPlatforms/{PlatformID} p:hasSignInOptions ex:SignInOptions/{AdditionalFeatures} .
+source		SELECT `PlatformID`, `AdditionalFeatures` FROM `InternetBankingPlatforms` WHERE `AdditionalFeatures` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:JoinDate {JoinDate} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `JoinDate` FROM `Customers`
+
+mappingId	Accounts_base
+target		ex:Accounts/{AccountId} a :Accounts ; p:AccountId {AccountId} ; p:CustomerId {CustomerId} ; p:Type {Type} ; p:Balance {Balance} .
+source		SELECT `AccountId`, `CustomerId`, `Type`, `Balance` FROM `Accounts`
+
+mappingId	Accounts_CustomerId_fk
+target		ex:Accounts/{AccountId} p:hasCustomers ex:Customers/{CustomerId} .
+source		SELECT `AccountId`, `CustomerId` FROM `Accounts` WHERE `CustomerId` IS NOT NULL
+
+mappingId	Transactions_base
+target		ex:Transactions/{TransactionId} a :Transactions ; p:TransactionId {TransactionId} ; p:AccountId {AccountId} ; p:Amount {Amount} ; p:DateAndTime {DateAndTime} .
+source		SELECT `TransactionId`, `AccountId`, `Amount`, `DateAndTime` FROM `Transactions`
+
+mappingId	Transactions_AccountId_fk
+target		ex:Transactions/{TransactionId} p:hasAccounts ex:Accounts/{AccountId} .
+source		SELECT `TransactionId`, `AccountId` FROM `Transactions` WHERE `AccountId` IS NOT NULL
+
+]]

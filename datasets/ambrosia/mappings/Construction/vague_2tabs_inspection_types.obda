@@ -1,0 +1,61 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Project_base
+target		ex:Projects/{projectID} a :Projects ; p:projectID {projectID} ; p:name {name} ; p:startDate {startDate} ; p:endDate {endDate} ; p:structuralInspectionID {structuralInspectionID} ; p:safetyInspectionID {safetyInspectionID} .
+source		SELECT `projectID`, `name`, `startDate`, `endDate`, `structuralInspectionID`, `safetyInspectionID` FROM `Project`
+
+mappingId	Project_safetyInspectionID_fk
+target		ex:Projects/{projectID} p:hasInspection_Types ex:Inspection_Types/{safetyInspectionID} .
+source		SELECT `projectID`, `safetyInspectionID` FROM `Project` WHERE `safetyInspectionID` IS NOT NULL
+
+mappingId	Project_structuralInspectionID_fk
+target		ex:Projects/{projectID} p:hasInspection_Types ex:Inspection_Types/{structuralInspectionID} .
+source		SELECT `projectID`, `structuralInspectionID` FROM `Project` WHERE `structuralInspectionID` IS NOT NULL
+
+mappingId	Material_base
+target		ex:Materials/{materialID} a :Materials ; p:materialID {materialID} ; p:type {type} ; p:quantity {quantity} ; p:unit {unit} ; p:price {price} ; p:projectID {projectID} .
+source		SELECT `materialID`, `type`, `quantity`, `unit`, `price`, `projectID` FROM `Material`
+
+mappingId	Material_projectID_fk
+target		ex:Materials/{materialID} p:hasProjects ex:Projects/{projectID} .
+source		SELECT `materialID`, `projectID` FROM `Material` WHERE `projectID` IS NOT NULL
+
+mappingId	Employee_base
+target		ex:Employees/{employeeID} a :Employees ; p:employeeID {employeeID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:role {role} ; p:hireDate {hireDate} ; p:supervisorID {supervisorID} .
+source		SELECT `employeeID`, `firstName`, `lastName`, `role`, `hireDate`, `supervisorID` FROM `Employee`
+
+mappingId	Employee_supervisorID_fk
+target		ex:Employees/{employeeID} p:hasEmployees ex:Employees/{supervisorID} .
+source		SELECT `employeeID`, `supervisorID` FROM `Employee` WHERE `supervisorID` IS NOT NULL
+
+mappingId	Structural_Inspection_base
+target		ex:Inspection_Types/{inspectionID} a :Inspection_Types ; p:inspectionID {inspectionID} ; p:date {date} ; p:result {result} ; p:inspectorEmployeeID {inspectorEmployeeID} .
+source		SELECT `inspectionID`, `date`, `result`, `inspectorEmployeeID` FROM `Structural_Inspection`
+
+mappingId	Structural_Inspection_inspectorEmployeeID_fk
+target		ex:Inspection_Types/{inspectionID} p:hasEmployees ex:Employees/{inspectorEmployeeID} .
+source		SELECT `inspectionID`, `inspectorEmployeeID` FROM `Structural_Inspection` WHERE `inspectorEmployeeID` IS NOT NULL
+
+mappingId	Safety_Inspection_base
+target		ex:Inspection_Types/{inspectionID} a :Inspection_Types ; p:inspectionID {inspectionID} ; p:date {date} ; p:result {result} ; p:inspectorEmployeeID {inspectorEmployeeID} .
+source		SELECT `inspectionID`, `date`, `result`, `inspectorEmployeeID` FROM `Safety_Inspection`
+
+mappingId	Safety_Inspection_inspectorEmployeeID_fk
+target		ex:Inspection_Types/{inspectionID} p:hasEmployees ex:Employees/{inspectorEmployeeID} .
+source		SELECT `inspectionID`, `inspectorEmployeeID` FROM `Safety_Inspection` WHERE `inspectorEmployeeID` IS NOT NULL
+
+mappingId	Worker_base
+target		ex:Workers/{workerID} a :Workers ; p:workerID {workerID} ; p:firstName {firstName} ; p:lastName {lastName} ; p:employmentStartDate {employmentStartDate} ; p:currentProjectID {currentProjectID} .
+source		SELECT `workerID`, `firstName`, `lastName`, `employmentStartDate`, `currentProjectID` FROM `Worker`
+
+mappingId	Worker_currentProjectID_fk
+target		ex:Workers/{workerID} p:hasProjects ex:Projects/{currentProjectID} .
+source		SELECT `workerID`, `currentProjectID` FROM `Worker` WHERE `currentProjectID` IS NOT NULL
+
+]]

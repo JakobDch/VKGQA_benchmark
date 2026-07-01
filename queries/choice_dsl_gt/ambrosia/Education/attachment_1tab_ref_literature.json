@@ -1,0 +1,42 @@
+{
+  "domain": "Education",
+  "db_base": "attachment_1tab_ref_literature",
+  "schema": "amb_attachment_1tab_ref_literature",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show non-fiction books and fiction books with review rating higher than 4.",
+      "qtype": "ambig",
+      "sql": "SELECT Books.title \nFROM Books JOIN reviews ON Books.id = reviews.book_id\nWHERE (Books.literature = \"Non-fiction Book\" OR Books.literature = \"Fiction Book\") AND reviews.rating > 4",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?reviews a :Reviews .\n  ?reviews p:hasBooks ?books .\n  ?books p:title ?title .\n  ?books p:literature ?literature_w .\n  ?books p:literature ?literature_w2 .\n  ?reviews p:rating ?rating_w .\n  FILTER((((STR(?literature_w) = \"Non-fiction Book\" || STR(?literature_w2) = \"Fiction Book\")) && xsd:double(?rating_w) > 4))\n}",
+      "status": "pass",
+      "note": "n=3"
+    },
+    {
+      "qid": 1,
+      "question": "Show non-fiction books and fiction books with review rating higher than 4.",
+      "qtype": "ambig",
+      "sql": "SELECT Books.title \nFROM Books JOIN reviews ON Books.id = reviews.book_id\nWHERE Books.literature = \"Non-fiction Book\" OR Books.literature = \"Fiction Book\" AND reviews.rating > 4",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?title WHERE {\n  ?books a :Books .\n  ?reviews a :Reviews .\n  ?reviews p:hasBooks ?books .\n  ?books p:title ?title .\n  ?books p:literature ?literature_w .\n  ?books p:literature ?literature_w2 .\n  ?reviews p:rating ?rating_w .\n  FILTER((STR(?literature_w) = \"Non-fiction Book\" || (STR(?literature_w2) = \"Fiction Book\" && xsd:double(?rating_w) > 4)))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show non-fiction books and fiction books with review rating higher than 4.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?reviews a :Reviews .\n  ?reviews p:hasBooks ?books .\n  ?books p:title ?title .\n  ?books p:literature ?literature_w .\n  ?books p:literature ?literature_w2 .\n  ?reviews p:rating ?rating_w .\n  FILTER((((STR(?literature_w) = \"Non-fiction Book\" || STR(?literature_w2) = \"Fiction Book\")) && xsd:double(?rating_w) > 4))\n} }\n  low: { SELECT ?title WHERE {\n  ?books a :Books .\n  ?reviews a :Reviews .\n  ?reviews p:hasBooks ?books .\n  ?books p:title ?title .\n  ?books p:literature ?literature_w .\n  ?books p:literature ?literature_w2 .\n  ?reviews p:rating ?rating_w .\n  FILTER((STR(?literature_w) = \"Non-fiction Book\" || (STR(?literature_w2) = \"Fiction Book\" && xsd:double(?rating_w) > 4)))\n} }\n}",
+      "verified": true
+    }
+  ]
+}

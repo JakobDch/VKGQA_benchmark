@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Bed_and_breakfast_base
+target		ex:Bed_and_breakfast/{id} a :Bed_and_breakfast ; p:id {id} ; p:name {name} ; p:address {address} ; p:rating {rating} .
+source		SELECT `id`, `name`, `address`, `rating` FROM `Bed_and_breakfast`
+
+mappingId	Rooms_base
+target		ex:Rooms/{room_type} a :Rooms ; p:room_type {room_type} ; p:price {price} .
+source		SELECT `room_type`, `price` FROM `Rooms`
+
+mappingId	Bed_and_breakfast_rooms_base
+target		ex:Bed_and_breakfast_rooms/{_amb_rowid} a :Bed_and_breakfast_rooms ; p:bed_id {bed_id} ; p:room_id {room_id} .
+source		SELECT `_amb_rowid`, `bed_id`, `room_id` FROM `Bed_and_breakfast_rooms`
+
+mappingId	Bed_and_breakfast_rooms_room_id_fk
+target		ex:Bed_and_breakfast_rooms/{_amb_rowid} p:hasRooms ex:Rooms/{room_id} .
+source		SELECT `_amb_rowid`, `room_id` FROM `Bed_and_breakfast_rooms` WHERE `room_id` IS NOT NULL
+
+mappingId	Bed_and_breakfast_rooms_bed_id_fk
+target		ex:Bed_and_breakfast_rooms/{_amb_rowid} p:hasBed_and_breakfast ex:Bed_and_breakfast/{bed_id} .
+source		SELECT `_amb_rowid`, `bed_id` FROM `Bed_and_breakfast_rooms` WHERE `bed_id` IS NOT NULL
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:email {email} ; p:phone_number {phone_number} .
+source		SELECT `customer_id`, `first_name`, `last_name`, `email`, `phone_number` FROM `Customers`
+
+mappingId	Bookings_base
+target		ex:Bookings/{booking_id} a :Bookings ; p:booking_id {booking_id} ; p:bed_id {bed_id} ; p:customer_id {customer_id} ; p:checkin {checkin} ; p:checkout {checkout} ; p:total_price {total_price} .
+source		SELECT `booking_id`, `bed_id`, `customer_id`, `checkin`, `checkout`, `total_price` FROM `Bookings`
+
+mappingId	Bookings_customer_id_fk
+target		ex:Bookings/{booking_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `booking_id`, `customer_id` FROM `Bookings` WHERE `customer_id` IS NOT NULL
+
+mappingId	Bookings_bed_id_fk
+target		ex:Bookings/{booking_id} p:hasBed_and_breakfast_rooms ex:Bed_and_breakfast_rooms/{bed_id} .
+source		SELECT `booking_id`, `bed_id` FROM `Bookings` WHERE `bed_id` IS NOT NULL
+
+]]

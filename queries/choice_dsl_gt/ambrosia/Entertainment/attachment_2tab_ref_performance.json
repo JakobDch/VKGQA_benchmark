@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_performance",
+  "schema": "amb_attachment_2tab_ref_performance",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which improvised theatres' venue is Cambridge Theatre and which musicals have the same venue?",
+      "qtype": "unambig",
+      "sql": "SELECT Improvised_Theatres.name\nFROM Venues JOIN Improvised_Theatres ON Venues.id = Improvised_Theatres.venueID\nWHERE Venues.Name = \"Cambridge Theatre\"\nUNION\nSELECT Musicals.name\nFROM Venues JOIN Musicals ON Venues.id = Musicals.venueID\nWHERE Venues.Name = \"Cambridge Theatre\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?venues a :Venue .\n    ?improvised_theatres a :Improvised_Theatres .\n    ?improvised_theatres p:hasVenues ?venues .\n    ?improvised_theatres p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?venues a :Venue .\n    ?musicals a :Musicals .\n    ?musicals p:hasVenues ?venues .\n    ?musicals p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Show improvised theatres and musicals that take place in Cambridge Theatre.",
+      "qtype": "ambig",
+      "sql": "SELECT Improvised_Theatres.name\nFROM Venues JOIN Improvised_Theatres ON Venues.id = Improvised_Theatres.venueID\nUNION\nSELECT Musicals.name\nFROM Venues JOIN Musicals ON Venues.id = Musicals.venueID\nWHERE Venues.Name = \"Cambridge Theatre\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?venues a :Venue .\n    ?improvised_theatres a :Improvised_Theatres .\n    ?improvised_theatres p:hasVenues ?venues .\n    ?improvised_theatres p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?venues a :Venue .\n    ?musicals a :Musicals .\n    ?musicals p:hasVenues ?venues .\n    ?musicals p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=3"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show improvised theatres and musicals that take place in Cambridge Theatre.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?venues a :Venue .\n    ?improvised_theatres a :Improvised_Theatres .\n    ?improvised_theatres p:hasVenues ?venues .\n    ?improvised_theatres p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?venues a :Venue .\n    ?musicals a :Musicals .\n    ?musicals p:hasVenues ?venues .\n    ?musicals p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?venues a :Venue .\n    ?improvised_theatres a :Improvised_Theatres .\n    ?improvised_theatres p:hasVenues ?venues .\n    ?improvised_theatres p:name ?name .\n    BIND(?name AS ?o0)\n  }\n  UNION\n  {\n    ?venues a :Venue .\n    ?musicals a :Musicals .\n    ?musicals p:hasVenues ?venues .\n    ?musicals p:name ?name .\n    ?venues p:name ?name_f .\n    FILTER(STR(?name_f) = \"Cambridge Theatre\")\n    BIND(?name AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

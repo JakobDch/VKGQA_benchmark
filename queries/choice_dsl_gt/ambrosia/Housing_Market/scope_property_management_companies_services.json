@@ -1,0 +1,42 @@
+{
+  "domain": "Housing Market",
+  "db_base": "scope_property_management_companies_services",
+  "schema": "amb_scope_property_management_companies_services",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Tell me services each property management company provides.",
+      "qtype": "ambig",
+      "sql": "SELECT Services.service_name  from Property_Management_Companies_Services join Services on Property_Management_Companies_Services.service_id = Services.id join Property_Management_Companies on Property_Management_Companies_Services.company_id = Property_Management_Companies.id   GROUP BY Property_Management_Companies_Services.service_id HAVING COUNT(DISTINCT Property_Management_Companies_Services.company_id) = (SELECT COUNT(*) FROM  Property_Management_Companies)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?service_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasProperty_Management_Companies ?parent . } GROUP BY ?child }\n  ?child p:service_name ?service_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Property_Management_Companies } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Tell me services each property management company provides.",
+      "qtype": "ambig",
+      "sql": "select property_management_companies.name , services.service_name from Property_Management_Companies_Services join Services on Property_Management_Companies_Services.service_id = Services.id join Property_Management_Companies on Property_Management_Companies_Services.company_id = Property_Management_Companies.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?service_name WHERE {\n  ?property_management_companies_services a :Property_Management_Companies_Services .\n  ?services a :Services .\n  ?property_management_companies_services p:hasServices ?services .\n  ?property_management_companies a :Property_Management_Companies .\n  ?property_management_companies_services p:hasProperty_Management_Companies ?property_management_companies .\n  ?property_management_companies p:name ?name .\n  ?services p:service_name ?service_name .\n}",
+      "status": "pass",
+      "note": "n=10"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Tell me services each property management company provides.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/housingmarket#>\nPREFIX p: <http://ambrosia.example.org/housingmarket/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?service_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasServices ?child ; p:hasProperty_Management_Companies ?parent . } GROUP BY ?child }\n  ?child p:service_name ?service_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Property_Management_Companies } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?service_name WHERE {\n  ?property_management_companies_services a :Property_Management_Companies_Services .\n  ?services a :Services .\n  ?property_management_companies_services p:hasServices ?services .\n  ?property_management_companies a :Property_Management_Companies .\n  ?property_management_companies_services p:hasProperty_Management_Companies ?property_management_companies .\n  ?property_management_companies p:name ?name .\n  ?services p:service_name ?service_name .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

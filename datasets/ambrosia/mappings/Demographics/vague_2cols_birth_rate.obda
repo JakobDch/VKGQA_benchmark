@@ -1,0 +1,65 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/demographics#
+p:	http://ambrosia.example.org/demographics/prop#
+ex:	http://ambrosia.example.org/demographics/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	AgeGroups_base
+target		ex:AgeGroup/{ID} a :AgeGroup ; p:ID {ID} ; p:name {Name} .
+source		SELECT `ID`, `Name` FROM `AgeGroups`
+
+mappingId	BirthYears_base
+target		ex:BirthYears/{Year} a :BirthYears ; p:Year {Year} ; p:Number_Of_Births {Number_Of_Births} ; p:Crude_Birth_Rate {Crude_Birth_Rate} ; p:City {City} .
+source		SELECT `Year`, `Number_Of_Births`, `Crude_Birth_Rate`, `City` FROM `BirthYears`
+
+mappingId	Regions_base
+target		ex:Regions/{RegionName} a :Regions ; p:RegionName {RegionName} ; p:PopulationCount {PopulationCount} .
+source		SELECT `RegionName`, `PopulationCount` FROM `Regions`
+
+mappingId	Cities_base
+target		ex:Cities/{CityName} a :Cities ; p:CityName {CityName} ; p:RegionName {RegionName} .
+source		SELECT `CityName`, `RegionName` FROM `Cities`
+
+mappingId	Cities_RegionName_fk
+target		ex:Cities/{CityName} p:hasRegions ex:Regions/{RegionName} .
+source		SELECT `CityName`, `RegionName` FROM `Cities` WHERE `RegionName` IS NOT NULL
+
+mappingId	AgeGroupPopulations_base
+target		ex:AgeGroupPopulations/{_amb_rowid} a :AgeGroupPopulations ; p:AgeGroupID {AgeGroupID} ; p:Year {Year} ; p:CityName {CityName} ; p:TotalPopulation {TotalPopulation} .
+source		SELECT `_amb_rowid`, `AgeGroupID`, `Year`, `CityName`, `TotalPopulation` FROM `AgeGroupPopulations`
+
+mappingId	AgeGroupPopulations_CityName_fk
+target		ex:AgeGroupPopulations/{_amb_rowid} p:hasCities ex:Cities/{CityName} .
+source		SELECT `_amb_rowid`, `CityName` FROM `AgeGroupPopulations` WHERE `CityName` IS NOT NULL
+
+mappingId	AgeGroupPopulations_Year_fk
+target		ex:AgeGroupPopulations/{_amb_rowid} p:hasBirthYears ex:BirthYears/{Year} .
+source		SELECT `_amb_rowid`, `Year` FROM `AgeGroupPopulations` WHERE `Year` IS NOT NULL
+
+mappingId	AgeGroupPopulations_AgeGroupID_fk
+target		ex:AgeGroupPopulations/{_amb_rowid} p:hasAgeGroup ex:AgeGroup/{AgeGroupID} .
+source		SELECT `_amb_rowid`, `AgeGroupID` FROM `AgeGroupPopulations` WHERE `AgeGroupID` IS NOT NULL
+
+mappingId	EducationLevels_base
+target		ex:EducationLevel/{Level} a :EducationLevel ; p:Level {Level} ; p:Percentage {Percentage} .
+source		SELECT `Level`, `Percentage` FROM `EducationLevels`
+
+mappingId	CityEducationStats_base
+target		ex:CityEducationStats/{_amb_rowid} a :CityEducationStats ; p:CityName {CityName} ; p:Level {Level} ; p:Percentage {Percentage} .
+source		SELECT `_amb_rowid`, `CityName`, `Level`, `Percentage` FROM `CityEducationStats`
+
+mappingId	CityEducationStats_CityName_fk
+target		ex:CityEducationStats/{_amb_rowid} p:hasCities ex:Cities/{CityName} .
+source		SELECT `_amb_rowid`, `CityName` FROM `CityEducationStats` WHERE `CityName` IS NOT NULL
+
+mappingId	CityEducationStats_Level_fk
+target		ex:CityEducationStats/{_amb_rowid} p:hasEducationLevel ex:EducationLevel/{Level} .
+source		SELECT `_amb_rowid`, `Level` FROM `CityEducationStats` WHERE `Level` IS NOT NULL
+
+mappingId	CityEducationStats_CityName_fk
+target		ex:CityEducationStats/{_amb_rowid} p:hasCities ex:Cities/{CityName} .
+source		SELECT `_amb_rowid`, `CityName` FROM `CityEducationStats` WHERE `CityName` IS NOT NULL
+
+]]

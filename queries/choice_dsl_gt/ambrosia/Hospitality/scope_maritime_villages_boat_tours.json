@@ -1,0 +1,108 @@
+{
+  "domain": "Hospitality",
+  "db_base": "scope_maritime_villages_boat_tours",
+  "schema": "amb_scope_maritime_villages_boat_tours",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "For every maritime village, list the names and descriptions of the tours they offer.",
+      "qtype": "unambig",
+      "sql": "select maritime_villages.name , boat_tours.tour_name , boat_tours.description from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tour_name ?description WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:tour_name ?tour_name .\n  ?boat_tours p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 1,
+      "question": "Could you provide the boat tours for all maritime villages?",
+      "qtype": "unambig",
+      "sql": "select maritime_villages.name , boat_tours.tour_name from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?tour_name WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:tour_name ?tour_name .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 2,
+      "question": "What are the tour options offered by boat tours in each maritime village?",
+      "qtype": "ambig",
+      "sql": "SELECT Boat_Tours.tour_name  from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id   GROUP BY Maritime_Villages_Boat_Tours.boat_tour_id HAVING COUNT(DISTINCT Maritime_Villages_Boat_Tours.maritime_village_id) = (SELECT COUNT(*) FROM  Maritime_Villages)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tour_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:tour_name ?tour_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "For every maritime village, describe the boat tours that they offer.",
+      "qtype": "unambig",
+      "sql": "select maritime_villages.name , boat_tours.description from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?description WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:description ?description .\n}",
+      "status": "pass",
+      "note": "n=6"
+    },
+    {
+      "qid": 4,
+      "question": "Describe the boat tours that each maritime village offers",
+      "qtype": "ambig",
+      "sql": "SELECT Boat_Tours.description  from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id   GROUP BY Maritime_Villages_Boat_Tours.boat_tour_id HAVING COUNT(DISTINCT Maritime_Villages_Boat_Tours.maritime_village_id) = (SELECT COUNT(*) FROM  Maritime_Villages)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Show me the names and descriptions of the tours each maritime village offers.",
+      "qtype": "ambig",
+      "sql": "SELECT Boat_Tours.tour_name, Boat_Tours.description  from Maritime_Villages_Boat_Tours join Boat_Tours on Maritime_Villages_Boat_Tours.boat_tour_id = Boat_Tours.id join Maritime_Villages on Maritime_Villages_Boat_Tours.maritime_village_id = Maritime_Villages.id   GROUP BY Maritime_Villages_Boat_Tours.boat_tour_id HAVING COUNT(DISTINCT Maritime_Villages_Boat_Tours.maritime_village_id) = (SELECT COUNT(*) FROM  Maritime_Villages)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tour_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:tour_name ?tour_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Show me the names and descriptions of the tours each maritime village offers.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?tour_name ?description WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:tour_name ?tour_name .\n  ?boat_tours p:description ?description .\n} }\n  collective: { SELECT ?tour_name ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:tour_name ?tour_name .\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "What are the tour options offered by boat tours in each maritime village?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        2
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?tour_name WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:tour_name ?tour_name .\n} }\n  collective: { SELECT ?tour_name WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:tour_name ?tour_name .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Describe the boat tours that each maritime village offers",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?description WHERE {\n  ?maritime_villages_boat_tours a :Maritime_Villages_Boat_Tours .\n  ?boat_tours a :Boat_Tours .\n  ?maritime_villages_boat_tours p:hasBoat_Tours ?boat_tours .\n  ?maritime_villages a :Maritime_Villages .\n  ?maritime_villages_boat_tours p:hasMaritime_Villages ?maritime_villages .\n  ?maritime_villages p:name ?name .\n  ?boat_tours p:description ?description .\n} }\n  collective: { SELECT ?description WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasBoat_Tours ?child ; p:hasMaritime_Villages ?parent . } GROUP BY ?child }\n  ?child p:description ?description .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Maritime_Villages } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Boeing_base
+target		ex:Boeing/{id} a :Boeing ; p:id {id} ; p:Model {Model} ; p:Number_of_seats {Number_of_seats} ; p:Manufacture_year {Manufacture_year} ; p:LastMaintenanceDate {LastMaintenanceDate} .
+source		SELECT `id`, `Model`, `Number_of_seats`, `Manufacture_year`, `LastMaintenanceDate` FROM `Boeing`
+
+mappingId	Airbus_base
+target		ex:Airbus/{id} a :Airbus ; p:id {id} ; p:Model {Model} ; p:Number_of_seats {Number_of_seats} ; p:Manufacture_year {Manufacture_year} ; p:LastMaintenanceDate {LastMaintenanceDate} .
+source		SELECT `id`, `Model`, `Number_of_seats`, `Manufacture_year`, `LastMaintenanceDate` FROM `Airbus`
+
+mappingId	Flight_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:airplaneId {airplaneId} ; p:departureTime {departureTime} ; p:arrivalTime {arrivalTime} ; p:destination {destination} .
+source		SELECT `id`, `airplaneId`, `departureTime`, `arrivalTime`, `destination` FROM `Flight`
+
+mappingId	Flight_airplaneId_fk
+target		ex:Flights/{id} p:hasBoeing ex:Boeing/{airplaneId} .
+source		SELECT `id`, `airplaneId` FROM `Flight` WHERE `airplaneId` IS NOT NULL
+
+mappingId	Flight_airplaneId_fk
+target		ex:Flights/{id} p:hasAirbus ex:Airbus/{airplaneId} .
+source		SELECT `id`, `airplaneId` FROM `Flight` WHERE `airplaneId` IS NOT NULL
+
+mappingId	Pilot_base
+target		ex:Pilots/{id} a :Pilots ; p:id {id} ; p:name {name} ; p:licenseNumber {licenseNumber} ; p:experienceYears {experienceYears} .
+source		SELECT `id`, `name`, `licenseNumber`, `experienceYears` FROM `Pilot`
+
+mappingId	Maintenance_base
+target		ex:Maintenance/{id} a :Maintenance ; p:id {id} ; p:airplaneId {airplaneId} ; p:maintenanceType {maintenanceType} ; p:datePerformed {datePerformed} ; p:technicianName {technicianName} .
+source		SELECT `id`, `airplaneId`, `maintenanceType`, `datePerformed`, `technicianName` FROM `Maintenance`
+
+mappingId	Maintenance_airplaneId_fk
+target		ex:Maintenance/{id} p:hasBoeing ex:Boeing/{airplaneId} .
+source		SELECT `id`, `airplaneId` FROM `Maintenance` WHERE `airplaneId` IS NOT NULL
+
+mappingId	Maintenance_airplaneId_fk
+target		ex:Maintenance/{id} p:hasAirbus ex:Airbus/{airplaneId} .
+source		SELECT `id`, `airplaneId` FROM `Maintenance` WHERE `airplaneId` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/housingmarket#
+p:	http://ambrosia.example.org/housingmarket/prop#
+ex:	http://ambrosia.example.org/housingmarket/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Real_Estate_Agencies_base
+target		ex:Real_Estate_Agencies/{agency_id} a :Real_Estate_Agencies ; p:agency_id {agency_id} ; p:name {name} ; p:location {location} .
+source		SELECT `agency_id`, `name`, `location` FROM `Real_Estate_Agencies`
+
+mappingId	Services_base
+target		ex:Services/{service_id} a :Services ; p:service_id {service_id} ; p:description {description} ; p:price {price} .
+source		SELECT `service_id`, `description`, `price` FROM `Services`
+
+mappingId	Real_Estate_Agencies_Services_base
+target		ex:Real_Estate_Agencies_Services/{real_estate_agency_id}/{service_id} a :Real_Estate_Agencies_Services ; p:real_estate_agency_id {real_estate_agency_id} ; p:service_id {service_id} .
+source		SELECT `real_estate_agency_id`, `service_id` FROM `Real_Estate_Agencies_Services`
+
+mappingId	Real_Estate_Agencies_Services_service_id_fk
+target		ex:Real_Estate_Agencies_Services/{real_estate_agency_id}/{service_id} p:hasServices ex:Services/{service_id} .
+source		SELECT `real_estate_agency_id`, `service_id` FROM `Real_Estate_Agencies_Services` WHERE `service_id` IS NOT NULL
+
+mappingId	Real_Estate_Agencies_Services_real_estate_agency_id_fk
+target		ex:Real_Estate_Agencies_Services/{real_estate_agency_id}/{service_id} p:hasReal_Estate_Agencies ex:Real_Estate_Agencies/{real_estate_agency_id} .
+source		SELECT `real_estate_agency_id`, `service_id` FROM `Real_Estate_Agencies_Services` WHERE `real_estate_agency_id` IS NOT NULL
+
+]]

@@ -1,0 +1,29 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/entertainment#
+p:	http://ambrosia.example.org/entertainment/prop#
+ex:	http://ambrosia.example.org/entertainment/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Authors_base
+target		ex:Author/{id} a :Author ; p:id {id} ; p:name {Name} .
+source		SELECT `id`, `Name` FROM `Authors`
+
+mappingId	Written_Works_base
+target		ex:WrittenWorks/{id} a :WrittenWorks ; p:id {id} ; p:AuthorID {AuthorID} ; p:Type {Type} ; p:Title {Title} ; p:DatePublished {DatePublished} .
+source		SELECT `id`, `AuthorID`, `Type`, `Title`, `DatePublished` FROM `Written_Works`
+
+mappingId	Written_Works_AuthorID_fk
+target		ex:WrittenWorks/{id} p:hasAuthor ex:Author/{AuthorID} .
+source		SELECT `id`, `AuthorID` FROM `Written_Works` WHERE `AuthorID` IS NOT NULL
+
+mappingId	Movie_Ratings_base
+target		ex:FilmRatings/{id} a :FilmRatings ; p:id {id} ; p:MovieID {MovieID} ; p:Rating {Rating} ; p:ReviewerID {ReviewerID} ; p:DateRated {DateRated} .
+source		SELECT `id`, `MovieID`, `Rating`, `ReviewerID`, `DateRated` FROM `Movie_Ratings`
+
+mappingId	Books_Sales_base
+target		ex:Books_Sales/{id} a :Books_Sales ; p:id {id} ; p:BookID {BookID} ; p:Quantity {Quantity} ; p:SaleDate {SaleDate} ; p:Revenue {Revenue} .
+source		SELECT `id`, `BookID`, `Quantity`, `SaleDate`, `Revenue` FROM `Books_Sales`
+
+]]

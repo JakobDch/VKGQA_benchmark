@@ -1,0 +1,53 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/construction#
+p:	http://ambrosia.example.org/construction/prop#
+ex:	http://ambrosia.example.org/construction/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Materials_base
+target		ex:Materials/{material_id} a :Materials ; p:material_id {material_id} ; p:name {name} ; p:cost {cost} .
+source		SELECT `material_id`, `name`, `cost` FROM `Materials`
+
+mappingId	Projects_base
+target		ex:Projects/{project_id} a :Projects ; p:project_id {project_id} ; p:name {name} ; p:start_date {start_date} ; p:end_date {end_date} ; p:infrastructure_id {infrastructure_id} .
+source		SELECT `project_id`, `name`, `start_date`, `end_date`, `infrastructure_id` FROM `Projects`
+
+mappingId	Projects_infrastructure_id_fk
+target		ex:Projects/{project_id} p:hasInfrastructure ex:Infrastructure/{infrastructure_id} .
+source		SELECT `project_id`, `infrastructure_id` FROM `Projects` WHERE `infrastructure_id` IS NOT NULL
+
+mappingId	Infrastructure_base
+target		ex:Infrastructure/{infrastructure_id} a :Infrastructure ; p:infrastructure_id {infrastructure_id} ; p:description {description} ; p:service_life_expectancy_id {service_life_expectancy_id} ; p:renewal_schedule_id {renewal_schedule_id} .
+source		SELECT `infrastructure_id`, `description`, `service_life_expectancy_id`, `renewal_schedule_id` FROM `Infrastructure`
+
+mappingId	Infrastructure_renewal_schedule_id_fk
+target		ex:Infrastructure/{infrastructure_id} p:hasRenewal_Schedule ex:Renewal_Schedule/{renewal_schedule_id} .
+source		SELECT `infrastructure_id`, `renewal_schedule_id` FROM `Infrastructure` WHERE `renewal_schedule_id` IS NOT NULL
+
+mappingId	Infrastructure_service_life_expectancy_id_fk
+target		ex:Infrastructure/{infrastructure_id} p:hasService_Life_Expectancy ex:Service_Life_Expectancy/{service_life_expectancy_id} .
+source		SELECT `infrastructure_id`, `service_life_expectancy_id` FROM `Infrastructure` WHERE `service_life_expectancy_id` IS NOT NULL
+
+mappingId	Workers_base
+target		ex:Workers/{worker_id} a :Workers ; p:worker_id {worker_id} ; p:first_name {first_name} ; p:last_name {last_name} ; p:skill_level {skill_level} .
+source		SELECT `worker_id`, `first_name`, `last_name`, `skill_level` FROM `Workers`
+
+mappingId	Tasks_base
+target		ex:Tasks/{task_id} a :Tasks ; p:task_id {task_id} ; p:description {description} ; p:assigned_to_worker_id {assigned_to_worker_id} ; p:due_date {due_date} ; p:completed {completed} .
+source		SELECT `task_id`, `description`, `assigned_to_worker_id`, `due_date`, `completed` FROM `Tasks`
+
+mappingId	Tasks_assigned_to_worker_id_fk
+target		ex:Tasks/{task_id} p:hasWorkers ex:Workers/{assigned_to_worker_id} .
+source		SELECT `task_id`, `assigned_to_worker_id` FROM `Tasks` WHERE `assigned_to_worker_id` IS NOT NULL
+
+mappingId	Service_Life_Expectancy_base
+target		ex:Service_Life_Expectancy/{service_life_expectancy_id} a :Service_Life_Expectancy ; p:service_life_expectancy_id {service_life_expectancy_id} ; p:min_years {min_years} ; p:max_years {max_years} .
+source		SELECT `service_life_expectancy_id`, `min_years`, `max_years` FROM `Service_Life_Expectancy`
+
+mappingId	Renewal_Schedule_base
+target		ex:Renewal_Schedule/{renewal_schedule_id} a :Renewal_Schedule ; p:renewal_schedule_id {renewal_schedule_id} ; p:frequency {frequency} .
+source		SELECT `renewal_schedule_id`, `frequency` FROM `Renewal_Schedule`
+
+]]

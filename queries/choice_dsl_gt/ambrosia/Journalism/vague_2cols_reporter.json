@@ -1,0 +1,97 @@
+{
+  "domain": "Journalism",
+  "db_base": "vague_2cols_reporter",
+  "schema": "amb_vague_2cols_reporter",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Who reported the results of the US elections?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name AS journalist_name\nFROM \n    stories s \nJOIN \n    journalists j ON s.journalist_id = j.id\nWHERE\n    s.title = 'US Election Results'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?j p:name ?name .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who reported the results of the US elections?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name AS news_agency_name\nFROM \n    stories s \nJOIN \n    news_agencies j ON s.news_agency_id = j.id\nWHERE\n    s.title = 'US Election Results'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?s a :Stories .\n  ?j a :News_Agency .\n  ?s p:hasnews_agencies ?j .\n  ?j p:name ?name .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Who reported the results of the US elections?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name AS journalist_name, na.name AS news_agency_name\nFROM \n    stories s \nJOIN \n    journalists j ON s.journalist_id = j.id  JOIN news_agencies na ON s.news_agency_id = na.id\nWHERE\n    s.title = 'US Election Results'",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?na a :News_Agency .\n  ?s p:hasnews_agencies ?na .\n  ?j p:name ?name .\n  ?na p:name ?name2 .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Who reported what story?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name AS journalist_name,\n    s.title AS story_title\nFROM \n    stories s \nJOIN \n    journalists j ON s.journalist_id = j.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?j p:name ?name .\n  ?s p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 4,
+      "question": "Who reported what story?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name AS news_agency_name,\n    s.title AS story_title\nFROM \n    stories s \nJOIN \n    news_agencies j ON s.news_agency_id = j.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?title WHERE {\n  ?s a :Stories .\n  ?j a :News_Agency .\n  ?s p:hasnews_agencies ?j .\n  ?j p:name ?name .\n  ?s p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 5,
+      "question": "Who reported what story?",
+      "qtype": "ambig",
+      "sql": "SELECT \n    j.name, na.name,\n    s.title AS story_title\nFROM \n    stories s \nJOIN \n    journalists j ON s.journalist_id = j.id JOIN news_agencies na ON s.news_agency_id = na.id;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 ?title WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?na a :News_Agency .\n  ?s p:hasnews_agencies ?na .\n  ?j p:name ?name .\n  ?na p:name ?name2 .\n  ?s p:title ?title .\n}",
+      "status": "pass",
+      "note": "n=2"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who reported the results of the US elections?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        1,
+        0,
+        2
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?s a :Stories .\n  ?j a :News_Agency .\n  ?s p:hasnews_agencies ?j .\n  ?j p:name ?name .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?j p:name ?name .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?na a :News_Agency .\n  ?s p:hasnews_agencies ?na .\n  ?j p:name ?name .\n  ?na p:name ?name2 .\n  ?s p:title ?title_f .\n  FILTER(STR(?title_f) = \"US Election Results\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who reported what story?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        3,
+        5,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "full",
+        "component"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/journalism#>\nPREFIX p: <http://ambrosia.example.org/journalism/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name ?title WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?j p:name ?name .\n  ?s p:title ?title .\n} }\n  full: { SELECT ?name ?name2 ?title WHERE {\n  ?s a :Stories .\n  ?j a :Journalists .\n  ?s p:hasjournalists ?j .\n  ?na a :News_Agency .\n  ?s p:hasnews_agencies ?na .\n  ?j p:name ?name .\n  ?na p:name ?name2 .\n  ?s p:title ?title .\n} }\n  component_2: { SELECT ?name ?title WHERE {\n  ?s a :Stories .\n  ?j a :News_Agency .\n  ?s p:hasnews_agencies ?j .\n  ?j p:name ?name .\n  ?s p:title ?title .\n} }\n}",
+      "verified": true
+    }
+  ]
+}

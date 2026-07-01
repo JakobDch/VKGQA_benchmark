@@ -1,0 +1,42 @@
+{
+  "domain": "Entertainment",
+  "db_base": "attachment_2tab_ref_visual_art",
+  "schema": "amb_attachment_2tab_ref_visual_art",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "What photography is being shown at the Museum of Modern Art and what paintings are also being shown there?",
+      "qtype": "unambig",
+      "sql": "SELECT Photography.title\nFROM Gallery JOIN Photography ON Gallery.GalleryId = Photography.GalleryId\nWHERE Gallery.Name = \"MoMA - Museum of Modern Art\"\nUNION\nSELECT Painting.title\nFROM Gallery JOIN Painting ON Gallery.GalleryId = Painting.GalleryId\nWHERE Gallery.Name = \"MoMA - Museum of Modern Art\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?gallery a :Gallery .\n    ?photography a :Photography .\n    ?photography p:hasGallery ?gallery .\n    ?photography p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?gallery a :Gallery .\n    ?painting a :Painting .\n    ?painting p:hasGallery ?gallery .\n    ?painting p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "Provide a list of all photographs and also provide a list of paintings being show at the Museum of Modern Art.",
+      "qtype": "unambig",
+      "sql": "SELECT Photography.title\nFROM Gallery JOIN Photography ON Gallery.GalleryId = Photography.GalleryId\nUNION\nSELECT Painting.title\nFROM Gallery JOIN Painting ON Gallery.GalleryId = Painting.GalleryId\nWHERE Gallery.Name = \"MoMA - Museum of Modern Art\"",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT DISTINCT ?o0 WHERE {\n  {\n    ?gallery a :Gallery .\n    ?photography a :Photography .\n    ?photography p:hasGallery ?gallery .\n    ?photography p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?gallery a :Gallery .\n    ?painting a :Painting .\n    ?painting p:hasGallery ?gallery .\n    ?painting p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n}",
+      "status": "pass",
+      "note": "n=6"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List photographs and paintings being shown at the Museum of Modern Art.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?gallery a :Gallery .\n    ?photography a :Photography .\n    ?photography p:hasGallery ?gallery .\n    ?photography p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?gallery a :Gallery .\n    ?painting a :Painting .\n    ?painting p:hasGallery ?gallery .\n    ?painting p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n} }\n  low: { SELECT DISTINCT ?o0 WHERE {\n  {\n    ?gallery a :Gallery .\n    ?photography a :Photography .\n    ?photography p:hasGallery ?gallery .\n    ?photography p:Title ?title .\n    BIND(?title AS ?o0)\n  }\n  UNION\n  {\n    ?gallery a :Gallery .\n    ?painting a :Painting .\n    ?painting p:hasGallery ?gallery .\n    ?painting p:Title ?title .\n    ?gallery p:name ?name_f .\n    FILTER(STR(?name_f) = \"MoMA - Museum of Modern Art\")\n    BIND(?title AS ?o0)\n  }\n} }\n}",
+      "verified": true
+    }
+  ]
+}

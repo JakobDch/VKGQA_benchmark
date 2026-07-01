@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Accommodations_base
+target		ex:Accommodations/{ID} a :Accommodations ; p:ID {ID} ; p:name {Name} ; p:Type_of_Accommodation {Type_of_Accommodation} ; p:Price {Price} .
+source		SELECT `ID`, `Name`, `Type_of_Accommodation`, `Price` FROM `Accommodations`
+
+mappingId	Customers_base
+target		ex:Customers/{CustomerID} a :Customers ; p:CustomerID {CustomerID} ; p:FirstName {FirstName} ; p:LastName {LastName} ; p:email {Email} .
+source		SELECT `CustomerID`, `FirstName`, `LastName`, `Email` FROM `Customers`
+
+mappingId	Booking_base
+target		ex:Bookings/{BookingID} a :Bookings ; p:BookingID {BookingID} ; p:CustomerID {CustomerID} ; p:AccommodationID {AccommodationID} ; p:CheckInDate {CheckInDate} ; p:CheckOutDate {CheckOutDate} .
+source		SELECT `BookingID`, `CustomerID`, `AccommodationID`, `CheckInDate`, `CheckOutDate` FROM `Booking`
+
+mappingId	Booking_AccommodationID_fk
+target		ex:Bookings/{BookingID} p:hasAccommodations ex:Accommodations/{AccommodationID} .
+source		SELECT `BookingID`, `AccommodationID` FROM `Booking` WHERE `AccommodationID` IS NOT NULL
+
+mappingId	Booking_CustomerID_fk
+target		ex:Bookings/{BookingID} p:hasCustomers ex:Customers/{CustomerID} .
+source		SELECT `BookingID`, `CustomerID` FROM `Booking` WHERE `CustomerID` IS NOT NULL
+
+mappingId	Reviews_base
+target		ex:Reviews/{ReviewID} a :Reviews ; p:ReviewID {ReviewID} ; p:AccommodationID {AccommodationID} ; p:Rating {Rating} ; p:Comment {Comment} .
+source		SELECT `ReviewID`, `AccommodationID`, `Rating`, `Comment` FROM `Reviews`
+
+mappingId	Reviews_AccommodationID_fk
+target		ex:Reviews/{ReviewID} p:hasAccommodations ex:Accommodations/{AccommodationID} .
+source		SELECT `ReviewID`, `AccommodationID` FROM `Reviews` WHERE `AccommodationID` IS NOT NULL
+
+]]

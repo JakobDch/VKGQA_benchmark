@@ -1,0 +1,97 @@
+{
+  "domain": "Entertainment",
+  "db_base": "vague_2tabs_production2",
+  "schema": "amb_vague_2tabs_production2",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Which theatre company produced Hamlet?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Theater_Company JOIN Stage_Play ON Stage_Play.theater_company_id = Theater_Company.id WHERE title = 'Hamlet';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?theater_company p:name ?name .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "Who acted as producer for the show Hamlet?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Producer JOIN Stage_Play ON Stage_Play.Producer_id = Producer.id WHERE title = 'Hamlet';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?producer a :Producer .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "Which companies staged plays with ratings above 8.5?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Theater_Company JOIN Stage_Play ON Stage_Play.theater_company_id = Theater_Company.id JOIN Review ON Review.stage_play_id = Stage_Play.id WHERE rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?theater_company p:name ?name .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 3,
+      "question": "Which directors staged plays with ratings above 8.5?",
+      "qtype": "unambig",
+      "sql": "SELECT name FROM Producer JOIN Stage_Play ON Stage_Play.Producer_id = Producer.id JOIN Review ON Review.stage_play_id = Stage_Play.id WHERE rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?producer a :Producer .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasProducer ?producer .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?producer p:name ?name .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 4,
+      "question": "Who directed plays with ratings above 8.5?",
+      "qtype": "ambig",
+      "sql": "SELECT Producer.name, Theater_Company.name FROM Theater_Company JOIN Stage_Play ON Stage_Play.theater_company_id = Theater_Company.id JOIN Review ON Review.stage_play_id = Stage_Play.id JOIN Producer ON Stage_Play.Producer_id = Producer.id  WHERE rating > 8.5;",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?producer a :Producer .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?theater_company p:name ?name2 .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "Which theatre company put on Hamlet and who was the producer?",
+      "qtype": "unambig",
+      "sql": "SELECT Producer.name, Theater_Company.name FROM Theater_Company JOIN Stage_Play ON Stage_Play.theater_company_id = Theater_Company.id JOIN Producer ON Stage_Play.Producer_id = Producer.id  WHERE title = 'Hamlet';",
+      "sparql": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?name2 WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?producer a :Producer .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?theater_company p:name ?name2 .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n}",
+      "status": "pass",
+      "note": "n=1"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "Who produced Hamlet?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        0,
+        1,
+        5
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?theater_company p:name ?name .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n  component_2: { SELECT ?name WHERE {\n  ?producer a :Producer .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?producer a :Producer .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?theater_company p:name ?name2 .\n  ?stage_play p:title ?title_f .\n  FILTER(STR(?title_f) = \"Hamlet\")\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Who directed plays with ratings above 8.5?",
+      "ambig_type": "vague",
+      "n_interpretations": 3,
+      "member_qids": [
+        2,
+        3,
+        4
+      ],
+      "interpretation_labels": [
+        "component",
+        "component",
+        "full"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/entertainment#>\nPREFIX p: <http://ambrosia.example.org/entertainment/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE vague {\n  component: { SELECT ?name WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?theater_company p:name ?name .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n} }\n  component_2: { SELECT ?name WHERE {\n  ?producer a :Producer .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasProducer ?producer .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?producer p:name ?name .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n} }\n  full: { SELECT ?name ?name2 WHERE {\n  ?theater_company a :Theater_Company .\n  ?stage_play a :Stage_Play .\n  ?stage_play p:hasTheater_Company ?theater_company .\n  ?review a :Review .\n  ?review p:hasStage_Play ?stage_play .\n  ?producer a :Producer .\n  ?stage_play p:hasProducer ?producer .\n  ?producer p:name ?name .\n  ?theater_company p:name ?name2 .\n  ?review p:rating ?rating_f .\n  FILTER(xsd:double(?rating_f) > 8.5)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

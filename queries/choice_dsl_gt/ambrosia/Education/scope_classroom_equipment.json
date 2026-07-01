@@ -1,0 +1,108 @@
+{
+  "domain": "Education",
+  "db_base": "scope_classroom_equipment",
+  "schema": "amb_scope_classroom_equipment",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show me the equipment names that are common to all classes",
+      "qtype": "unambig",
+      "sql": "SELECT Equipment.equipmentName  from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id   GROUP BY Classroom_Equipment.equipmentId HAVING COUNT(DISTINCT Classroom_Equipment.classroomId) = (SELECT COUNT(*) FROM  Classroom)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?equipmentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:equipmentName ?equipmentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 1,
+      "question": "What information is there on equipment including their quantity that is common to all classrooms?",
+      "qtype": "unambig",
+      "sql": "SELECT Equipment.equipmentName, Equipment.quantity  from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id   GROUP BY Classroom_Equipment.equipmentId HAVING COUNT(DISTINCT Classroom_Equipment.classroomId) = (SELECT COUNT(*) FROM  Classroom)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?equipmentname ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:equipmentName ?equipmentname .\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 2,
+      "question": "For each classroom, List the quantity of equipment.",
+      "qtype": "unambig",
+      "sql": "select classroom.name , equipment.quantity from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?quantity WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:quantity ?quantity .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 3,
+      "question": "For every classroom, list information on equipment used including their quantity.",
+      "qtype": "unambig",
+      "sql": "select classroom.name , equipment.equipmentname , equipment.quantity from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?equipmentname ?quantity WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:equipmentName ?equipmentname .\n  ?equipment p:quantity ?quantity .\n}",
+      "status": "pass",
+      "note": "n=9"
+    },
+    {
+      "qid": 4,
+      "question": "List the quantity of equipment that is common for all classrooms.",
+      "qtype": "unambig",
+      "sql": "SELECT Equipment.quantity  from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id   GROUP BY Classroom_Equipment.equipmentId HAVING COUNT(DISTINCT Classroom_Equipment.classroomId) = (SELECT COUNT(*) FROM  Classroom)",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n}",
+      "status": "pass",
+      "note": "n=1"
+    },
+    {
+      "qid": 5,
+      "question": "What equipment names do we have in every class?",
+      "qtype": "ambig",
+      "sql": "select classroom.name , equipment.equipmentname from Classroom_Equipment join Equipment on Classroom_Equipment.equipmentId = Equipment.id join Classroom on Classroom_Equipment.classroomId = Classroom.id",
+      "sparql": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name ?equipmentname WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:equipmentName ?equipmentname .\n}",
+      "status": "pass",
+      "note": "n=9"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "What equipment names do we have in every class?",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        5
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?equipmentname WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:equipmentName ?equipmentname .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?equipmentname WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:equipmentName ?equipmentname .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "Show me information on equipment each classroom uses including their quantity.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        1,
+        3
+      ],
+      "interpretation_labels": [
+        "collective",
+        "distributive"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  collective: { SELECT ?equipmentname ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:equipmentName ?equipmentname .\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n} }\n  distributive: { SELECT ?name ?equipmentname ?quantity WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:equipmentName ?equipmentname .\n  ?equipment p:quantity ?quantity .\n} }\n}",
+      "verified": true
+    },
+    {
+      "question": "List the quantity of equipment available in every classroom.",
+      "ambig_type": "scope",
+      "n_interpretations": 2,
+      "member_qids": [
+        2,
+        4
+      ],
+      "interpretation_labels": [
+        "distributive",
+        "collective"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/education#>\nPREFIX p: <http://ambrosia.example.org/education/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE scope {\n  distributive: { SELECT ?name ?quantity WHERE {\n  ?classroom_equipment a :Classroom_Equipment .\n  ?equipment a :Equipment .\n  ?classroom_equipment p:hasEquipment ?equipment .\n  ?classroom a :Classrooms .\n  ?classroom_equipment p:hasClassroom ?classroom .\n  ?classroom p:name ?name .\n  ?equipment p:quantity ?quantity .\n} }\n  collective: { SELECT ?quantity WHERE {\n  { SELECT ?child (COUNT(DISTINCT ?parent) AS ?nf) WHERE { ?l p:hasEquipment ?child ; p:hasClassroom ?parent . } GROUP BY ?child }\n  ?child p:quantity ?quantity .\n  { SELECT (COUNT(DISTINCT ?t) AS ?total) WHERE { ?t a :Classrooms } }\n  FILTER(?nf = ?total)\n} }\n}",
+      "verified": true
+    }
+  ]
+}

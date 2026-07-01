@@ -1,0 +1,34 @@
+@prefix : <http://ambrosia.example.org/traffic#> .
+@prefix p: <http://ambrosia.example.org/traffic/prop#> .
+@prefix ex: <http://ambrosia.example.org/traffic/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+
+<#tm_scope_train_stations_platforms_0_Train_Stations_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StationID\", \"Name\", \"Location\" FROM \"Train_Stations\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Train_Stations/{StationID}" ; rr:class :Train_Stations ] ;
+  rr:predicateObjectMap [ rr:predicate p:StationID ; rr:objectMap [ rr:column "StationID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:location ; rr:objectMap [ rr:column "Location" ] ] .
+
+<#tm_scope_train_stations_platforms_1_Platforms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlatformID\", \"Name\" FROM \"Platforms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Platforms/{PlatformID}" ; rr:class :Platforms ] ;
+  rr:predicateObjectMap [ rr:predicate p:PlatformID ; rr:objectMap [ rr:column "PlatformID" ] ] ;
+  rr:predicateObjectMap [ rr:predicate p:name ; rr:objectMap [ rr:column "Name" ] ] .
+
+<#tm_scope_train_stations_platforms_2_Train_Stations_Platforms_base> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"StationID\", \"PlatformID\" FROM \"Train_Stations_Platforms\"""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Train_Stations_Platforms/{PlatformID}/{StationID}" ; rr:class :Train_Stations_Platforms ] .
+
+<#tm_scope_train_stations_platforms_3_Train_Stations_Platforms_PlatformID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlatformID\", \"StationID\" FROM \"Train_Stations_Platforms\" WHERE \"PlatformID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Train_Stations_Platforms/{PlatformID}/{StationID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasPlatforms ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Platforms/{PlatformID}" ; rr:termType rr:IRI ] ] .
+
+<#tm_scope_train_stations_platforms_4_Train_Stations_Platforms_StationID_fk> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """SELECT \"PlatformID\", \"StationID\" FROM \"Train_Stations_Platforms\" WHERE \"StationID\" IS NOT NULL""" ] ;
+  rr:subjectMap [ rr:template "http://ambrosia.example.org/traffic/id/Train_Stations_Platforms/{PlatformID}/{StationID}" ] ;
+  rr:predicateObjectMap [ rr:predicate p:hasTrain_Stations ; rr:objectMap [ rr:template "http://ambrosia.example.org/traffic/id/Train_Stations/{StationID}" ; rr:termType rr:IRI ] ] .
+

@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/airport#
+p:	http://ambrosia.example.org/airport/prop#
+ex:	http://ambrosia.example.org/airport/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Air_traffic_controller_base
+target		ex:Air_traffic_controller/{id} a :Air_traffic_controller ; p:id {id} ; p:name {Name} ; p:Experience {Experience} ; p:Salary {Salary} ; p:Training_Center {Training_Center} .
+source		SELECT `id`, `Name`, `Experience`, `Salary`, `Training_Center` FROM `Air_traffic_controller`
+
+mappingId	Ground_staff_base
+target		ex:Ground_staff/{id} a :Ground_staff ; p:id {id} ; p:name {Name} ; p:Experience {Experience} ; p:Salary {Salary} ; p:Role {Role} .
+source		SELECT `id`, `Name`, `Experience`, `Salary`, `Role` FROM `Ground_staff`
+
+mappingId	Flight_base
+target		ex:Flights/{id} a :Flights ; p:id {id} ; p:Date {Date} ; p:Time {Time} ; p:Destination {Destination} ; p:Pilot_id {Pilot_id} .
+source		SELECT `id`, `Date`, `Time`, `Destination`, `Pilot_id` FROM `Flight`
+
+mappingId	Flight_Pilot_id_fk
+target		ex:Flights/{id} p:hasPilots ex:Pilots/{Pilot_id} .
+source		SELECT `id`, `Pilot_id` FROM `Flight` WHERE `Pilot_id` IS NOT NULL
+
+mappingId	Pilots_base
+target		ex:Pilots/{id} a :Pilots ; p:id {id} ; p:name {Name} ; p:License_Number {License_Number} ; p:Total_Flights {Total_Flights} .
+source		SELECT `id`, `Name`, `License_Number`, `Total_Flights` FROM `Pilots`
+
+mappingId	Runway_base
+target		ex:Runways/{id} a :Runways ; p:id {id} ; p:Length {Length} ; p:Width {Width} ; p:location {Location} .
+source		SELECT `id`, `Length`, `Width`, `Location` FROM `Runway`
+
+mappingId	Planes_base
+target		ex:Planes/{id} a :Planes ; p:id {id} ; p:Model {Model} ; p:Registration_number {Registration_number} ; p:Capacity {Capacity} ; p:Current_Location {Current_Location} .
+source		SELECT `id`, `Model`, `Registration_number`, `Capacity`, `Current_Location` FROM `Planes`
+
+mappingId	Planes_Current_Location_fk
+target		ex:Planes/{id} p:hasRunways ex:Runways/{Current_Location} .
+source		SELECT `id`, `Current_Location` FROM `Planes` WHERE `Current_Location` IS NOT NULL
+
+]]

@@ -1,0 +1,69 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/education#
+p:	http://ambrosia.example.org/education/prop#
+ex:	http://ambrosia.example.org/education/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Dissertations_base
+target		ex:Dissertations/{ID} a :Dissertations ; p:ID {ID} ; p:Title {Title} ; p:Abstract {Abstract} ; p:Date {Date} ; p:Academic_Supervisor {Academic_Supervisor} .
+source		SELECT `ID`, `Title`, `Abstract`, `Date`, `Academic_Supervisor` FROM `Dissertations`
+
+mappingId	Thesis_Proposals_base
+target		ex:Thesis_Proposals/{ID} a :Thesis_Proposals ; p:ID {ID} ; p:Title {Title} ; p:Abstract {Abstract} ; p:Date {Date} ; p:Academic_Supervisor {Academic_Supervisor} .
+source		SELECT `ID`, `Title`, `Abstract`, `Date`, `Academic_Supervisor` FROM `Thesis_Proposals`
+
+mappingId	Students_base
+target		ex:Students/{ID} a :Students ; p:ID {ID} ; p:name {Name} ; p:email {Email} ; p:PhoneNumber {PhoneNumber} ; p:EnrolmentDate {EnrolmentDate} .
+source		SELECT `ID`, `Name`, `Email`, `PhoneNumber`, `EnrolmentDate` FROM `Students`
+
+mappingId	Supervisors_base
+target		ex:Supervisors/{ID} a :Supervisors ; p:ID {ID} ; p:name {FullName} .
+source		SELECT `ID`, `FullName` FROM `Supervisors`
+
+mappingId	Student_Supervision_base
+target		ex:Student_Supervision/{StudentID}/{SupervisorID}/{DissertationID}/{ThesisProposalID} a :Student_Supervision ; p:StudentID {StudentID} ; p:SupervisorID {SupervisorID} ; p:DissertationID {DissertationID} ; p:ThesisProposalID {ThesisProposalID} .
+source		SELECT `StudentID`, `SupervisorID`, `DissertationID`, `ThesisProposalID` FROM `Student_Supervision`
+
+mappingId	Student_Supervision_ThesisProposalID_fk
+target		ex:Student_Supervision/{StudentID}/{SupervisorID}/{DissertationID}/{ThesisProposalID} p:hasThesis_Proposals ex:Thesis_Proposals/{ThesisProposalID} .
+source		SELECT `StudentID`, `SupervisorID`, `DissertationID`, `ThesisProposalID` FROM `Student_Supervision` WHERE `ThesisProposalID` IS NOT NULL
+
+mappingId	Student_Supervision_DissertationID_fk
+target		ex:Student_Supervision/{StudentID}/{SupervisorID}/{DissertationID}/{ThesisProposalID} p:hasDissertations ex:Dissertations/{DissertationID} .
+source		SELECT `StudentID`, `SupervisorID`, `DissertationID`, `ThesisProposalID` FROM `Student_Supervision` WHERE `DissertationID` IS NOT NULL
+
+mappingId	Student_Supervision_SupervisorID_fk
+target		ex:Student_Supervision/{StudentID}/{SupervisorID}/{DissertationID}/{ThesisProposalID} p:hasSupervisors ex:Supervisors/{SupervisorID} .
+source		SELECT `StudentID`, `SupervisorID`, `DissertationID`, `ThesisProposalID` FROM `Student_Supervision` WHERE `SupervisorID` IS NOT NULL
+
+mappingId	Student_Supervision_StudentID_fk
+target		ex:Student_Supervision/{StudentID}/{SupervisorID}/{DissertationID}/{ThesisProposalID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `StudentID`, `SupervisorID`, `DissertationID`, `ThesisProposalID` FROM `Student_Supervision` WHERE `StudentID` IS NOT NULL
+
+mappingId	Degree_base
+target		ex:Degree/{ID} a :Degree ; p:ID {ID} ; p:StudentID {StudentID} ; p:DegreeType {DegreeType} ; p:GraduationDate {GraduationDate} ; p:Grade {Grade} .
+source		SELECT `ID`, `StudentID`, `DegreeType`, `GraduationDate`, `Grade` FROM `Degree`
+
+mappingId	Degree_StudentID_fk
+target		ex:Degree/{ID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `ID`, `StudentID` FROM `Degree` WHERE `StudentID` IS NOT NULL
+
+mappingId	Course_base
+target		ex:Courses/{ID} a :Courses ; p:ID {ID} ; p:Code {Code} ; p:Description {Description} ; p:Credit {Credit} .
+source		SELECT `ID`, `Code`, `Description`, `Credit` FROM `Course`
+
+mappingId	Student_Course_base
+target		ex:Student_Course/{StudentID}/{CourseID} a :Student_Course ; p:StudentID {StudentID} ; p:CourseID {CourseID} ; p:Marks {Marks} .
+source		SELECT `StudentID`, `CourseID`, `Marks` FROM `Student_Course`
+
+mappingId	Student_Course_CourseID_fk
+target		ex:Student_Course/{StudentID}/{CourseID} p:hasCourses ex:Courses/{CourseID} .
+source		SELECT `StudentID`, `CourseID` FROM `Student_Course` WHERE `CourseID` IS NOT NULL
+
+mappingId	Student_Course_StudentID_fk
+target		ex:Student_Course/{StudentID}/{CourseID} p:hasStudents ex:Students/{StudentID} .
+source		SELECT `StudentID`, `CourseID` FROM `Student_Course` WHERE `StudentID` IS NOT NULL
+
+]]

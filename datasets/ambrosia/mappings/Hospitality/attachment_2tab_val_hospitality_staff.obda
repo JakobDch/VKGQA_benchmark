@@ -1,0 +1,49 @@
+[PrefixDeclaration]
+:	http://ambrosia.example.org/hospitality#
+p:	http://ambrosia.example.org/hospitality/prop#
+ex:	http://ambrosia.example.org/hospitality/id/
+rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:	http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId	Chefs_base
+target		ex:Chefs/{chef_id} a :Chefs ; p:chef_id {chef_id} ; p:name {name} ; p:language {language} ; p:experience_years {experience_years} .
+source		SELECT `chef_id`, `name`, `language`, `experience_years` FROM `Chefs`
+
+mappingId	Servers_base
+target		ex:Servers/{server_id} a :Servers ; p:server_id {server_id} ; p:name {name} ; p:language {language} ; p:years_of_service {years_of_service} .
+source		SELECT `server_id`, `name`, `language`, `years_of_service` FROM `Servers`
+
+mappingId	Customers_base
+target		ex:Customers/{customer_id} a :Customers ; p:customer_id {customer_id} ; p:name {name} ; p:phone_number {phone_number} ; p:preferred_server_id {preferred_server_id} .
+source		SELECT `customer_id`, `name`, `phone_number`, `preferred_server_id` FROM `Customers`
+
+mappingId	Customers_preferred_server_id_fk
+target		ex:Customers/{customer_id} p:hasServers ex:Servers/{preferred_server_id} .
+source		SELECT `customer_id`, `preferred_server_id` FROM `Customers` WHERE `preferred_server_id` IS NOT NULL
+
+mappingId	Restaurants_base
+target		ex:Restaurants/{restaurant_id} a :Restaurants ; p:restaurant_id {restaurant_id} ; p:name {name} ; p:address {address} ; p:cuisine {cuisine} .
+source		SELECT `restaurant_id`, `name`, `address`, `cuisine` FROM `Restaurants`
+
+mappingId	Menus_base
+target		ex:Menus/{menu_id} a :Menus ; p:menu_id {menu_id} ; p:restaurant_id {restaurant_id} ; p:dish {dish} ; p:price {price} .
+source		SELECT `menu_id`, `restaurant_id`, `dish`, `price` FROM `Menus`
+
+mappingId	Menus_restaurant_id_fk
+target		ex:Menus/{menu_id} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `menu_id`, `restaurant_id` FROM `Menus` WHERE `restaurant_id` IS NOT NULL
+
+mappingId	Orders_base
+target		ex:Orders/{order_id} a :Orders ; p:order_id {order_id} ; p:customer_id {customer_id} ; p:restaurant_id {restaurant_id} ; p:total_price {total_price} .
+source		SELECT `order_id`, `customer_id`, `restaurant_id`, `total_price` FROM `Orders`
+
+mappingId	Orders_restaurant_id_fk
+target		ex:Orders/{order_id} p:hasRestaurants ex:Restaurants/{restaurant_id} .
+source		SELECT `order_id`, `restaurant_id` FROM `Orders` WHERE `restaurant_id` IS NOT NULL
+
+mappingId	Orders_customer_id_fk
+target		ex:Orders/{order_id} p:hasCustomers ex:Customers/{customer_id} .
+source		SELECT `order_id`, `customer_id` FROM `Orders` WHERE `customer_id` IS NOT NULL
+
+]]

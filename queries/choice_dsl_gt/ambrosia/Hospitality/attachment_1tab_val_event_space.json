@@ -1,0 +1,42 @@
+{
+  "domain": "Hospitality",
+  "db_base": "attachment_1tab_val_event_space",
+  "schema": "amb_attachment_1tab_val_event_space",
+  "queries": [
+    {
+      "qid": 0,
+      "question": "Show all banquet halls and conference rooms where either can hold 200 people.",
+      "qtype": "unambig",
+      "sql": "SELECT EventSpaces.Name \nFROM EventSpaces\nWHERE (EventSpaces.Event_Space = \"Banquet Hall\" OR EventSpaces.Event_Space = \"Conference Room\") AND EventSpaces.Capacity = 200",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?eventspaces a :EventSpaces .\n  ?eventspaces p:name ?name .\n  ?eventspaces p:Event_Space ?event_space_w .\n  ?eventspaces p:Event_Space ?event_space_w2 .\n  ?eventspaces p:Capacity ?capacity_w .\n  FILTER((((STR(?event_space_w) = \"Banquet Hall\" || STR(?event_space_w2) = \"Conference Room\")) && (STR(?capacity_w) = \"200\" || STR(?capacity_w) = \"200.0\")))\n}",
+      "status": "pass",
+      "note": "n=2"
+    },
+    {
+      "qid": 1,
+      "question": "List all banquet halls and conference rooms with a 200 person capacity.",
+      "qtype": "ambig",
+      "sql": "SELECT EventSpaces.Name \nFROM EventSpaces\nWHERE EventSpaces.Event_Space = \"Banquet Hall\" OR EventSpaces.Event_Space = \"Conference Room\" AND EventSpaces.Capacity = 200",
+      "sparql": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?name WHERE {\n  ?eventspaces a :EventSpaces .\n  ?eventspaces p:name ?name .\n  ?eventspaces p:Event_Space ?event_space_w .\n  ?eventspaces p:Event_Space ?event_space_w2 .\n  ?eventspaces p:Capacity ?capacity_w .\n  FILTER((STR(?event_space_w) = \"Banquet Hall\" || (STR(?event_space_w2) = \"Conference Room\" && (STR(?capacity_w) = \"200\" || STR(?capacity_w) = \"200.0\"))))\n}",
+      "status": "pass",
+      "note": "n=5"
+    }
+  ],
+  "ambiguous_dsl": [
+    {
+      "question": "List all banquet halls and conference rooms with a 200 person capacity.",
+      "ambig_type": "attachment",
+      "n_interpretations": 2,
+      "member_qids": [
+        0,
+        1
+      ],
+      "interpretation_labels": [
+        "high",
+        "low"
+      ],
+      "choice_dsl": "PREFIX : <http://ambrosia.example.org/hospitality#>\nPREFIX p: <http://ambrosia.example.org/hospitality/prop#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nCHOICE attachment {\n  high: { SELECT ?name WHERE {\n  ?eventspaces a :EventSpaces .\n  ?eventspaces p:name ?name .\n  ?eventspaces p:Event_Space ?event_space_w .\n  ?eventspaces p:Event_Space ?event_space_w2 .\n  ?eventspaces p:Capacity ?capacity_w .\n  FILTER((((STR(?event_space_w) = \"Banquet Hall\" || STR(?event_space_w2) = \"Conference Room\")) && (STR(?capacity_w) = \"200\" || STR(?capacity_w) = \"200.0\")))\n} }\n  low: { SELECT ?name WHERE {\n  ?eventspaces a :EventSpaces .\n  ?eventspaces p:name ?name .\n  ?eventspaces p:Event_Space ?event_space_w .\n  ?eventspaces p:Event_Space ?event_space_w2 .\n  ?eventspaces p:Capacity ?capacity_w .\n  FILTER((STR(?event_space_w) = \"Banquet Hall\" || (STR(?event_space_w2) = \"Conference Room\" && (STR(?capacity_w) = \"200\" || STR(?capacity_w) = \"200.0\"))))\n} }\n}",
+      "verified": true
+    }
+  ]
+}
