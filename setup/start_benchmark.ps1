@@ -9,7 +9,7 @@ $BENCH = Split-Path -Parent $HERE
 $DATASETS = Join-Path $BENCH "datasets"
 $NET = "bench_net"
 $ONTOP = "ontop/ontop:5.4.0"
-$NOISE = @("bsbm","cwd","cwe_secutable","eicu","gtfs","lubm","mimic_iii","npd")
+$NOISE = @("bsbm","cwd","cwe_secutable","gtfs","lubm","npd")
 
 function Log($m){ Write-Host "[bench] $m" -ForegroundColor Cyan }
 

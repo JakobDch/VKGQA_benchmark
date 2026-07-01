@@ -26,8 +26,6 @@ level that license permits — summarised here.
 | **lubm** | ontop/ontop-examples (LUBM) | Apache 2.0 | **Zenodo** |
 | **cwe_secutable** | SecuTable (HF) + SEPSES CWE | CC BY 4.0 | **Zenodo** |
 | **bsbm** | locally generated (bsbmtools) | synthetic, free | **Zenodo** |
-| **eicu** | PhysioNet eICU-CRD | Credentialed — **no redistribution** | bring-your-own → physionet.org |
-| **mimic_iii** | PhysioNet MIMIC-III | Credentialed — **no redistribution** | bring-your-own → physionet.org |
 
 Each dataset folder carries an `ATTRIBUTION.md` (source + license + citation) or, for the
 restricted ones, a `DATA_ACCESS.md` with obtain-it-yourself instructions.

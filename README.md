@@ -46,7 +46,7 @@ questions, ground truth, scripts). The **data** is fetched separately:
 cd setup
 ./download_data.sh all     # open datasets + WebQSP graph, from Zenodo
 ```
-Restricted datasets (eICU, MIMIC-III, AMBROSIA) are **not** downloadable — obtain them
+The restricted dataset (AMBROSIA) is **not** downloadable — obtain it
 yourself per the `DATA_ACCESS.md` in each dataset folder. Full breakdown of every
 dataset's source, license, and distribution channel: **[DATASET_LICENSES.md](DATASET_LICENSES.md)**.
 
@@ -67,8 +67,8 @@ benchmark/
 │   ├── webqsp/                   #   Freebase (real user questions)
 │   │   ├── mappings/  webqsp_big.r2rml.ttl
 │   │   └── DATA_ACCESS.md        #   Freebase/VKG is external (see file)
-│   └── <noise>/                  #   bsbm, cwd, cwe_secutable, eicu, gtfs, lubm,
-│       ├── mapping/              #   mimic_iii, npd — extra federated domains that
+│   └── <noise>/                  #   bsbm, cwd, cwe_secutable, gtfs, lubm, npd —
+│       ├── mapping/              #   extra federated domains that
 │       ├── ontology/             #   act as distractors ("noise"); no GT of their own
 │       └── data.zip              #   the raw data (dumps/CSV) for that dataset
 │
@@ -199,7 +199,6 @@ See `DINA_AMBIGUITY_README.md` for the full grammar and API.
   (see `datasets/ambrosia/DATA_ACCESS.md`). Only our R2RML/ontology/GT derivatives are included.
 - **WebQSP** questions: Microsoft Research; **Freebase**: public RDF dump. Data is
   external (see `datasets/webqsp/DATA_ACCESS.md`).
-- **Noise datasets** (bsbm, cwd, cwe_secutable, eicu, gtfs, lubm, mimic_iii, npd):
-  see each dataset's own README for its source and license. eICU/MIMIC-III are
-  restricted-access clinical data — the `data.zip` here follows their access terms.
+- **Noise datasets** (bsbm, cwd, cwe_secutable, gtfs, lubm, npd): permissively licensed
+  (Apache 2.0 / CC BY 4.0 / NLOD); see each dataset's `ATTRIBUTION.md` for source + license.
 - **CHOICE-DSL expander**: from the `dina_ambiguity` project.

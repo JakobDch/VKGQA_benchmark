@@ -2,7 +2,7 @@
 # Fetch the benchmark data that is NOT stored in git.
 #
 #   - Open datasets + the WebQSP 668M RDF graph  -> downloaded from Zenodo
-#   - Restricted datasets (eICU, MIMIC-III, AMBROSIA) -> you must obtain them yourself
+#   - AMBROSIA (authors request no re-hosting) -> you must obtain it yourself
 #
 # Usage: ./download_data.sh [all|webqsp|noise]
 set -euo pipefail
@@ -17,7 +17,7 @@ ZENODO_RECORD="REPLACE_WITH_ZENODO_RECORD_ID"
 ZBASE="https://zenodo.org/records/${ZENODO_RECORD}/files"
 # ---------------------------------------------------------------------------
 
-OPEN_NOISE=(bsbm cwd cwe_secutable gtfs lubm npd)   # eICU + mimic_iii are NOT here (restricted)
+OPEN_NOISE=(bsbm cwd cwe_secutable gtfs lubm npd)
 
 log(){ echo -e "\033[1;32m[download]\033[0m $*"; }
 
@@ -61,9 +61,7 @@ esac
 cat <<'NOTE'
 
 ------------------------------------------------------------------------------
-Restricted datasets are NOT downloaded here (license) — obtain them yourself:
-  - eICU       -> datasets/eicu/DATA_ACCESS.md       (PhysioNet credentialed)
-  - MIMIC-III  -> datasets/mimic_iii/DATA_ACCESS.md  (PhysioNet credentialed)
-  - AMBROSIA   -> datasets/ambrosia/DATA_ACCESS.md   (authors' request)
+AMBROSIA source data is NOT downloaded here (the authors request no re-hosting) —
+obtain it yourself: datasets/ambrosia/DATA_ACCESS.md
 ------------------------------------------------------------------------------
 NOTE

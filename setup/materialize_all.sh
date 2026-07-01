@@ -14,7 +14,7 @@ DATASETS="$BENCH/datasets"
 NET=bench_net
 ONTOP_IMAGE=ontop/ontop:5.4.0
 JDBC_DIR="$HERE/jdbc"
-NOISE_SETS=(bsbm cwd cwe_secutable eicu gtfs lubm mimic_iii npd)
+NOISE_SETS=(bsbm cwd cwe_secutable gtfs lubm npd)
 export MSYS_NO_PATHCONV=1
 hostpath(){ case "$1" in /?/*) echo "$1" | sed -E 's#^/([a-zA-Z])/#\1:/#';; *) echo "$1";; esac; }
 

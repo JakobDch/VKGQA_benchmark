@@ -2,7 +2,7 @@
 # One-command setup for the Ambiguity VKGQA benchmark (VKG mode).
 #
 #   ./start_benchmark.sh              # everything: backends + load data + start endpoints
-#   ./start_benchmark.sh noise        # only the 8 noise datasets
+#   ./start_benchmark.sh noise        # only the 6 noise datasets
 #   ./start_benchmark.sh ambrosia     # only AMBROSIA (loads 846 MySQL schemas)
 #   ./start_benchmark.sh webqsp       # only WebQSP (loads the shipped 668M RDF)
 #
@@ -35,7 +35,7 @@ start_backends(){
 }
 
 # ---------------------------------------------------------------- noise (postgres)
-NOISE_SETS=(bsbm cwd cwe_secutable eicu gtfs lubm mimic_iii npd)
+NOISE_SETS=(bsbm cwd cwe_secutable gtfs lubm npd)
 # next free ontop host port for noise endpoints
 NOISE_BASE_PORT=13001
 
